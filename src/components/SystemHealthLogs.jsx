@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { 
   Activity, 
@@ -12,60 +12,70 @@ import {
   RefreshCw, 
   Filter, 
   Terminal, 
-  Clock 
+  Clock,
+  Loader2
 } from 'lucide-react';
 
 import SuperadminSidebar from './SuperadminSidebar';
-
-// Mock Operational Logs
-const initialLogs = [
-  {
-    id: 'LOG-9941',
-    timestamp: '2026-08-13 17:22:04',
-    level: 'ERROR',
-    service: 'AI-Inference-Engine',
-    message: 'OpenAI API rate limit exceeded (429). Initiating fallback route to Claude 3.5 Sonnet.',
-    tenant: 'Acme Corp'
-  },
-  {
-    id: 'LOG-9940',
-    timestamp: '2026-08-13 17:20:15',
-    level: 'INFO',
-    service: 'Vector-DB-Qdrant',
-    message: 'Index re-embedding completed for taxonomy category CAT-2 (Artificial Intelligence).',
-    tenant: 'Global Platform'
-  },
-  {
-    id: 'LOG-9939',
-    timestamp: '2026-08-13 17:18:42',
-    level: 'WARN',
-    service: 'Auth-SSO',
-    message: 'SAML Certificate expiring in 14 days for identity provider Okta-Apex Health.',
-    tenant: 'Apex Health Systems'
-  },
-  {
-    id: 'LOG-9938',
-    timestamp: '2026-08-13 17:15:00',
-    level: 'INFO',
-    service: 'Sync-Worker-Workday',
-    message: 'Scheduled HRIS batch sync succeeded. 450 user profiles updated.',
-    tenant: 'Starlight Tech'
-  },
-  {
-    id: 'LOG-9937',
-    timestamp: '2026-08-13 17:05:12',
-    level: 'ERROR',
-    service: 'Database-Postgres',
-    message: 'Deadlock detected during concurrent skill assessment transaction update. Retried successfully.',
-    tenant: 'Vanguard Global'
-  }
-];
+import { adminAPI } from '../services/api';
 
 const SystemHealthLogs = () => {
-  const [logs, setLogs] = useState(initialLogs);
+  const [logs, setLogs] = useState([]);
+  const [telemetry, setTelemetry] = useState({
+    uptime: '99.98%',
+    latency: '45 ms',
+    aiErrorRate: '0.00%',
+    cpuLoad: '22% Load'
+  });
+  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [levelFilter, setLevelFilter] = useState('All');
   const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const fetchLogsAndTelemetry = async () => {
+    try {
+      const [auditRes, telemetryRes] = await Promise.allSettled([
+        adminAPI.getAuditLogs(),
+        adminAPI.getGlobalTelemetry()
+      ]);
+
+      if (auditRes.status === 'fulfilled' && auditRes.value?.success && auditRes.value.data) {
+        const mapped = auditRes.value.data.map(log => {
+          const actionUpper = (log.action || '').toUpperCase();
+          const level = actionUpper.includes('ERROR') || actionUpper.includes('FAIL') 
+            ? 'ERROR' 
+            : actionUpper.includes('WARN') || actionUpper.includes('SUSPEND')
+            ? 'WARN' 
+            : 'INFO';
+
+          const userText = log.user ? ` (${log.user.firstName || ''} ${log.user.lastName || ''} - ${log.user.email || ''})` : '';
+
+          return {
+            id: `LOG-${log.id.slice(-4).toUpperCase()}`,
+            timestamp: new Date(log.createdAt).toLocaleString(),
+            level,
+            service: log.resource || 'System-Core',
+            message: `${log.action}${userText}`,
+            tenant: log.tenant?.name || 'Global Platform'
+          };
+        });
+        setLogs(mapped);
+      }
+
+      if (telemetryRes.status === 'fulfilled' && telemetryRes.value?.success && telemetryRes.value.telemetry) {
+        setTelemetry(telemetryRes.value.telemetry);
+      }
+    } catch (err) {
+      console.warn('Failed to load system audit logs or telemetry:', err);
+    } finally {
+      setLoading(false);
+      setIsRefreshing(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchLogsAndTelemetry();
+  }, []);
 
   // Filter Logic
   const filteredLogs = logs.filter(log => {
@@ -78,14 +88,14 @@ const SystemHealthLogs = () => {
 
   const handleRefresh = () => {
     setIsRefreshing(true);
-    setTimeout(() => setIsRefreshing(false), 800);
+    fetchLogsAndTelemetry();
   };
 
   return (
     <div className="flex min-h-screen bg-[#0B1120]">
       <SuperadminSidebar />
 
-      <main className="flex-1 text-slate-100 p-8 pl-80 font-sans">
+      <main className="flex-1 text-slate-100 ml-64 p-8 w-full font-sans">
         
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4 border-b border-slate-800/80 pb-6">
@@ -114,21 +124,21 @@ const SystemHealthLogs = () => {
           <div className="p-5 rounded-2xl bg-[#0F172A] border border-slate-800/80 shadow-xl">
             <p className="text-xs text-slate-400 font-medium">Global System Uptime</p>
             <p className="text-2xl font-extrabold text-emerald-400 mt-1 flex items-center gap-2">
-              <CheckCircle2 className="w-5 h-5" />
-              99.98%
+              <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+              {telemetry.uptime}
             </p>
           </div>
           <div className="p-5 rounded-2xl bg-[#0F172A] border border-slate-800/80 shadow-xl">
             <p className="text-xs text-slate-400 font-medium">Avg. API Response Latency</p>
-            <p className="text-2xl font-extrabold text-white mt-1">142 ms</p>
+            <p className="text-2xl font-extrabold text-white mt-1">{telemetry.latency}</p>
           </div>
           <div className="p-5 rounded-2xl bg-[#0F172A] border border-slate-800/80 shadow-xl">
             <p className="text-xs text-slate-400 font-medium">AI Service Error Rate</p>
-            <p className="text-2xl font-extrabold text-indigo-400 mt-1">0.04%</p>
+            <p className="text-2xl font-extrabold text-indigo-400 mt-1">{telemetry.aiErrorRate}</p>
           </div>
           <div className="p-5 rounded-2xl bg-[#0F172A] border border-slate-800/80 shadow-xl">
             <p className="text-xs text-slate-400 font-medium">Database CPU Load</p>
-            <p className="text-2xl font-extrabold text-indigo-300 mt-1">28% Load</p>
+            <p className="text-2xl font-extrabold text-indigo-300 mt-1">{telemetry.cpuLoad}</p>
           </div>
         </div>
 
@@ -177,37 +187,48 @@ const SystemHealthLogs = () => {
           </div>
 
           <div className="divide-y divide-slate-800/60 font-mono text-xs">
-            {filteredLogs.map((log) => (
-              <div key={log.id} className="p-4 hover:bg-slate-800/30 transition-colors flex flex-col md:flex-row md:items-center justify-between gap-3">
-                <div className="flex items-start md:items-center gap-3 flex-1">
-                  <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase shrink-0 ${
-                    log.level === 'ERROR' 
-                      ? 'bg-rose-500/20 text-rose-400 border border-rose-500/30' 
-                      : log.level === 'WARN'
-                      ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
-                      : 'bg-indigo-500/20 text-indigo-400 border border-indigo-500/30'
-                  }`}>
-                    {log.level}
-                  </span>
-
-                  <span className="text-slate-500 shrink-0">{log.timestamp}</span>
-
-                  <span className="text-indigo-300 font-semibold shrink-0">
-                    [{log.service}]
-                  </span>
-
-                  <p className="text-slate-300 truncate font-sans text-xs">
-                    {log.message}
-                  </p>
-                </div>
-
-                <div className="shrink-0 text-right">
-                  <span className="text-[11px] text-slate-500 bg-slate-800 px-2.5 py-1 rounded-lg">
-                    {log.tenant}
-                  </span>
-                </div>
+            {loading ? (
+              <div className="flex flex-col items-center justify-center py-16">
+                <Loader2 className="w-8 h-8 animate-spin text-indigo-500" />
+                <p className="text-xs text-slate-400 mt-3 font-sans">Querying real-time system audit logs from database...</p>
               </div>
-            ))}
+            ) : filteredLogs.length > 0 ? (
+              filteredLogs.map((log) => (
+                <div key={log.id} className="p-4 hover:bg-slate-800/30 transition-colors flex flex-col md:flex-row md:items-center justify-between gap-3">
+                  <div className="flex items-start md:items-center gap-3 flex-1">
+                    <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase shrink-0 ${
+                      log.level === 'ERROR' 
+                        ? 'bg-rose-500/20 text-rose-400 border border-rose-500/30' 
+                        : log.level === 'WARN'
+                        ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
+                        : 'bg-indigo-500/20 text-indigo-400 border border-indigo-500/30'
+                    }`}>
+                      {log.level}
+                    </span>
+
+                    <span className="text-slate-500 shrink-0">{log.timestamp}</span>
+
+                    <span className="text-indigo-300 font-semibold shrink-0">
+                      [{log.service}]
+                    </span>
+
+                    <p className="text-slate-300 truncate font-sans text-xs">
+                      {log.message}
+                    </p>
+                  </div>
+
+                  <div className="shrink-0 text-right">
+                    <span className="text-[11px] text-slate-500 bg-slate-800 px-2.5 py-1 rounded-lg">
+                      {log.tenant}
+                    </span>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="py-16 text-center text-slate-500 font-sans text-xs">
+                No system audit events match the active search or severity filter.
+              </div>
+            )}
           </div>
         </div>
 

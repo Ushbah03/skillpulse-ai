@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
@@ -10,8 +10,11 @@ import {
   History, 
   Award, 
   Navigation, 
-  LogOut 
+  LogOut,
+  Activity
 } from 'lucide-react';
+
+import logo from '../assets/images/logo.png';
 
 const menuItems = [
   { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
@@ -28,9 +31,14 @@ const menuItems = [
 const Sidebar = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const [imgFailed, setImgFailed] = useState(false);
 
   const handleLogout = () => {
-    navigate('/login');
+    localStorage.removeItem('token');
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('user');
+    localStorage.removeItem('userRole');
+    window.location.replace('/login');
   };
 
   return (
@@ -43,17 +51,28 @@ const Sidebar = () => {
 
       {/* Logo Section */}
       <motion.div
-        onClick={() => navigate('/select-role')}
+        onClick={() => navigate('/dashboard')}
         whileTap={{ scale: 0.98 }}
         className="mb-10 px-2 flex items-center gap-3 cursor-pointer group relative z-10"
       >
-        <motion.img 
-          src="/favicon.ico" 
-          alt="SkillPulse Logo" 
-          whileHover={{ rotate: -12, scale: 1.1 }}
-          transition={{ type: "spring", stiffness: 400, damping: 15 }}
-          className="w-8 h-8 object-contain" 
-        />
+        {!imgFailed ? (
+          <motion.img 
+            src={logo} 
+            alt="SkillPulse Logo" 
+            onError={() => setImgFailed(true)}
+            whileHover={{ rotate: -12, scale: 1.1 }}
+            transition={{ type: "spring", stiffness: 400, damping: 15 }}
+            className="w-8 h-8 object-contain" 
+          />
+        ) : (
+          <motion.div 
+            whileHover={{ rotate: -12, scale: 1.1 }}
+            className="w-8 h-8 rounded-xl bg-gradient-to-tr from-indigo-600 to-blue-500 flex items-center justify-center text-white shadow-md"
+          >
+            <Activity className="w-5 h-5 text-white" />
+          </motion.div>
+        )}
+
         <h1 className="text-white text-xl font-bold tracking-tight group-hover:text-indigo-400 transition-colors duration-300">
           SkillPulse AI
         </h1>
@@ -84,15 +103,13 @@ const Sidebar = () => {
                     />
                   )}
 
-                  <div className="absolute inset-0 bg-white/0 group-hover:bg-white/3 rounded-xl transition-colors duration-200 pointer-events-none" />
-
                   <item.icon 
-                    className={`w-5 h-5 transition-all duration-300 z-10 group-hover:scale-105 ${
-                      isActive ? 'text-blue-500 scale-105' : 'text-slate-500 group-hover:text-slate-300'
+                    className={`w-5 h-5 transition-colors duration-300 z-10 shrink-0 ${
+                      isItemActive ? 'text-indigo-400' : 'text-slate-400 group-hover:text-slate-200'
                     }`} 
                   />
-                  
-                  <span className="text-sm font-medium tracking-wide z-10 transition-transform duration-300 group-hover:translate-x-0.5">
+
+                  <span className="font-semibold text-sm tracking-wide z-10 truncate">
                     {item.name}
                   </span>
                 </>
@@ -102,18 +119,15 @@ const Sidebar = () => {
         })}
       </nav>
 
-      {/* Sticky Bottom Logout Button */}
-      <div className="pt-4 mt-auto">
-        <motion.button
+      {/* Logout Action */}
+      <div className="pt-4 z-10">
+        <button
           onClick={handleLogout}
-          whileTap={{ scale: 0.98 }}
-          className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition-all duration-300 group border-0 outline-none relative"
+          className="flex items-center gap-3 px-4 py-3 w-full rounded-xl text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 transition-colors duration-300 font-semibold text-sm tracking-wide"
         >
-          <LogOut className="w-5 h-5 text-slate-500 group-hover:text-red-400 transition-transform duration-300 group-hover:-translate-x-0.5" />
-          <span className="text-sm font-medium tracking-wide transition-transform duration-300 group-hover:translate-x-0.5">
-            Logout
-          </span>
-        </motion.button>
+          <LogOut className="w-5 h-5 shrink-0" />
+          <span>Logout</span>
+        </button>
       </div>
 
     </div>

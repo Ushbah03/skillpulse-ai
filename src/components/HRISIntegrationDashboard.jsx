@@ -56,8 +56,8 @@ const HRISIntegrationDashboard = () => {
       <SuperadminSidebar />
 
       {/* ── MAIN SCROLLABLE CONTENT WRAPPER ── */}
-      {/* pl-72 ensures content clears the sidebar nicely */}
-      <div className="flex-1 pl-72 flex flex-col min-h-screen overflow-hidden">
+      {/* pl-64 ensures content clears the sidebar nicely */}
+      <div className="flex-1 pl-64 flex flex-col min-h-screen overflow-hidden">
         
         {/* sticky top bar inside dashboard container */}
         <header className="bg-white border-b border-slate-200 px-8 py-4 flex items-center justify-between sticky top-0 z-20 backdrop-blur-md bg-white/90">
@@ -87,7 +87,7 @@ const HRISIntegrationDashboard = () => {
         </header>
 
         {/* ── CORE SETTINGS MAIN WORKSPACE ── */}
-        <main className="flex-1 overflow-y-auto p-8 space-y-6 max-w-[1600px] w-full mx-auto">
+        <main className="flex-1 overflow-y-auto p-8 space-y-6 w-full">
           
           {/* SECTION 1: TOP METRICS MATRIX */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">

@@ -51,12 +51,12 @@ const SystemParameters= () => {
   return (
     <div className="flex min-h-screen bg-slate-50">
       {/* Sidebar */}
-      <div className="fixed left-0 top-0 h-full w-72 z-50">
+      <div className="fixed left-0 top-0 h-full w-64 z-50">
         <SuperadminSidebar />
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 ml-72">
+      <div className="flex-1 ml-64">
         {/* Header */}
         <header className="bg-white border-b border-slate-200 px-8 py-6 flex items-center justify-between">
           <div>

@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
+import ScrollToTop from './components/ScrollToTop';
 import ForgotPasswordScreen from './components/ForgotPasswordScreen';
 import SkillPulseLanding from './components/SkillPulseLanding';
 import FeaturePage from './components/FeaturePage';
@@ -12,6 +13,7 @@ import ContactPage from './components/ContactPage';
 import SignUp from './components/SignUp';
 import Login from './components/Login';
 import RoleSelection from './components/RoleSelection';
+import ProtectedRoute from './components/ProtectedRoute';
 
 // Employee Dashboard Components
 import DashboardLayout from './components/Layout';
@@ -111,11 +113,19 @@ function LayoutWrapper({ children }) {
   );
 }
 
+import WorkspaceSuspended from './components/WorkspaceSuspended';
+import AccountSuspended from './components/AccountSuspended';
+
 function App() {
   return (
     <Router>
+      <ScrollToTop />
       <LayoutWrapper>
         <Routes>
+          {/* Workspace & Account Suspended Routes */}
+          <Route path="/workspace-suspended" element={<WorkspaceSuspended />} />
+          <Route path="/account-suspended" element={<AccountSuspended />} />
+
           {/* Forgot Password Route */}
           <Route path="/forgot-password" element={<ForgotPasswordScreen />} />
 
@@ -128,74 +138,90 @@ function App() {
           <Route path="contact" element={<ContactPage />}/>
           <Route path="signup" element={<SignUp />} />
           <Route path="login" element={<Login />} />
-          <Route path="select-role" element={<RoleSelection />} />
-
-          {/* Employee Dashboard Nested Routes */}
-          <Route path="/dashboard" element={<DashboardLayout />}>
-            <Route index element={<EmployeeDashboard />} /> 
-            <Route path="profile" element={<MySkillProfile />} />
-            <Route path="assessment" element={<SkillAssessment />} />
-            <Route path="results" element={<AssessmentResults />} />
-            <Route path="learning" element={<LearningRecommendations />} />
-            <Route path="courses" element={<CourseDetails />} />
-            <Route path="progress" element={<MyProgress />} />
-            <Route path="certifications" element={<Certifications />} />
-            <Route path="career" element={<CareerPaths />} /> 
+          {/* Role Selection (Admin only - regular users redirected to their dashboard) */}
+          <Route element={<ProtectedRoute allowedRoles={['SUPER_ADMIN']} />}>
+            <Route path="select-role" element={<RoleSelection />} />
           </Route>
 
-          {/* Team Leader Dashboard Routes */}
-          <Route path="/team-leader">
-            <Route index element={<TeamLeaderDashboard />} /> 
-            <Route path="skill-overview" element={<TeamLeaderSkillOverview />} />
-            <Route path="member-profile" element={<TeamMemberProfile />} />
-            <Route path="assign-learning" element={<AssignLearning />} />
-            <Route path="team-formation" element={<TeamFormation />} />
-            <Route path="performance" element={<PerformanceMonitor />} />
-            <Route path="readiness" element={<TeamReadinessScore />} />
-            <Route path="gap-analysis" element={<TeamLeaderSkillGapAnalysis />} />
-            <Route path="requests" element={<TeamTrainingRequests />} />
-            <Route path="reports" element={<TeamReports />} />
+          {/* Employee Dashboard Nested Routes (Employee & Super Admin) */}
+          <Route element={<ProtectedRoute allowedRoles={['EMPLOYEE', 'SUPER_ADMIN']} />}>
+            <Route path="/dashboard" element={<DashboardLayout />}>
+              <Route index element={<EmployeeDashboard />} /> 
+              <Route path="profile" element={<MySkillProfile />} />
+              <Route path="assessment" element={<SkillAssessment />} />
+              <Route path="results" element={<AssessmentResults />} />
+              <Route path="learning" element={<LearningRecommendations />} />
+              <Route path="courses" element={<CourseDetails />} />
+              <Route path="progress" element={<MyProgress />} />
+              <Route path="certifications" element={<Certifications />} />
+              <Route path="career" element={<CareerPaths />} /> 
+            </Route>
           </Route>
 
-          {/* HR Routes */}
-          <Route path="/hr-dashboard">
-            <Route index element={<HRDashboard />} />
-            <Route path="skill-analytics" element={<OrganizationSkillAnalytics />} />
-            <Route path="workforce-planning" element={<WorkforcePlanning/>} />
-            <Route path="compliance-management" element={<ComplianceManagement />} />
-            <Route path="career-planning" element={<SuccessionPipeline />} />
-            <Route path="skill-gap-reports" element={<SkillGapReports />} />
-            <Route path="training-management" element={<TrainingProgramManagement />} />
-            <Route path="performance-reports" element={<EmployeePerformance />} />
-            <Route path="department-comparison" element={<DepartmentComparison />} />
-            <Route path="hr-insights" element={<HRInsightsForecasting />} />
+          {/* Team Leader Dashboard Routes (Team Leader & Super Admin) - Requires PRO or ENTERPRISE plan */}
+          <Route element={<ProtectedRoute allowedRoles={['TEAM_LEADER', 'SUPER_ADMIN']} allowedPlans={['PRO', 'ENTERPRISE']} />}>
+            <Route path="/team-leader">
+              <Route index element={<TeamLeaderDashboard />} /> 
+              <Route path="skill-overview" element={<TeamLeaderSkillOverview />} />
+              <Route path="member-profile" element={<TeamMemberProfile />} />
+              <Route path="assign-learning" element={<AssignLearning />} />
+              <Route path="team-formation" element={<TeamFormation />} />
+              <Route path="performance" element={<PerformanceMonitor />} />
+              <Route path="readiness" element={<TeamReadinessScore />} />
+              <Route path="gap-analysis" element={<TeamLeaderSkillGapAnalysis />} />
+              <Route path="requests" element={<TeamTrainingRequests />} />
+              <Route path="reports" element={<TeamReports />} />
+            </Route>
           </Route>
 
-          {/* Superadmin Main Dashboard Routes Layer */}
-        {/* Superadmin Main Dashboard Routes Layer */}
-<Route path="/superadmin">
-  <Route index element={<SuperAdminDashboard />} />
-  <Route path="dashboard" element={<SuperAdminDashboard />} /> {/* <-- ADD THIS LINE */}
-  <Route path="tenants" element={<TenantManagement />} />
-    <Route path="users" element={<UserManagement />} />
-  <Route path="roles" element={<RoleManagement />} />
-  <Route path="taxonomy" element={<SkillTaxonomyManagement/>} />
-  <Route path="ai-config" element={<AIModelConfiguration />} />
-    <Route path="integrations" element={<GlobalIntegrations />} />
-      <Route path="billing" element={<BillingAndSubscriptions />} />
-       <Route path="settings" element={<SystemHealthLogs />} />
-  <Route path="audit-logs" element={<AuditTrailLogs />} />
- 
-</Route>
+          {/* HR Routes (HR Manager & Super Admin) - Requires PRO or ENTERPRISE plan */}
+          <Route element={<ProtectedRoute allowedRoles={['HR_MANAGER', 'SUPER_ADMIN']} allowedPlans={['PRO', 'ENTERPRISE']} />}>
+            <Route path="/hr-dashboard">
+              <Route index element={<HRDashboard />} />
+              <Route path="skill-analytics" element={<OrganizationSkillAnalytics />} />
+              <Route path="workforce-planning" element={<WorkforcePlanning/>} />
+              <Route path="compliance-management" element={<ComplianceManagement />} />
+              <Route path="career-planning" element={<SuccessionPipeline />} />
+              <Route path="skill-gap-reports" element={<SkillGapReports />} />
+              <Route path="training-management" element={<TrainingProgramManagement />} />
+              <Route path="performance-reports" element={<EmployeePerformance />} />
+              <Route path="department-comparison" element={<DepartmentComparison />} />
+              <Route path="hr-insights" element={<HRInsightsForecasting />} />
+            </Route>
+          </Route>
 
-          {/* Company Admin Routes */}
-          <Route path="/company-admin">
-            <Route index element={<CompanyAdminDashboard />} />
-            <Route path="users" element={<UserRoleGovernance />} />
-            <Route path="taxonomy" element={<CompanySkillTaxonomy />} />
-            <Route path="integrations" element={<IntegrationsHub />} />
-            <Route path="security" element={<SecurityAccessPolicies />} />
-            <Route path="settings" element={<OrgSettingsAuditLogs />} />
+          {/* Company Admin Routes (Company Admin & Super Admin) */}
+          <Route element={<ProtectedRoute allowedRoles={['COMPANY_ADMIN', 'SUPER_ADMIN']} />}>
+            <Route path="/company-admin">
+              <Route index element={<CompanyAdminDashboard />} />
+              <Route path="users" element={<UserRoleGovernance />} />
+              <Route path="taxonomy" element={<CompanySkillTaxonomy />} />
+              
+              {/* Requires PRO or ENTERPRISE */}
+              <Route element={<ProtectedRoute allowedRoles={['COMPANY_ADMIN', 'SUPER_ADMIN']} allowedPlans={['PRO', 'ENTERPRISE']} />}>
+                <Route path="integrations" element={<IntegrationsHub />} />
+              </Route>
+              
+              <Route path="security" element={<SecurityAccessPolicies />} />
+              <Route path="settings" element={<OrgSettingsAuditLogs />} />
+            </Route>
+          </Route>
+
+          {/* Superadmin Main Dashboard Routes Layer (Super Admin Only) */}
+          <Route element={<ProtectedRoute allowedRoles={['SUPER_ADMIN']} />}>
+            <Route path="/superadmin">
+              <Route index element={<SuperAdminDashboard />} />
+              <Route path="dashboard" element={<SuperAdminDashboard />} />
+              <Route path="tenants" element={<TenantManagement />} />
+              <Route path="users" element={<UserManagement />} />
+              <Route path="roles" element={<RoleManagement />} />
+              <Route path="taxonomy" element={<SkillTaxonomyManagement/>} />
+              <Route path="ai-config" element={<AIModelConfiguration />} />
+              <Route path="integrations" element={<GlobalIntegrations />} />
+              <Route path="billing" element={<BillingAndSubscriptions />} />
+              <Route path="settings" element={<SystemHealthLogs />} />
+              <Route path="audit-logs" element={<AuditTrailLogs />} />
+            </Route>
           </Route>
 
         </Routes>

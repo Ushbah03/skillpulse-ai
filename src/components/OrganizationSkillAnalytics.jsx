@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Search, 
   ChevronLeft, 
@@ -11,40 +11,81 @@ import {
   Target,
   Building,
   CheckCircle2,
-  X
+  X,
+  Loader2
 } from 'lucide-react';
 import HRSidebar from './HRSidebar'; 
 import { motion, AnimatePresence } from 'framer-motion';
+import { hrAPI } from '../services/api';
 
 const OrganizationSkillAnalytics = () => {
   // Multi-tenant & Global State
-  const [currentTenant] = useState("Enterprise Corp");
+  const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
+  const currentTenant = storedUser.tenant?.name || "Organization";
   const [searchQuery, setSearchQuery] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [analyticsData, setAnalyticsData] = useState(null);
   
   // Interactive UI States
   const [currentPage, setCurrentPage] = useState(1);
   const [isAIModalOpen, setIsAIModalOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState(null);
 
-  const itemsPerPage = 3;
+  const itemsPerPage = 5;
 
-  // Mock Data for Table
-  const employeeGaps = [
-    { id: 1, name: 'Marcus Thorne', dept: 'Engineering', skill: 'System Design', score: '2 / 5', severity: 'CRITICAL', rec: 'Advanced System Arch. Workshop' },
-    { id: 2, name: 'Elena Rodriguez', dept: 'Product', skill: 'Data Analytics', score: '3 / 4', severity: 'MODERATE', rec: 'Python for Data Science Path' },
-    { id: 3, name: 'Samir Gupta', dept: 'Operations', skill: 'Cloud Security', score: '4 / 5', severity: 'LOW', rec: 'AWS Security Specialization' },
-    { id: 4, name: 'John Doe', dept: 'Engineering', skill: 'React Patterns', score: '1 / 5', severity: 'CRITICAL', rec: 'React Performance Course' },
-    { id: 5, name: 'Jane Smith', dept: 'Marketing', skill: 'SEO', score: '2 / 4', severity: 'LOW', rec: 'Advanced Google Analytics' },
-  ];
+  useEffect(() => {
+    let isMounted = true;
+    const loadAnalytics = async () => {
+      setLoading(true);
+      try {
+        const res = await hrAPI.getAnalytics();
+        if (isMounted && res?.success) {
+          setAnalyticsData(res.data);
+        }
+      } catch (err) {
+        console.warn('Failed to load analytics for OrganizationSkillAnalytics:', err);
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    };
+    loadAnalytics();
+    return () => { isMounted = false; };
+  }, []);
 
-  // Heatmap Data Logic
-  const heatmapSkills = ['React', 'Node.js', 'AWS', 'Python', 'UX Design', 'SQL', 'Docker'];
-  const heatmapEmployees = [
-    { name: 'Alex Rivera', gaps: [1, 2, 0, 1, 0, 1, 2] }, // 0: Green, 1: Orange, 2: Red
-    { name: 'Jordan Smith', gaps: [2, 1, 2, 0, 1, 0, 1] },
-    { name: 'Casey Chen', gaps: [1, 0, 1, 2, 0, 2, 0] },
-    { name: 'Taylor Swift', gaps: [0, 2, 0, 1, 2, 1, 0] },
-  ];
+  // Derive employee gaps from backend skillGaps data
+  const employeeGaps = React.useMemo(() => {
+    if (!analyticsData?.skillGaps) return [];
+    return analyticsData.skillGaps.map(g => ({
+      id: g.id,
+      name: `${g.user?.firstName || 'Employee'} ${g.user?.lastName || ''}`.trim(),
+      dept: g.user?.department ? g.user.department.name : 'Unassigned',
+      skill: g.skill?.name || 'General Skill',
+      score: `${g.currentLevel || 1} / ${g.requiredLevel || 3}`,
+      severity: g.severity || 'MODERATE',
+      rec: g.severity === 'CRITICAL' ? 'Immediate Upskilling Training Plan' : 'Standard Learning Module'
+    }));
+  }, [analyticsData]);
+
+  // Heatmap Data Logic derived from DB
+  const { heatmapSkills, heatmapEmployees } = React.useMemo(() => {
+    if (!analyticsData?.members) return { heatmapSkills: [], heatmapEmployees: [] };
+    const gapSkillNames = (analyticsData.skillGaps || []).map(g => g.skill?.name).filter(Boolean);
+    const memberSkillNames = analyticsData.members.flatMap(m => (m.skills || []).map(s => s.skill?.name).filter(Boolean));
+    const skills = Array.from(new Set([...gapSkillNames, ...memberSkillNames])).slice(0, 7);
+
+    const emps = analyticsData.members.slice(0, 6).map(m => {
+      const gaps = skills.map(skName => {
+        const gap = analyticsData.skillGaps?.find(g => g.userId === m.id && g.skill?.name === skName);
+        if (!gap) return 0; // No gap
+        return gap.severity === 'CRITICAL' ? 2 : 1; // 1: Moderate/High, 2: Critical
+      });
+      return {
+        name: `${m.firstName} ${m.lastName}`,
+        gaps
+      };
+    });
+    return { heatmapSkills: skills, heatmapEmployees: emps };
+  }, [analyticsData]);
 
   // Filtered & Paginated Data
   const filteredEmployees = employeeGaps.filter(emp => 
@@ -61,12 +102,25 @@ const OrganizationSkillAnalytics = () => {
     setTimeout(() => setToastMessage(null), 3000);
   };
 
+  // Derive counts & Severity Distribution dynamically from DB
+  const totalEmployeesCount = analyticsData?.members?.length || analyticsData?.totalEmployees || 0;
+  const totalEmployeesWithGaps = analyticsData?.skillGaps ? new Set(analyticsData.skillGaps.map(g => g.userId)).size : 0;
+  const criticalGaps = analyticsData?.criticalGapsCount || 0;
+  const totalGapsCount = analyticsData?.skillGaps?.length || 0;
+  const moderateGaps = Math.max(0, totalGapsCount - criticalGaps);
+  const workforceMatchScore = analyticsData?.averageReadiness !== undefined ? analyticsData.averageReadiness : 0;
+  const totalSkillCount = analyticsData?.categoryDistribution?.reduce((acc, c) => acc + c.skillCount, 0) || 0;
+
+  const criticalGapPct = totalGapsCount ? Math.round((criticalGaps / totalGapsCount) * 100) : 0;
+  const moderateGapPct = totalGapsCount ? Math.round((moderateGaps / totalGapsCount) * 100) : 0;
+  const noGapPct = Math.max(0, 100 - criticalGapPct - moderateGapPct);
+
   return (
     <div className="flex min-h-screen bg-[#F8F9FE] font-sans">
       {/* 1. Sidebar with Tenant prop */}
       <HRSidebar currentTenant={currentTenant} currentScreen="Skill Analytics" />
 
-      <main className="flex-1 ml-80 p-10 max-w-[1600px] mx-auto space-y-8 relative">
+      <main className="flex-1 ml-80 p-10 w-full space-y-8 relative">
         
         {/* Toast Notification Layer */}
         <AnimatePresence>
@@ -87,13 +141,13 @@ const OrganizationSkillAnalytics = () => {
         <header className="flex justify-between items-center bg-white p-4 -mt-2 -mx-4 rounded-2xl border border-slate-100 shadow-sm mb-4">
           <div>
             <h1 className="text-2xl font-black text-[#0b1221] tracking-tight flex items-center gap-3">
-              Skill Gap Analysis
+              Organization Skill Analytics
               <span className="flex items-center gap-1.5 px-2.5 py-1 bg-slate-100 rounded-lg text-xs font-bold text-slate-500 tracking-normal">
                 <Building size={14} className="text-slate-400" />
                 {currentTenant}
               </span>
             </h1>
-            <p className="text-slate-400 text-xs font-semibold mt-0.5">Analyze workforce skill deficiencies and identify training priorities</p>
+            <p className="text-slate-400 text-xs font-semibold mt-0.5">Live organization-wide skill gap reports & heatmap</p>
           </div>
           
           <div className="flex items-center gap-4">
@@ -102,113 +156,147 @@ const OrganizationSkillAnalytics = () => {
               <input 
                 type="text" 
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search employees, skills..." 
+                onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
+                placeholder="Search gaps, employees..." 
                 className="w-80 pl-11 pr-4 py-2.5 bg-[#f3f4f6]/60 rounded-xl text-sm font-semibold text-slate-700 outline-none border border-transparent focus:border-blue-500/30 focus:bg-white focus:shadow-[0_0_0_4px_rgba(59,130,246,0.1)] transition-all" 
               />
             </div>
-            <div className="w-10 h-10 rounded-full bg-slate-200 overflow-hidden border-2 border-white shadow-sm cursor-pointer" onClick={() => triggerAction("Profile View")}>
-              <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=150" alt="profile" />
+            <div className="w-10 h-10 rounded-full bg-indigo-600 text-white font-bold flex items-center justify-center border-2 border-white shadow-sm cursor-pointer" onClick={() => triggerAction("Profile View")}>
+              {storedUser.firstName ? `${storedUser.firstName[0]}${storedUser.lastName ? storedUser.lastName[0] : ''}` : 'HR'}
             </div>
           </div>
         </header>
 
-        {/* --- SECTION 2: TOP METRICS CARDS --- */}
-        <div className="grid grid-cols-4 gap-6">
-          <MetricCard title="Employees with Skill Gaps" value="54" />
-          <MetricCard title="Critical Skill Gaps" value="17" trend="+3 vs last month" trendColor="text-rose-500" badge="Critical" badgeBg="bg-rose-500" />
-          <MetricCard title="Moderate Skill Gaps" value="26" trend="-5 vs last month" trendColor="text-emerald-500" badge="Moderate" badgeBg="bg-amber-500" />
-          
-          <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between hover:shadow-md transition-shadow">
-            <div>
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Workforce Match Score</p>
-              <h4 className="text-3xl font-black text-slate-900 mt-2">76%</h4>
-              <p className="text-[10px] font-bold text-slate-400 mt-1">Enterprise standard: 85%</p>
-            </div>
-            <div className="relative w-16 h-16">
-              <svg className="w-full h-full" viewBox="0 0 36 36">
-                <path className="text-slate-100" strokeWidth="3" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                <motion.path 
-                  initial={{ strokeDasharray: "0, 100" }}
-                  animate={{ strokeDasharray: "76, 100" }}
-                  transition={{ duration: 1.2, ease: "easeOut" }}
-                  className="text-emerald-500" 
-                  strokeWidth="3" 
-                  strokeLinecap="round" 
-                  stroke="currentColor" 
-                  fill="none" 
-                  d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" 
-                />
-              </svg>
-            </div>
+        {loading ? (
+          <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
+            <Loader2 className="w-10 h-10 animate-spin text-indigo-600" />
+            <p className="text-sm font-semibold text-slate-400">Loading skill analytics details...</p>
           </div>
-        </div>
-
-        {/* --- SECTION 3: HEATMAP --- */}
-        <div className="bg-white rounded-2xl p-8 border border-slate-100 shadow-sm space-y-6">
-          <div className="flex justify-between items-center">
-            <h3 className="text-xl font-bold text-slate-900">Workforce Skill Gap Heatmap</h3>
-            <div className="flex gap-4 text-[10px] font-black uppercase tracking-widest text-slate-500">
-              <div className="flex items-center gap-2"><span className="w-3 h-3 rounded bg-[#10b981]"></span> No Gap</div>
-              <div className="flex items-center gap-2"><span className="w-3 h-3 rounded bg-[#f59e0b]"></span> Moderate</div>
-              <div className="flex items-center gap-2"><span className="w-3 h-3 rounded bg-[#ef4444]"></span> Critical</div>
-            </div>
-          </div>
-          
-          <div className="space-y-4">
-            <div className="grid grid-cols-8 gap-4 px-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">
-              <div className="text-left">Employee</div>
-              {heatmapSkills.map(s => <div key={s}>{s}</div>)}
-            </div>
-            {heatmapEmployees.map((emp, i) => (
-              <div key={i} className="grid grid-cols-8 gap-4 items-center">
-                <div className="text-sm font-bold text-slate-700">{emp.name}</div>
-                {emp.gaps.map((g, j) => (
-                  <div 
-                    key={j} 
-                    className={`h-8 rounded-lg ${g === 0 ? 'bg-[#10b981]' : g === 1 ? 'bg-[#f59e0b]' : 'bg-[#ef4444]'} opacity-80 hover:opacity-100 transition-all cursor-pointer hover:scale-105`}
-                    onClick={() => triggerAction(`${emp.name}'s ${heatmapSkills[j]} details`)}
-                  />
-                ))}
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* --- SECTION 4: CATEGORY & DISTRIBUTION --- */}
-        <div className="grid grid-cols-2 gap-8">
-          <div className="bg-white rounded-2xl p-8 border border-slate-100 shadow-sm space-y-6">
-            <h3 className="text-xl font-bold text-slate-900">Skill Gap by Category</h3>
-            <div className="space-y-6">
-              <CategoryRow onClick={() => triggerAction("Backend Category View")} label="Backend Development" value="24 gaps" />
-              <CategoryRow onClick={() => triggerAction("Cloud Category View")} label="Cloud Infrastructure" value="18 gaps" />
-              <CategoryRow onClick={() => triggerAction("AI Category View")} label="AI / Machine Learning" value="15 gaps" />
-              <CategoryRow onClick={() => triggerAction("UX Category View")} label="UX/UI Design" value="8 gaps" />
-            </div>
-          </div>
-
-          <div className="bg-white rounded-2xl p-8 border border-slate-100 shadow-sm space-y-6">
-            <h3 className="text-xl font-bold text-slate-900">Gap Severity Distribution</h3>
-            <div className="flex items-center justify-between">
-              <div className="relative w-32 h-32">
-                <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
-                  <circle cx="18" cy="18" r="16" fill="transparent" stroke="#10b981" strokeWidth="4" strokeDasharray="60 100" />
-                  <circle cx="18" cy="18" r="16" fill="transparent" stroke="#f59e0b" strokeWidth="4" strokeDasharray="25 100" strokeDashoffset="-60" />
-                  <circle cx="18" cy="18" r="16" fill="transparent" stroke="#ef4444" strokeWidth="4" strokeDasharray="15 100" strokeDashoffset="-85" />
-                </svg>
-                <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <span className="text-xl font-black text-slate-900">124</span>
-                  <span className="text-[8px] font-bold text-slate-400 uppercase">Total Skills</span>
+        ) : (
+          <>
+            {/* --- SECTION 2: TOP METRICS CARDS --- */}
+            <div className="grid grid-cols-4 gap-6">
+              <MetricCard 
+                title="Employees with Skill Gaps" 
+                value={`${totalEmployeesWithGaps}`} 
+                trend={`${totalEmployeesWithGaps} of ${totalEmployeesCount} total employees`}
+                trendColor="text-slate-400"
+              />
+              <MetricCard 
+                title="Critical Skill Gaps" 
+                value={`${criticalGaps}`} 
+                trend="High priority upskilling" 
+                trendColor="text-rose-500" 
+                badge="Critical" 
+                badgeBg="bg-rose-500" 
+              />
+              <MetricCard 
+                title="Moderate Skill Gaps" 
+                value={`${moderateGaps}`} 
+                trend="Standard learning modules" 
+                trendColor="text-amber-600" 
+                badge="Moderate" 
+                badgeBg="bg-amber-500" 
+              />
+              
+              <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between hover:shadow-md transition-shadow">
+                <div>
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Workforce Match Score</p>
+                  <h4 className="text-3xl font-black text-slate-900 mt-2">{workforceMatchScore}%</h4>
+                  <p className="text-[10px] font-bold text-slate-400 mt-1">Enterprise standard: 85%</p>
+                </div>
+                <div className="relative w-16 h-16">
+                  <svg className="w-full h-full" viewBox="0 0 36 36">
+                    <path className="text-slate-100" strokeWidth="3" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    <motion.path 
+                      initial={{ strokeDasharray: "0, 100" }}
+                      animate={{ strokeDasharray: `${workforceMatchScore}, 100` }}
+                      transition={{ duration: 1.2, ease: "easeOut" }}
+                      className="text-emerald-500" 
+                      strokeWidth="3" 
+                      strokeLinecap="round" 
+                      stroke="currentColor" 
+                      fill="none" 
+                      d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" 
+                    />
+                  </svg>
                 </div>
               </div>
-              <div className="space-y-4 flex-1 ml-12">
-                <div className="flex justify-between items-center"><span className="text-xs font-bold text-slate-500">No Gap</span> <span className="text-sm font-black text-[#10b981]">60%</span></div>
-                <div className="flex justify-between items-center"><span className="text-xs font-bold text-slate-500">Moderate</span> <span className="text-sm font-black text-[#f59e0b]">25%</span></div>
-                <div className="flex justify-between items-center"><span className="text-xs font-bold text-slate-500">Critical</span> <span className="text-sm font-black text-[#ef4444]">15%</span></div>
+            </div>
+
+            {/* --- SECTION 3: HEATMAP --- */}
+            {heatmapSkills.length > 0 && (
+              <div className="bg-white rounded-2xl p-8 border border-slate-100 shadow-sm space-y-6">
+                <div className="flex justify-between items-center">
+                  <h3 className="text-xl font-bold text-slate-900">Workforce Skill Gap Heatmap</h3>
+                  <div className="flex gap-4 text-[10px] font-black uppercase tracking-widest text-slate-500">
+                    <div className="flex items-center gap-2"><span className="w-3 h-3 rounded bg-[#10b981]"></span> No Gap</div>
+                    <div className="flex items-center gap-2"><span className="w-3 h-3 rounded bg-[#f59e0b]"></span> Moderate</div>
+                    <div className="flex items-center gap-2"><span className="w-3 h-3 rounded bg-[#ef4444]"></span> Critical</div>
+                  </div>
+                </div>
+                
+                <div className="space-y-4">
+                  <div className="grid grid-cols-8 gap-4 px-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">
+                    <div className="text-left">Employee</div>
+                    {heatmapSkills.map(s => <div key={s} className="truncate">{s}</div>)}
+                  </div>
+                  {heatmapEmployees.map((emp, i) => (
+                    <div key={i} className="grid grid-cols-8 gap-4 items-center">
+                      <div className="text-sm font-bold text-slate-700 truncate">{emp.name}</div>
+                      {emp.gaps.map((g, j) => (
+                        <div 
+                          key={j} 
+                          className={`h-8 rounded-lg ${g === 0 ? 'bg-[#10b981]' : g === 1 ? 'bg-[#f59e0b]' : 'bg-[#ef4444]'} opacity-80 hover:opacity-100 transition-all cursor-pointer hover:scale-105`}
+                          onClick={() => triggerAction(`${emp.name}'s ${heatmapSkills[j]} details`)}
+                        />
+                      ))}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* --- SECTION 4: CATEGORY & DISTRIBUTION --- */}
+            <div className="grid grid-cols-2 gap-8">
+              <div className="bg-white rounded-2xl p-8 border border-slate-100 shadow-sm space-y-6">
+                <h3 className="text-xl font-bold text-slate-900">Skill Gap by Category</h3>
+                <div className="space-y-6">
+                  {analyticsData?.categoryDistribution?.slice(0, 4).map(cat => (
+                    <CategoryRow 
+                      key={cat.name} 
+                      onClick={() => triggerAction(`${cat.name} Category View`)} 
+                      label={cat.name} 
+                      value={`${cat.totalProficiencyEntries} entries`} 
+                    />
+                  ))}
+                </div>
+              </div>
+
+              <div className="bg-white rounded-2xl p-8 border border-slate-100 shadow-sm space-y-6">
+                <h3 className="text-xl font-bold text-slate-900">Gap Severity Distribution</h3>
+                <div className="flex items-center justify-between">
+                  <div className="relative w-32 h-32">
+                    <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                      <circle cx="18" cy="18" r="16" fill="transparent" stroke="#10b981" strokeWidth="4" strokeDasharray={`${noGapPct} 100`} />
+                      <circle cx="18" cy="18" r="16" fill="transparent" stroke="#f59e0b" strokeWidth="4" strokeDasharray={`${moderateGapPct} 100`} strokeDashoffset={`-${noGapPct}`} />
+                      <circle cx="18" cy="18" r="16" fill="transparent" stroke="#ef4444" strokeWidth="4" strokeDasharray={`${criticalGapPct} 100`} strokeDashoffset={`-${noGapPct + moderateGapPct}`} />
+                    </svg>
+                    <div className="absolute inset-0 flex flex-col items-center justify-center">
+                      <span className="text-xl font-black text-slate-900">{totalSkillCount}</span>
+                      <span className="text-[8px] font-bold text-slate-400 uppercase">Total Skills</span>
+                    </div>
+                  </div>
+                  <div className="space-y-4 flex-1 ml-12">
+                    <div className="flex justify-between items-center"><span className="text-xs font-bold text-slate-500">No Gap</span> <span className="text-sm font-black text-[#10b981]">{noGapPct}%</span></div>
+                    <div className="flex justify-between items-center"><span className="text-xs font-bold text-slate-500">Moderate</span> <span className="text-sm font-black text-[#f59e0b]">{moderateGapPct}%</span></div>
+                    <div className="flex justify-between items-center"><span className="text-xs font-bold text-slate-500">Critical</span> <span className="text-sm font-black text-[#ef4444]">{criticalGapPct}%</span></div>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
+          </>
+        )}
 
         {/* --- SECTION 5: EMPLOYEE GAPS TABLE --- */}
         <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
@@ -307,7 +395,11 @@ const OrganizationSkillAnalytics = () => {
             </div>
             <div>
               <h4 className="text-xl font-bold tracking-tight">AI Skill Gap Insight</h4>
-              <p className="text-slate-400 text-sm mt-1 max-w-xl">Backend, Cloud, and AI skills show highest gap levels across workforce. Training recommended for backend and cloud skill improvement to meet upcoming Q3 project requirements.</p>
+              <p className="text-slate-400 text-sm mt-1 max-w-xl">
+                {analyticsData?.categoryDistribution && analyticsData.categoryDistribution.length > 0 
+                  ? `${analyticsData.categoryDistribution.slice(0, 3).map(c => c.name).join(', ')} categories show primary gap concentrations across ${currentTenant}. Targeted upskilling is recommended.`
+                  : `Skill analytics for ${currentTenant} are loaded live from database.`}
+              </p>
             </div>
           </div>
           <button 
@@ -381,12 +473,12 @@ const OrganizationSkillAnalytics = () => {
               </div>
               <h2 className="text-2xl font-black text-slate-900 mb-2">Assign Recommended Training</h2>
               <p className="text-slate-500 text-sm mb-6">
-                Automatically assign targeted learning paths to employees with identified skill deficiencies in Backend, Cloud, and AI.
+                Automatically assign targeted learning paths to employees with identified skill deficiencies in {currentTenant}.
               </p>
               <div className="space-y-3 mb-8">
                 <div className="p-3 bg-slate-50 rounded-xl border border-slate-100 flex justify-between text-sm">
                   <span className="font-semibold text-slate-600">Impacted Employees</span>
-                  <span className="font-bold text-slate-900">17 Critical Employees</span>
+                  <span className="font-bold text-slate-900">{criticalGaps || totalEmployeesWithGaps} Employees</span>
                 </div>
                 <div className="p-3 bg-slate-50 rounded-xl border border-slate-100 flex justify-between text-sm">
                   <span className="font-semibold text-slate-600">Target Completion</span>

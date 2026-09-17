@@ -52,11 +52,15 @@ const SuperadminSidebar = () => {
   const location = useLocation();
 
   const handleLogout = () => {
-    navigate('/login');
+    localStorage.removeItem('token');
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('user');
+    localStorage.removeItem('userRole');
+    window.location.replace('/login');
   };
 
   return (
-    <div className="h-screen bg-[#0F172A] text-slate-400 flex flex-col shadow-2xl fixed left-0 top-0 w-72 border-r border-slate-800/40 select-none z-50">
+    <div className="h-screen bg-[#0F172A] text-slate-400 flex flex-col shadow-2xl fixed left-0 top-0 w-64 border-r border-slate-800/40 select-none z-50">
       
       {/* Logo Header */}
       <motion.div

@@ -37,10 +37,11 @@ const HRSidebar = ({ currentTenant = "Enterprise Corp" }) => {
   const location = useLocation();
 
   const handleLogout = () => {
-    // Clear auth session or tokens if stored
+    localStorage.removeItem('token');
     localStorage.removeItem('authToken');
+    localStorage.removeItem('user');
     localStorage.removeItem('userRole');
-    navigate('/login');
+    window.location.replace('/login');
   };
 
   return (
@@ -57,7 +58,7 @@ const HRSidebar = ({ currentTenant = "Enterprise Corp" }) => {
         <motion.div
           whileTap={{ scale: 0.98 }}
           className="px-5 pt-5 pb-3 flex items-center gap-3 cursor-pointer group relative z-10"
-          onClick={() => navigate('/select-role')}
+          onClick={() => navigate('/hr-dashboard')}
         >
           <div className="w-9 h-9 rounded-xl flex items-center justify-center overflow-hidden flex-shrink-0 bg-transparent">
             <motion.img

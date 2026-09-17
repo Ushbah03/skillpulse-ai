@@ -88,6 +88,7 @@ const Avatar = ({ name }) => {
 
 // ── Main Component ────────────────────────────────────────────────────────────
 const UserManagement = () => {
+  const loggedInUser = JSON.parse(localStorage.getItem('user') || '{}');
   const [currentPage, setCurrentPage] = useState(1);
 
   const statCards = [
@@ -149,7 +150,7 @@ const UserManagement = () => {
     <div className="flex min-h-screen bg-[#f8fafc]" style={{ fontFamily: "'Segoe UI',system-ui,sans-serif" }}>
       <SuperadminSidebar />
 
-      <div className="flex-1 pl-72 flex flex-col min-h-screen overflow-hidden">
+      <div className="flex-1 pl-64 flex flex-col min-h-screen overflow-hidden">
 
         {/* ── TOP HEADER ── */}
         <header className="bg-white border-b border-slate-200 px-8 py-4 flex items-center justify-between flex-shrink-0 sticky top-0 z-20">
@@ -172,7 +173,7 @@ const UserManagement = () => {
             <button className="inline-flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-black hover:bg-blue-700 transition-all shadow-md shadow-blue-200">
               <UserPlus size={15} /> Add New User
             </button>
-            <img src="https://i.pravatar.cc/36?img=53" alt="avatar" className="w-9 h-9 rounded-full object-cover border-2 border-slate-200 ml-1" />
+            <Avatar name={loggedInUser?.firstName ? `${loggedInUser.firstName} ${loggedInUser.lastName}` : loggedInUser?.email || "Super Admin"} />
           </div>
         </header>
 

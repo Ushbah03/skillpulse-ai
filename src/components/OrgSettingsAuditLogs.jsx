@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useLocation } from 'react-router-dom';
 import { 
   Building2, 
   ShieldAlert, 
@@ -13,39 +14,179 @@ import {
   User, 
   Globe, 
   Palette,
-  FileText
+  FileText,
+  Loader2,
+  X,
+  Binary,
+  Database
 } from 'lucide-react';
 
 import CompanyAdminSidebar from './CompanyAdminSidebar';
+import { adminAPI } from '../services/api';
 
-// Initial Mock Audit Log Data
-const initialAuditLogs = [
-  { id: 'LOG-8821', user: 'Alex Vance (Admin)', action: 'Updated Security Policies (Enforced MFA)', target: 'Tenant Security', ip: '192.168.1.45', timestamp: '2026-08-13 14:22:10', severity: 'High' },
-  { id: 'LOG-8820', user: 'Sarah Jenkins (HR)', action: 'Exported Org Skill Gap Report', target: 'Analytics Engine', ip: '10.0.4.12', timestamp: '2026-08-13 13:10:05', severity: 'Low' },
-  { id: 'LOG-8819', user: 'Alex Vance (Admin)', action: 'Created New Skill: Kubernetes Cluster Mgmt', target: 'Skill Taxonomy', ip: '192.168.1.45', timestamp: '2026-08-13 11:45:30', severity: 'Medium' },
-  { id: 'LOG-8818', user: 'System Connector', action: 'Automated Sync Executed: Workday HRIS', target: 'Integrations Hub', ip: '52.14.88.201', timestamp: '2026-08-13 08:00:00', severity: 'Low' },
-  { id: 'LOG-8817', user: 'David Miller (Lead)', action: 'Modified Team Member Competency Rating', target: 'User Profiles', ip: '172.16.0.88', timestamp: '2026-08-12 17:35:12', severity: 'Medium' },
-  { id: 'LOG-8816', user: 'Alex Vance (Admin)', action: 'Revoked User Access for John Doe', target: 'User Role Governance', ip: '192.168.1.45', timestamp: '2026-08-12 15:12:40', severity: 'High' },
-];
+const SEVERITY_LABEL = (action) => {
+  const a = (action || '').toUpperCase();
+  if (a.includes('ROLE') || a.includes('DEACTIVAT') || a.includes('DELETE') || a.includes('SECURITY')) return 'High';
+  if (a.includes('UPDATE') || a.includes('MODIFIED') || a.includes('TAXONOMY') || a.includes('CREATED')) return 'Medium';
+  return 'Low';
+};
 
 const OrgSettingsAuditLogs = () => {
-  const [activeTab, setActiveTab] = useState('settings'); // 'settings' | 'audit'
-  const [saveSuccess, setSaveSuccess] = useState(false);
+  const location = useLocation();
+  const [activeTab, setActiveTab] = useState('settings');
+  const [loadingLogs, setLoadingLogs] = useState(false);
+  const [loadingOrg, setLoadingOrg] = useState(true);
 
-  // Organization Form State
+  // Organization Form State (populated from backend)
   const [orgData, setOrgData] = useState({
-    companyName: 'Acme Global Enterprises',
-    domain: 'acmeglobal.com',
-    primaryColor: '#6366F1',
-    maxSeats: 250,
-    activeSeats: 184,
-    subscriptionTier: 'Enterprise AI Suite'
+    legalName: '',
+    domain: '',
+    themeColor: '#6366F1',
+    maxSeats: 0,
+    activeSeats: 0,
+    subscriptionTier: ''
   });
-
-  // Audit Log State
-  const [auditLogs] = useState(initialAuditLogs);
+  const [saveSuccess, setSaveSuccess] = useState(false);
+  const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+  
+  // Upgrade Modal State
+  const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
+  const [checkoutLoading, setCheckoutLoading] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedSeverity, setSelectedSeverity] = useState('All');
+
+  // Audit Log State
+  const [auditLogs, setAuditLogs] = useState([]);
+
+  // Check for plan restriction redirect
+  useEffect(() => {
+    if (location.state?.planRestricted) {
+      setIsUpgradeModalOpen(true);
+      // Clear state so it doesn't keep reopening on refresh
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }, [location.state]);
+
+  useEffect(() => {
+    const fetchOrgData = async () => {
+      setLoadingOrg(true);
+      try {
+        // Handle Stripe payment success verification
+        const urlParams = new URLSearchParams(window.location.search);
+        const sessionId = urlParams.get('session_id');
+        if (sessionId) {
+          const { paymentAPI, authAPI } = await import('../services/api');
+          const verifyRes = await paymentAPI.verifySession(sessionId);
+          if (verifyRes?.success) {
+            window.history.replaceState({}, document.title, window.location.pathname);
+            setSaveSuccess(true);
+            setTimeout(() => setSaveSuccess(false), 3000);
+            
+            // Fetch fresh user data to update plan in localStorage so Sidebar unlocks
+            try {
+              const meRes = await authAPI.getMe();
+              if (meRes?.success && meRes.user) {
+                localStorage.setItem('user', JSON.stringify(meRes.user));
+                // Force a custom event to re-render the sidebar immediately
+                window.dispatchEvent(new Event('user-updated'));
+              }
+            } catch(e) {
+              console.error('Failed to update local user state:', e);
+            }
+          }
+        }
+
+        const res = await adminAPI.getDashboard();
+        if (res?.success) {
+          const d = res.data;
+          setOrgData({
+            legalName: d.tenantName || '',
+            domain: '',
+            themeColor: '#6366F1',
+            maxSeats: d.maxUsers || 0,
+            activeSeats: d.activeUsersCount || 0,
+            subscriptionTier: d.plan || 'PRO'
+          });
+        }
+      } catch (err) {
+        console.warn('Failed to load org data:', err);
+      } finally {
+        setLoadingOrg(false);
+      }
+    };
+    fetchOrgData();
+  }, []);
+
+  const fetchAuditLogs = async () => {
+    setLoadingLogs(true);
+    try {
+      const res = await adminAPI.getAuditLogs();
+      if (res?.success) {
+        const mapped = res.data.map(log => ({
+          id: `LOG-${log.id.slice(-4).toUpperCase()}`,
+          user: log.user ? `${log.user.firstName} ${log.user.lastName} (${log.user.role})` : 'System',
+          action: log.action,
+          target: log.resource || 'System',
+          ip: log.ipAddress || 'N/A',
+          severity: SEVERITY_LABEL(log.action),
+          timestamp: new Date(log.createdAt).toLocaleString('en-US', { dateStyle: 'short', timeStyle: 'medium' })
+        }));
+        setAuditLogs(mapped);
+      }
+    } catch (err) {
+      console.warn('Failed to load audit logs:', err);
+    } finally {
+      setLoadingLogs(false);
+    }
+  };
+
+  useEffect(() => {
+    if (activeTab === 'audit') {
+      fetchAuditLogs();
+    }
+  }, [activeTab]);
+
+
+  const handleExportCSV = () => {
+    if (filteredLogs.length === 0) return;
+    const headers = ['Event ID', 'User Agent', 'Action Executed', 'Target Module', 'IP Address', 'Severity', 'Timestamp'];
+    const csvRows = [
+      headers.join(','),
+      ...filteredLogs.map(log => [
+        `"${log.id}"`,
+        `"${log.user.replace(/"/g, '""')}"`,
+        `"${log.action.replace(/"/g, '""')}"`,
+        `"${log.target.replace(/"/g, '""')}"`,
+        `"${log.ip}"`,
+        `"${log.severity}"`,
+        `"${log.timestamp}"`
+      ].join(','))
+    ].join('\n');
+
+    const blob = new Blob([csvRows], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', `audit_logs_${Date.now()}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    setIsExportModalOpen(false);
+  };
+
+  const handleExportJSON = () => {
+    if (filteredLogs.length === 0) return;
+    const jsonStr = JSON.stringify(filteredLogs, null, 2);
+    const blob = new Blob([jsonStr], { type: 'application/json;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', `audit_logs_${Date.now()}.json`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    setIsExportModalOpen(false);
+  };
 
   // Handle Org Settings Form Save
   const handleSaveOrgSettings = (e) => {
@@ -135,9 +276,15 @@ const OrgSettingsAuditLogs = () => {
                   <p className="text-xs text-slate-400">Allocated Seats</p>
                   <p className="text-xl font-extrabold text-white mt-0.5">{orgData.activeSeats} / {orgData.maxSeats}</p>
                 </div>
-                <div className="w-24 bg-slate-800 h-2 rounded-full overflow-hidden">
+                <div className="w-24 bg-slate-800 h-2 rounded-full overflow-hidden mr-4">
                   <div className="bg-indigo-500 h-full rounded-full" style={{ width: `${(orgData.activeSeats / orgData.maxSeats) * 100}%` }} />
                 </div>
+                <button
+                  onClick={() => setIsUpgradeModalOpen(true)}
+                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold rounded-xl shadow-lg shadow-indigo-600/20 transition-all shrink-0"
+                >
+                  Upgrade Plan
+                </button>
               </div>
             </div>
 
@@ -248,7 +395,7 @@ const OrgSettingsAuditLogs = () => {
                 </div>
 
                 <button
-                  onClick={() => alert("Exporting audit log trail (JSON/CSV).")}
+                  onClick={() => setIsExportModalOpen(true)}
                   className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-[#1E293B] hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-semibold transition-all shrink-0"
                 >
                   <Download className="w-4 h-4 text-slate-400" />
@@ -257,7 +404,13 @@ const OrgSettingsAuditLogs = () => {
               </div>
             </div>
 
-            {/* Audit Trail Table */}
+            {loadingLogs ? (
+              <div className="flex flex-col items-center justify-center py-20 space-y-4">
+                <Loader2 className="w-8 h-8 animate-spin text-indigo-500" />
+                <p className="text-sm font-semibold text-slate-400">Loading audit trail from database...</p>
+              </div>
+            ) : (
+            /* Audit Trail Table */
             <div className="rounded-2xl bg-[#0F172A] border border-slate-800/80 shadow-xl overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-sm text-slate-300">
@@ -316,9 +469,169 @@ const OrgSettingsAuditLogs = () => {
                 </table>
               </div>
             </div>
+            )}
 
           </motion.div>
         )}
+
+        {/* Custom Export Modal */}
+        <AnimatePresence>
+          {isExportModalOpen && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                className="bg-[#0F172A] border border-slate-800 rounded-2xl p-6 w-full max-w-sm shadow-2xl relative"
+              >
+                <div className="mb-6">
+                  <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                    <Download className="w-5 h-5 text-indigo-400" /> Export Audit Logs
+                  </h3>
+                  <p className="text-xs text-slate-400 mt-1">Select the format you want to download.</p>
+                </div>
+                <div className="flex flex-col gap-3">
+                  <button onClick={handleExportCSV} className="w-full py-3 bg-[#1E293B] hover:bg-[#2A374A] border border-slate-700/50 rounded-xl text-sm font-medium text-slate-200 transition-colors flex items-center justify-center gap-2">
+                    <Binary className="w-4 h-4 text-slate-400" /> Download as CSV
+                  </button>
+                  <button onClick={handleExportJSON} className="w-full py-3 bg-[#1E293B] hover:bg-[#2A374A] border border-slate-700/50 rounded-xl text-sm font-medium text-slate-200 transition-colors flex items-center justify-center gap-2">
+                    <Database className="w-4 h-4 text-slate-400" /> Download as JSON
+                  </button>
+                </div>
+                <button onClick={() => setIsExportModalOpen(false)} className="absolute top-4 right-4 text-slate-500 hover:text-slate-300">
+                  <X className="w-5 h-5" />
+                </button>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
+
+        {/* Pricing & Upgrade Modal */}
+        <AnimatePresence>
+          {isUpgradeModalOpen && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md overflow-y-auto">
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 30 }}
+                className="bg-[#0F172A] border border-slate-800 rounded-3xl p-8 w-full max-w-5xl shadow-2xl relative my-8"
+              >
+                <button onClick={() => setIsUpgradeModalOpen(false)} className="absolute top-6 right-6 text-slate-500 hover:text-slate-300 bg-slate-800/50 p-2 rounded-full transition-all hover:bg-slate-700/50">
+                  <X className="w-5 h-5" />
+                </button>
+
+                <div className="text-center mb-10">
+                  <h2 className="text-3xl font-extrabold text-white tracking-tight">Upgrade Your Enterprise Plan</h2>
+                  <p className="text-slate-400 mt-3 max-w-xl mx-auto text-sm">
+                    Select the plan that fits your organization's needs. Your current plan is <span className="font-bold text-indigo-400">{orgData.subscriptionTier}</span>.
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {/* Starter Plan */}
+                  <div className={`relative p-6 rounded-3xl border flex flex-col ${orgData.subscriptionTier === 'STARTER' ? 'border-indigo-500 bg-indigo-500/5' : 'border-slate-800 bg-[#151E32]'}`}>
+                    {orgData.subscriptionTier === 'STARTER' && (
+                      <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-indigo-500 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+                        Current Plan
+                      </div>
+                    )}
+                    <h3 className="text-xl font-bold text-white mb-2">Starter</h3>
+                    <div className="flex items-baseline gap-1 mb-4">
+                      <span className="text-3xl font-extrabold text-white">$600</span>
+                      <span className="text-sm text-slate-400">/ mo</span>
+                    </div>
+                    <ul className="space-y-3 mb-8 flex-1 text-sm text-slate-300">
+                      <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" /> Up to 50 Seats</li>
+                      <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" /> Basic AI Inferencing</li>
+                      <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" /> Standard Support</li>
+                    </ul>
+                    <button
+                      disabled={orgData.subscriptionTier === 'STARTER' || checkoutLoading === 'Starter'}
+                      onClick={async () => {
+                        setCheckoutLoading('Starter');
+                        try {
+                          const user = JSON.parse(localStorage.getItem('user'));
+                          const res = await import('../services/api').then(m => m.paymentAPI.createCheckoutSession(user?.tenantId || user?.tenant?.id, 'Starter', 50));
+                          if (res?.success && res?.url) window.location.href = res.url;
+                        } finally { setCheckoutLoading(null); }
+                      }}
+                      className={`w-full py-3 rounded-xl text-sm font-semibold transition-all ${orgData.subscriptionTier === 'STARTER' ? 'bg-slate-800 text-slate-400 cursor-not-allowed' : 'bg-white text-slate-900 hover:bg-slate-200'}`}
+                    >
+                      {checkoutLoading === 'Starter' ? 'Processing...' : orgData.subscriptionTier === 'STARTER' ? 'Active' : 'Downgrade to Starter'}
+                    </button>
+                  </div>
+
+                  {/* Pro Plan */}
+                  <div className={`relative p-6 rounded-3xl border flex flex-col ${orgData.subscriptionTier === 'PRO' || orgData.subscriptionTier === 'Professional' ? 'border-indigo-500 bg-indigo-500/10 scale-105 shadow-2xl shadow-indigo-500/20' : 'border-slate-800 bg-[#151E32]'}`}>
+                    {(orgData.subscriptionTier === 'PRO' || orgData.subscriptionTier === 'Professional') && (
+                      <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-indigo-500 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+                        Current Plan
+                      </div>
+                    )}
+                    <h3 className="text-xl font-bold text-indigo-400 mb-2">Professional</h3>
+                    <div className="flex items-baseline gap-1 mb-4">
+                      <span className="text-3xl font-extrabold text-white">$1200</span>
+                      <span className="text-sm text-slate-400">/ mo</span>
+                    </div>
+                    <ul className="space-y-3 mb-8 flex-1 text-sm text-slate-300">
+                      <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" /> Up to 250 Seats</li>
+                      <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" /> Advanced AI Analytics</li>
+                      <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" /> Custom HRIS Integrations</li>
+                    </ul>
+                    <button
+                      disabled={orgData.subscriptionTier === 'PRO' || orgData.subscriptionTier === 'Professional' || checkoutLoading === 'Professional'}
+                      onClick={async () => {
+                        setCheckoutLoading('Professional');
+                        try {
+                          const user = JSON.parse(localStorage.getItem('user'));
+                          const res = await import('../services/api').then(m => m.paymentAPI.createCheckoutSession(user?.tenantId || user?.tenant?.id, 'Professional', 250));
+                          if (res?.success && res?.url) window.location.href = res.url;
+                        } finally { setCheckoutLoading(null); }
+                      }}
+                      className={`w-full py-3 rounded-xl text-sm font-semibold transition-all ${(orgData.subscriptionTier === 'PRO' || orgData.subscriptionTier === 'Professional') ? 'bg-slate-800 text-slate-400 cursor-not-allowed' : 'bg-indigo-600 text-white hover:bg-indigo-500 shadow-lg shadow-indigo-600/20'}`}
+                    >
+                      {checkoutLoading === 'Professional' ? 'Processing...' : (orgData.subscriptionTier === 'PRO' || orgData.subscriptionTier === 'Professional') ? 'Active' : 'Upgrade to Pro'}
+                    </button>
+                  </div>
+
+                  {/* Enterprise Plan */}
+                  <div className={`relative p-6 rounded-3xl border flex flex-col ${orgData.subscriptionTier === 'ENTERPRISE' || orgData.subscriptionTier === 'Enterprise AI' ? 'border-indigo-500 bg-indigo-500/5' : 'border-slate-800 bg-[#151E32]'}`}>
+                    {(orgData.subscriptionTier === 'ENTERPRISE' || orgData.subscriptionTier === 'Enterprise AI') && (
+                      <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-indigo-500 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+                        Current Plan
+                      </div>
+                    )}
+                    <h3 className="text-xl font-bold text-white mb-2">Enterprise AI</h3>
+                    <div className="flex items-baseline gap-1 mb-4">
+                      <span className="text-3xl font-extrabold text-white">$2500</span>
+                      <span className="text-sm text-slate-400">/ mo</span>
+                    </div>
+                    <ul className="space-y-3 mb-8 flex-1 text-sm text-slate-300">
+                      <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" /> Unlimited Seats</li>
+                      <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" /> Priority AI Model Compute</li>
+                      <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" /> 24/7 Dedicated SLA Support</li>
+                    </ul>
+                    <button
+                      disabled={orgData.subscriptionTier === 'ENTERPRISE' || orgData.subscriptionTier === 'Enterprise AI' || checkoutLoading === 'Enterprise AI'}
+                      onClick={async () => {
+                        setCheckoutLoading('Enterprise AI');
+                        try {
+                          const user = JSON.parse(localStorage.getItem('user'));
+                          const res = await import('../services/api').then(m => m.paymentAPI.createCheckoutSession(user?.tenantId || user?.tenant?.id, 'Enterprise AI', 500));
+                          if (res?.success && res?.url) window.location.href = res.url;
+                        } finally { setCheckoutLoading(null); }
+                      }}
+                      className={`w-full py-3 rounded-xl text-sm font-semibold transition-all ${(orgData.subscriptionTier === 'ENTERPRISE' || orgData.subscriptionTier === 'Enterprise AI') ? 'bg-slate-800 text-slate-400 cursor-not-allowed' : 'bg-white text-slate-900 hover:bg-slate-200'}`}
+                    >
+                      {checkoutLoading === 'Enterprise AI' ? 'Processing...' : (orgData.subscriptionTier === 'ENTERPRISE' || orgData.subscriptionTier === 'Enterprise AI') ? 'Active' : 'Upgrade to Enterprise'}
+                    </button>
+                  </div>
+                </div>
+
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
 
       </main>
     </div>

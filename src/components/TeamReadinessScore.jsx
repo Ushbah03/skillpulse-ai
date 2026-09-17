@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import TeamLeaderSidebar from './TeamLeaderSidebar';
+import { teamLeaderAPI } from '../services/api';
 import { 
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar
@@ -9,82 +11,58 @@ import {
   X, CheckCircle2, Loader2, Sparkles, AlertTriangle, Layers, UserCheck
 } from 'lucide-react';
 
-// --- Datasets ---
-const timelineTrendData = [
-  { month: 'Jan', score: 65 },
-  { month: 'Feb', score: 70 },
-  { month: 'Mar', score: 74 },
-  { month: 'Apr', score: 72 },
-  { month: 'May', score: 79 },
-  { month: 'Jun', score: 85 },
-];
-
-const capabilityRadarData = [
-  { subject: 'Architecture', A: 85 },
-  { subject: 'Backend', A: 70 },
-  { subject: 'Cloud Native', A: 55 },
-  { subject: 'DevOps', A: 60 },
-  { subject: 'Frontend', A: 90 },
-  { subject: 'Security', A: 45 },
-];
-
-const initialIndividualReadiness = [
-  {
-    id: 1,
-    name: "Ali Khan",
-    role: "Senior Full Stack",
-    score: "92%",
-    status: "Ready",
-    verifiedSkills: 5,
-    gaps: 0,
-    initials: "AK"
-  },
-  {
-    id: 2,
-    name: "Sarah Miller",
-    role: "Cloud Specialist",
-    score: "78%",
-    status: "Ready",
-    verifiedSkills: 4,
-    gaps: 1,
-    initials: "SM"
-  },
-  {
-    id: 3,
-    name: "Jessica Doe",
-    role: "Backend Engineer",
-    score: "55%",
-    status: "Needs Training",
-    verifiedSkills: 2,
-    gaps: 3,
-    initials: "JD"
-  },
-  {
-    id: 4,
-    name: "John Smith",
-    role: "Frontend Dev",
-    score: "88%",
-    status: "Ready",
-    verifiedSkills: 6,
-    gaps: 0,
-    initials: "JS"
-  }
-];
-
 export default function TeamReadinessScore() {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('readiness'); 
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedProject, setSelectedProject] = useState('FinTech API Upgrade');
+  const [selectedProject, setSelectedProject] = useState('General Team Deployment');
   const [requiredLevel, setRequiredLevel] = useState('Advanced');
   const [isRecalculating, setIsRecalculating] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [liveReadiness, setLiveReadiness] = useState(null);
   
   // Modal states
   const [activeModal, setActiveModal] = useState(null); // 'requirements', 'training', 'risk'
   const [selectedMember, setSelectedMember] = useState(null);
   const [toastMessage, setToastMessage] = useState('');
+  const [assigningTrack, setAssigningTrack] = useState(false);
+
+  useEffect(() => {
+    let isMounted = true;
+    const loadData = async () => {
+      setLoading(true);
+      try {
+        const res = await teamLeaderAPI.getReadiness();
+        if (isMounted && res?.success && res.data) {
+          setLiveReadiness(res.data);
+          if (res.data.projects && res.data.projects.length > 0) {
+            setSelectedProject(res.data.projects[0].title);
+          }
+        }
+      } catch (err) {
+        console.warn('Error loading live readiness data:', err);
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    };
+    loadData();
+    return () => { isMounted = false; };
+  }, []);
+
+  const dynamicMemberList = liveReadiness?.members || [];
+  const capabilityRadarData = liveReadiness?.radarData || [];
+  const timelineTrendData = liveReadiness?.trendData || [];
+  const criticalGapsList = liveReadiness?.criticalGaps || [];
+  const projectList = liveReadiness?.projects || [];
+
+  const overallScoreVal = liveReadiness?.overallScore ?? 0;
+  const qualifiedCount = liveReadiness?.qualifiedCount ?? 0;
+  const totalMembersCount = liveReadiness?.totalMembers ?? 0;
+  const totalValidatedSkills = liveReadiness?.totalValidatedSkills ?? 0;
+  const criticalGapsCount = liveReadiness?.criticalRiskAreas ?? 0;
 
   // Filter members dynamically
-  const filteredMembers = initialIndividualReadiness.filter(member => 
+  const filteredMembers = dynamicMemberList.filter(member => 
     member.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     member.role.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -103,14 +81,37 @@ export default function TeamReadinessScore() {
     setActiveModal('training');
   };
 
+  const handleAssignTrackSubmit = async () => {
+    if (!selectedMember) return;
+    try {
+      setAssigningTrack(true);
+      await teamLeaderAPI.assignTraining({
+        userId: selectedMember.id,
+        courseId: 'readiness-track-course'
+      });
+      setToastMessage(`Targeted training module assigned to ${selectedMember.name}`);
+      setTimeout(() => setToastMessage(''), 4000);
+      setActiveModal(null);
+    } catch (err) {
+      console.warn('Error assigning readiness track training:', err);
+      setActiveModal(null);
+    } finally {
+      setAssigningTrack(false);
+    }
+  };
+
+  const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
+  const leaderName = storedUser.firstName ? `${storedUser.firstName} ${storedUser.lastName}` : 'Team Lead';
+  const leaderInitials = `${storedUser.firstName?.[0] || 'T'}${storedUser.lastName?.[0] || 'L'}`.toUpperCase();
+
   return (
     <div className="flex min-h-screen bg-[#F8F9FE]">
       
       {/* Sidebar Component */}
       <TeamLeaderSidebar activeTab={activeTab} setActiveTab={setActiveTab} />
       
-      {/* Main Content Pane */}
-      <main className="flex-1 ml-72 p-10 max-w-[1600px] mx-auto space-y-8">
+      {/* Main Content Pane - Fluid Full Width */}
+      <main className="flex-1 ml-72 p-10 w-full space-y-8">
         
         {/* Notification Toast */}
         {toastMessage && (
@@ -143,9 +144,19 @@ export default function TeamReadinessScore() {
               <Bell size={20} />
             </button>
 
-            <div className="w-10 h-10 rounded-full overflow-hidden border border-slate-200 bg-slate-100">
-              <div className="w-full h-full bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-xs font-black text-white">
-                TL
+            <div className="flex items-center gap-3 pl-2 border-l border-slate-200">
+              <div className="text-right hidden sm:block">
+                <p className="text-xs font-black text-slate-900 leading-none">{leaderName}</p>
+                <p className="text-[10px] font-bold text-slate-400 mt-1">Team Leader</p>
+              </div>
+              <div className="w-10 h-10 rounded-full overflow-hidden border border-slate-200 bg-slate-100 flex items-center justify-center">
+                {storedUser.avatarUrl ? (
+                  <img src={storedUser.avatarUrl} alt={leaderName} className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-xs font-black text-white">
+                    {leaderInitials}
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -161,7 +172,7 @@ export default function TeamReadinessScore() {
               <h4 className="text-3xl font-black text-slate-900 tracking-tight">Production Fit</h4>
             </div>
             <div className="w-16 h-16 rounded-full border-[5px] border-emerald-500 flex items-center justify-center text-base font-black text-emerald-600 shadow-inner">
-              79%
+              {overallScoreVal}%
             </div>
           </div>
 
@@ -169,10 +180,10 @@ export default function TeamReadinessScore() {
           <div className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm flex flex-col justify-between">
             <div>
               <p className="text-slate-400 text-xs font-bold mb-1.5 uppercase tracking-wider">Target Skills Validated</p>
-              <h4 className="text-3xl font-black text-slate-900 tracking-tight">24 / 32 Skills</h4>
+              <h4 className="text-3xl font-black text-slate-900 tracking-tight">{totalValidatedSkills} Skills</h4>
             </div>
             <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden mt-3">
-              <div className="h-full bg-blue-500 rounded-full" style={{ width: '75%' }}></div>
+              <div className="h-full bg-blue-500 rounded-full" style={{ width: `${overallScoreVal}%` }}></div>
             </div>
           </div>
 
@@ -180,10 +191,10 @@ export default function TeamReadinessScore() {
           <div className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm flex flex-col justify-between">
             <div>
               <p className="text-slate-400 text-xs font-bold mb-1.5 uppercase tracking-wider">Qualified Members</p>
-              <h4 className="text-3xl font-black text-slate-900 tracking-tight">5 / 6 Members</h4>
+              <h4 className="text-3xl font-black text-slate-900 tracking-tight">{qualifiedCount} / {totalMembersCount} Members</h4>
             </div>
             <p className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded mt-3 self-start">
-              83.3% Match Rate
+              {totalMembersCount > 0 ? ((qualifiedCount / totalMembersCount) * 100).toFixed(0) : '0'}% Match Rate
             </p>
           </div>
 
@@ -191,7 +202,7 @@ export default function TeamReadinessScore() {
           <div className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm flex flex-col justify-between">
             <div>
               <p className="text-slate-400 text-xs font-bold mb-1.5 uppercase tracking-wider">Critical Capability Gaps</p>
-              <h4 className="text-3xl font-black text-rose-500 tracking-tight">4 Gaps Left</h4>
+              <h4 className="text-3xl font-black text-rose-500 tracking-tight">{criticalGapsCount} Gaps Left</h4>
             </div>
             <button 
               onClick={() => setActiveModal('requirements')}
@@ -218,9 +229,13 @@ export default function TeamReadinessScore() {
               onChange={(e) => setSelectedProject(e.target.value)}
               className="bg-slate-50 border border-slate-200 hover:bg-slate-100 px-4 py-2 rounded-xl text-xs font-bold text-slate-700 cursor-pointer transition-colors focus:outline-none"
             >
-              <option>Project: FinTech API Upgrade</option>
-              <option>Project: Cloud Migration Phase 2</option>
-              <option>Project: Microservices Refactor</option>
+              {projectList.length > 0 ? (
+                projectList.map(p => (
+                  <option key={p.id} value={p.title}>Project: {p.title}</option>
+                ))
+              ) : (
+                <option value="General Team Deployment">Project: General Team Deployment</option>
+              )}
             </select>
 
             {/* Level Select */}
@@ -325,18 +340,27 @@ export default function TeamReadinessScore() {
                 <tbody className="divide-y divide-slate-50 text-sm font-bold">
                   {filteredMembers.length > 0 ? (
                     filteredMembers.map((member) => (
-                      <tr key={member.id} className="hover:bg-slate-50/40 transition-colors">
+                      <tr 
+                        key={member.id} 
+                        className="hover:bg-slate-50/40 transition-colors cursor-pointer"
+                        onClick={(e) => {
+                          // Prevent modal triggers from triggering row navigation
+                          if (e.target.tagName !== 'BUTTON') {
+                            navigate(`/team-leader/member-profile?name=${encodeURIComponent(member.name)}`);
+                          }
+                        }}
+                      >
                         <td className="py-4 px-6 flex items-center gap-3">
                           <div className="w-9 h-9 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-xs font-black text-slate-600 shadow-sm">
                             {member.initials}
                           </div>
                           <div>
-                            <p className="font-black text-slate-900 text-sm leading-tight">{member.name}</p>
+                            <p className="font-black text-slate-900 text-sm leading-tight hover:text-blue-600 transition-colors">{member.name}</p>
                             <p className="text-[11px] font-bold text-slate-400 mt-0.5">{member.role}</p>
                           </div>
                         </td>
                         <td className="py-4 px-4 text-center font-black text-slate-800 text-sm">{member.score}</td>
-                        <td className="py-4 px-4 text-center font-bold text-slate-600">{member.verifiedSkills} / 8 Skills</td>
+                        <td className="py-4 px-4 text-center font-bold text-slate-600">{member.verifiedSkills} / {member.totalSkills || 5} Skills</td>
                         <td className="py-4 px-4 text-center">
                           <span className={`text-xs font-black ${member.gaps > 0 ? 'text-amber-500' : 'text-slate-400'}`}>
                             {member.gaps} Gaps
@@ -344,7 +368,10 @@ export default function TeamReadinessScore() {
                         </td>
                         <td className="py-4 px-6 text-right">
                           <button 
-                            onClick={() => handleOpenTrainingModal(member)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleOpenTrainingModal(member);
+                            }}
                             className={`inline-block px-2.5 py-1 rounded-xl text-xs font-black uppercase tracking-wider hover:opacity-80 transition-opacity
                             ${member.status === 'Ready' ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' : 'bg-amber-50 text-amber-700 border border-amber-100'}
                           `}>
@@ -374,16 +401,30 @@ export default function TeamReadinessScore() {
                 <ShieldAlert size={20} />
                 <h4 className="text-sm font-black uppercase tracking-wider">Critical Readiness Risks</h4>
               </div>
-              <p className="text-xs text-slate-500 font-semibold leading-relaxed">
-                Project deployment deployment is gated by <span className="text-rose-500 font-bold">Cloud Native & Security</span> constraints. 2 members lack specific configuration authority clearances.
-              </p>
-              <div 
-                onClick={() => setActiveModal('risk')}
-                className="mt-4 p-3 bg-rose-50 hover:bg-rose-100/80 cursor-pointer transition-colors rounded-xl border border-rose-100/60 text-xs font-bold text-rose-800 flex justify-between items-center"
-              >
-                <span>AWS Security Policy Gaps Found</span>
-                <span className="text-rose-600 font-black">High Risk</span>
-              </div>
+              {criticalGapsList.length > 0 ? (
+                <>
+                  <p className="text-xs text-slate-500 font-semibold leading-relaxed">
+                    Project deployment is affected by <span className="text-rose-500 font-bold">{criticalGapsList[0].skillName}</span> constraints. {criticalGapsList.length} critical skill gap(s) identified.
+                  </p>
+                  <div 
+                    onClick={() => setActiveModal('risk')}
+                    className="mt-4 p-3 bg-rose-50 hover:bg-rose-100/80 cursor-pointer transition-colors rounded-xl border border-rose-100/60 text-xs font-bold text-rose-800 flex justify-between items-center"
+                  >
+                    <span className="truncate mr-2">{criticalGapsList[0].skillName} ({criticalGapsList[0].memberName})</span>
+                    <span className="text-rose-600 font-black shrink-0">{criticalGapsList[0].severity || 'High Risk'}</span>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <p className="text-xs text-slate-500 font-semibold leading-relaxed">
+                    All current team capabilities match active production requirement thresholds cleanly.
+                  </p>
+                  <div className="mt-4 p-3 bg-emerald-50 rounded-xl border border-emerald-100 text-xs font-bold text-emerald-800 flex justify-between items-center">
+                    <span>Zero Readiness Blockers</span>
+                    <span className="text-emerald-600 font-black">Optimal</span>
+                  </div>
+                </>
+              )}
             </div>
 
             {/* AI Action Panel */}
@@ -392,14 +433,25 @@ export default function TeamReadinessScore() {
                 <span className="text-[10px] bg-blue-500/20 text-blue-400 font-black px-2.5 py-1 rounded-lg uppercase tracking-wide inline-block mb-3">
                   AI Skill Recommendation
                 </span>
-                <p className="text-xs text-slate-300 leading-relaxed font-medium">
-                  Enrolling Jessica Doe in <span className="text-blue-400 font-bold">Advanced Cloud & Security Stacks</span> will remove 3 dependencies, pushing team readiness past the deployment threshold.
-                </p>
+                {criticalGapsList.length > 0 ? (
+                  <p className="text-xs text-slate-300 leading-relaxed font-medium">
+                    Enrolling <span className="text-blue-400 font-bold">{criticalGapsList[0].memberName}</span> in target skills training will remove critical dependencies and push readiness score higher.
+                  </p>
+                ) : (
+                  <p className="text-xs text-slate-300 leading-relaxed font-medium">
+                    Team is in optimal state. Enrolling engineers in advanced upskilling tracks maintains high technical readiness.
+                  </p>
+                )}
               </div>
 
               <button 
-                onClick={() => handleOpenTrainingModal(initialIndividualReadiness[2])}
-                className="w-full mt-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl transition-all shadow-md text-center flex items-center justify-center gap-1.5 uppercase tracking-wider"
+                onClick={() => {
+                  const targetMember = (criticalGapsList.length > 0 
+                    ? dynamicMemberList.find(m => m.id === criticalGapsList[0].memberId) 
+                    : null) || dynamicMemberList.find(m => m.status !== 'Ready') || dynamicMemberList[0];
+                  if (targetMember) handleOpenTrainingModal(targetMember);
+                }}
+                className="w-full mt-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl transition-all shadow-md text-center flex items-center justify-center gap-1.5 uppercase tracking-wider cursor-pointer"
               >
                 <span>Launch Targeted Training</span>
                 <ArrowUpRight size={14} />
@@ -430,18 +482,21 @@ export default function TeamReadinessScore() {
               </div>
 
               <div className="space-y-3">
-                <div className="p-3 bg-slate-50 rounded-xl border border-slate-100 flex justify-between items-center">
-                  <span className="text-xs font-bold text-slate-700">AWS Security Configuration</span>
-                  <span className="text-xs font-black text-rose-500">2 Gaps</span>
-                </div>
-                <div className="p-3 bg-slate-50 rounded-xl border border-slate-100 flex justify-between items-center">
-                  <span className="text-xs font-bold text-slate-700">Kubernetes Pod Orchestration</span>
-                  <span className="text-xs font-black text-amber-500">1 Gap</span>
-                </div>
-                <div className="p-3 bg-slate-50 rounded-xl border border-slate-100 flex justify-between items-center">
-                  <span className="text-xs font-bold text-slate-700">OAuth2.0 Enterprise SSO</span>
-                  <span className="text-xs font-black text-amber-500">1 Gap</span>
-                </div>
+                {criticalGapsList.length > 0 ? (
+                  criticalGapsList.map((gap, idx) => (
+                    <div key={gap.id || idx} className="p-3 bg-slate-50 rounded-xl border border-slate-100 flex justify-between items-center">
+                      <div>
+                        <p className="text-xs font-bold text-slate-700">{gap.skillName}</p>
+                        <p className="text-[10px] text-slate-400">{gap.memberName} ({gap.memberRole})</p>
+                      </div>
+                      <span className="text-xs font-black text-rose-500">{gap.severity || 'Gap'}</span>
+                    </div>
+                  ))
+                ) : (
+                  <div className="p-3 bg-emerald-50 text-emerald-700 text-xs font-bold rounded-xl text-center">
+                    All project capability requirements are currently satisfied.
+                  </div>
+                )}
               </div>
 
               <button onClick={() => setActiveModal(null)} className="w-full py-3 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl">
@@ -479,29 +534,23 @@ export default function TeamReadinessScore() {
                   <div className="space-y-2">
                     <label className="flex items-center gap-2 text-xs font-bold text-slate-700 p-3 border border-slate-200 rounded-xl bg-slate-50/50 cursor-pointer">
                       <input type="checkbox" defaultChecked className="rounded text-blue-600" />
-                      <span>Advanced Cloud & Security Stacks</span>
-                    </label>
-                    <label className="flex items-center gap-2 text-xs font-bold text-slate-700 p-3 border border-slate-200 rounded-xl bg-slate-50/50 cursor-pointer">
-                      <input type="checkbox" defaultChecked className="rounded text-blue-600" />
-                      <span>Enterprise OAuth & Authorization Standards</span>
+                      <span>{selectedMember.name} Target Readiness Training Track</span>
                     </label>
                   </div>
                 </div>
               </div>
 
               <div className="flex gap-3">
-                <button onClick={() => setActiveModal(null)} className="w-1/2 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl">
+                <button onClick={() => setActiveModal(null)} className="w-1/2 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl cursor-pointer">
                   Cancel
                 </button>
                 <button 
-                  onClick={() => {
-                    setActiveModal(null);
-                    setToastMessage(`Targeted training module assigned to ${selectedMember.name}`);
-                    setTimeout(() => setToastMessage(''), 3000);
-                  }} 
-                  className="w-1/2 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-md"
+                  onClick={handleAssignTrackSubmit} 
+                  disabled={assigningTrack}
+                  className="w-1/2 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-md cursor-pointer flex items-center justify-center gap-2"
                 >
-                  Assign & Launch Track
+                  {assigningTrack ? <Loader2 size={14} className="animate-spin" /> : null}
+                  <span>{assigningTrack ? 'Assigning Track...' : 'Assign & Launch Track'}</span>
                 </button>
               </div>
             </div>
@@ -512,10 +561,13 @@ export default function TeamReadinessScore() {
             <div className="bg-white w-full max-w-md rounded-3xl p-6 shadow-2xl space-y-5 border border-slate-100">
               <div className="flex items-center gap-3 text-rose-600">
                 <AlertTriangle size={24} />
-                <h3 className="text-lg font-bold text-slate-900">AWS Security Policy Clearance</h3>
+                <h3 className="text-lg font-bold text-slate-900">Critical Capability Risk Breakdown</h3>
               </div>
               <p className="text-xs text-slate-500 font-medium leading-relaxed">
-                2 members currently lack formal AWS Security clearance needed for production cluster deployments. Assign training or request override access from Department Manager.
+                {criticalGapsList.length > 0 
+                  ? `${criticalGapsList.length} member gap(s) currently gate overall project deployment readiness. Launch targeted training to upgrade skill proficiency.`
+                  : 'No active capability risks detected for current team members.'
+                }
               </p>
               <div className="flex gap-3 pt-2">
                 <button onClick={() => setActiveModal(null)} className="w-full py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl">
@@ -524,7 +576,10 @@ export default function TeamReadinessScore() {
                 <button 
                   onClick={() => {
                     setActiveModal(null);
-                    handleOpenTrainingModal(initialIndividualReadiness[2]);
+                    const targetMember = (criticalGapsList.length > 0 
+                      ? dynamicMemberList.find(m => m.id === criticalGapsList[0].memberId) 
+                      : null) || dynamicMemberList.find(m => m.status !== 'Ready') || dynamicMemberList[0];
+                    if (targetMember) handleOpenTrainingModal(targetMember);
                   }} 
                   className="w-full py-3 bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs rounded-xl shadow-md"
                 >

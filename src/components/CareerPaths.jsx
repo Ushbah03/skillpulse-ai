@@ -1,6 +1,58 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { employeeAPI } from '../services/api';
+import { Loader2, Sparkles, Navigation } from 'lucide-react';
 
 const CareerPaths = () => {
+  const navigate = useNavigate();
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [selectedPathId, setSelectedPathId] = useState('path-1');
+
+  const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
+  const workspaceName = storedUser.tenant?.name || 'Apex Tech Solutions Workspace';
+
+  useEffect(() => {
+    async function fetchCareerData() {
+      try {
+        setLoading(true);
+        const res = await employeeAPI.getCareerPaths();
+        if (res?.success && res.data) {
+          setData(res.data);
+        }
+      } catch (err) {
+        console.warn('Error loading DB career paths:', err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchCareerData();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="p-8 bg-[#F8F9FE] min-h-screen flex items-center justify-center">
+        <div className="flex flex-col items-center gap-3 text-indigo-600">
+          <Loader2 className="w-10 h-10 animate-spin" />
+          <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Loading Career Pathway Intelligence...</span>
+        </div>
+      </div>
+    );
+  }
+
+  const profile = data?.userProfile || {};
+  const currentTitle = profile.jobTitle || storedUser.jobTitle || 'Software Specialist';
+  const targetReadiness = data?.targetReadiness ?? 75;
+  const roadmapSteps = data?.roadmap || [];
+  const recommendedPaths = data?.recommendedPaths || [];
+  const monthlyProgress = data?.monthlyProgress || [];
+  const gaps = data?.gaps || [];
+  const acceleration = data?.accelerationPlan || {};
+
+  const activeSelectedPath = recommendedPaths.find(p => p.id === selectedPathId) || recommendedPaths[0] || {};
+  const heroTargetRole = activeSelectedPath.title || data?.primaryTargetRole || 'Lead Architect';
+  const heroReadiness = activeSelectedPath.readiness || `${targetReadiness}%`;
+
   return (
     <div className="p-4 md:p-8 bg-[#F8F9FE] min-h-screen font-sans text-slate-900">
       
@@ -8,29 +60,17 @@ const CareerPaths = () => {
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div>
           <span className="text-[10px] font-black uppercase tracking-wider bg-blue-50 text-blue-600 px-2.5 py-1 rounded-md border border-blue-100 mb-2 inline-block">
-            Talent Mobility & Progression
+            {workspaceName}
           </span>
           <h1 className="text-3xl font-extrabold tracking-tight">Career Path Suggestions</h1>
           <p className="text-slate-500 text-sm mt-1 font-medium">
-            AI-recommended career progression based on your readiness and skills
+            Career progression pathways calculated live from your verified skill inventory & department benchmarks
           </p>
         </div>
 
         <div className="flex items-center gap-3">
-          <button className="flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-bold shadow-sm hover:bg-slate-50 transition-all active:scale-95">
-            <IconFilter className="w-4 h-4 text-slate-600" /> 
-            <span>Filter Level</span>
-          </button>
-
-          <div className="flex items-center gap-3 bg-white px-4 py-2.5 rounded-xl shadow-sm border border-slate-200">
-            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">AI Recs</span>
-            <div className="w-9 h-5 bg-emerald-500 rounded-full relative cursor-pointer transition-colors">
-              <div className="absolute right-1 top-1 w-3 h-3 bg-white rounded-full shadow-sm"></div>
-            </div>
-          </div>
-
-          <div className="w-10 h-10 rounded-xl bg-slate-200 overflow-hidden border-2 border-white shadow-sm ml-1 shrink-0">
-            <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=100" alt="Profile" className="w-full h-full object-cover" />
+          <div className="w-10 h-10 rounded-xl bg-indigo-600 border-2 border-white shadow-md flex items-center justify-center text-white font-bold text-sm shrink-0">
+            {storedUser.firstName?.charAt(0) || 'E'}{storedUser.lastName?.charAt(0) || 'Z'}
           </div>
         </div>
       </header>
@@ -39,20 +79,24 @@ const CareerPaths = () => {
       <section className="relative w-full bg-gradient-to-r from-blue-600 to-indigo-600 rounded-3xl md:rounded-[2.5rem] p-8 md:p-12 text-white overflow-hidden mb-10 shadow-xl shadow-indigo-100">
         <div className="relative z-10 max-w-2xl">
           <span className="bg-white/20 backdrop-blur-md px-4 py-1.5 rounded-full text-xs font-bold mb-6 inline-block">
-            Current Role: Senior Designer
+            Current Role: {currentTitle}
           </span>
           <h2 className="text-3xl md:text-5xl font-black mb-6 leading-[1.15]">
-            You are <span className="text-blue-200">72%</span> ready for a Product Manager role.
+            You are <span className="text-blue-200">{heroReadiness}</span> ready for a {heroTargetRole} role.
           </h2>
           <p className="text-blue-100 text-sm md:text-lg leading-relaxed mb-8 opacity-90">
-            Based on your recent leadership assessments and project management certifications, you have high potential for strategic product roles. We've mapped out a path to bridge your remaining gaps.
+            {gaps.length > 0 
+              ? `Based on your verified skills in ${profile.department || 'Engineering'}, you have high potential for ${heroTargetRole} tracks. Bridging your ${gaps.length} remaining skill gaps will unlock this position.`
+              : `Your verified skill inventory meets 100% of benchmark criteria for advanced ${heroTargetRole} tracks. You are eligible for immediate career promotion review.`
+            }
           </p>
           <div className="flex flex-wrap gap-4">
-            <button className="px-7 py-3.5 bg-white text-blue-600 rounded-2xl font-black text-sm md:text-base shadow-lg hover:bg-blue-50 transition-all active:scale-95">
+            <button 
+              onClick={() => navigate('/dashboard/learning')}
+              className="px-7 py-3.5 bg-white text-blue-600 rounded-2xl font-black text-sm md:text-base shadow-lg hover:bg-blue-50 transition-all active:scale-95 flex items-center gap-2"
+            >
+              <Navigation className="w-4 h-4" />
               Start Path Now
-            </button>
-            <button className="px-7 py-3.5 bg-white/10 backdrop-blur-md border border-white/20 text-white rounded-2xl font-black text-sm md:text-base hover:bg-white/20 transition-all">
-              View Full Analysis
             </button>
           </div>
         </div>
@@ -62,10 +106,10 @@ const CareerPaths = () => {
           <div className="relative w-56 h-56">
             <svg className="w-full h-full transform -rotate-90" viewBox="0 0 240 240">
               <circle cx="120" cy="120" r="100" stroke="currentColor" strokeWidth="16" fill="transparent" className="text-white/15" />
-              <circle cx="120" cy="120" r="100" stroke="currentColor" strokeWidth="16" fill="transparent" strokeDasharray="628" strokeDashoffset="175" className="text-white" strokeLinecap="round" />
+              <circle cx="120" cy="120" r="100" stroke="currentColor" strokeWidth="16" fill="transparent" strokeDasharray="628" strokeDashoffset={628 - (628 * (parseInt(heroReadiness) / 100))} className="text-white" strokeLinecap="round" />
             </svg>
             <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className="text-5xl font-black">72%</span>
+              <span className="text-5xl font-black">{heroReadiness}</span>
               <span className="text-[10px] font-black uppercase tracking-[0.2em] opacity-70 mt-1">Readiness</span>
             </div>
           </div>
@@ -81,10 +125,16 @@ const CareerPaths = () => {
             <div className="absolute top-11 left-16 right-16 h-1 bg-slate-100 z-0"></div>
             
             <div className="flex justify-between items-start relative z-10">
-              <RoadmapStep label="Senior Designer" sub="CURRENT" status="active" />
-              <RoadmapStep label="Lead Designer" sub="NEXT STEP" status="active" flag />
-              <RoadmapStep label="Product Manager" sub="TARGET" status="pending" star />
-              <RoadmapStep label="Head of Product" sub="ADVANCED" status="locked" />
+              {roadmapSteps.map((s, idx) => (
+                <RoadmapStep 
+                  key={idx}
+                  label={s.label} 
+                  sub={s.sub} 
+                  status={s.status} 
+                  flag={s.flag}
+                  star={s.star}
+                />
+              ))}
             </div>
           </div>
         </div>
@@ -96,25 +146,26 @@ const CareerPaths = () => {
         {/* Left Column: Recommended Paths & Chart */}
         <div className="col-span-12 lg:col-span-8 space-y-8">
           <div>
-            <h3 className="text-xl font-bold mb-6 px-1">Top Recommended Paths</h3>
+            <div className="flex justify-between items-center mb-6 px-1">
+              <h3 className="text-xl font-bold">Top Recommended Paths</h3>
+              <span className="text-xs font-semibold text-slate-400">Click path to view active alignment</span>
+            </div>
+            
             <div className="space-y-4">
-              <RecommendationCard 
-                title="Product Manager" 
-                dept="Product & Innovation Department" 
-                gaps="3 Missing Skills" 
-                time="~ 4 Months" 
-                readiness="72%" 
-                subText="92% Prob. Promotion"
-                aiPick
-              />
-              <RecommendationCard 
-                title="Lead Product Designer" 
-                dept="Design & Creative Department" 
-                gaps="1 Missing Skill" 
-                time="~ 1 Month" 
-                readiness="89%" 
-                subText="High Readiness"
-              />
+              {recommendedPaths.map((path) => (
+                <RecommendationCard 
+                  key={path.id}
+                  title={path.title} 
+                  dept={path.dept} 
+                  gaps={path.gapsText} 
+                  time={path.timeToReady} 
+                  readiness={path.readiness} 
+                  subText={path.subText}
+                  aiPick={path.isPrimary}
+                  isSelected={selectedPathId === path.id}
+                  onSelect={() => setSelectedPathId(path.id)}
+                />
+              ))}
             </div>
           </div>
 
@@ -123,7 +174,7 @@ const CareerPaths = () => {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
               <div>
                 <h4 className="text-lg font-bold text-slate-900">Projected Readiness Progress</h4>
-                <p className="text-slate-400 text-xs mt-0.5">Forecasted growth based on your current learning path</p>
+                <p className="text-slate-400 text-xs mt-0.5">Forecasted growth based on your active learning path</p>
               </div>
               <div className="flex gap-4 items-center">
                 <div className="flex items-center gap-2">
@@ -138,14 +189,15 @@ const CareerPaths = () => {
             </div>
 
             <div className="flex items-end justify-between h-48 px-2 gap-2 md:gap-4">
-              <Bar height="35%" label="Jan" />
-              <Bar height="42%" label="Feb" />
-              <Bar height="50%" label="Mar" />
-              <Bar height="68%" label="Apr" />
-              <Bar height="80%" label="NOW" active />
-              <Bar height="85%" label="Jun" forecast />
-              <Bar height="92%" label="Jul" forecast />
-              <Bar height="98%" label="Aug" forecast />
+              {monthlyProgress.map((bar, i) => (
+                <Bar 
+                  key={i}
+                  height={bar.heightPct} 
+                  label={bar.month} 
+                  active={bar.active} 
+                  forecast={bar.forecast}
+                />
+              ))}
             </div>
           </div>
         </div>
@@ -155,31 +207,62 @@ const CareerPaths = () => {
           
           {/* Gap Analysis */}
           <div className="bg-white p-6 md:p-8 rounded-3xl shadow-sm border border-slate-100">
-            <h4 className="text-lg font-bold mb-6 text-slate-900">Gap Analysis: Product Manager</h4>
-            <div className="space-y-5">
-              <GapMetric label="Stakeholder Management" status="Critical" color="bg-rose-500" width="45%" />
-              <GapMetric label="Data-Driven Decision Making" status="Gap" color="bg-amber-500" width="70%" />
-              <GapMetric label="Market Research" status="Minor Gap" color="bg-emerald-500" width="90%" />
+            <div className="flex justify-between items-center mb-6">
+              <h4 className="text-lg font-bold text-slate-900">Active Gap Alignment</h4>
+              <span className="text-xs font-bold text-slate-500 bg-slate-100 px-2.5 py-0.5 rounded-full">
+                {gaps.length} Gaps
+              </span>
             </div>
+            
+            {gaps.length > 0 ? (
+              <div className="space-y-5">
+                {gaps.map((g) => {
+                  const current = g.currentLevel || 1.0;
+                  const required = g.requiredLevel || 4.5;
+                  const pct = `${Math.min(100, Math.round((current / required) * 100))}%`;
+                  return (
+                    <GapMetric 
+                      key={g.id} 
+                      label={g.skill?.name || 'Skill Gap'} 
+                      status={g.severity || 'HIGH'} 
+                      color={g.severity === 'CRITICAL' ? 'bg-rose-500' : 'bg-amber-500'} 
+                      width={pct} 
+                    />
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="text-center py-6 bg-slate-50 rounded-2xl p-4">
+                <p className="text-xs font-bold text-emerald-600">✓ 100% Skills Aligned</p>
+                <p className="text-[11px] text-slate-400 mt-1">No active skill gaps found in your DB profile.</p>
+              </div>
+            )}
           </div>
 
           {/* AI Acceleration Plan */}
           <div className="bg-[#1E0B4B] p-6 md:p-8 rounded-3xl text-white relative overflow-hidden shadow-xl">
             <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -translate-y-16 translate-x-16 pointer-events-none"></div>
-            <h4 className="text-lg font-bold mb-6 relative z-10">AI Acceleration Plan</h4>
+            
+            <div className="flex items-center gap-2 mb-6 relative z-10">
+              <Sparkles className="w-5 h-5 text-purple-300" />
+              <h4 className="text-lg font-bold">Target Acceleration Plan</h4>
+            </div>
             
             <div className="space-y-3.5 mb-6">
-              <PlanItem label="RECOMMENDED COURSE" value="Advanced Stakeholder Mastery" />
-              <PlanItem label="CERTIFICATION" value="Certified Product Manager (CPM)" />
+              <PlanItem label="RECOMMENDED COURSE" value={acceleration.recommendedCourse || 'Advanced Skill Acceleration'} />
+              <PlanItem label="TARGET CERTIFICATION" value={acceleration.targetCertification || 'Enterprise Certified Professional'} />
               
               <div className="bg-white/10 rounded-2xl p-5 text-center border border-white/10 mt-4">
                 <p className="text-blue-200 text-[10px] font-bold uppercase tracking-widest mb-1">Estimated Readiness Increase</p>
-                <h5 className="text-2xl md:text-3xl font-black text-emerald-400">+15% in 30 Days</h5>
+                <h5 className="text-2xl md:text-3xl font-black text-emerald-400">{acceleration.estimatedIncrease || '+15% in 30 Days'}</h5>
               </div>
             </div>
 
-            <button className="w-full py-3.5 bg-white text-[#1E0B4B] rounded-xl font-bold text-sm hover:bg-slate-100 transition-all active:scale-95">
-              View Full Roadmap
+            <button 
+              onClick={() => navigate('/dashboard/learning')}
+              className="w-full py-3.5 bg-white text-[#1E0B4B] rounded-xl font-bold text-sm hover:bg-slate-100 transition-all active:scale-95"
+            >
+              Start Acceleration
             </button>
           </div>
 
@@ -211,10 +294,17 @@ const RoadmapStep = ({ label, sub, status, flag, star }) => (
   </div>
 );
 
-const RecommendationCard = ({ title, dept, gaps, time, readiness, subText, aiPick }) => (
-  <div className="bg-white p-6 md:p-8 rounded-3xl border border-slate-100 shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 group hover:shadow-md transition-all">
+const RecommendationCard = ({ title, dept, gaps, time, readiness, subText, aiPick, isSelected, onSelect }) => (
+  <div 
+    onClick={onSelect}
+    className={`bg-white p-6 md:p-8 rounded-3xl border transition-all duration-200 cursor-pointer flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 group ${
+      isSelected ? 'border-2 border-indigo-600 shadow-md ring-2 ring-indigo-100' : 'border-slate-100 hover:border-slate-300 shadow-sm'
+    }`}
+  >
     <div className="flex gap-5 items-center">
-      <div className="w-14 h-14 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-400 group-hover:bg-blue-50 group-hover:text-blue-600 transition-colors shrink-0">
+      <div className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-colors shrink-0 ${
+        isSelected ? 'bg-indigo-600 text-white' : 'bg-slate-50 text-slate-400 group-hover:bg-blue-50 group-hover:text-blue-600'
+      }`}>
         <IconPath className="w-6 h-6" />
       </div>
       <div>
@@ -222,7 +312,7 @@ const RecommendationCard = ({ title, dept, gaps, time, readiness, subText, aiPic
           <h4 className="text-lg md:text-xl font-bold text-slate-900">{title}</h4>
           {aiPick && (
             <span className="bg-purple-100 text-purple-700 text-[9px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider">
-              AI PICK
+              PRIMARY
             </span>
           )}
         </div>
@@ -246,11 +336,10 @@ const RecommendationCard = ({ title, dept, gaps, time, readiness, subText, aiPic
           <span className="text-2xl md:text-3xl font-black text-slate-900">{readiness}</span>
           <span className="text-xs font-bold text-slate-400 italic">Ready</span>
         </div>
-        <p className={`text-[10px] font-black uppercase tracking-tight mt-0.5 ${subText.includes('92%') ? 'text-emerald-500' : 'text-blue-600'}`}>
+        <p className="text-[10px] font-black uppercase tracking-tight mt-0.5 text-emerald-500">
           {subText}
         </p>
       </div>
-      <button className="text-indigo-600 font-bold text-sm hover:underline">View Detail</button>
     </div>
   </div>
 );
@@ -259,7 +348,7 @@ const GapMetric = ({ label, status, color, width }) => (
   <div>
     <div className="flex justify-between items-center mb-1.5">
       <span className="text-xs md:text-sm font-bold text-slate-700">{label}</span>
-      <span className={`text-[10px] font-black uppercase ${status === 'Critical' ? 'text-rose-500' : status === 'Gap' ? 'text-amber-500' : 'text-emerald-500'}`}>
+      <span className={`text-[10px] font-black uppercase ${status === 'CRITICAL' ? 'text-rose-500' : 'text-amber-500'}`}>
         {status}
       </span>
     </div>
@@ -297,9 +386,6 @@ const Bar = ({ height, label, active, forecast }) => (
 );
 
 /* --- SVG Icons --- */
-const IconFilter = ({ className = "w-4 h-4" }) => (
-  <svg className={className} fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></svg>
-);
 const IconUser = ({ className = "w-5 h-5" }) => (
   <svg className={className} fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
 );

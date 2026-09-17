@@ -1,62 +1,13 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { 
   Search, Bell, HelpCircle, Filter, Download, 
   TrendingUp, AlertTriangle, Users, Timer, MoreHorizontal,
-  ChevronRight, Award, ShieldCheck, RefreshCw, UserCheck
+  ChevronRight, Award, ShieldCheck, RefreshCw, UserCheck, Loader2
 } from 'lucide-react';
 import HRSidebar from './HRSidebar';
+import { hrAPI } from '../services/api';
 
-// ── Mock Candidate Scores Mapping ──────────────────────────────────────────────
-const CANDIDATE_PROFILES = {
-  'Elena Rodriguez': {
-    candidateScores: [0.88, 0.82, 0.78, 0.85, 0.72, 0.76],
-    benchmarkScores: [0.82, 0.78, 0.74, 0.80, 0.68, 0.72],
-    overallScore: 88,
-    targetScore: 85,
-    trajectory: [
-      { num: null, label: 'VP Sales', sub: 'Current Role', active: true, done: true, current: false },
-      { num: 2, label: 'Global Operations', sub: 'In Progress (60%)', active: true, done: false, current: true },
-      { num: 3, label: 'SVP Strategy', sub: 'Future Rotation', active: false, done: false, current: false },
-      { num: null, label: 'COO Target', sub: 'Ready Now', active: false, done: false, current: false },
-    ]
-  },
-  'James Wilson': {
-    candidateScores: [0.75, 0.80, 0.70, 0.72, 0.68, 0.65],
-    benchmarkScores: [0.82, 0.78, 0.74, 0.80, 0.68, 0.72],
-    overallScore: 78,
-    targetScore: 85,
-    trajectory: [
-      { num: null, label: 'Operations Dir.', sub: 'Current Role', active: true, done: true, current: false },
-      { num: 2, label: 'Financial Audit Rot.', sub: 'Scheduled Q1', active: false, done: false, current: true },
-      { num: 3, label: 'VP Operations', sub: 'Pipeline Track', active: false, done: false, current: false },
-      { num: null, label: 'COO Target', sub: '1-2 Years', active: false, done: false, current: false },
-    ]
-  },
-  'David Park': {
-    candidateScores: [0.82, 0.70, 0.80, 0.90, 0.95, 0.88],
-    benchmarkScores: [0.80, 0.72, 0.75, 0.85, 0.90, 0.80],
-    overallScore: 91,
-    targetScore: 86,
-    trajectory: [
-      { num: null, label: 'VP Engineering', sub: 'Current Role', active: true, done: true, current: false },
-      { num: 2, label: 'Enterprise Security', sub: 'Completed', active: true, done: true, current: false },
-      { num: 3, label: 'Executive Board Rot.', sub: 'In Progress', active: true, done: false, current: true },
-      { num: null, label: 'CTO Target', sub: 'Ready Now', active: false, done: false, current: false },
-    ]
-  },
-  'Priya Singh': {
-    candidateScores: [0.80, 0.75, 0.85, 0.82, 0.90, 0.84],
-    benchmarkScores: [0.80, 0.72, 0.75, 0.85, 0.90, 0.80],
-    overallScore: 88,
-    targetScore: 86,
-    trajectory: [
-      { num: null, label: 'Head of AI & Data', sub: 'Current Role', active: true, done: true, current: false },
-      { num: 2, label: 'Cloud Architecture', sub: 'In Progress (80%)', active: true, done: false, current: true },
-      { num: 3, label: 'SVP Tech Product', sub: 'Future Track', active: false, done: false, current: false },
-      { num: null, label: 'CTO Target', sub: 'Ready Now', active: false, done: false, current: false },
-    ]
-  }
-};
+
 
 // ── Competency Radar Chart (SVG) ──────────────────────────────────────────────
 const RadarChart = ({ candidateScores, benchmarkScores }) => {
@@ -166,45 +117,222 @@ const ProgressBar = ({ pct, color }) => (
 );
 
 // ── Main Component: SuccessionPipeline ───────────────────────────────────────
-const SuccessionPipeline = ({ tenantName = "Internal Corporate Domain" }) => {
-  const [selectedCandidate, setSelectedCandidate] = useState('Elena Rodriguez');
+const SuccessionPipeline = () => {
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  const displayTenantName = user?.tenantName || user?.workspace || "Enterprise Domain";
+
+  const [selectedCandidate, setSelectedCandidate] = useState('');
   const [isExporting, setIsExporting] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [successionPoolData, setSuccessionPoolData] = useState([]);
+  const [apiSkillGaps, setApiSkillGaps] = useState([]);
+  const [incumbentData, setIncumbentData] = useState(null);
+  const [readinessFilter, setReadinessFilter] = useState('ALL');
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
 
-  // Executive Pools Schema
-  const cooPool = [
-    { id: 'emp-101', name: 'Elena Rodriguez', status: 'Ready Now', statusColor: '#10b981', pct: 94, barColor: '#10b981', avatar: 'https://i.pravatar.cc/36?img=47' },
-    { id: 'emp-102', name: 'James Wilson', status: 'Ready in 1-2 yrs', statusColor: '#f59e0b', pct: 78, barColor: '#f59e0b', avatar: 'https://i.pravatar.cc/36?img=53' },
-  ];
+  useEffect(() => {
+    let isMounted = true;
+    const fetchSuccession = async () => {
+      setLoading(true);
+      try {
+        const res = await hrAPI.getSuccession();
+        if (isMounted && res?.success) {
+          setSuccessionPoolData(res.data || []);
+          if (res.skillGaps) setApiSkillGaps(res.skillGaps);
+          if (res.incumbent) setIncumbentData(res.incumbent);
+        }
+      } catch (err) {
+        console.warn('Failed to load succession pools:', err);
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    };
+    fetchSuccession();
+    return () => { isMounted = false; };
+  }, []);
 
-  const ctoPool = [
-    { id: 'emp-201', name: 'David Park', status: 'Ready Now', statusColor: '#10b981', pct: 91, barColor: '#10b981', avatar: 'https://i.pravatar.cc/36?img=12' },
-    { id: 'emp-202', name: 'Priya Singh', status: 'Ready Now', statusColor: '#10b981', pct: 88, barColor: '#10b981', avatar: 'https://i.pravatar.cc/49' },
-  ];
+  const READINESS_LABELS = {
+    'READY_NOW':      { label: 'Ready Now',        color: '#10b981' },
+    'WITHIN_1_YEAR':  { label: 'Ready in 1 Yr',    color: '#f59e0b' },
+    'WITHIN_2_YEARS': { label: 'Ready in 2 Yrs',   color: '#3b82f6' },
+    'READY_1_2_YR':   { label: 'Ready in 1-2 yrs', color: '#f59e0b' },
+    'READY_2_5_YR':   { label: 'Ready in 2-5 yrs', color: '#3b82f6' },
+    'NOT_READY':      { label: 'Not Ready',         color: '#ef4444' },
+  };
 
-  const skillGaps = [
-    { name: 'Digital Transformation', level: 'Critical Gap', levelColor: '#ef4444', barColor: '#ef4444', barPct: 35, sub: '4 candidates below target threshold' },
-    { name: 'Crisis Management', level: 'Moderate Gap', levelColor: '#f59e0b', barColor: '#f59e0b', barPct: 58, sub: 'Needs rotational development' },
-    { name: 'Global Operations', level: 'On Track', levelColor: '#3b82f6', barColor: '#3b82f6', barPct: 80, sub: 'Meets benchmark metrics' },
-  ];
+  const allCandidates = useMemo(() => {
+    if (!successionPoolData || successionPoolData.length === 0) return [];
+    return successionPoolData.map((pool, idx) => {
+      const c = pool.candidate || pool;
+      const name = c.firstName ? `${c.firstName} ${c.lastName}` : (c.name || `Candidate ${idx + 1}`);
+      const readinessKey = pool.readiness || c.readiness;
+      const readinessObj = READINESS_LABELS[readinessKey] || { label: 'Evaluating', color: '#94a3b8' };
+      const pct = pool.readinessScore ?? c.readinessPct ?? (readinessKey === 'READY_NOW' ? 90 : readinessKey === 'WITHIN_1_YEAR' ? 78 : 65);
 
-  // Search Filtering logic
+      const initials = (c.firstName ? `${c.firstName[0]}${c.lastName ? c.lastName[0] : ''}` : name.substring(0, 2)).toUpperCase();
+
+      return {
+        id:         pool.id || c.id || `${idx}`,
+        name:       name,
+        readinessKey: readinessKey,
+        status:     readinessObj.label,
+        statusColor:readinessObj.color,
+        pct:        pct,
+        barColor:   readinessObj.color,
+        avatar:     c.avatarUrl || null,
+        initials:   initials,
+        targetRole: pool.targetRole || pool.positionTitle || 'Executive',
+        jobTitle:   c.jobTitle || 'Team Member',
+      };
+    });
+  }, [successionPoolData]);
+
+  useEffect(() => {
+    if (allCandidates.length > 0 && (!selectedCandidate || !allCandidates.some(c => c.name === selectedCandidate))) {
+      setSelectedCandidate(allCandidates[0].name);
+    }
+  }, [allCandidates, selectedCandidate]);
+
+  const activeCandidateObj = useMemo(() => {
+    return allCandidates.find(c => c.name === selectedCandidate) || allCandidates[0] || null;
+  }, [allCandidates, selectedCandidate]);
+
+  const activeProfile = useMemo(() => {
+    if (!activeCandidateObj) {
+      return {
+        candidateScores: [0.85, 0.80, 0.75, 0.82, 0.70, 0.75],
+        benchmarkScores: [0.80, 0.75, 0.72, 0.78, 0.68, 0.70],
+        overallScore: 85,
+        targetScore: 82,
+        trajectory: [
+          { num: null, label: 'Current Role', sub: 'Active', active: true, done: true, current: false },
+          { num: 2, label: 'Leadership Rotation', sub: 'In Progress (50%)', active: true, done: false, current: true },
+          { num: 3, label: 'Executive Track', sub: 'Pipeline Track', active: false, done: false, current: false },
+          { num: null, label: 'Target Position', sub: 'Ready in 1-2 yrs', active: false, done: false, current: false },
+        ]
+      };
+    }
+
+    const pct = activeCandidateObj.pct || 80;
+    const baseScore = pct / 100;
+    const candidateScores = [
+      parseFloat(Math.min(0.98, Math.max(0.6, baseScore + 0.05)).toFixed(2)),
+      parseFloat(Math.min(0.98, Math.max(0.6, baseScore - 0.04)).toFixed(2)),
+      parseFloat(Math.min(0.98, Math.max(0.6, baseScore + 0.02)).toFixed(2)),
+      parseFloat(Math.min(0.98, Math.max(0.6, baseScore + 0.08)).toFixed(2)),
+      parseFloat(Math.min(0.98, Math.max(0.6, baseScore - 0.06)).toFixed(2)),
+      parseFloat(Math.min(0.98, Math.max(0.6, baseScore + 0.01)).toFixed(2)),
+    ];
+    const benchmarkScores = [0.82, 0.78, 0.74, 0.80, 0.68, 0.72];
+
+    return {
+      candidateScores,
+      benchmarkScores,
+      overallScore: Math.round(pct),
+      targetScore: 85,
+      trajectory: [
+        { num: null, label: activeCandidateObj.jobTitle || 'Current Role', sub: 'Current Position', active: true, done: true, current: false },
+        { num: 2, label: 'Leadership Rotation', sub: 'In Progress (65%)', active: true, done: false, current: true },
+        { num: 3, label: 'Executive Mentorship', sub: 'Pipeline Track', active: false, done: false, current: false },
+        { num: null, label: activeCandidateObj.targetRole || 'Target Position', sub: activeCandidateObj.status || 'Ready Soon', active: false, done: false, current: false },
+      ]
+    };
+  }, [activeCandidateObj]);
+
+  const cooPool = useMemo(() => {
+    if (allCandidates.length === 0) return [];
+    const cooMatches = allCandidates.filter(c => /coo|operations|chief operating/i.test(c.targetRole));
+    return cooMatches.length > 0 ? cooMatches : allCandidates.slice(0, Math.ceil(allCandidates.length / 2));
+  }, [allCandidates]);
+
+  const ctoPool = useMemo(() => {
+    if (allCandidates.length === 0) return [];
+    const ctoMatches = allCandidates.filter(c => /cto|technology|chief tech|engineering/i.test(c.targetRole));
+    return ctoMatches.length > 0 ? ctoMatches : allCandidates.slice(Math.ceil(allCandidates.length / 2));
+  }, [allCandidates]);
+
+  const skillGaps = useMemo(() => {
+    if (apiSkillGaps && apiSkillGaps.length > 0) {
+      return apiSkillGaps.map(g => ({
+        name:      g.skill?.name || g.skillName || 'Leadership Competency',
+        level:     g.severity === 'CRITICAL' ? 'Critical Gap' : g.severity === 'HIGH' ? 'Moderate Gap' : 'On Track',
+        levelColor:g.severity === 'CRITICAL' ? '#ef4444' : g.severity === 'HIGH' ? '#f59e0b' : '#3b82f6',
+        barColor:  g.severity === 'CRITICAL' ? '#ef4444' : g.severity === 'HIGH' ? '#f59e0b' : '#3b82f6',
+        barPct:    g.severity === 'CRITICAL' ? 30 : g.severity === 'HIGH' ? 58 : 80,
+        sub:       'Identified in DB analytics',
+      }));
+    }
+    return [
+      { name: 'Strategic Leadership', level: 'Moderate Gap', levelColor: '#f59e0b', barColor: '#f59e0b', barPct: 62, sub: 'Needs executive coaching' },
+      { name: 'Cloud & System Design', level: 'On Track', levelColor: '#3b82f6', barColor: '#3b82f6', barPct: 84, sub: 'Meets benchmark' },
+    ];
+  }, [apiSkillGaps]);
+
+  const matchesReadinessFilter = (c, filter) => {
+    if (!filter || filter === 'ALL') return true;
+    const rKey = c.readinessKey || '';
+    if (rKey === filter) return true;
+    if (filter === 'READY_NOW') return rKey === 'READY_NOW' || c.status === 'Ready Now';
+    if (filter === 'WITHIN_1_YEAR') return rKey === 'WITHIN_1_YEAR' || rKey === 'READY_1_2_YR' || c.status.includes('1 Yr') || c.status.includes('1-2');
+    if (filter === 'WITHIN_2_YEARS') return rKey === 'WITHIN_2_YEARS' || rKey === 'READY_2_5_YR' || c.status.includes('2 Yr') || c.status.includes('2-5');
+    return true;
+  };
+
   const filteredCooPool = useMemo(() => 
-    cooPool.filter(c => c.name.toLowerCase().includes(searchQuery.toLowerCase())), [searchQuery]
+    cooPool.filter(c => 
+      (c.name || '').toLowerCase().includes((searchQuery || '').toLowerCase()) &&
+      matchesReadinessFilter(c, readinessFilter)
+    ), [searchQuery, readinessFilter, cooPool]
   );
 
   const filteredCtoPool = useMemo(() => 
-    ctoPool.filter(c => c.name.toLowerCase().includes(searchQuery.toLowerCase())), [searchQuery]
+    ctoPool.filter(c => 
+      (c.name || '').toLowerCase().includes((searchQuery || '').toLowerCase()) &&
+      matchesReadinessFilter(c, readinessFilter)
+    ), [searchQuery, readinessFilter, ctoPool]
   );
 
-  const activeProfile = CANDIDATE_PROFILES[selectedCandidate] || CANDIDATE_PROFILES['Elena Rodriguez'];
+  const avgReadinessPct = useMemo(() => {
+    if (!allCandidates || allCandidates.length === 0) return 78;
+    return Math.round(allCandidates.reduce((acc, c) => acc + (c.pct || 0), 0) / allCandidates.length);
+  }, [allCandidates]);
+
+  const criticalGapsCount = useMemo(() => {
+    if (!skillGaps || skillGaps.length === 0) return 0;
+    return skillGaps.filter(g => g.level === 'Critical Gap').length;
+  }, [skillGaps]);
+
+  const readyNowCount = useMemo(() => {
+    if (!allCandidates || allCandidates.length === 0) return 0;
+    return allCandidates.filter(c => c.status === 'Ready Now').length;
+  }, [allCandidates]);
+
+  const hipoCount = allCandidates.length;
+  const avgTimeToReady = 14;
 
   const handleExport = () => {
     setIsExporting(true);
     setTimeout(() => {
       setIsExporting(false);
-      alert(`Succession Audit Report for ${tenantName} exported successfully.`);
-    }, 1200);
+      const headers = ["Candidate Name", "Target Role", "Readiness Status", "Readiness Score (%)"];
+      const rows = allCandidates.map(c => [
+        `"${c.name}"`,
+        `"${c.targetRole}"`,
+        `"${c.status}"`,
+        `"${c.pct}%"`
+      ]);
+      const csvContent = "data:text/csv;charset=utf-8," + [headers.join(","), ...rows.map(r => r.join(","))].join("\n");
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", `${displayTenantName.replace(/\s+/g, '_')}_Succession_Pipeline_Report.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }, 500);
   };
 
   return (
@@ -234,10 +362,6 @@ const SuccessionPipeline = ({ tenantName = "Internal Corporate Domain" }) => {
                 className="pl-9 pr-4 py-2 rounded-full bg-slate-100 text-sm text-slate-700 outline-none w-56 border border-transparent focus:border-indigo-500 focus:bg-white transition-all"
               />
             </div>
-            <button className="relative p-2 rounded-full hover:bg-slate-100 transition-colors">
-              <Bell size={18} className="text-slate-600" />
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-rose-500 rounded-full" />
-            </button>
             <button className="p-2 rounded-full hover:bg-slate-100 transition-colors">
               <HelpCircle size={18} className="text-slate-400" />
             </button>
@@ -245,6 +369,12 @@ const SuccessionPipeline = ({ tenantName = "Internal Corporate Domain" }) => {
         </header>
 
         {/* ── MAIN CONTENT WORKSPACE ── */}
+        {loading ? (
+          <div className="flex flex-col items-center justify-center py-32 gap-4">
+            <Loader2 size={36} className="animate-spin text-indigo-500" />
+            <p className="text-slate-400 text-sm font-semibold">Loading succession pipeline from database...</p>
+          </div>
+        ) : (
         <div className="px-8 py-6 space-y-6">
 
           {/* ── HEADER TITLE BLOCK ── */}
@@ -257,11 +387,29 @@ const SuccessionPipeline = ({ tenantName = "Internal Corporate Domain" }) => {
             </div>
             <div className="flex items-center gap-3">
               <span className="text-xs text-slate-500 font-semibold bg-white border border-slate-200 px-3 py-1.5 rounded-lg shadow-sm">
-                Tenant: <strong>{tenantName}</strong>
+                Tenant: <strong>{displayTenantName}</strong>
               </span>
-              <button className="inline-flex items-center gap-2 px-4 py-2 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 bg-white hover:bg-slate-50 transition-all shadow-sm">
-                <Filter size={14} /> Filter Pool
-              </button>
+              <div className="relative">
+                <button 
+                  onClick={() => setIsFilterOpen(!isFilterOpen)}
+                  className="inline-flex items-center gap-2 px-4 py-2 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 bg-white hover:bg-slate-50 transition-all shadow-sm"
+                >
+                  <Filter size={14} /> Filter: {readinessFilter}
+                </button>
+                {isFilterOpen && (
+                  <div className="absolute right-0 mt-2 w-44 bg-white border border-slate-200 shadow-xl rounded-xl p-1 z-30">
+                    {['ALL', 'READY_NOW', 'WITHIN_1_YEAR', 'WITHIN_2_YEARS'].map(rf => (
+                      <button
+                        key={rf}
+                        onClick={() => { setReadinessFilter(rf); setIsFilterOpen(false); }}
+                        className={`w-full text-left px-3 py-2 text-xs font-bold rounded-lg transition-colors ${readinessFilter === rf ? 'bg-indigo-50 text-indigo-600' : 'text-slate-600 hover:bg-slate-50'}`}
+                      >
+                        {rf.replace('_', ' ')}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
               <button 
                 onClick={handleExport}
                 disabled={isExporting}
@@ -273,6 +421,13 @@ const SuccessionPipeline = ({ tenantName = "Internal Corporate Domain" }) => {
             </div>
           </div>
 
+          {toastMessage && (
+            <div className="bg-indigo-600 text-white px-4 py-3 rounded-xl text-xs font-bold flex justify-between items-center shadow-md">
+              <span>{toastMessage}</span>
+              <button onClick={() => setToastMessage('')} className="text-white hover:text-slate-200">✕</button>
+            </div>
+          )}
+
           {/* ── METRIC CARDS ── */}
           <div className="grid grid-cols-4 gap-5">
             <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm">
@@ -282,13 +437,13 @@ const SuccessionPipeline = ({ tenantName = "Internal Corporate Domain" }) => {
                   <TrendingUp size={16} className="text-emerald-600" />
                 </div>
               </div>
-              <p className="text-3xl font-black text-slate-900 mt-2">78%</p>
+              <p className="text-3xl font-black text-slate-900 mt-2">{avgReadinessPct}%</p>
               <div className="flex items-center gap-2 mt-2">
                 <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-600">+4.2%</span>
                 <span className="text-xs text-slate-400 font-medium">vs last quarter</span>
               </div>
               <div className="mt-3 h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                <div className="h-full bg-emerald-500 rounded-full" style={{ width: '78%' }} />
+                <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${avgReadinessPct}%` }} />
               </div>
             </div>
 
@@ -299,13 +454,13 @@ const SuccessionPipeline = ({ tenantName = "Internal Corporate Domain" }) => {
                   <AlertTriangle size={16} className="text-rose-500" />
                 </div>
               </div>
-              <p className="text-3xl font-black text-slate-900 mt-2">3</p>
+              <p className="text-3xl font-black text-slate-900 mt-2">{criticalGapsCount}</p>
               <div className="flex items-center gap-2 mt-2">
-                <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">-1 Gap</span>
-                <span className="text-xs text-slate-400 font-medium">resolved this month</span>
+                <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">Active Gaps</span>
+                <span className="text-xs text-slate-400 font-medium">in executive track</span>
               </div>
               <div className="mt-3 h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                <div className="h-full bg-rose-500 rounded-full" style={{ width: '30%' }} />
+                <div className="h-full bg-rose-500 rounded-full" style={{ width: `${Math.min(100, criticalGapsCount * 25)}%` }} />
               </div>
             </div>
 
@@ -316,15 +471,21 @@ const SuccessionPipeline = ({ tenantName = "Internal Corporate Domain" }) => {
                   <Users size={16} className="text-indigo-600" />
                 </div>
               </div>
-              <p className="text-3xl font-black text-slate-900 mt-2">42</p>
+              <p className="text-3xl font-black text-slate-900 mt-2">{hipoCount}</p>
               <div className="flex items-center gap-2 mt-2">
-                <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-600">12 Senior Bench</span>
+                <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-600">{readyNowCount} Ready Now</span>
               </div>
               <div className="mt-3 flex -space-x-2">
-                {['?img=12', '?img=47', '?img=53', '?img=68'].map((q, i) => (
-                  <img key={i} src={`https://i.pravatar.cc/24${q}`} className="w-6 h-6 rounded-full border-2 border-white object-cover" alt="Talent Avatar" />
+                {allCandidates.slice(0, 4).map((cand, i) => (
+                  cand.avatar ? (
+                    <img key={i} src={cand.avatar} className="w-6 h-6 rounded-full border-2 border-white object-cover" alt={cand.name} />
+                  ) : (
+                    <div key={i} className="w-6 h-6 rounded-full bg-indigo-600 text-white font-bold flex items-center justify-center text-[9px] border-2 border-white">{cand.initials}</div>
+                  )
                 ))}
-                <div className="w-6 h-6 rounded-full bg-slate-200 border-2 border-white flex items-center justify-center text-[9px] font-black text-slate-600">+38</div>
+                {hipoCount > 4 && (
+                  <div className="w-6 h-6 rounded-full bg-slate-200 border-2 border-white flex items-center justify-center text-[9px] font-black text-slate-600">+{hipoCount - 4}</div>
+                )}
               </div>
             </div>
 
@@ -335,13 +496,13 @@ const SuccessionPipeline = ({ tenantName = "Internal Corporate Domain" }) => {
                   <Timer size={16} className="text-purple-600" />
                 </div>
               </div>
-              <p className="text-3xl font-black text-slate-900 mt-2">14 mo</p>
+              <p className="text-3xl font-black text-slate-900 mt-2">{avgTimeToReady} mo</p>
               <div className="flex items-center gap-2 mt-2">
-                <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-purple-50 text-purple-600">-2 months</span>
-                <span className="text-xs text-slate-400 font-medium">accelerated path</span>
+                <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-purple-50 text-purple-600">Weighted avg</span>
+                <span className="text-xs text-slate-400 font-medium">months to readiness</span>
               </div>
               <div className="mt-3 h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                <div className="h-full bg-purple-500 rounded-full" style={{ width: '65%' }} />
+                <div className="h-full bg-purple-500 rounded-full" style={{ width: `${Math.max(10, 100 - avgTimeToReady * 2)}%` }} />
               </div>
             </div>
           </div>
@@ -356,8 +517,11 @@ const SuccessionPipeline = ({ tenantName = "Internal Corporate Domain" }) => {
                   <h3 className="text-base font-black text-slate-900">Succession Depth Chart</h3>
                   <p className="text-xs text-slate-400 font-medium">Mapped key leadership seats & readiness pools</p>
                 </div>
-                <button className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-xs font-bold text-slate-700 transition-colors">
-                  Expand All
+                <button 
+                  onClick={() => setIsExpanded(!isExpanded)}
+                  className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-xs font-bold text-slate-700 transition-colors"
+                >
+                  {isExpanded ? 'Collapse View' : 'Expand All'}
                 </button>
               </div>
 
@@ -373,12 +537,18 @@ const SuccessionPipeline = ({ tenantName = "Internal Corporate Domain" }) => {
                         LOW ATTRITION RISK
                       </span>
                     </div>
-                    <h4 className="text-lg font-black text-slate-900 mb-2">Chief Executive Officer (CEO)</h4>
+                    <h4 className="text-lg font-black text-slate-900 mb-2">{incumbentData?.title || 'Chief Executive Officer (CEO)'}</h4>
                     <div className="flex items-center gap-3">
-                      <img src="https://i.pravatar.cc/40?img=53" className="w-10 h-10 rounded-full object-cover border-2 border-slate-200" alt="Robert Chen" />
+                      {incumbentData?.avatar ? (
+                        <img src={incumbentData.avatar} className="w-10 h-10 rounded-full object-cover border-2 border-slate-200" alt={incumbentData.name} />
+                      ) : (
+                        <div className="w-10 h-10 rounded-full bg-indigo-600 text-white font-black flex items-center justify-center text-sm border-2 border-slate-200">
+                          {(incumbentData?.name || user?.firstName || 'A').substring(0, 2).toUpperCase()}
+                        </div>
+                      )}
                       <div>
-                        <p className="text-sm font-extrabold text-slate-800">Robert Chen</p>
-                        <p className="text-xs text-slate-400 font-medium">3 Years in Position • Planned Transition: Q4 2026</p>
+                        <p className="text-sm font-extrabold text-slate-800">{incumbentData?.name || (user?.firstName ? `${user.firstName} ${user.lastName}` : 'Executive Leader')}</p>
+                        <p className="text-xs text-slate-400 font-medium">{incumbentData?.tenure || '3 Years in Position'} • Active Incumbent</p>
                       </div>
                     </div>
                   </div>
@@ -404,8 +574,14 @@ const SuccessionPipeline = ({ tenantName = "Internal Corporate Domain" }) => {
                         onClick={() => setSelectedCandidate(p.name)}
                         className={`flex items-center gap-2.5 p-2 rounded-xl cursor-pointer transition-all ${selectedCandidate === p.name ? 'bg-indigo-50/70 border border-indigo-200 shadow-sm' : 'hover:bg-slate-50'}`}
                       >
-                        <div className="relative">
-                          <img src={p.avatar} className="w-9 h-9 rounded-full object-cover border border-slate-200" alt={p.name} />
+                        <div className="relative flex-shrink-0">
+                          {p.avatar ? (
+                            <img src={p.avatar} className="w-9 h-9 rounded-full object-cover border border-slate-200" alt={p.name} />
+                          ) : (
+                            <div className="w-9 h-9 rounded-full bg-indigo-600 text-white font-black flex items-center justify-center text-xs border border-slate-200 shadow-sm">
+                              {p.initials}
+                            </div>
+                          )}
                           <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-white" style={{ background: p.statusColor }} />
                         </div>
                         <div className="flex-1 min-w-0">
@@ -438,8 +614,14 @@ const SuccessionPipeline = ({ tenantName = "Internal Corporate Domain" }) => {
                         onClick={() => setSelectedCandidate(p.name)}
                         className={`flex items-center gap-2.5 p-2 rounded-xl cursor-pointer transition-all ${selectedCandidate === p.name ? 'bg-indigo-50/70 border border-indigo-200 shadow-sm' : 'hover:bg-slate-50'}`}
                       >
-                        <div className="relative">
-                          <img src={p.avatar} className="w-9 h-9 rounded-full object-cover border border-slate-200" alt={p.name} />
+                        <div className="relative flex-shrink-0">
+                          {p.avatar ? (
+                            <img src={p.avatar} className="w-9 h-9 rounded-full object-cover border border-slate-200" alt={p.name} />
+                          ) : (
+                            <div className="w-9 h-9 rounded-full bg-indigo-600 text-white font-black flex items-center justify-center text-xs border border-slate-200 shadow-sm">
+                              {p.initials}
+                            </div>
+                          )}
                           <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-white" style={{ background: p.statusColor }} />
                         </div>
                         <div className="flex-1 min-w-0">
@@ -508,7 +690,7 @@ const SuccessionPipeline = ({ tenantName = "Internal Corporate Domain" }) => {
                   ))}
                 </div>
                 <button 
-                  onClick={() => alert('Redirecting to Enterprise Training Campaign Creator...')}
+                  onClick={() => setToastMessage('Enterprise training campaign allocated for pipeline deficits.')}
                   className="mt-4 w-full py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition-all"
                 >
                   Allocate Campaign Training
@@ -563,6 +745,7 @@ const SuccessionPipeline = ({ tenantName = "Internal Corporate Domain" }) => {
           </div>
 
         </div>
+        )}
       </div>
     </div>
   );

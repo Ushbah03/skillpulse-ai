@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
@@ -13,7 +13,8 @@ import {
   Zap, 
   Database, 
   Activity, 
-  ShieldAlert 
+  ShieldAlert,
+  Loader2
 } from 'lucide-react';
 import { 
   AreaChart, 
@@ -28,27 +29,40 @@ import {
 } from 'recharts';
 
 import CompanyAdminSidebar from './CompanyAdminSidebar';
-
-// Mock Analytics Data
-const userActivityData = [
-  { month: 'Jan', active: 62, total: 85 },
-  { month: 'Feb', active: 68, total: 85 },
-  { month: 'Mar', active: 74, total: 90 },
-  { month: 'Apr', active: 79, total: 95 },
-  { month: 'May', active: 83, total: 100 },
-  { month: 'Jun', active: 88, total: 100 },
-];
-
-const deptSkillCompletion = [
-  { dept: 'Engineering', rate: 92 },
-  { dept: 'Product', rate: 84 },
-  { dept: 'Sales', rate: 76 },
-  { dept: 'HR & Ops', rate: 89 },
-  { dept: 'Design', rate: 95 },
-];
+import { adminAPI } from '../services/api';
 
 const CompanyAdminDashboard = () => {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
+  const [dashboardData, setDashboardData] = useState(null);
+
+  useEffect(() => {
+    let isMounted = true;
+    const fetchDashboard = async () => {
+      setLoading(true);
+      try {
+        const res = await adminAPI.getDashboard();
+        if (isMounted && res?.success) {
+          setDashboardData(res.data);
+        }
+      } catch (err) {
+        console.warn('Failed to load admin dashboard stats:', err);
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    };
+    fetchDashboard();
+    return () => { isMounted = false; };
+  }, []);
+
+  const totalUsers = dashboardData?.totalUsersCount || 0;
+  const maxUsers = dashboardData?.maxUsers || 100;
+  const activeUsers = dashboardData?.activeUsersCount || 0;
+  const remainingSeats = Math.max(0, maxUsers - totalUsers);
+  const licensePct = Math.min(100, Math.round((totalUsers / maxUsers) * 100));
+
+  const userActivityData = dashboardData?.userActivityData || [];
+  const deptSkillCompletion = dashboardData?.deptSkillCompletion || [];
 
   // Container Animation Variant
   const containerVariants = {
@@ -86,7 +100,7 @@ const CompanyAdminDashboard = () => {
               </h1>
               <span className="px-2.5 py-0.5 text-xs font-semibold rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                Tenant Active
+                {dashboardData?.tenantName || "Enterprise Workspace"}
               </span>
             </div>
             <p className="text-slate-400 text-sm">
@@ -118,6 +132,13 @@ const CompanyAdminDashboard = () => {
           </div>
         </div>
 
+        {loading ? (
+          <div className="flex flex-col items-center justify-center py-32 space-y-4">
+            <Loader2 className="w-10 h-10 animate-spin text-indigo-500" />
+            <p className="text-sm font-semibold text-slate-400">Loading tenant control stats from database...</p>
+          </div>
+        ) : (
+          <>
         {/* Metric Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
           
@@ -130,15 +151,15 @@ const CompanyAdminDashboard = () => {
               </div>
             </div>
             <div className="flex items-baseline gap-2 mb-2">
-              <span className="text-3xl font-extrabold text-white">88</span>
-              <span className="text-sm font-medium text-slate-400">/ 100 Seats</span>
+              <span className="text-3xl font-extrabold text-white">{totalUsers}</span>
+              <span className="text-sm font-medium text-slate-400">/ {maxUsers} Seats</span>
             </div>
             {/* Progress Bar */}
             <div className="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
-              <div className="bg-indigo-500 h-full rounded-full transition-all duration-500" style={{ width: '88%' }} />
+              <div className="bg-indigo-500 h-full rounded-full transition-all duration-500" style={{ width: `${licensePct}%` }} />
             </div>
             <p className="text-[11px] text-slate-400 mt-2.5 flex items-center gap-1">
-              <span className="text-emerald-400 font-semibold">12 seats remaining</span> in current tier
+              <span className="text-emerald-400 font-semibold">{remainingSeats} seats remaining</span> in {dashboardData?.plan || 'PRO'} tier
             </p>
           </motion.div>
 
@@ -151,12 +172,12 @@ const CompanyAdminDashboard = () => {
               </div>
             </div>
             <div className="flex items-baseline gap-2 mb-2">
-              <span className="text-3xl font-extrabold text-white">87.2%</span>
+              <span className="text-3xl font-extrabold text-white">{dashboardData?.readinessPct ?? 0}%</span>
               <span className="text-xs font-semibold text-emerald-400 flex items-center">
-                <ArrowUpRight className="w-3.5 h-3.5" /> +3.4%
+                <ArrowUpRight className="w-3.5 h-3.5" /> DB Computed
               </span>
             </div>
-            <p className="text-xs text-slate-400">Average alignment across active roles</p>
+            <p className="text-xs text-slate-400">Average proficiency across user skills</p>
           </motion.div>
 
           {/* Card 3: HRIS Integration Health */}
@@ -168,26 +189,27 @@ const CompanyAdminDashboard = () => {
               </div>
             </div>
             <div className="flex items-center gap-2 mb-2">
-              <span className="text-xl font-bold text-white">Workday HRIS</span>
+              <span className="text-xl font-bold text-white">Database Direct</span>
               <span className="px-2 py-0.5 text-[10px] font-bold rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                Synced
+                Active
               </span>
             </div>
-            <p className="text-xs text-slate-400">Last automated sync: 14 mins ago</p>
+            <p className="text-xs text-slate-400">PostgreSQL Prisma Engine</p>
           </motion.div>
 
-          {/* Card 4: LMS Connector */}
+          {/* Card 4: LMS Catalog */}
           <motion.div variants={itemVariants} className="p-5 rounded-2xl bg-[#0F172A] border border-slate-800/80 shadow-xl relative overflow-hidden group">
             <div className="flex items-center justify-between mb-3">
-              <span className="text-xs font-bold uppercase tracking-wider text-slate-400">LMS Integration</span>
+              <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Course Catalog</span>
               <div className="p-2 rounded-xl bg-purple-500/10 text-purple-400">
                 <Layers className="w-5 h-5" />
               </div>
             </div>
             <div className="flex items-center gap-2 mb-2">
-              <span className="text-xl font-bold text-white">Coursera Enterprise</span>
+              <span className="text-3xl font-extrabold text-white">{dashboardData?.courseCount ?? 0}</span>
+              <span className="text-sm text-slate-400">Courses</span>
             </div>
-            <p className="text-xs text-slate-400">142 Courses indexed in catalog</p>
+            <p className="text-xs text-slate-400">Indexed in database catalog</p>
           </motion.div>
 
         </div>
@@ -272,41 +294,25 @@ const CompanyAdminDashboard = () => {
             <div className="space-y-3">
               <div className="flex items-center justify-between p-3.5 rounded-xl bg-[#1E293B]/50 border border-slate-800">
                 <div className="flex items-center gap-3">
-                  <div className="w-2.5 h-2.5 rounded-full bg-emerald-400" />
+                  <div className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
                   <div>
-                    <p className="text-sm font-semibold text-slate-200">Workday Sync Service</p>
-                    <p className="text-[11px] text-slate-400">Auto-sync active (Every 6 hours)</p>
+                    <p className="text-sm font-semibold text-slate-200">PostgreSQL Prisma Data Hub</p>
+                    <p className="text-[11px] text-slate-400">Primary Tenant Data Storage Engine</p>
                   </div>
                 </div>
                 <span className="text-xs font-medium text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-md border border-emerald-500/20">
-                  Operational
+                  Connected
                 </span>
               </div>
 
-              <div className="flex items-center justify-between p-3.5 rounded-xl bg-[#1E293B]/50 border border-slate-800">
-                <div className="flex items-center gap-3">
-                  <div className="w-2.5 h-2.5 rounded-full bg-emerald-400" />
-                  <div>
-                    <p className="text-sm font-semibold text-slate-200">Coursera LMS Content Sync</p>
-                    <p className="text-[11px] text-slate-400">Webhook listener operational</p>
-                  </div>
-                </div>
-                <span className="text-xs font-medium text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-md border border-emerald-500/20">
-                  Operational
-                </span>
-              </div>
-
-              <div className="flex items-center justify-between p-3.5 rounded-xl bg-[#1E293B]/50 border border-slate-800">
-                <div className="flex items-center gap-3">
-                  <div className="w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse" />
-                  <div>
-                    <p className="text-sm font-semibold text-slate-200">Azure Active Directory SSO</p>
-                    <p className="text-[11px] text-slate-400">SAML Certificate expires in 12 days</p>
-                  </div>
-                </div>
-                <span className="text-xs font-medium text-amber-400 bg-amber-500/10 px-2.5 py-1 rounded-md border border-amber-500/20">
-                  Action Req.
-                </span>
+              <div className="p-4 rounded-xl bg-[#1E293B]/30 border border-slate-800/60 text-center">
+                <p className="text-xs text-slate-400 mb-2">No external HRIS or LMS integrations linked.</p>
+                <button
+                  onClick={() => navigate('/company-admin/integrations')}
+                  className="text-xs text-indigo-400 hover:text-indigo-300 font-semibold"
+                >
+                  + Add Enterprise Connector
+                </button>
               </div>
             </div>
           </motion.div>
@@ -326,33 +332,31 @@ const CompanyAdminDashboard = () => {
             </div>
 
             <div className="space-y-3">
-              <div className="p-3.5 rounded-xl bg-[#1E293B]/50 border border-slate-800 flex items-start justify-between">
-                <div>
-                  <p className="text-sm font-semibold text-slate-200">User Role Updated</p>
-                  <p className="text-xs text-slate-400">Admin assigned "HR Manager" role to john.doe@company.com</p>
+              {dashboardData?.recentAuditLogs?.length > 0 ? (
+                dashboardData.recentAuditLogs.map((log) => (
+                  <div key={log.id} className="p-3.5 rounded-xl bg-[#1E293B]/50 border border-slate-800 flex items-start justify-between">
+                    <div>
+                      <p className="text-sm font-semibold text-slate-200">{log.action}</p>
+                      <p className="text-xs text-slate-400">
+                        {log.user ? `${log.user.firstName} ${log.user.lastName} (${log.user.email})` : 'System Action'}
+                      </p>
+                    </div>
+                    <span className="text-[10px] text-slate-500 font-mono">
+                      {new Date(log.createdAt).toLocaleDateString()}
+                    </span>
+                  </div>
+                ))
+              ) : (
+                <div className="p-6 text-center text-xs text-slate-500">
+                  No recent audit events recorded in database.
                 </div>
-                <span className="text-[10px] text-slate-500 font-mono">10m ago</span>
-              </div>
-
-              <div className="p-3.5 rounded-xl bg-[#1E293B]/50 border border-slate-800 flex items-start justify-between">
-                <div>
-                  <p className="text-sm font-semibold text-slate-200">Skill Taxonomy Matrix Uploaded</p>
-                  <p className="text-xs text-slate-400">CSV framework blueprint imported (42 new skills mapped)</p>
-                </div>
-                <span className="text-[10px] text-slate-500 font-mono">2h ago</span>
-              </div>
-
-              <div className="p-3.5 rounded-xl bg-[#1E293B]/50 border border-slate-800 flex items-start justify-between">
-                <div>
-                  <p className="text-sm font-semibold text-slate-200">Account Deactivated</p>
-                  <p className="text-xs text-slate-400">Status changed to inactive for sarah.k@company.com</p>
-                </div>
-                <span className="text-[10px] text-slate-500 font-mono">1d ago</span>
-              </div>
+              )}
             </div>
           </motion.div>
 
         </div>
+        </>
+        )}
       </motion.div>
     </div>
   );

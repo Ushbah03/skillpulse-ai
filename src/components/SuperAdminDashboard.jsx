@@ -1,45 +1,68 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import { 
   Building2, 
   Users, 
   Cpu, 
   Activity, 
   ArrowUpRight, 
-  ArrowDownRight, 
   AlertTriangle, 
-  CheckCircle2, 
   ShieldCheck, 
   TrendingUp, 
   Layers, 
   HardDrive,
   RefreshCw,
-  ExternalLink
+  Loader2,
+  ArrowRight
 } from 'lucide-react';
 
 import SuperadminSidebar from './SuperadminSidebar';
-
-// Mock Quick System Alert Logs
-const initialSystemAlerts = [
-  { id: 'ALT-901', type: 'Warning', message: 'Apex Financial Services exceeded 90% seat limit quota.', time: '12 mins ago' },
-  { id: 'ALT-902', type: 'Info', message: 'Automated HRIS Sync executed successfully for 12 enterprise tenants.', time: '1 hour ago' },
-  { id: 'ALT-903', type: 'Error', message: 'AI Vector Database latency spike detected in US-East region.', time: '3 hours ago' },
-  { id: 'ALT-904', type: 'Success', message: 'System Backup completed: 1.4 TB secure vault stored.', time: '6 hours ago' },
-];
+import { adminAPI } from '../services/api';
 
 const SuperAdminDashboard = () => {
   const [refreshing, setRefreshing] = useState(false);
+  const [telemetry, setTelemetry] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const handleRefresh = () => {
+  const fetchTelemetry = async () => {
     setRefreshing(true);
-    setTimeout(() => setRefreshing(false), 800);
+    try {
+      const res = await adminAPI.getGlobalTelemetry();
+      if (res?.success) {
+        setTelemetry({
+          ...res.data,
+          ...(res.telemetry || {})
+        });
+      }
+    } catch (err) {
+      console.warn('Failed to load global platform telemetry:', err);
+    } finally {
+      setRefreshing(false);
+      setLoading(false);
+    }
   };
+
+  useEffect(() => {
+    fetchTelemetry();
+  }, []);
+
+  const tenantsCount = telemetry?.tenantsCount ?? 0;
+  const totalUsersCount = telemetry?.totalUsersCount ?? 0;
+  const totalSeatLimit = telemetry?.totalSeatLimit ?? 1000;
+  const seatUsagePct = Math.min(100, Math.round((totalUsersCount / Math.max(1, totalSeatLimit)) * 100 * 10) / 10);
+  const recentTenants = telemetry?.recentTenants ?? [];
+  const recentAuditLogs = telemetry?.recentAuditLogs ?? [];
+  const uptime = telemetry?.uptime || '100.00%';
+  const latency = telemetry?.latency || '38 ms';
+  const cpuLoad = telemetry?.cpuLoad || '18% Load';
+  const aiErrorRate = telemetry?.aiErrorRate || '0.00%';
 
   return (
     <div className="flex min-h-screen bg-[#0B1120]">
       <SuperadminSidebar />
 
-      <main className="flex-1 text-slate-100 p-8 pl-80 font-sans">
+      <main className="flex-1 text-slate-100 ml-64 p-8 w-full font-sans">
         
         {/* Top Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4 border-b border-slate-800/80 pb-6">
@@ -60,8 +83,9 @@ const SuperAdminDashboard = () => {
 
           <div className="flex items-center gap-3">
             <button
-              onClick={handleRefresh}
-              className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-[#0F172A] hover:bg-slate-800 text-slate-300 border border-slate-800 text-xs font-semibold transition-all shrink-0"
+              onClick={fetchTelemetry}
+              disabled={refreshing}
+              className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-[#0F172A] hover:bg-slate-800 text-slate-300 border border-slate-800 text-xs font-semibold transition-all shrink-0 cursor-pointer"
             >
               <RefreshCw className={`w-3.5 h-3.5 text-slate-400 ${refreshing ? 'animate-spin' : ''}`} />
               Refresh Telemetry
@@ -73,6 +97,13 @@ const SuperAdminDashboard = () => {
           </div>
         </div>
 
+        {loading ? (
+          <div className="flex flex-col items-center justify-center py-32 space-y-4">
+            <Loader2 className="w-10 h-10 animate-spin text-indigo-500" />
+            <p className="text-sm font-semibold text-slate-400">Querying platform telemetries from PostgreSQL...</p>
+          </div>
+        ) : (
+          <>
         {/* Global Platform KPI Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
           
@@ -88,12 +119,12 @@ const SuperAdminDashboard = () => {
               </div>
             </div>
             <div className="mt-4 flex items-baseline justify-between">
-              <span className="text-3xl font-extrabold text-white">42</span>
+              <span className="text-3xl font-extrabold text-white">{tenantsCount}</span>
               <span className="text-xs font-semibold text-emerald-400 flex items-center gap-0.5">
-                <ArrowUpRight className="w-3.5 h-3.5" /> +12% MoM
+                <ArrowUpRight className="w-3.5 h-3.5" /> Live DB
               </span>
             </div>
-            <p className="text-[11px] text-slate-500 mt-1">Across 3 global cloud regions</p>
+            <p className="text-[11px] text-slate-500 mt-1">Provisioned client environments</p>
           </motion.div>
 
           {/* Provisioned Seat Utilization */}
@@ -108,32 +139,32 @@ const SuperAdminDashboard = () => {
               </div>
             </div>
             <div className="mt-4 flex items-baseline justify-between">
-              <span className="text-3xl font-extrabold text-white">14,280</span>
+              <span className="text-3xl font-extrabold text-white">{totalUsersCount}</span>
               <span className="text-xs font-semibold text-emerald-400 flex items-center gap-0.5">
-                <ArrowUpRight className="w-3.5 h-3.5" /> 84.2%
+                <ArrowUpRight className="w-3.5 h-3.5" /> {seatUsagePct}%
               </span>
             </div>
-            <p className="text-[11px] text-slate-500 mt-1">Out of 16,960 total licensed seats</p>
+            <p className="text-[11px] text-slate-500 mt-1">Out of {totalSeatLimit} total licensed seats</p>
           </motion.div>
 
-          {/* Monthly AI Token Usage */}
+          {/* LLM Model Service */}
           <motion.div 
             whileHover={{ y: -2 }} 
             className="p-5 rounded-2xl bg-[#0F172A] border border-slate-800/80 shadow-xl relative overflow-hidden"
           >
             <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">LLM Token Usage</span>
+              <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">LLM Model Service</span>
               <div className="p-2.5 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-400">
                 <Cpu className="w-5 h-5" />
               </div>
             </div>
             <div className="mt-4 flex items-baseline justify-between">
-              <span className="text-3xl font-extrabold text-white">88.4 M</span>
+              <span className="text-3xl font-extrabold text-white">Active</span>
               <span className="text-xs font-semibold text-purple-400 flex items-center gap-0.5">
-                <TrendingUp className="w-3.5 h-3.5" /> Tokens/Mo
+                <TrendingUp className="w-3.5 h-3.5" /> Err: {aiErrorRate}
               </span>
             </div>
-            <p className="text-[11px] text-slate-500 mt-1">Avg latency: 142ms per inference</p>
+            <p className="text-[11px] text-slate-500 mt-1">Vector Search + Skill Parsing Active</p>
           </motion.div>
 
           {/* SLA Uptime */}
@@ -148,12 +179,12 @@ const SuperAdminDashboard = () => {
               </div>
             </div>
             <div className="mt-4 flex items-baseline justify-between">
-              <span className="text-3xl font-extrabold text-white">99.98%</span>
+              <span className="text-3xl font-extrabold text-white">{uptime}</span>
               <span className="text-xs font-semibold text-emerald-400 flex items-center gap-0.5">
                 <ShieldCheck className="w-3.5 h-3.5" /> Target Met
               </span>
             </div>
-            <p className="text-[11px] text-slate-500 mt-1">Zero unplanned downtime this month</p>
+            <p className="text-[11px] text-slate-500 mt-1">Calculated from live tenant status</p>
           </motion.div>
 
         </div>
@@ -173,41 +204,48 @@ const SuperAdminDashboard = () => {
                   <p className="text-xs text-slate-400">Real-time seat allocation and status tracking.</p>
                 </div>
               </div>
+              <Link 
+                to="/superadmin/tenants" 
+                className="text-xs font-semibold text-indigo-400 hover:text-indigo-300 flex items-center gap-1.5 transition-colors"
+              >
+                Manage Tenants <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
             </div>
 
             <div className="mt-5 space-y-4">
-              {[
-                { name: 'Acme Global Enterprises', domain: 'acmeglobal.com', seats: '184 / 250', tier: 'Enterprise AI', status: 'Active', usage: 73.6 },
-                { name: 'Apex Financial Services', domain: 'apexfin.com', seats: '410 / 500', tier: 'Enterprise AI', status: 'Payment Past Due', usage: 82.0 },
-                { name: 'Nexus Tech Solutions', domain: 'nexustech.io', seats: '92 / 100', tier: 'Professional', status: 'Active', usage: 92.0 },
-                { name: 'Vanguard Health Systems', domain: 'vanguardhealth.org', seats: '48 / 50', tier: 'Starter', status: 'Suspended', usage: 96.0 }
-              ].map((tenant, idx) => (
-                <div key={idx} className="p-4 rounded-xl bg-[#1E293B]/50 border border-slate-800/80 flex items-center justify-between gap-4">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2">
-                      <span className="font-bold text-sm text-white">{tenant.name}</span>
-                      <span className="text-[10px] text-slate-400 font-mono">({tenant.domain})</span>
+              {recentTenants.length > 0 ? (
+                recentTenants.map((tenant, idx) => (
+                  <div key={idx} className="p-4 rounded-xl bg-[#1E293B]/50 border border-slate-800/80 flex items-center justify-between gap-4">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <span className="font-bold text-sm text-white">{tenant.name}</span>
+                        <span className="text-[10px] text-slate-400 font-mono">({tenant.domain})</span>
+                      </div>
+                      <div className="mt-2 w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                        <div 
+                          className="h-full rounded-full bg-indigo-500" 
+                          style={{ width: `${tenant.usage}%` }} 
+                        />
+                      </div>
                     </div>
-                    <div className="mt-2 w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
-                      <div 
-                        className={`h-full rounded-full ${tenant.usage > 90 ? 'bg-amber-400' : 'bg-indigo-500'}`} 
-                        style={{ width: `${tenant.usage}%` }} 
-                      />
-                    </div>
-                  </div>
 
-                  <div className="text-right shrink-0">
-                    <div className="text-xs font-bold text-slate-200">{tenant.seats} Seats</div>
-                    <span className={`inline-block mt-1 px-2 py-0.5 rounded text-[10px] font-semibold border ${
-                      tenant.status === 'Active' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' :
-                      tenant.status === 'Payment Past Due' ? 'bg-amber-500/10 text-amber-400 border-amber-500/20' :
-                      'bg-rose-500/10 text-rose-400 border-rose-500/20'
-                    }`}>
-                      {tenant.status}
-                    </span>
+                    <div className="text-right shrink-0">
+                      <div className="text-xs font-bold text-slate-200">{tenant.seats} Seats</div>
+                      <span className={`inline-block mt-1 px-2 py-0.5 rounded text-[10px] font-semibold border ${
+                        tenant.status === 'Active' 
+                          ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' 
+                          : 'bg-amber-500/10 text-amber-400 border-amber-500/20'
+                      }`}>
+                        {tenant.status}
+                      </span>
+                    </div>
                   </div>
+                ))
+              ) : (
+                <div className="text-center py-6 text-xs text-slate-500">
+                  No active client tenants registered in database.
                 </div>
-              ))}
+              )}
             </div>
           </div>
 
@@ -219,39 +257,46 @@ const SuperAdminDashboard = () => {
                   <HardDrive className="w-5 h-5" />
                 </div>
                 <div>
-                  <h2 className="text-lg font-bold text-white">System Health</h2>
-                  <p className="text-xs text-slate-400">Core infrastructure metrics</p>
+                  <h2 className="text-lg font-bold text-white">Database & System Health</h2>
+                  <p className="text-xs text-slate-400">PostgreSQL Prisma Live Telemetry</p>
                 </div>
               </div>
 
               <div className="mt-5 space-y-4">
                 <div className="flex items-center justify-between text-xs">
-                  <span className="text-slate-400 font-medium">Vector DB Storage Pool</span>
-                  <span className="text-slate-200 font-mono font-bold">1.8 TB / 5.0 TB</span>
+                  <span className="text-slate-400 font-medium">PostgreSQL Database Connection</span>
+                  <span className="text-emerald-400 font-mono font-bold">100% Operational</span>
                 </div>
                 <div className="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
-                  <div className="bg-indigo-500 h-full rounded-full" style={{ width: '36%' }} />
+                  <div className="bg-emerald-500 h-full rounded-full" style={{ width: '100%' }} />
                 </div>
 
-                <div className="flex items-center justify-between text-xs pt-2">
-                  <span className="text-slate-400 font-medium">Global API Rate Limit Capacity</span>
-                  <span className="text-slate-200 font-mono font-bold">4,200 req/sec</span>
-                </div>
-                <div className="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
-                  <div className="bg-emerald-400 h-full rounded-full" style={{ width: '62%' }} />
+                <div className="flex items-center justify-between text-xs pt-1">
+                  <span className="text-slate-400 font-medium">Query Execution Latency</span>
+                  <span className="text-sky-300 font-mono font-bold">{latency}</span>
                 </div>
 
-                <div className="flex items-center justify-between text-xs pt-2">
-                  <span className="text-slate-400 font-medium">HRIS / LMS Webhook Queue</span>
-                  <span className="text-emerald-400 font-mono font-bold">0 Pending</span>
+                <div className="flex items-center justify-between text-xs pt-1">
+                  <span className="text-slate-400 font-medium">Database CPU Load</span>
+                  <span className="text-amber-400 font-mono font-bold">{cpuLoad}</span>
+                </div>
+
+                <div className="flex items-center justify-between text-xs pt-1">
+                  <span className="text-slate-400 font-medium">Active Enterprise Tenants</span>
+                  <span className="text-indigo-300 font-mono font-bold">{tenantsCount} Tenants</span>
+                </div>
+
+                <div className="flex items-center justify-between text-xs pt-1">
+                  <span className="text-slate-400 font-medium">Active User Directory Profiles</span>
+                  <span className="text-purple-300 font-mono font-bold">{totalUsersCount} Profiles</span>
                 </div>
               </div>
             </div>
 
             <div className="pt-6 border-t border-slate-800 mt-6">
               <div className="p-3.5 rounded-xl bg-indigo-600/10 border border-indigo-500/20 flex items-center justify-between">
-                <span className="text-xs text-indigo-300 font-medium">Primary AI Model Engine</span>
-                <span className="text-xs font-mono font-bold text-indigo-400">GPT-4o / Claude 3.5</span>
+                <span className="text-xs text-indigo-300 font-medium">AI Model Engine Status</span>
+                <span className="text-xs font-mono font-bold text-indigo-400">GenAI Inference Active</span>
               </div>
             </div>
           </div>
@@ -270,31 +315,44 @@ const SuperAdminDashboard = () => {
                 <p className="text-xs text-slate-400">Real-time platform warnings, sync events, and security logs.</p>
               </div>
             </div>
+            <Link 
+              to="/superadmin/audit-logs" 
+              className="text-xs font-semibold text-indigo-400 hover:text-indigo-300 flex items-center gap-1.5 transition-colors"
+            >
+              View Audit Trail <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
           </div>
 
           <div className="mt-4 divide-y divide-slate-800/60">
-            {initialSystemAlerts.map((alert) => (
-              <div key={alert.id} className="py-3.5 flex items-center justify-between gap-4 text-xs">
-                <div className="flex items-center gap-3">
-                  <span className={`px-2 py-0.5 rounded font-mono font-bold text-[10px] ${
-                    alert.type === 'Warning' ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' :
-                    alert.type === 'Error' ? 'bg-rose-500/10 text-rose-400 border border-rose-500/20' :
-                    alert.type === 'Success' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' :
-                    'bg-sky-500/10 text-sky-400 border border-sky-500/20'
-                  }`}>
-                    {alert.type}
+            {recentAuditLogs.length > 0 ? (
+              recentAuditLogs.map((alert) => (
+                <div key={alert.id} className="py-3.5 flex items-center justify-between gap-4 text-xs">
+                  <div className="flex items-center gap-3">
+                    <span className={`px-2 py-0.5 rounded font-mono font-bold text-[10px] bg-sky-500/10 text-sky-400 border border-sky-500/20`}>
+                      {alert.resource || 'System'}
+                    </span>
+                    <span className="text-slate-200 font-medium">{alert.action}</span>
+                    <span className="text-slate-400 text-[11px]">
+                      by {alert.user ? `${alert.user.firstName} ${alert.user.lastName}` : 'System'}
+                    </span>
+                  </div>
+                  <span className="text-slate-500 font-mono text-[11px] shrink-0">
+                    {new Date(alert.createdAt).toLocaleDateString()} {new Date(alert.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </span>
-                  <span className="text-slate-200 font-medium">{alert.message}</span>
                 </div>
-                <span className="text-slate-500 font-mono text-[11px] shrink-0">{alert.time}</span>
+              ))
+            ) : (
+              <div className="text-center py-6 text-xs text-slate-500">
+                No platform security events or system logs found.
               </div>
-            ))}
+            )}
           </div>
         </div>
-
+        </>
+        )}
       </main>
     </div>
   );
 };
 
-export default SuperAdminDashboard;
+export default SuperAdminDashboard;

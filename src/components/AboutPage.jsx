@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion'; 
+import { Sparkles, Target, Cpu, BrainCircuit, Users, Award, ArrowRight, CheckCircle2 } from 'lucide-react';
 
 import aboutImg from '../assets/images/about.png'; 
 import intelligentImg from '../assets/images/image-sample.png';
@@ -9,90 +10,91 @@ const AboutPage = () => {
   const { tenantId } = useParams();
   const tenantBaseRoute = tenantId ? `/${tenantId}` : '';
 
-  // Stagger configurations to synchronize clean entryway streams
   const staggerContainer = {
     hidden: { opacity: 0 },
     visible: { opacity: 1, transition: { staggerChildren: 0.12 } }
   };
 
   const fadeInUp = {
-    hidden: { opacity: 0, y: 40 },
+    hidden: { opacity: 0, y: 35 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] } }
   };
 
-  const cardHoverStyle = {
-    y: -8,
-    scale: 1.01,
-    boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.08)",
-    transition: { type: "spring", stiffness: 300, damping: 20 }
-  };
-
   return (
-    <div className="min-h-screen bg-white font-sans text-slate-900 overflow-x-hidden selection:bg-indigo-600 selection:text-white">
-      {/* Dynamic ambient pulse routines */}
+    <div className="bg-[#0B1120] font-sans text-slate-100 overflow-x-hidden selection:bg-indigo-600 selection:text-white relative min-h-screen">
+      {/* Keyframe Animations & Background Canvas */}
       <style>{`
-        @keyframes floatSlow { 0%, 100% { transform: translateY(0px) scale(1); } 50% { transform: translateY(-15px) scale(1.04); } }
-        @keyframes subtlePulse { 0%, 100% { opacity: 0.4; } 50% { opacity: 0.7; } }
-        .animate-float-slow { animation: floatSlow 8s ease-in-out infinite; }
-        .animate-subtle-pulse { animation: subtlePulse 5s ease-in-out infinite; }
+        @keyframes float-slow { 0%, 100% { transform: translateY(0px) rotate(0deg); } 50% { transform: translateY(-16px) rotate(2deg); } }
+        @keyframes float-reverse { 0%, 100% { transform: translateY(0px) rotate(0deg); } 50% { transform: translateY(16px) rotate(-2deg); } }
+        @keyframes aurora { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(40px, -30px) scale(1.1); } }
+        .animate-float-1 { animation: float-slow 8s ease-in-out infinite; }
+        .animate-float-2 { animation: float-reverse 10s ease-in-out infinite; }
+        .animate-aurora { animation: aurora 14s ease-in-out infinite; }
       `}</style>
       
-      {/* SECTION 1: HERO */}
-      <section className="relative bg-[#0F172B] text-white pt-32 pb-64 px-6 overflow-hidden">
-        <div 
-          className="absolute inset-0 z-0"
-          style={{ background: `radial-gradient(circle at 50% 50%, #2E3759 0%, #171E35 45%, #0F172B 100%)` }}
-        />
-        <div className="absolute top-1/4 right-10 w-[450px] h-[450px] bg-indigo-500/10 blur-[130px] rounded-full pointer-events-none animate-subtle-pulse" />
-        
+      {/* Global Background Atmosphere */}
+      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+        <div className="absolute top-0 right-1/4 w-[600px] h-[600px] bg-indigo-600/15 blur-[160px] rounded-full animate-aurora" />
+        <div className="absolute top-1/3 left-10 w-[500px] h-[500px] bg-purple-600/15 blur-[150px] rounded-full animate-float-1" />
+        <div className="absolute bottom-1/4 right-10 w-[650px] h-[650px] bg-indigo-900/20 blur-[180px] rounded-full animate-float-2" />
+        <div className="absolute inset-0 bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:32px_32px] opacity-20" />
+      </div>
+
+      {/* 1. HERO HEADER */}
+      <section className="relative text-white pt-24 pb-20 px-6 overflow-hidden z-10">
         <div className="container mx-auto max-w-6xl relative z-10 grid md:grid-cols-2 gap-12 items-center">
           <motion.div
             initial={{ opacity: 0, x: -40 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
           >
-            <h1 className="text-5xl md:text-7xl font-bold leading-tight mb-8 tracking-tight">
+            <div className="inline-flex items-center gap-2 bg-indigo-500/10 border border-indigo-500/20 px-4 py-1.5 rounded-full mb-6 backdrop-blur-md">
+              <Sparkles className="w-4 h-4 text-indigo-400 animate-pulse" />
+              <span className="text-indigo-300 text-xs font-bold uppercase tracking-widest font-mono">
+                ABOUT SKILLPULSE AI
+              </span>
+            </div>
+
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-extrabold leading-tight mb-6 tracking-tight">
               Redefining Workforce <br /> 
-              <span className="text-indigo-400 drop-shadow-[0_0_30px_rgba(129,140,248,0.2)]">Intelligence with AI</span>
+              <span className="bg-gradient-to-r from-indigo-300 via-indigo-200 to-purple-300 bg-clip-text text-transparent">
+                Intelligence with AI
+              </span>
             </h1>
-            <p className="text-slate-400 text-lg mb-6 max-w-md font-light leading-relaxed">
-              SkillPulse-AI bridges the gap between talent potential and organizational growth using intelligent skill analytics.
+            <p className="text-slate-400 text-lg mb-6 font-light leading-relaxed">
+              SkillPulse AI bridges the gap between talent potential and organizational growth using real-time skill analytics and PostgreSQL-backed workforce telemetry.
             </p>
-            <p className="text-slate-500 text-sm max-w-md italic tracking-wide">
-              Our mission is to empower organizations with data-driven insights to build resilient, high-performing teams.
+            <p className="text-slate-400 text-xs border-l-2 border-indigo-500 pl-4 py-1 font-mono italic">
+              Our mission is empowering organizations with data-driven insights to build resilient, high-performing engineering and enterprise teams.
             </p>
           </motion.div>
           
           <motion.div 
-            initial={{ opacity: 0, scale: 0.92, rotateY: 10 }}
-            animate={{ opacity: 1, scale: 1, rotateY: 0 }}
+            initial={{ opacity: 0, scale: 0.92 }}
+            animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 1, ease: "easeOut" }}
             className="flex justify-center relative group"
-            style={{ perspective: 1000 }}
           >
-             <div className="relative w-full max-w-md aspect-square bg-gradient-to-br from-indigo-500/20 to-purple-500/10 rounded-full blur-3xl absolute opacity-50 pointer-events-none" />
+             <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/20 to-purple-500/10 rounded-full blur-3xl opacity-50 pointer-events-none" />
              <motion.img 
                src={aboutImg} 
-               alt="Intelligence Graph" 
-               className="relative z-10 w-full animate-float-slow filter drop-shadow-[0_15px_30px_rgba(0,0,0,0.3)] cursor-grab active:cursor-grabbing" 
-               whileHover={{ scale: 1.03, rotateZ: 1 }}
+               alt="Intelligence Radar Visual" 
+               className="relative z-10 w-full max-w-md animate-float-1 filter drop-shadow-[0_20px_40px_rgba(0,0,0,0.5)]" 
+               whileHover={{ scale: 1.03, rotate: 1 }}
              />
           </motion.div>
         </div>
       </section>
 
-      {/* SECTION 2: THE CHALLENGE */}
-      <section className="relative z-20 -mt-32 bg-white rounded-t-[3.5rem] pt-24 pb-20 px-6 shadow-[0_-15px_40px_rgba(0,0,0,0.03)]">
-        <motion.div 
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.8 }}
-          className="container mx-auto text-center mb-20"
-        >
-          <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-6 tracking-tight">The Challenge Modern Organizations Face</h2>
-          <p className="text-slate-500 max-w-xl mx-auto font-medium">Traditional performance management is reactive. SkillPulse-AI makes it predictive.</p>
-        </motion.div>
+      {/* 2. THE CHALLENGES WE SOLVE */}
+      <section className="py-20 px-6 md:px-12 relative z-10">
+        <div className="container mx-auto text-center mb-16 max-w-3xl">
+          <span className="px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-400 text-xs font-mono font-bold uppercase tracking-wider inline-block mb-3">
+            WORKFORCE DISCONNECTS
+          </span>
+          <h2 className="text-3xl md:text-5xl font-extrabold text-white mb-4 tracking-tight">The Challenges Modern Organizations Face</h2>
+          <p className="text-slate-400 text-base font-light">Traditional performance reviews are static and manual. SkillPulse AI makes talent management predictive and continuous.</p>
+        </div>
 
         <motion.div 
           variants={staggerContainer}
@@ -102,47 +104,50 @@ const AboutPage = () => {
           className="container mx-auto grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl"
         >
           {[
-            { title: "Unidentified Skill Gaps", desc: "Most companies lack real-time understanding of where their capabilities end." },
-            { title: "Static Performance Metrics", desc: "Legacy systems track history, not potential. They lack predictive intelligence." },
-            { title: "Generic Learning Paths", desc: "L&D initiatives often follow a one-size-fits-all approach that fails." },
-            { title: "Opaque Career Growth", desc: "Employees feel stuck because they don't know the path to promotion." }
+            { title: "Unidentified Skill Gaps", desc: "Organizations struggle to pinpoint exact technical skill deficiencies across departments." },
+            { title: "Static Performance Logs", desc: "Legacy tools track historical attendance instead of active skill development and growth." },
+            { title: "Generic Learning Paths", desc: "One-size-fits-all training courses fail to target individual employee skill gaps." },
+            { title: "Opaque Career Pathways", desc: "Employees lack clear visibility into role benchmarks required for promotion." }
           ].map((item, i) => (
             <motion.div 
               key={i} 
               variants={fadeInUp}
-              whileHover={cardHoverStyle}
-              className="p-8 rounded-[2rem] border border-slate-100 bg-slate-50/50 hover:bg-white hover:border-slate-200 transition-colors cursor-default flex flex-col group"
+              whileHover={{ y: -8 }}
+              className="p-8 rounded-3xl border border-slate-800/80 bg-[#0F172B]/90 backdrop-blur-xl hover:border-indigo-500/40 transition-all duration-300 flex flex-col group shadow-xl"
             >
-              <div className="w-12 h-12 bg-indigo-100/70 text-indigo-600 rounded-2xl mb-6 group-hover:scale-110 group-hover:bg-indigo-600 group-hover:text-white transition-all duration-300 flex items-center justify-center font-bold shadow-sm">
+              <div className="w-12 h-12 bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 rounded-2xl mb-6 group-hover:scale-110 group-hover:bg-indigo-600 group-hover:text-white transition-all duration-300 flex items-center justify-center font-bold font-mono text-sm">
                 0{i+1}
               </div>
-              <h3 className="text-xl font-bold mb-4 text-slate-800 group-hover:text-indigo-950 transition-colors">{item.title}</h3>
-              <p className="text-slate-500 text-sm leading-relaxed font-light">{item.desc}</p>
+              <h3 className="text-xl font-bold mb-3 text-white group-hover:text-indigo-300 transition-colors">{item.title}</h3>
+              <p className="text-slate-400 text-xs leading-relaxed font-light">{item.desc}</p>
             </motion.div>
           ))}
         </motion.div>
       </section>
 
-      {/* SECTION 3: INTELLIGENT APPROACH */}
-      <section className="py-24 px-6 bg-slate-50 overflow-hidden">
+      {/* 3. OUR INTELLIGENT ARCHITECTURE */}
+      <section className="py-20 px-6 md:px-12 relative z-10">
         <div className="container mx-auto max-w-7xl grid md:grid-cols-2 gap-16 items-center">
           <motion.div
             initial={{ opacity: 0, x: -40 }}
             whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
+            viewport={{ once: true }}
             transition={{ duration: 0.8 }}
           >
-            <h2 className="text-4xl font-bold mb-6 text-[#0F172B] tracking-tight">Our Intelligent Approach</h2>
-            <p className="text-slate-600 mb-10 leading-relaxed max-w-lg font-medium opacity-90">
-              SkillPulse-AI integrates deep learning with human resources psychology to create a dynamic, adaptive intelligence layer for your workforce.
+            <span className="px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-mono font-bold uppercase tracking-wider inline-block mb-3">
+              PLATFORM ARCHITECTURE
+            </span>
+            <h2 className="text-3xl md:text-5xl font-extrabold text-white mb-6 tracking-tight">Our Intelligent Approach</h2>
+            <p className="text-slate-400 text-base mb-8 leading-relaxed font-light">
+              SkillPulse AI connects live PostgreSQL databases with specialized AI inference engines to provide real-time skill intelligence across all enterprise levels.
             </p>
             
             <div className="space-y-4">
               {[
-                { text: "AI Skill Gap Detection Engine", color: "bg-indigo-500" },
-                { text: "Workforce Readiness Scoring Engine", color: "bg-blue-500" },
-                { text: "Learning Recommendation Engine", color: "bg-purple-500" },
-                { text: "Career Path Prediction Model", color: "bg-sky-500" }
+                { title: "Real-Time AI Skill Gap Detection", desc: "Analyzes verified employee skill profiles against department benchmarks." },
+                { title: "Workforce Readiness Scoring", desc: "Computes overall readiness percentage and flags critical missing competencies." },
+                { title: "Personalized Course Recommendations", desc: "Matches active skill gaps directly with indexed training courses." },
+                { title: "5-Tier Role-Based Access Control", desc: "Seamless governance for Employees, Team Leads, HR Managers, Company Admins, and Superadmins." }
               ].map((item, i) => (
                 <motion.div 
                   key={i} 
@@ -150,117 +155,103 @@ const AboutPage = () => {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.08 }}
-                  whileHover={{ x: 6, backgroundColor: "rgba(255,255,255,1)" }}
-                  className="flex items-center gap-4 p-5 bg-white/60 backdrop-blur-sm rounded-[1.5rem] border border-slate-100 shadow-sm transition-all"
+                  whileHover={{ x: 6 }}
+                  className="flex items-start gap-4 p-4 bg-[#0F172B]/80 backdrop-blur-xl rounded-2xl border border-slate-800/80 hover:border-indigo-500/30 transition-all"
                 >
-                  <div className={`w-3 h-3 ${item.color} rounded-full shadow-[0_0_10px_rgba(0,0,0,0.1)]`} />
-                  <span className="font-bold text-slate-800 text-sm tracking-wide">{item.text}</span>
+                  <div className="w-5 h-5 rounded-full bg-indigo-500/20 border border-indigo-500/40 flex items-center justify-center shrink-0 mt-0.5">
+                    <CheckCircle2 className="w-3 h-3 text-indigo-400" />
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-white text-sm mb-1">{item.title}</h4>
+                    <p className="text-slate-400 text-xs font-light">{item.desc}</p>
+                  </div>
                 </motion.div>
               ))}
             </div>
           </motion.div>
 
-          {/* Right Side: Tilted Image Container */}
+          {/* Right Side: Image Framing */}
           <motion.div 
-            initial={{ opacity: 0, x: 50, rotate: 6 }}
-            whileInView={{ opacity: 1, x: 0, rotate: 2 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ type: "spring", stiffness: 50, damping: 15 }}
-            style={{ perspective: 1200 }}
-            className="relative pt-10"
+            initial={{ opacity: 0, x: 40 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+            className="relative pt-6"
           >
-            <motion.div 
-              whileHover={{ rotate: 0, scale: 1.02, z: 20 }}
-              transition={{ duration: 0.4 }}
-              className="relative z-10 bg-white p-3 rounded-[2.5rem] shadow-[0_25px_60px_rgba(0,0,0,0.08)] border border-slate-100 cursor-pointer"
-            >
+            <div className="relative z-10 bg-[#0F172B]/90 p-3 rounded-3xl border border-slate-800 shadow-2xl overflow-hidden backdrop-blur-xl">
                <img 
                  src={intelligentImg} 
-                 alt="SkillPulse Platform UI" 
-                 className="rounded-[2rem] w-full h-auto object-cover"
+                 alt="SkillPulse AI Platform Overview" 
+                 className="rounded-2xl w-full h-auto object-cover border border-slate-800"
                />
-            </motion.div>
+            </div>
 
-            {/* Floating Accuracy Badge */}
+            {/* Live Metrics Badge */}
             <motion.div 
               initial={{ scale: 0, opacity: 0 }}
               whileInView={{ scale: 1, opacity: 1 }}
-              viewport={{ once: true, delay: 0.5 }}
-              transition={{ type: "spring", stiffness: 120, damping: 12 }}
-              whileHover={{ scale: 1.08, rotate: -4 }}
-              className="absolute -bottom-4 -left-8 z-20 bg-[#564df0] text-white p-8 rounded-[2rem] shadow-2xl transform -rotate-2 cursor-default select-none"
+              viewport={{ once: true, delay: 0.3 }}
+              whileHover={{ scale: 1.05 }}
+              className="absolute -bottom-6 -left-6 z-20 bg-indigo-600 border border-indigo-400/30 text-white p-6 rounded-2xl shadow-2xl select-none"
             >
-               <div className="text-4xl font-black tracking-tighter">98%</div>
-               <div className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-90 mt-1 whitespace-nowrap">
-                 Accuracy Rate
+               <div className="text-3xl font-black font-mono">100%</div>
+               <div className="text-[10px] font-mono font-bold uppercase tracking-wider text-indigo-200 mt-0.5">
+                 PostgreSQL Telemetry Sync
                </div>
             </motion.div>
-            
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-indigo-200/30 blur-[100px] rounded-full z-0 pointer-events-none" />
           </motion.div>
         </div>
       </section>
 
-      {/* SECTION 4: STATS BAR */}
-      <section className="py-20 border-t border-slate-100 bg-white">
+      {/* 4. IMPACT METRICS BAR */}
+      <section className="py-20 border-t border-b border-slate-800/80 bg-[#0F172B]/50 relative z-10">
         <div className="container mx-auto max-w-7xl grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
            {[
-             { val: "42%", label: "Skill Improvement" },
-             { val: "95%", label: "Assessment Completion" },
-             { val: "3x", label: "Learning Engagement" },
-             { val: "89%", label: "Promotion Accuracy" }
+             { val: "5 Roles", label: "Multi-Tenant Governance" },
+             { val: "100%", label: "Live Database Telemetry" },
+             { val: "Real-Time", label: "Skill Gap Inference" },
+             { val: "2.4s", label: "High-Performance Build" }
            ].map((stat, i) => (
              <motion.div 
                key={i} 
-               initial={{ opacity: 0, scale: 0.85 }}
+               initial={{ opacity: 0, scale: 0.9 }}
                whileInView={{ opacity: 1, scale: 1 }}
                viewport={{ once: true }}
-               transition={{ delay: i * 0.1, type: "spring", stiffness: 100 }}
-               whileHover={{ y: -6, backgroundColor: "rgb(248,250,252)" }}
-               className="p-8 rounded-3xl bg-slate-50 transition-colors duration-300 border border-transparent hover:border-slate-100"
+               transition={{ delay: i * 0.1 }}
+               whileHover={{ y: -4 }}
+               className="p-6 rounded-2xl bg-[#0F172B]/90 border border-slate-800/80"
              >
-               <motion.div 
-                 initial={{ opacity: 0 }}
-                 whileInView={{ opacity: 1 }}
-                 transition={{ delay: 0.3 + (i * 0.1), duration: 0.5 }}
-                 className="text-4xl font-black text-indigo-600 mb-2 tracking-tight"
-               >
+               <div className="text-3xl md:text-4xl font-extrabold text-indigo-400 mb-2 font-mono">
                  {stat.val}
-               </motion.div>
-               <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{stat.label}</div>
+               </div>
+               <div className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest">{stat.label}</div>
              </motion.div>
            ))}
         </div>
       </section>
 
-      {/* SECTION 5: FOOTER CTA */}
-      <section className="relative bg-[#0F172B] text-white py-24 px-6 text-center overflow-hidden group">
-        <div className="absolute inset-0 opacity-20 transition-transform duration-1000 group-hover:scale-105" style={{ background: `radial-gradient(circle at 50% 50%, #4F46E5 0%, transparent 70%)` }} />
-        <div className="absolute bottom-[-100px] left-1/2 -translate-x-1/2 w-80 h-80 bg-purple-500/10 blur-[80px] rounded-full pointer-events-none" />
-        
-        <motion.div 
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
-          className="relative z-10 container mx-auto max-w-3xl"
-        >
-          <h2 className="text-4xl md:text-5xl font-bold mb-12 tracking-tight leading-tight">Join the Skill Intelligence Revolution</h2>
+      {/* 5. CALL TO ACTION */}
+      <section className="relative text-white py-24 px-6 text-center overflow-hidden z-10">
+        <div className="container mx-auto max-w-3xl relative z-10">
+          <h2 className="text-3xl md:text-5xl font-extrabold mb-6 tracking-tight leading-tight">Ready to Elevate Your Workforce Intelligence?</h2>
+          <p className="text-slate-400 text-base mb-10 max-w-xl mx-auto font-light">
+            Discover how SkillPulse AI transforms skills tracking, gap detection, and workforce readiness across your enterprise.
+          </p>
           <div className="flex flex-wrap justify-center gap-4">
             <Link 
-              to={tenantId ? `${tenantBaseRoute}/upgrade` : "/onboard"}
-              className="bg-indigo-600 hover:bg-indigo-500 text-white px-10 py-4 rounded-2xl font-bold transition-all transform hover:scale-105 active:scale-95 shadow-lg shadow-indigo-600/30 hover:shadow-indigo-500/40"
+              to="/features"
+              className="bg-indigo-600 hover:bg-indigo-500 text-white px-8 py-3.5 rounded-xl font-bold text-sm transition-all shadow-lg shadow-indigo-600/30 hover:scale-105"
             >
-              Start Free Trial
+              Explore All Features
             </Link>
             <Link 
-              to="/contact-sales"
-              className="bg-white/5 border border-white/10 text-white hover:bg-white/10 px-10 py-4 rounded-2xl font-bold transition-all active:scale-95"
+              to="/pricing"
+              className="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 px-8 py-3.5 rounded-xl font-bold text-sm transition-all hover:scale-105"
             >
-              Contact Sales
+              View Pricing Tiers
             </Link>
           </div>
-        </motion.div>
+        </div>
       </section>
     </div>
   );

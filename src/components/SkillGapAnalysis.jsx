@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import TeamLeaderSidebar from './TeamLeaderSidebar'; 
+import { teamLeaderAPI } from '../services/api';
 import { 
   ChevronDown, 
   Search, 
@@ -15,7 +16,7 @@ import {
   CheckCircle2,
   Users,
   FileText,
-  Filter
+  Loader2
 } from 'lucide-react';
 
 export default function SkillGapAnalysis() {
@@ -23,61 +24,45 @@ export default function SkillGapAnalysis() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedSeverity, setSelectedSeverity] = useState('All');
   const [selectedCategory, setSelectedCategory] = useState('All');
+  const [loading, setLoading] = useState(true);
+  const [gapData, setGapData] = useState(null);
+  const [assigningTrack, setAssigningTrack] = useState(false);
   
   // Interactive Modals & Toast State
   const [activeModal, setActiveModal] = useState(null); // 'assign', 'report', 'profiles'
   const [selectedGap, setSelectedGap] = useState(null);
   const [toastMessage, setToastMessage] = useState('');
 
-  // Primary Gaps Dataset
-  const gapsData = [
-    {
-      id: 1,
-      name: 'Emily Zhang',
-      role: 'Senior DevOps',
-      category: 'DevOps',
-      skill: 'Kubernetes Security',
-      required: 4.5,
-      current: 2.0,
-      severity: 'Critical',
-      training: 'Advanced K8s Security Hardening',
-      img: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=150'
-    },
-    {
-      id: 2,
-      name: 'Michael Ross',
-      role: 'Product Designer',
-      category: 'Design',
-      skill: 'Motion Design',
-      required: 4.0,
-      current: 2.5,
-      severity: 'High',
-      training: 'After Effects for Product UX',
-      img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=150'
-    },
-    {
-      id: 3,
-      name: 'Sophia Lane',
-      role: 'Frontend Dev',
-      category: 'Frontend',
-      skill: 'TypeScript 5.0',
-      required: 5.0,
-      current: 4.2,
-      severity: 'Low',
-      training: 'TS Advanced Design Patterns',
-      img: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=150'
-    }
-  ];
+  useEffect(() => {
+    let isMounted = true;
+    const loadGapsData = async () => {
+      setLoading(true);
+      try {
+        const res = await teamLeaderAPI.getGaps();
+        if (isMounted && res?.success && res.data) {
+          setGapData(res.data);
+        }
+      } catch (err) {
+        console.warn('Error loading team skill gaps data:', err);
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    };
+    loadGapsData();
+    return () => { isMounted = false; };
+  }, []);
 
-  // Heatmap Matrix Mappings
-  const heatmapMatrix = {
-    skills: ['KUBERNETES', 'REACT NATIVE', 'TYPESCRIPT', 'AWS CLOUD', 'SECURITY', 'UI DESIGN'],
-    members: [
-      { name: 'Emily Zhang', cells: ['critical', 'none', 'low', 'high', 'critical', 'none'] },
-      { name: 'Michael Ross', cells: ['none', 'high', 'none', 'none', 'none', 'high'] },
-      { name: 'Sophia Lane', cells: ['low', 'none', 'low', 'none', 'none', 'none'] }
-    ]
+  const gapsData = gapData?.gaps || [];
+  const heatmapMatrix = gapData?.heatmapMatrix || { skills: [], members: [] };
+  const stats = gapData?.stats || {
+    totalGaps: 0,
+    criticalGaps: 0,
+    moderateGaps: 0,
+    distinctSkillsCount: 0,
+    resolutionProgress: '0%'
   };
+  const categoryOptions = gapData?.categories || ['All'];
+  const teamMemberList = gapData?.members || [];
 
   // Filter Data Logic
   const filteredGaps = gapsData.filter((item) => {
@@ -98,10 +83,106 @@ export default function SkillGapAnalysis() {
     setActiveModal('assign');
   };
 
-  const handleConfirmAssignment = () => {
-    const targetName = selectedGap ? selectedGap.name : 'Selected Team Members';
-    setActiveModal(null);
-    setToastMessage(`Training track successfully assigned to ${targetName}.`);
+  const handleConfirmAssignment = async () => {
+    try {
+      setAssigningTrack(true);
+      if (selectedGap) {
+        await teamLeaderAPI.assignTraining({
+          userId: selectedGap.userId,
+          skillId: selectedGap.skillId,
+          trainingTitle: selectedGap.training
+        });
+        setToastMessage(`Training track assigned to ${selectedGap.name}! Active now on employee portal.`);
+      } else {
+        const memberIdsToAssign = Array.from(new Set(gapsData.map(g => g.userId)));
+        if (memberIdsToAssign.length > 0) {
+          await teamLeaderAPI.assignTraining({
+            userIds: memberIdsToAssign,
+            trainingTitle: 'Enterprise Skill Gap Resolution Track'
+          });
+        }
+        setToastMessage(`Training tracks assigned to team members! Active now on employee portals.`);
+      }
+      setTimeout(() => setToastMessage(''), 3500);
+      setActiveModal(null);
+      
+      // Refetch live gaps data to display updated course assignment status
+      const res = await teamLeaderAPI.getGaps();
+      if (res?.success && res.data) {
+        setGapData(res.data);
+      }
+    } catch (err) {
+      console.warn('Error assigning training:', err);
+      setActiveModal(null);
+    } finally {
+      setAssigningTrack(false);
+    }
+  };
+
+  const handleExportCSV = () => {
+    if (!gapsData || gapsData.length === 0) {
+      setToastMessage('No skill gap records available to export.');
+      setTimeout(() => setToastMessage(''), 3000);
+      return;
+    }
+
+    const headers = ["Member Name", "Job Role", "Skill Category", "Missing Skill", "Required Level", "Current Level", "Severity", "Recommended Training"];
+    const rows = filteredGaps.map(g => [
+      `"${(g.name || '').replace(/"/g, '""')}"`,
+      `"${(g.role || '').replace(/"/g, '""')}"`,
+      `"${(g.category || '').replace(/"/g, '""')}"`,
+      `"${(g.skill || '').replace(/"/g, '""')}"`,
+      g.required ?? 4.5,
+      g.current ?? 2.0,
+      `"${(g.severity || '').replace(/"/g, '""')}"`,
+      `"${(g.training || '').replace(/"/g, '""')}"`
+    ]);
+
+    const csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `team_skill_gaps_report_${Date.now()}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
+    setToastMessage('Skill Gap Analysis CSV report successfully exported!');
+    setTimeout(() => setToastMessage(''), 3500);
+  };
+
+  const handleExportSummaryReport = () => {
+    if (!gapsData || gapsData.length === 0) {
+      setToastMessage('No skill gap records available for report generation.');
+      setTimeout(() => setToastMessage(''), 3000);
+      return;
+    }
+
+    const reportTitle = "SKILLPULSE - TEAM SKILL GAP EXECUTIVE REPORT\n";
+    const timestamp = `Generated At: ${new Date().toLocaleString()}\n`;
+    const lineDivider = "=====================================================\n\n";
+
+    const statsHeader = `METRICS SUMMARY:\n- Total Active Skill Gaps: ${stats.totalGaps}\n- Critical Priority Gaps: ${stats.criticalGaps}\n- Moderate Priority Gaps: ${stats.moderateGaps}\n- Resolution Progress: ${stats.resolutionProgress}\n\n`;
+
+    const gapDetails = `INDIVIDUAL GAP BREAKDOWN:\n` + filteredGaps.map((g, idx) => 
+      `${idx + 1}. Member: ${g.name} (${g.role})\n   Skill: ${g.skill} [Category: ${g.category}]\n   Proficiency: ${g.current} / Required: ${g.required} (Severity: ${g.severity})\n   Recommended Action: ${g.training}\n`
+    ).join('\n');
+
+    const fullReportContent = reportTitle + timestamp + lineDivider + statsHeader + gapDetails;
+
+    const blob = new Blob([fullReportContent], { type: 'text/plain;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `team_skill_gap_executive_report_${Date.now()}.txt`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
+    setToastMessage('Executive Gap Report summary successfully downloaded!');
     setTimeout(() => setToastMessage(''), 3500);
   };
 
@@ -119,14 +200,14 @@ export default function SkillGapAnalysis() {
         </div>
       )}
 
-      {/* Main Content Area */}
-      <main className="flex-1 ml-72 p-12 max-w-[1600px] mx-auto space-y-10">
+      {/* Main Content Area - Fluid full width */}
+      <main className="flex-1 ml-72 p-10 w-full space-y-8">
         
         {/* Top Header Section */}
-        <header className="flex justify-between items-center mb-4">
+        <header className="flex justify-between items-center">
           <div>
-            <h1 className="text-4xl font-black text-[#0b1221] tracking-tight">Skill Gap Analysis (Team)</h1>
-            <p className="text-slate-500 text-base font-semibold mt-2">Identify missing skills and analyze deficiencies to improve team capability</p>
+            <h1 className="text-3xl font-black text-[#0b1221] tracking-tight">Skill Gap Analysis (Team)</h1>
+            <p className="text-slate-500 text-sm font-semibold mt-1">Identify missing skills and analyze deficiencies to improve team capability</p>
           </div>
           
           <div className="flex items-center gap-4">
@@ -135,12 +216,11 @@ export default function SkillGapAnalysis() {
               <select 
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
-                className="appearance-none bg-white border border-slate-200 pl-5 pr-10 py-3 rounded-xl text-sm font-bold text-slate-700 shadow-sm hover:bg-slate-50 transition-all cursor-pointer focus:outline-none"
+                className="appearance-none bg-white border border-slate-200 pl-5 pr-10 py-2.5 rounded-xl text-xs font-bold text-slate-700 shadow-sm hover:bg-slate-50 transition-all cursor-pointer focus:outline-none"
               >
-                <option value="All">All Skill Categories</option>
-                <option value="DevOps">DevOps & Cloud</option>
-                <option value="Design">Product Design</option>
-                <option value="Frontend">Frontend Development</option>
+                {categoryOptions.map(cat => (
+                  <option key={cat} value={cat}>{cat === 'All' ? 'All Skill Categories' : cat}</option>
+                ))}
               </select>
               <ChevronDown size={16} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
             </div>
@@ -150,7 +230,7 @@ export default function SkillGapAnalysis() {
               <select 
                 value={selectedSeverity}
                 onChange={(e) => setSelectedSeverity(e.target.value)}
-                className="appearance-none bg-white border border-slate-200 pl-10 pr-10 py-3 rounded-xl text-sm font-bold text-slate-700 shadow-sm hover:bg-slate-50 transition-all cursor-pointer focus:outline-none"
+                className="appearance-none bg-white border border-slate-200 pl-10 pr-10 py-2.5 rounded-xl text-xs font-bold text-slate-700 shadow-sm hover:bg-slate-50 transition-all cursor-pointer focus:outline-none"
               >
                 <option value="All">All Severities</option>
                 <option value="Critical">Critical Severity</option>
@@ -167,27 +247,27 @@ export default function SkillGapAnalysis() {
         <div className="grid grid-cols-4 gap-6">
           <OverviewMetricCard 
             title="Total Gaps" 
-            value="24" 
-            badgeText="Across 8 Skills"
+            value={stats.totalGaps} 
+            badgeText={`Across ${stats.distinctSkillsCount || 0} Skills`}
             icon={<Layers className="text-blue-500 bg-blue-50 p-1.5 rounded-lg" size={36} />} 
           />
           <OverviewMetricCard 
             title="Critical Gaps" 
-            value="6" 
+            value={stats.criticalGaps} 
             subValue="High Priority"
             subValueColor="bg-rose-50 text-rose-600 border border-rose-100"
             icon={<Flame className="text-rose-500 bg-rose-50 p-1.5 rounded-lg" size={36} />} 
           />
           <OverviewMetricCard 
             title="Moderate Gaps" 
-            value="12" 
+            value={stats.moderateGaps} 
             subValue="Active"
             subValueColor="text-slate-600"
             icon={<ShieldAlert className="text-amber-500 bg-amber-50 p-1.5 rounded-lg" size={36} />} 
           />
           <OverviewMetricCard 
             title="Resolution Progress" 
-            value="68%" 
+            value={stats.resolutionProgress} 
             subValue="Trend Up"
             icon={<TrendingUp className="text-emerald-500 bg-emerald-50 p-1.5 rounded-lg" size={36} />} 
             isTrendUp={true}
@@ -197,7 +277,7 @@ export default function SkillGapAnalysis() {
         {/* 2. Team Skill Gap Analysis Block */}
         <div className="bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm space-y-6">
           <div className="flex justify-between items-center">
-            <h3 className="text-2xl font-bold text-slate-900 tracking-tight">Team Skill Gap Analysis</h3>
+            <h3 className="text-xl font-bold text-slate-900 tracking-tight">Team Skill Gap Analysis</h3>
             <div className="flex items-center gap-3">
               <div className="relative">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
@@ -206,15 +286,16 @@ export default function SkillGapAnalysis() {
                   placeholder="Search member or skill..." 
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="bg-slate-50 border border-slate-200/80 rounded-xl pl-11 pr-4 py-2.5 text-sm font-semibold text-slate-700 w-64 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:bg-white transition-all"
+                  className="bg-slate-50 border border-slate-200/80 rounded-xl pl-11 pr-4 py-2 text-xs font-semibold text-slate-700 w-64 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:bg-white transition-all"
                 />
               </div>
               <button 
-                onClick={() => setActiveModal('report')}
-                className="p-3 bg-white border border-slate-200 text-slate-500 rounded-xl hover:bg-slate-50 transition-all shadow-sm"
-                title="Export Gap Data"
+                onClick={handleExportCSV}
+                className="p-2.5 bg-white border border-slate-200 text-slate-600 hover:text-blue-600 hover:border-blue-200 rounded-xl hover:bg-blue-50/50 transition-all shadow-sm flex items-center gap-1.5 cursor-pointer"
+                title="Export Gap Data to CSV"
               >
                 <Download size={18} />
+                <span className="text-xs font-bold hidden sm:inline">Export CSV</span>
               </button>
             </div>
           </div>
@@ -241,8 +322,8 @@ export default function SkillGapAnalysis() {
                   />
                 ))
               ) : (
-                <div className="p-8 text-center bg-slate-50 rounded-2xl border border-dashed border-slate-200 text-slate-400 text-sm font-bold">
-                  No skill gaps match the current filters or search query.
+                <div className="p-8 text-center bg-slate-50 rounded-2xl border border-dashed border-slate-200 text-slate-400 text-xs font-bold">
+                  {loading ? 'Loading team skill gap metrics...' : `No skill gaps match the current filters or search query.`}
                 </div>
               )}
             </div>
@@ -253,8 +334,8 @@ export default function SkillGapAnalysis() {
         <div className="bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm space-y-8">
           <div className="flex justify-between items-start">
             <div>
-              <h3 className="text-2xl font-bold text-slate-900 tracking-tight">Team Skill Gap Heatmap</h3>
-              <p className="text-slate-400 text-sm font-semibold mt-1">Color intensity indicates severity of skill gaps across the team</p>
+              <h3 className="text-xl font-bold text-slate-900 tracking-tight">Team Skill Gap Heatmap</h3>
+              <p className="text-slate-400 text-xs font-semibold mt-1">Color intensity indicates severity of skill gaps across the team</p>
             </div>
             <div className="flex items-center gap-5 text-xs font-bold text-slate-500">
               <div className="flex items-center gap-2">
@@ -278,18 +359,18 @@ export default function SkillGapAnalysis() {
               <div className="flex items-center text-center">
                 <div className="w-[15%] text-left"></div>
                 <div className="w-[85%] grid grid-cols-6 gap-3 text-xs font-black text-slate-400 tracking-widest">
-                  {heatmapMatrix.skills.map((skill, index) => (
+                  {(heatmapMatrix.skills || []).map((skill, index) => (
                     <div key={index}>{skill}</div>
                   ))}
                 </div>
               </div>
 
               <div className="space-y-3">
-                {heatmapMatrix.members.map((member, rIdx) => (
+                {(heatmapMatrix.members || []).map((member, rIdx) => (
                   <div key={rIdx} className="flex items-center">
-                    <div className="w-[15%] text-sm font-black text-slate-700">{member.name}</div>
+                    <div className="w-[15%] text-xs font-black text-slate-700 truncate pr-2">{member.name}</div>
                     <div className="w-[85%] grid grid-cols-6 gap-3">
-                      {member.cells.map((cellType, cIdx) => {
+                      {(member.cells || []).map((cellType, cIdx) => {
                         let cellBg = "bg-[#FFFDF4]/70 border border-amber-100/50";
                         if (cellType === 'critical') cellBg = "bg-[#EF4444]";
                         if (cellType === 'high') cellBg = "bg-[#F97316]";
@@ -297,7 +378,7 @@ export default function SkillGapAnalysis() {
                         return (
                           <div 
                             key={cIdx} 
-                            className={`h-16 rounded-2xl transition-all hover:scale-[1.02] cursor-pointer ${cellBg}`}
+                            className={`h-14 rounded-2xl transition-all hover:scale-[1.02] cursor-pointer ${cellBg}`}
                             title={`${member.name} - ${heatmapMatrix.skills[cIdx]}: ${cellType.toUpperCase()}`}
                           />
                         );
@@ -313,12 +394,12 @@ export default function SkillGapAnalysis() {
         {/* 4. AI Skill Gap Intelligence */}
         <div className="bg-[#F3F6FF] rounded-[2.5rem] p-8 border border-blue-100/60 space-y-6">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center text-white shadow-md">
-              <BrainCircuit size={24} />
+            <div className="w-10 h-10 bg-blue-600 rounded-2xl flex items-center justify-center text-white shadow-md">
+              <BrainCircuit size={20} />
             </div>
             <div>
-              <h3 className="text-2xl font-bold text-slate-900 tracking-tight">AI Skill Gap Intelligence</h3>
-              <p className="text-slate-500 text-sm font-semibold">Predictive deficiency analysis and automated recommendations</p>
+              <h3 className="text-xl font-bold text-slate-900 tracking-tight">AI Skill Gap Intelligence</h3>
+              <p className="text-slate-500 text-xs font-semibold">Predictive deficiency analysis and automated recommendations</p>
             </div>
           </div>
 
@@ -327,26 +408,30 @@ export default function SkillGapAnalysis() {
               type="CRITICAL WARNING"
               typeColor="bg-rose-50 text-rose-600 border-rose-100"
               confidence="96%"
-              title="Kubernetes Hardening"
-              description="Detected a core capability deficiency across the DevOps sub-team. Projected impact: 35% delay in Q3 security audits."
+              title={gapsData[0] ? `${gapsData[0].skill} Deficiency` : "Core Capability Warning"}
+              description={gapsData[0] 
+                ? `Detected a ${gapsData[0].severity.toLowerCase()} deficiency for ${gapsData[0].name} in ${gapsData[0].skill}. Early resolution recommended.`
+                : "Detected core capability constraints across active projects."}
               actionText="View Solution"
-              onAction={() => handleOpenAssignModal(gapsData[0])}
+              onAction={() => handleOpenAssignModal(gapsData[0] || null)}
             />
             <AIIntelligenceCard 
               type="GROWTH PATH"
               typeColor="bg-blue-50 text-blue-600 border-blue-100"
               confidence="89%"
-              title="Full-stack Transition"
-              description="Current frontend gaps can be mitigated by fast-tracking Sophia Lane into the TypeScript advanced modules."
+              title="Targeted Skill Upskilling"
+              description={gapsData[1] 
+                ? `Fast-tracking ${gapsData[1].name} into ${gapsData[1].training} will remove team dependencies.`
+                : "Assigning targeted training tracks mitigates team skill bottlenecks efficiently."}
               actionText="Assign Path"
-              onAction={() => handleOpenAssignModal(gapsData[2])}
+              onAction={() => handleOpenAssignModal(gapsData[1] || gapsData[0] || null)}
             />
             <AIIntelligenceCard 
               type="SKILL SUCCESS"
               typeColor="bg-emerald-50 text-emerald-600 border-emerald-100"
               confidence="92%"
               title="Resolution Velocity"
-              description="Team is closing gaps 12% faster than last month. Current resolution path is optimized for upcoming project loads."
+              description={`Current team gap resolution progress stands at ${stats.resolutionProgress}. Optimized for project deployment.`}
               actionText="View Progress"
               onAction={() => setActiveModal('report')}
             />
@@ -356,25 +441,25 @@ export default function SkillGapAnalysis() {
         {/* 5. Skill Gap Resolution Actions Footer */}
         <div className="bg-[#0b111e] p-8 rounded-[2.5rem] text-white flex justify-between items-center shadow-xl">
           <div>
-            <h3 className="text-2xl font-bold tracking-tight mb-1">Skill Gap Resolution Actions</h3>
-            <p className="text-slate-400 text-base font-semibold">Surgical interventions to bridge identified technical deficiencies</p>
+            <h3 className="text-xl font-bold tracking-tight mb-1">Skill Gap Resolution Actions</h3>
+            <p className="text-slate-400 text-xs font-semibold">Surgical interventions to bridge identified technical deficiencies</p>
           </div>
           <div className="flex items-center gap-4">
             <button 
               onClick={() => handleOpenAssignModal(null)}
-              className="px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-black text-sm rounded-2xl shadow-lg shadow-blue-600/20 transition-all"
+              className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-black text-xs rounded-2xl shadow-lg shadow-blue-600/20 transition-all cursor-pointer"
             >
               Assign Training
             </button>
             <button 
               onClick={() => setActiveModal('report')}
-              className="px-8 py-4 bg-[#182235] hover:bg-[#202c44] text-slate-300 font-bold text-sm border border-slate-800 rounded-2xl transition-all"
+              className="px-6 py-3 bg-[#182235] hover:bg-[#202c44] text-slate-300 font-bold text-xs border border-slate-800 rounded-2xl transition-all cursor-pointer"
             >
               Generate Gap Report
             </button>
             <button 
               onClick={() => setActiveModal('profiles')}
-              className="px-8 py-4 bg-[#182235] hover:bg-[#202c44] text-slate-300 font-bold text-sm border border-slate-800 rounded-2xl transition-all"
+              className="px-6 py-3 bg-[#182235] hover:bg-[#202c44] text-slate-300 font-bold text-xs border border-slate-800 rounded-2xl transition-all cursor-pointer"
             >
               View Team Profiles
             </button>
@@ -403,14 +488,16 @@ export default function SkillGapAnalysis() {
               <div className="space-y-4">
                 {selectedGap ? (
                   <div className="flex items-center gap-3 bg-slate-50 p-3.5 rounded-2xl border border-slate-100">
-                    <img src={selectedGap.img} alt={selectedGap.name} className="w-10 h-10 rounded-full object-cover" />
+                    <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-700 font-black text-xs flex items-center justify-center">
+                      {selectedGap.initials || 'EM'}
+                    </div>
                     <div>
                       <p className="font-bold text-slate-900 text-sm">{selectedGap.name}</p>
                       <p className="text-xs text-slate-500">{selectedGap.role} • Skill: <span className="font-bold text-slate-800">{selectedGap.skill}</span></p>
                     </div>
                   </div>
                 ) : (
-                  <p className="text-xs font-semibold text-slate-600">Assign targeted upskilling tracks to all team members with active critical gaps.</p>
+                  <p className="text-xs font-semibold text-slate-600">Assign targeted upskilling tracks to all team members with active gaps.</p>
                 )}
 
                 <div>
@@ -418,21 +505,23 @@ export default function SkillGapAnalysis() {
                   <input 
                     type="text" 
                     readOnly
-                    value={selectedGap ? selectedGap.training : 'Advanced Enterprise Skill Resolution Suite'} 
+                    value={selectedGap ? selectedGap.training : 'Enterprise Skill Gap Resolution Track'} 
                     className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-bold text-slate-700"
                   />
                 </div>
               </div>
 
               <div className="flex gap-3">
-                <button onClick={() => setActiveModal(null)} className="w-1/2 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl">
+                <button onClick={() => setActiveModal(null)} className="w-1/2 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl cursor-pointer">
                   Cancel
                 </button>
                 <button 
                   onClick={handleConfirmAssignment} 
-                  className="w-1/2 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-md"
+                  disabled={assigningTrack}
+                  className="w-1/2 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-md cursor-pointer flex items-center justify-center gap-2"
                 >
-                  Confirm Assignment
+                  {assigningTrack && <Loader2 size={14} className="animate-spin" />}
+                  <span>{assigningTrack ? 'Assigning...' : 'Confirm Assignment'}</span>
                 </button>
               </div>
             </div>
@@ -452,22 +541,34 @@ export default function SkillGapAnalysis() {
               </div>
 
               <p className="text-xs text-slate-500 font-medium leading-relaxed">
-                Generate an analytical export summarizing current capability deficits, severity breakdowns, and training ROI estimations.
+                Choose an analytical export format to download current team capability deficits, severity breakdowns, and training recommendations.
               </p>
 
-              <div className="flex gap-3 pt-2">
-                <button onClick={() => setActiveModal(null)} className="w-full py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl">
-                  Cancel
-                </button>
+              <div className="space-y-3 pt-2">
                 <button 
                   onClick={() => {
+                    handleExportCSV();
                     setActiveModal(null);
-                    setToastMessage('Skill Gap Summary PDF successfully downloaded.');
-                    setTimeout(() => setToastMessage(''), 3500);
                   }} 
-                  className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-md"
+                  className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-md cursor-pointer flex items-center justify-center gap-2"
                 >
-                  Download PDF
+                  <Download size={14} />
+                  <span>Download Spreadsheet (.CSV)</span>
+                </button>
+
+                <button 
+                  onClick={() => {
+                    handleExportSummaryReport();
+                    setActiveModal(null);
+                  }} 
+                  className="w-full py-3 bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs rounded-xl shadow-md cursor-pointer flex items-center justify-center gap-2"
+                >
+                  <FileText size={14} />
+                  <span>Download Executive Summary (.TXT)</span>
+                </button>
+
+                <button onClick={() => setActiveModal(null)} className="w-full py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl cursor-pointer">
+                  Cancel
                 </button>
               </div>
             </div>
@@ -486,21 +587,25 @@ export default function SkillGapAnalysis() {
                 </button>
               </div>
 
-              <div className="space-y-3">
-                {gapsData.map((m) => (
-                  <div key={m.id} className="p-3 bg-slate-50 rounded-xl border border-slate-100 flex justify-between items-center">
-                    <div>
-                      <p className="text-xs font-bold text-slate-900">{m.name}</p>
-                      <p className="text-[10px] text-slate-400">{m.role}</p>
+              <div className="space-y-3 max-h-60 overflow-y-auto pr-1">
+                {teamMemberList.length > 0 ? (
+                  teamMemberList.map((m) => (
+                    <div key={m.id} className="p-3 bg-slate-50 rounded-xl border border-slate-100 flex justify-between items-center">
+                      <div>
+                        <p className="text-xs font-bold text-slate-900">{m.name}</p>
+                        <p className="text-[10px] text-slate-400">{m.role}</p>
+                      </div>
+                      <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-blue-50 text-blue-600">
+                        Active Member
+                      </span>
                     </div>
-                    <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-blue-50 text-blue-600">
-                      {m.category}
-                    </span>
-                  </div>
-                ))}
+                  ))
+                ) : (
+                  <p className="text-xs text-slate-400 text-center py-4">No team member profiles found.</p>
+                )}
               </div>
 
-              <button onClick={() => setActiveModal(null)} className="w-full py-3 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl">
+              <button onClick={() => setActiveModal(null)} className="w-full py-3 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl cursor-pointer">
                 Close
               </button>
             </div>
@@ -552,7 +657,9 @@ const AnalysisRow = ({ data, onAssign }) => {
   return (
     <div className="flex items-center justify-between p-5 bg-slate-50/50 rounded-2xl border border-transparent hover:border-slate-200/80 hover:bg-white transition-all shadow-sm">
       <div className="flex items-center gap-4 w-[22%]">
-        <img src={data.img} alt={data.name} className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm" />
+        <div className="w-10 h-10 rounded-full bg-blue-100 border border-blue-200 flex items-center justify-center text-xs font-black text-blue-700 shadow-sm shrink-0">
+          {data.initials || 'EM'}
+        </div>
         <div>
           <p className="text-base font-black text-slate-900 leading-tight">{data.name}</p>
           <p className="text-sm font-bold text-slate-400 mt-1">{data.role}</p>

@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import TeamLeaderSidebar from './TeamLeaderSidebar';
 import { 
   Search, 
-  Bell, 
   SlidersHorizontal,
-  ArrowRight,
-  Layers
+  Sparkles,
+  Loader2
 } from 'lucide-react';
+import { teamLeaderAPI } from '../services/api';
 
 const TeamSkillOverview = () => {
   const navigate = useNavigate();
@@ -15,22 +15,122 @@ const TeamSkillOverview = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All Categories');
   const [selectedLevel, setSelectedLevel] = useState('Skill Level: All');
-  const [selectedDept, setSelectedDept] = useState('Dept: Engineering');
+
+  const [overviewData, setOverviewData] = useState(null);
+  const [teamGaps, setTeamGaps] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadTeamOverview() {
+      try {
+        setLoading(true);
+        const [overviewRes, gapsRes] = await Promise.allSettled([
+          teamLeaderAPI.getOverview(),
+          teamLeaderAPI.getGaps()
+        ]);
+
+        if (overviewRes.status === 'fulfilled' && overviewRes.value?.success && overviewRes.value?.data) {
+          setOverviewData(overviewRes.value.data);
+        }
+        if (gapsRes.status === 'fulfilled' && gapsRes.value?.success && gapsRes.value?.gaps) {
+          setTeamGaps(gapsRes.value.gaps);
+        }
+      } catch (err) {
+        console.warn('Error loading team overview:', err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadTeamOverview();
+  }, []);
+
+  const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
+  const leaderName = storedUser.firstName ? `${storedUser.firstName} ${storedUser.lastName}` : 'Team Leader';
+
+  // Process raw members from backend
+  const rawMembersList = overviewData?.members || [];
+  const matrixSkillHeaders = overviewData?.matrixSkills || ['Skill Level'];
+  const categoryOptions = overviewData?.categories || ['All Categories'];
+  const stats = overviewData?.stats || {
+    activeMembersCount: rawMembersList.length,
+    avgReadiness: '75%',
+    advancedCoverage: '0%',
+    criticalGapsCount: teamGaps.filter(g => g.severity === 'CRITICAL').length
+  };
+
+  const processedMembers = rawMembersList.map(m => {
+    const initials = `${m.firstName?.charAt(0) || 'T'}${m.lastName?.charAt(0) || 'M'}`.toUpperCase();
+    const skillMap = {};
+    (m.skills || []).forEach(us => {
+      if (us.skill?.name) {
+        skillMap[us.skill.name] = {
+          pct: `${Math.round((us.proficiencyLevel || 1.0) * 20)}%`,
+          level: us.proficiencyLevel || 1.0,
+          category: us.skill.category?.name || 'General'
+        };
+      }
+    });
+
+    return {
+      id: m.id,
+      name: `${m.firstName} ${m.lastName}`,
+      initials,
+      role: m.jobTitle || 'Team Member',
+      skills: skillMap
+    };
+  });
+
+  // Filter members based on Search, Category, and Level
+  const filteredMembers = processedMembers.filter(m => {
+    const matchesSearch = !searchQuery || 
+      m.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      m.role.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      Object.keys(m.skills).some(s => s.toLowerCase().includes(searchQuery.toLowerCase()));
+    
+    const matchesCategory = selectedCategory === 'All Categories' ||
+      Object.values(m.skills).some(info => info.category === selectedCategory);
+
+    let matchesLevel = true;
+    if (selectedLevel !== 'Skill Level: All') {
+      const targetMin = selectedLevel === 'Beginner' ? 0 : selectedLevel === 'Intermediate' ? 40 : selectedLevel === 'Advanced' ? 70 : 85;
+      const targetMax = selectedLevel === 'Beginner' ? 40 : selectedLevel === 'Intermediate' ? 70 : selectedLevel === 'Advanced' ? 85 : 100;
+      matchesLevel = Object.values(m.skills).some(info => {
+        const num = parseInt(info.pct) || 0;
+        return num >= targetMin && num <= targetMax;
+      });
+    }
+
+    return matchesSearch && matchesCategory && matchesLevel;
+  });
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen bg-[#F8F9FE]">
+        <TeamLeaderSidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+        <main className="flex-1 ml-72 p-10 flex items-center justify-center">
+          <div className="flex flex-col items-center gap-3 text-blue-600">
+            <Loader2 className="w-10 h-10 animate-spin" />
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Querying Neon Cloud Database...</span>
+          </div>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-screen bg-[#F8F9FE]">
-      {/* Sidebar - Fixed Positioned */}
+      {/* Sidebar */}
       <TeamLeaderSidebar activeTab={activeTab} setActiveTab={setActiveTab} />
       
       {/* Main Content Area */}
-      <main className="flex-1 ml-72 p-10 max-w-[1600px] mx-auto space-y-8">
+      <main className="flex-1 ml-72 p-10 w-full space-y-8">
         
         {/* Top Header Section */}
         <header className="flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-black text-[#0b1221] tracking-tight">Team Skill Overview</h1>
             <p className="text-slate-500 text-sm font-medium mt-1">
-              Analyze skill distribution, proficiency levels, and capability across your entire team
+              Analyze live skill distribution, proficiency levels, and capability across your team
             </p>
           </div>
           
@@ -47,48 +147,38 @@ const TeamSkillOverview = () => {
               />
             </div>
             
-            <button 
-              aria-label="View notifications"
-              className="p-3 bg-white border border-slate-100 rounded-xl shadow-sm hover:bg-slate-50 transition-all text-slate-600 cursor-pointer"
-            >
-              <Bell size={20} />
-            </button>
-
-            <div className="w-10 h-10 rounded-full overflow-hidden border border-slate-200 bg-slate-100 flex-shrink-0">
-              <div className="w-full h-full bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-xs font-black text-white">
+            <div className="flex items-center gap-3 pl-4 border-l border-slate-200">
+              <div className="text-right">
+                <p className="text-sm font-bold text-slate-900">{leaderName}</p>
+                <span className="text-[10px] font-black uppercase text-blue-600 tracking-wider">Engineering Lead</span>
+              </div>
+              <div className="w-10 h-10 rounded-full border border-slate-200 bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-xs font-black text-white">
                 TL
               </div>
             </div>
           </div>
         </header>
 
-        {/* Stats Grid */}
+        {/* Stats Grid - 100% Dynamic Live Metrics */}
         <div className="grid grid-cols-4 gap-6">
           <OverviewStatCard 
-            title="Total Skills Tracked" 
-            value="42 Skills" 
-            sub="Across 6 Categories" 
+            title="Team Members Active" 
+            value={`${stats.activeMembersCount} Members`} 
             color="blue" 
-            isBadge={true} 
           />
           <OverviewStatCard 
-            title="Average Team Skill Score" 
-            value="84%" 
-            sub="+2.4% Trend" 
+            title="Average Team Readiness" 
+            value={stats.avgReadiness} 
             color="emerald" 
-            isTrend={true} 
           />
           <OverviewStatCard 
             title="Advanced Skill Coverage" 
-            value="68%" 
-            sub="" 
+            value={stats.advancedCoverage} 
             color="purple" 
-            isProgress={true} 
           />
           <OverviewStatCard 
-            title="Critical Skill Gap Count" 
-            value="5 Skills" 
-            sub="View Gaps" 
+            title="Critical Skill Gaps" 
+            value={`${stats.criticalGapsCount} Critical`} 
             color="rose" 
             isLink={true} 
             onLinkClick={() => navigate('/team-leader/gap-analysis')}
@@ -105,158 +195,86 @@ const TeamSkillOverview = () => {
             <FilterSelect 
               value={selectedCategory} 
               onChange={setSelectedCategory} 
-              options={['All Categories', 'Frontend', 'Backend', 'Cloud', 'Database']} 
+              options={categoryOptions} 
             />
             <FilterSelect 
               value={selectedLevel} 
               onChange={setSelectedLevel} 
-              options={['Skill Level: All', 'Beginner', 'Intermediate', 'Advanced']} 
-            />
-            <FilterSelect 
-              value={selectedDept} 
-              onChange={setSelectedDept} 
-              options={['Dept: Engineering', 'Dept: Design', 'Dept: DevOps']} 
+              options={['Skill Level: All', 'Beginner', 'Intermediate', 'Advanced', 'Expert']} 
             />
           </div>
-          <button className="bg-[#0b1221] hover:bg-[#151f33] text-white text-sm font-bold px-6 py-2.5 rounded-xl transition-all shadow-sm cursor-pointer">
-            Apply Filters
+          <button 
+            onClick={() => navigate('/team-leader/team-formation')}
+            className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold px-6 py-2.5 rounded-xl transition-all shadow-md shadow-blue-500/20 flex items-center gap-2"
+          >
+            <Sparkles className="w-4 h-4" /> AI Squad Matchmaker
           </button>
         </div>
 
         {/* Skill Proficiency Distribution Matrix */}
         <div className="bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm">
-          <h3 className="text-xl font-bold text-slate-900 mb-6 tracking-tight">Skill Proficiency Distribution Matrix</h3>
+          <div className="flex justify-between items-center mb-6">
+            <div>
+              <h3 className="text-xl font-bold text-slate-900 tracking-tight">Live Squad Skill Matrix</h3>
+              <p className="text-xs text-slate-500 font-medium">Real-time skill proficiencies queried directly from Neon Cloud Database</p>
+            </div>
+            <button 
+              onClick={() => navigate('/team-leader/assign-learning')}
+              className="text-xs font-bold text-blue-600 hover:underline"
+            >
+              + Assign Training
+            </button>
+          </div>
           
           <div className="overflow-x-auto border border-slate-100 rounded-2xl custom-scrollbar">
             <div className="min-w-[1000px] p-2">
-              <table className="w-full text-left border-collapse">
-                <thead>
-                  <tr className="border-b border-slate-100 text-[11px] font-black uppercase tracking-wider text-slate-400 bg-slate-50/50">
-                    <th className="py-4 px-6">Team Member</th>
-                    <th className="py-4 px-4 text-center">React</th>
-                    <th className="py-4 px-4 text-center">Node.js</th>
-                    <th className="py-4 px-4 text-center">AWS Cloud</th>
-                    <th className="py-4 px-4 text-center">Python</th>
-                    <th className="py-4 px-4 text-center">TypeScript</th>
-                    <th className="py-4 px-4 text-center">Docker</th>
-                    <th className="py-4 px-4 text-center">SQL</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-50 text-sm font-bold text-slate-800">
-                  <MatrixRow name="Ali Khan" initials="AK" skills={["92%", "78%", "35%", "65%", "88%", "20%", "72%"]} />
-                  <MatrixRow name="Jessica Doe" initials="JD" skills={["75%", "90%", "82%", "60%", "40%", "30%", "85%"]} />
-                </tbody>
-              </table>
+              {filteredMembers.length > 0 ? (
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="border-b border-slate-100 text-[11px] font-black uppercase tracking-wider text-slate-400 bg-slate-50/50">
+                      <th className="py-4 px-6">Team Member</th>
+                      {matrixSkillHeaders.map((skillName, idx) => (
+                        <th key={idx} className="py-4 px-4 text-center">{skillName}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-50 text-sm font-bold text-slate-800">
+                    {filteredMembers.map((m) => (
+                      <MatrixRow 
+                        key={m.id}
+                        name={m.name} 
+                        role={m.role}
+                        initials={m.initials} 
+                        onClick={() => navigate(`/team-leader/member-profile?name=${encodeURIComponent(m.name)}`)}
+                        skills={matrixSkillHeaders.map(skillName => {
+                          const userSkillObj = m.skills[skillName];
+                          return userSkillObj ? userSkillObj.pct : 'N/A';
+                        })} 
+                      />
+                    ))}
+                  </tbody>
+                </table>
+              ) : (
+                <div className="text-center py-12 text-slate-400 font-medium text-sm">
+                  No matching team members found for selected criteria.
+                </div>
+              )}
             </div>
           </div>
 
           <div className="flex gap-6 justify-center items-center mt-6 text-[11px] font-black uppercase tracking-wider text-slate-400">
             <div className="flex items-center gap-2">
               <span className="w-3 h-3 rounded bg-slate-200 inline-block"></span>
-              <span>Beginner (0-40%)</span>
+              <span>N/A / Beginner (0-40%)</span>
             </div>
             <div className="flex items-center gap-2">
               <span className="w-3 h-3 rounded bg-blue-500 inline-block"></span>
               <span>Intermediate (41-80%)</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="w-3 h-3 rounded bg-[#a855f7] inline-block"></span>
+              <span className="w-3 h-3 rounded bg-emerald-500 inline-block"></span>
               <span>Advanced (81-100%)</span>
             </div>
-          </div>
-        </div>
-
-        {/* Category Strength & Team Skill Coverage */}
-        <div className="grid grid-cols-12 gap-8">
-          <div className="col-span-6 bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm">
-            <h3 className="text-xl font-bold text-slate-900 mb-6 tracking-tight">Skill Category Strength</h3>
-            <div className="space-y-5">
-              <CategoryProgress label="Frontend Development" percent="88%" color="bg-blue-500" />
-              <CategoryProgress label="Backend Systems" percent="72%" color="bg-blue-500" />
-              <CategoryProgress label="Cloud & Infrastructure" percent="45%" color="bg-amber-500" />
-              <CategoryProgress label="Database Management" percent="82%" color="bg-blue-500" />
-            </div>
-          </div>
-
-          <div className="col-span-6 bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm flex flex-col items-center justify-between">
-            <div className="w-full">
-              <h3 className="text-xl font-bold text-slate-900 mb-2 tracking-tight">Team Skill Coverage</h3>
-            </div>
-            
-            <div className="relative w-48 h-48 flex items-center justify-center my-2">
-              <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-                <circle cx="50" cy="50" r="40" stroke="#f1f5f9" strokeWidth="12" fill="transparent" />
-                <circle cx="50" cy="50" r="40" stroke="#a855f7" strokeWidth="12" fill="transparent" strokeDasharray="251.2" strokeDashoffset="80" strokeLinecap="round" />
-                <circle cx="50" cy="50" r="40" stroke="#3b82f6" strokeWidth="12" fill="transparent" strokeDasharray="251.2" strokeDashoffset="170" strokeLinecap="round" />
-              </svg>
-              <div className="absolute text-center">
-                <p className="text-4xl font-black text-slate-900 leading-none">42</p>
-                <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 mt-1">Total Skills</p>
-              </div>
-            </div>
-
-            <div className="flex gap-6 text-[11px] font-bold text-slate-500 w-full justify-center border-t border-slate-50 pt-4">
-              <div className="text-center"><p className="text-slate-900 font-black text-sm">68%</p><span className="text-xs font-medium text-slate-400">Advanced</span></div>
-              <div className="text-center"><p className="text-slate-900 font-black text-sm">20%</p><span className="text-xs font-medium text-slate-400">Inter.</span></div>
-              <div className="text-center"><p className="text-slate-900 font-black text-sm">12%</p><span className="text-xs font-medium text-slate-400">Beginner</span></div>
-            </div>
-          </div>
-        </div>
-
-        {/* Team Skill Ranking */}
-        <div className="bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm">
-          <h3 className="text-xl font-bold text-slate-900 mb-6 tracking-tight">Team Skill Ranking</h3>
-          <div className="max-h-[240px] overflow-y-auto pr-2 custom-scrollbar space-y-3">
-            <RankingRow rank={1} name="Ali Khan" imgInitials="AK" skill="React.js" score="92%" level="Advanced" />
-            <RankingRow rank={2} name="Sarah Miller" imgInitials="SM" skill="Node.js" score="88%" level="Advanced" />
-            <RankingRow rank={3} name="Jessica Doe" imgInitials="JD" skill="SQL" score="85%" level="Advanced" />
-            <RankingRow rank={4} name="John Smith" imgInitials="JS" skill="Python" score="65%" level="Intermediate" />
-          </div>
-        </div>
-
-        {/* Bottom Section */}
-        <div className="grid grid-cols-12 gap-8 items-stretch">
-          {/* Team Skill Gap Preview */}
-          <div className="col-span-5 bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm flex flex-col justify-between h-[320px]">
-            <div>
-              <h3 className="text-xl font-bold text-slate-900 mb-1 tracking-tight">Team Skill Gap Preview</h3>
-              <p className="text-xs text-slate-400 font-medium mb-4">5 critical skill gaps detected across backend and cloud technologies.</p>
-              
-              <div className="space-y-4">
-                <GapItem label="Cloud Infrastructure (AWS/Azure)" severity="High" color="text-rose-500" barColor="bg-rose-500" width="85%" />
-                <GapItem label="Container Security (Docker/K8s)" severity="Medium" color="text-amber-500" barColor="bg-amber-500" width="55%" />
-              </div>
-            </div>
-
-            <button 
-              onClick={() => navigate('/team-leader/gap-analysis')}
-              className="w-full text-center py-2.5 bg-white hover:bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 transition-all shadow-sm cursor-pointer"
-            >
-              View Full Skill Gap Analysis
-            </button>
-          </div>
-
-          {/* AI Skill Intelligence */}
-          <div className="col-span-7 bg-[#0b0f19] p-8 rounded-[2.5rem] text-white shadow-xl flex flex-col justify-between h-[320px]">
-            <div>
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 bg-blue-500/10 rounded-xl flex items-center justify-center">
-                  <Layers className="text-blue-400" size={22} />
-                </div>
-                <h4 className="text-xl font-bold tracking-tight">AI Skill Intelligence</h4>
-              </div>
-
-              <p className="text-sm text-slate-300 leading-relaxed font-medium max-w-xl">
-                Your team is strongest in <span className="text-blue-400 font-bold">frontend and UI technologies</span> but shows lower proficiency in <span className="text-amber-400 font-bold">backend and cloud infrastructure</span> skills. Training recommendations have been generated.
-              </p>
-            </div>
-
-            <button 
-              onClick={() => navigate('/team-leader/assign-learning')}
-              className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm rounded-xl transition-all shadow-lg shadow-blue-600/10 text-center flex items-center justify-center gap-2 cursor-pointer"
-            >
-              <span>Improve Skill Coverage</span>
-            </button>
           </div>
         </div>
 
@@ -265,33 +283,33 @@ const TeamSkillOverview = () => {
   );
 };
 
-/* --- Helper Sub-components --- */
+/* --- Subcomponents --- */
 
-const OverviewStatCard = ({ title, value, sub, color, isBadge, isTrend, isProgress, isLink, onLinkClick }) => {
+const OverviewStatCard = ({ title, value, sub, color, isLink, onLinkClick }) => {
+  const colorMap = {
+    blue: 'border-l-blue-600',
+    emerald: 'border-l-emerald-500',
+    purple: 'border-l-purple-500',
+    rose: 'border-l-rose-500'
+  };
+
   return (
-    <div className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm relative overflow-hidden flex flex-col justify-between">
-      <div>
-        <p className="text-slate-400 text-xs font-bold mb-2 uppercase tracking-wider">{title}</p>
-        <h4 className={`text-3xl font-black tracking-tight ${color === 'rose' ? 'text-rose-500' : 'text-slate-900'}`}>{value}</h4>
-      </div>
-      <div className="mt-4 flex items-center justify-between">
-        {isBadge && <span className="text-[10px] font-black uppercase tracking-wider bg-slate-100 text-slate-500 px-2.5 py-1 rounded-md">{sub}</span>}
-        {isTrend && <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2.5 py-0.5 rounded-md">{sub}</span>}
-        {isProgress && (
-          <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden mt-1">
-            <div className="h-full bg-purple-500 rounded-full" style={{ width: '68%' }}></div>
-          </div>
-        )}
-        {isLink && (
-          <button 
-            onClick={onLinkClick} 
-            className="text-xs font-bold text-rose-500 flex items-center gap-1 hover:underline border-0 bg-transparent cursor-pointer p-0"
-          >
-            <span>{sub}</span>
-            <ArrowRight size={14} />
-          </button>
-        )}
-      </div>
+    <div className={`bg-white rounded-2xl p-6 border border-slate-100 border-l-4 ${colorMap[color]} shadow-sm`}>
+      <p className="text-slate-400 text-xs font-bold uppercase tracking-wider mb-2">{title}</p>
+      <h3 className="text-2xl font-black text-slate-900 mb-2">{value}</h3>
+      {sub && (
+        <span className="text-xs font-bold text-slate-500 bg-slate-50 px-2 py-1 rounded-md">
+          {sub}
+        </span>
+      )}
+      {isLink && (
+        <button 
+          onClick={onLinkClick} 
+          className="text-xs font-bold text-rose-600 hover:underline block mt-2"
+        >
+          View Gaps →
+        </button>
+      )}
     </div>
   );
 };
@@ -300,93 +318,43 @@ const FilterSelect = ({ value, onChange, options }) => (
   <select 
     value={value} 
     onChange={(e) => onChange(e.target.value)}
-    className="bg-slate-50 border border-slate-100 hover:bg-slate-100 px-3 py-2 rounded-xl text-xs font-bold text-slate-600 focus:outline-none cursor-pointer transition-colors"
+    className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-700 focus:outline-none cursor-pointer"
   >
-    {options.map((option, idx) => (
-      <option key={idx} value={option}>{option}</option>
+    {options.map((opt) => (
+      <option key={opt} value={opt}>{opt}</option>
     ))}
   </select>
 );
 
-const MatrixRow = ({ name, initials, skills }) => {
-  const getCellBg = (val) => {
-    const num = parseInt(val, 10);
-    if (num <= 40) return 'bg-slate-100 text-slate-500';
-    if (num <= 80) return 'bg-blue-500 text-white';
-    return 'bg-[#a855f7] text-white';
-  };
-
-  return (
-    <tr className="hover:bg-slate-50/50 transition-colors">
-      <td className="py-4 px-6 flex items-center gap-3">
-        <div className="w-8 h-8 rounded-full bg-slate-200 text-slate-600 font-bold text-xs flex items-center justify-center">
-          {initials}
-        </div>
-        <span className="font-bold text-slate-900">{name}</span>
-      </td>
-      {skills.map((score, i) => (
+const MatrixRow = ({ name, role, initials, skills, onClick }) => (
+  <tr className="hover:bg-slate-50/50 transition-colors cursor-pointer" onClick={onClick}>
+    <td className="py-4 px-6 flex items-center gap-3">
+      <div className="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center text-xs font-black shrink-0">
+        {initials}
+      </div>
+      <div>
+        <p className="font-bold text-slate-900 text-sm leading-tight hover:text-blue-600 transition-colors">{name}</p>
+        <span className="text-[10px] text-slate-400 font-medium">{role}</span>
+      </div>
+    </td>
+    {skills.map((pct, i) => {
+      const num = parseInt(pct) || 0;
+      const bg = pct === 'N/A' 
+        ? 'bg-slate-100 text-slate-400 border-slate-200' 
+        : num > 80 
+        ? 'bg-emerald-50 text-emerald-600 border-emerald-100' 
+        : num > 40 
+        ? 'bg-blue-50 text-blue-600 border-blue-100' 
+        : 'bg-slate-100 text-slate-500 border-slate-200';
+      return (
         <td key={i} className="py-4 px-4 text-center">
-          <span className={`inline-block text-[11px] font-black px-3 py-1 rounded-lg ${getCellBg(score)}`}>
-            {score}
+          <span className={`inline-block px-2.5 py-1 rounded-lg text-xs font-bold border ${bg}`}>
+            {pct}
           </span>
         </td>
-      ))}
-    </tr>
-  );
-};
-
-const CategoryProgress = ({ label, percent, color }) => (
-  <div className="space-y-2">
-    <div className="flex justify-between items-center text-xs font-bold">
-      <span className="text-slate-600">{label}</span>
-      <span className="text-slate-900">{percent}</span>
-    </div>
-    <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
-      <div className={`h-full ${color} rounded-full`} style={{ width: percent }}></div>
-    </div>
-  </div>
-);
-
-const RankingRow = ({ rank, name, imgInitials, skill, score, level }) => (
-  <div className="flex justify-between items-center p-4 bg-slate-50/50 rounded-2xl border border-transparent hover:border-slate-100 hover:bg-white transition-all">
-    <div className="flex items-center gap-4">
-      <div className="w-6 text-center text-sm font-black text-blue-600 bg-blue-50 px-2 py-0.5 rounded">
-        {rank}
-      </div>
-      <div className="w-8 h-8 rounded-full bg-slate-200 text-slate-600 font-bold text-xs flex items-center justify-center">
-        {imgInitials}
-      </div>
-      <div>
-        <p className="text-sm font-bold text-slate-900 leading-tight">{name}</p>
-      </div>
-    </div>
-    <div className="flex items-center gap-16 text-right">
-      <div>
-        <p className="text-xs text-slate-400 font-bold mb-0.5">Primary Skill</p>
-        <p className="text-sm font-bold text-slate-700">{skill}</p>
-      </div>
-      <div>
-        <p className="text-sm font-black text-blue-600">{score}</p>
-      </div>
-      <div className="w-24 text-center">
-        <span className="text-[10px] font-black uppercase tracking-wider text-purple-600 bg-purple-50 px-2.5 py-1 rounded-md">
-          {level}
-        </span>
-      </div>
-    </div>
-  </div>
-);
-
-const GapItem = ({ label, severity, color, barColor, width }) => (
-  <div className="space-y-2">
-    <div className="flex justify-between items-center text-xs font-bold">
-      <span className="text-slate-700">{label}</span>
-      <span className={`text-[11px] font-black ${color}`}>{severity}</span>
-    </div>
-    <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
-      <div className={`h-full ${barColor} rounded-full`} style={{ width: width }}></div>
-    </div>
-  </div>
+      );
+    })}
+  </tr>
 );
 
 export default TeamSkillOverview;

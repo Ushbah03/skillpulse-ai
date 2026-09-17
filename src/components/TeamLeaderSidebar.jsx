@@ -35,9 +35,11 @@ const TeamLeaderSidebar = () => {
   const location = useLocation();
 
   const handleLogout = () => {
-    // Clear auth session / tokens if needed
+    localStorage.removeItem('token');
     localStorage.removeItem('authToken');
-    navigate('/login');
+    localStorage.removeItem('user');
+    localStorage.removeItem('userRole');
+    window.location.replace('/login');
   };
 
   return (
@@ -53,7 +55,7 @@ const TeamLeaderSidebar = () => {
       <motion.div
         whileTap={{ scale: 0.98 }}
         className="p-6 mb-2 flex items-center gap-3 cursor-pointer group relative z-10"
-        onClick={() => navigate('/select-role')}
+        onClick={() => navigate('/team-leader')}
       >
         <div className="w-10 h-10 rounded-xl flex items-center justify-center overflow-hidden bg-transparent">
           <motion.img

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { 
   ShieldCheck, 
@@ -10,30 +10,79 @@ import {
   AlertCircle, 
   CheckCircle2, 
   ShieldAlert,
-  Server
+  Server,
+  Loader2
 } from 'lucide-react';
 
 import CompanyAdminSidebar from './CompanyAdminSidebar';
+import { adminAPI } from '../services/api';
 
 const SecurityAccessPolicies = () => {
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
 
-  // Security Policy States
+  // Security Policy States (stored in SystemParameter table in DB)
   const [ssoEnforced, setSsoEnforced] = useState(true);
   const [mfaRequirement, setMfaRequirement] = useState('all'); // 'all' | 'admins' | 'optional'
-  const [sessionTimeout, setSessionTimeout] = useState('30'); // minutes
+  const [sessionTimeout, setSessionTimeout] = useState('60'); // minutes
   const [ipWhitelistingEnabled, setIpWhitelistingEnabled] = useState(false);
   const [whitelistedIPs, setWhitelistedIPs] = useState('192.168.1.1/24, 10.0.0.1');
   const [passwordMinLength, setPasswordMinLength] = useState(12);
   const [requireSpecialChar, setRequireSpecialChar] = useState(true);
   const [auditLogRetentionDays, setAuditLogRetentionDays] = useState(90);
 
-  const handleSavePolicies = (e) => {
-    e.preventDefault();
-    setSaveSuccess(true);
-    setTimeout(() => {
-      setSaveSuccess(false);
-    }, 2500);
+  useEffect(() => {
+    const fetchPolicies = async () => {
+      setLoading(true);
+      try {
+        const res = await adminAPI.getSecurityPolicies();
+        if (res?.success && res.data) {
+          const d = res.data;
+          if (d.ssoEnforced !== undefined) setSsoEnforced(d.ssoEnforced);
+          if (d.mfaRequirement) setMfaRequirement(d.mfaRequirement);
+          if (d.sessionTimeout) setSessionTimeout(String(d.sessionTimeout));
+          if (d.ipWhitelistingEnabled !== undefined) setIpWhitelistingEnabled(d.ipWhitelistingEnabled);
+          if (d.whitelistedIPs) setWhitelistedIPs(d.whitelistedIPs);
+          if (d.passwordMinLength) setPasswordMinLength(d.passwordMinLength);
+          if (d.requireSpecialChar !== undefined) setRequireSpecialChar(d.requireSpecialChar);
+          if (d.auditLogRetentionDays) setAuditLogRetentionDays(d.auditLogRetentionDays);
+        }
+      } catch (err) {
+        console.warn('Failed to load security policies:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPolicies();
+  }, []);
+
+  const handleSavePolicies = async (e) => {
+    if (e) e.preventDefault();
+    setSaving(true);
+    try {
+      const payload = {
+        ssoEnforced,
+        mfaRequirement,
+        sessionTimeout,
+        ipWhitelistingEnabled,
+        whitelistedIPs,
+        passwordMinLength,
+        requireSpecialChar,
+        auditLogRetentionDays
+      };
+      const res = await adminAPI.updateSecurityPolicies(payload);
+      if (res?.success) {
+        setSaveSuccess(true);
+        setTimeout(() => {
+          setSaveSuccess(false);
+        }, 3000);
+      }
+    } catch (err) {
+      console.warn('Failed to save security policies:', err);
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -57,10 +106,20 @@ const SecurityAccessPolicies = () => {
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             onClick={handleSavePolicies}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold shadow-lg shadow-indigo-600/20 transition-all duration-200 shrink-0"
+            disabled={saving || loading}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white text-sm font-semibold shadow-lg shadow-indigo-600/20 transition-all duration-200 shrink-0"
           >
-            <Save className="w-4 h-4" />
-            Save Security Policies
+            {saving ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Saving to Database...
+              </>
+            ) : (
+              <>
+                <Save className="w-4 h-4" />
+                Save Security Policies
+              </>
+            )}
           </motion.button>
         </div>
 

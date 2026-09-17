@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useGoogleLogin } from '@react-oauth/google';
+import { authAPI } from '../services/api';
 
 // SVG Icons
 const Icons = {
@@ -41,6 +43,18 @@ const Icons = {
     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
       <path d="M21 2l-2 2m-1.5 1.5L14 9.5l-2.5-2.5L10 8.5 7.5 6 6 7.5 8.5 10l-6 6V21h5l6.5-6.5" />
     </svg>
+  ),
+  Eye: () => (
+    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+      <circle cx="12" cy="12" r="3" />
+    </svg>
+  ),
+  EyeOff: () => (
+    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+      <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+      <line x1="1" y1="1" x2="23" y2="23" />
+    </svg>
   )
 };
 
@@ -61,13 +75,9 @@ const AuthInput = ({ label, name, type = 'text', placeholder, value, onChange, i
         value={value}
         onChange={onChange}
         required={required}
-        className={`w-full bg-[#1E2536]/40 border border-white/5 rounded-2xl py-3.5 pl-11 ${suffix ? 'pr-28' : 'pr-4'} text-sm text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/60 focus:border-indigo-500/40 transition-all backdrop-blur-md shadow-2xl hover:border-white/15`}
+        className="w-full bg-slate-900/40 border border-slate-700/50 text-sm text-slate-200 px-11 py-3.5 rounded-2xl focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/50 transition-all duration-300 placeholder:text-slate-600 shadow-inner"
       />
-      {suffix && (
-        <span className="absolute right-4 text-xs font-semibold text-indigo-400/80 pointer-events-none">
-          {suffix}
-        </span>
-      )}
+      {suffix && <span className="absolute right-4 text-slate-500 text-sm font-medium z-10">{suffix}</span>}
     </div>
   </div>
 );
@@ -88,11 +98,91 @@ const SignUp = () => {
     workspaceSubdomain: '',
     inviteCode: '',
     requestedRole: 'Company Admin',
+    selectedPlan: 'Starter',
   });
 
   const [showPopup, setShowPopup] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
+
+  // Refs for stale closures
+  const formDataRef = useRef(formData);
+  const signupTypeRef = useRef(signupType);
+  
+  useEffect(() => {
+    formDataRef.current = formData;
+    signupTypeRef.current = signupType;
+  }, [formData, signupType]);
+
+  const handleGoogleSSO = useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
+      setGoogleLoading(true);
+      setErrorMessage('');
+      try {
+        const latestFormData = formDataRef.current;
+        const latestSignupType = signupTypeRef.current;
+        
+        const roleMap = {
+          'Employee': 'EMPLOYEE',
+          'Company Admin': 'COMPANY_ADMIN',
+          'HR Manager': 'HR_MANAGER',
+          'Team Leader': 'TEAM_LEADER'
+        };
+
+        const payload = {
+          credential: tokenResponse.access_token,
+          isNewWorkspace: latestSignupType === 'create',
+          organizationName: latestSignupType === 'create' ? latestFormData.organizationName : undefined,
+          tenantSlug: latestSignupType === 'create' ? latestFormData.workspaceSubdomain : latestFormData.inviteCode,
+          role: latestSignupType === 'create' ? 'COMPANY_ADMIN' : (roleMap[latestFormData.requestedRole] || 'EMPLOYEE'),
+          plan: latestSignupType === 'create' ? latestFormData.selectedPlan : undefined
+        };
+
+        const res = await authAPI.googleSSO(payload);
+
+        if (res?.success) {
+          localStorage.setItem('token', res.token);
+          const userData = res.user || res.data;
+          localStorage.setItem('user', JSON.stringify(userData));
+
+          if (signupType === 'create') {
+            // Initiate Stripe Checkout for Selected Plan
+            try {
+              const seats = formData.selectedPlan === 'Enterprise AI' ? 1000 : formData.selectedPlan === 'Professional' ? 250 : 30;
+              const checkoutRes = await import('../services/api').then(m => m.paymentAPI.createCheckoutSession(userData.tenant.id, formData.selectedPlan, seats));
+              if (checkoutRes?.success && checkoutRes.url) {
+                window.location.href = checkoutRes.url;
+                return; // Stop execution here, we are redirecting
+              }
+            } catch (paymentErr) {
+              console.error('Failed to initiate checkout:', paymentErr);
+              setErrorMessage(paymentErr?.response?.data?.message || paymentErr?.message || 'Stripe Checkout failed to initialize. Please try again.');
+              setGoogleLoading(false);
+              return;
+            }
+          } else {
+            // Route based on status for normal join
+            const userRole = userData?.role;
+            const { getRoleDefaultPath } = await import('./ProtectedRoute');
+            window.location.href = getRoleDefaultPath(userRole);
+          }
+        } else {
+          setErrorMessage(res?.message || 'Google Sign-In failed. Please try again.');
+        }
+      } catch (err) {
+        setErrorMessage(err?.message || 'Google Sign-In failed. Please try again.');
+      } finally {
+        setGoogleLoading(false);
+      }
+    },
+    onError: () => {
+      setErrorMessage('Google Sign-In was cancelled or failed. Please try again.');
+    },
+    flow: 'implicit',
+  });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -120,7 +210,7 @@ const SignUp = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (formData.password !== formData.confirmPassword) {
@@ -139,15 +229,66 @@ const SignUp = () => {
     }
 
     setIsSubmitting(true);
+    setErrorMessage('');
 
-    setTimeout(() => {
+    try {
+      const [firstName, ...lastNameParts] = formData.fullName.split(' ');
+      const lastName = lastNameParts.join(' ') || 'User';
+      
+      const roleMap = {
+        'Employee': 'EMPLOYEE',
+        'Company Admin': 'COMPANY_ADMIN',
+        'HR Manager': 'HR_MANAGER',
+        'Team Leader': 'TEAM_LEADER'
+      };
+
+      const payload = {
+        email: formData.email,
+        password: formData.password,
+        firstName,
+        lastName,
+        isNewWorkspace: signupType === 'create',
+        organizationName: signupType === 'create' ? formData.organizationName : undefined,
+        tenantSlug: signupType === 'create' ? formData.workspaceSubdomain : formData.inviteCode,
+        role: roleMap[formData.requestedRole] || 'EMPLOYEE'
+      };
+
+      const res = await authAPI.register(payload);
+      
+      if (res?.success) {
+        if (signupType === 'create') {
+          // Immediately log them in so they can access the post-payment page
+          localStorage.setItem('token', res.token);
+          localStorage.setItem('user', JSON.stringify(res.data));
+
+          // Initiate Stripe Checkout for Selected Plan
+          try {
+            const seats = formData.selectedPlan === 'Enterprise AI' ? 1000 : formData.selectedPlan === 'Professional' ? 250 : 30;
+            const checkoutRes = await import('../services/api').then(m => m.paymentAPI.createCheckoutSession(res.data.tenant.id, formData.selectedPlan, seats));
+            if (checkoutRes?.success && checkoutRes.url) {
+              window.location.href = checkoutRes.url;
+              return; // Stop execution here, we are redirecting
+            }
+          } catch (paymentErr) {
+            console.error('Failed to initiate checkout:', paymentErr);
+            setErrorMessage(paymentErr?.response?.data?.message || paymentErr?.message || 'Stripe Checkout failed to initialize. Please try again.');
+            setIsSubmitting(false);
+            return;
+          }
+        } else {
+          // Join Existing Workspace — save user & token, ProtectedRoute will show ApprovalPendingWall
+          localStorage.setItem('token', res.token);
+          localStorage.setItem('user', JSON.stringify(res.data));
+          navigate('/company-admin'); // ProtectedRoute intercepts and shows the approval wall
+        }
+      } else {
+        setErrorMessage(res?.message || 'Registration failed. Please check your details.');
+      }
+    } catch (err) {
+      setErrorMessage(err?.response?.data?.message || err?.message || 'An error occurred during registration.');
+    } finally {
       setIsSubmitting(false);
-      setShowPopup(true);
-
-      setTimeout(() => {
-        navigate('/login');
-      }, 2500);
-    }, 1000);
+    }
   };
 
   const fadeInUp = {
@@ -294,20 +435,40 @@ const SignUp = () => {
               <AuthInput
                 label="Password"
                 name="password"
-                type="password"
+                type={showPassword ? "text" : "password"}
                 placeholder="••••••••"
                 value={formData.password}
                 onChange={handleChange}
                 icon={<Icons.Lock />}
+                suffix={
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="text-slate-500 hover:text-white transition-colors focus:outline-none"
+                    title={showPassword ? "Hide password" : "Show password"}
+                  >
+                    {showPassword ? <Icons.EyeOff /> : <Icons.Eye />}
+                  </button>
+                }
               />
               <AuthInput
                 label="Confirm Password"
                 name="confirmPassword"
-                type="password"
+                type={showConfirmPassword ? "text" : "password"}
                 placeholder="••••••••"
                 value={formData.confirmPassword}
                 onChange={handleChange}
                 icon={<Icons.Lock />}
+                suffix={
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="text-slate-500 hover:text-white transition-colors focus:outline-none"
+                    title={showConfirmPassword ? "Hide password" : "Show password"}
+                  >
+                    {showConfirmPassword ? <Icons.EyeOff /> : <Icons.Eye />}
+                  </button>
+                }
               />
             </div>
 
@@ -381,6 +542,31 @@ const SignUp = () => {
                   </svg>
                 </div>
               </div>
+
+              {signupType === 'create' && (
+                <div className="flex flex-col gap-1.5 text-left group mt-4">
+                  <label className="text-slate-400 text-[11px] font-semibold ml-1 uppercase tracking-wider group-focus-within:text-indigo-400 transition-colors duration-300">
+                    Subscription Plan
+                  </label>
+                  <div className="relative transform transition-transform duration-300 group-focus-within:translate-x-1">
+                    <select
+                      name="selectedPlan"
+                      value={formData.selectedPlan}
+                      onChange={handleChange}
+                      className="w-full bg-[#1E2536]/40 border border-white/5 rounded-2xl py-3.5 px-4 text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/60 focus:border-indigo-500/40 transition-all backdrop-blur-md appearance-none cursor-pointer hover:border-white/10"
+                    >
+                      <option className="bg-[#111827] text-white" value="Starter">Starter ($600/mo - 30 Seats)</option>
+                      <option className="bg-[#111827] text-white" value="Professional">Professional ($1200/mo - 250 Seats)</option>
+                      <option className="bg-[#111827] text-white" value="Enterprise AI">Enterprise AI ($2500/mo - 1000 Seats)</option>
+                    </select>
+                    <div className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-slate-400 group-focus-within:text-indigo-400 transition-colors">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+              )}
               <p className="text-[10px] text-slate-500 mt-1 pl-1 font-medium">
                 {signupType === 'create'
                   ? 'Creating a new organization tenant requires approval from System Admin'
@@ -406,7 +592,36 @@ const SignUp = () => {
             </motion.button>
           </form>
 
-          <p className="text-center text-sm text-slate-500 mt-8 font-medium">
+          {/* Divider */}
+          <div className="flex items-center gap-3 mt-5">
+            <div className="flex-1 h-px bg-slate-700/60"></div>
+            <span className="text-xs text-slate-500 font-medium">or continue with</span>
+            <div className="flex-1 h-px bg-slate-700/60"></div>
+          </div>
+
+          {/* Google SSO Button */}
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            type="button"
+            onClick={() => handleGoogleSSO()}
+            disabled={googleLoading}
+            className="w-full flex items-center justify-center gap-3 mt-4 py-3.5 bg-white/5 hover:bg-white/10 border border-slate-700/60 hover:border-slate-500 rounded-full text-sm font-semibold text-white transition-all duration-200 disabled:opacity-50"
+          >
+            {googleLoading ? (
+              <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+            ) : (
+              <svg className="w-5 h-5" viewBox="0 0 24 24">
+                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/>
+                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+              </svg>
+            )}
+            {googleLoading ? 'Signing in with Google...' : 'Continue with Google'}
+          </motion.button>
+
+          <p className="text-center text-sm text-slate-500 mt-6 font-medium">
             Already registered?{' '}
             <Link to="/login" className="text-white font-bold underline hover:text-indigo-400 transition-colors">
               Sign In

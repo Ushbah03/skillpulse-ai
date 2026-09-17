@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import TeamLeaderSidebar from './TeamLeaderSidebar'; 
 import { 
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
@@ -9,9 +9,9 @@ import {
   TrendingUp, AlertTriangle, ArrowUpRight, Download, Search, 
   SlidersHorizontal, Calendar, X, CheckCircle2, Loader2, Sparkles, BookOpen
 } from 'lucide-react';
+import { teamLeaderAPI } from '../services/api';
 
-// --- Mock Data ---
-const performanceTrendData = [
+const defaultTrendData = [
   { month: 'Jan', current: 62, benchmark: 70 },
   { month: 'Feb', current: 68, benchmark: 71 },
   { month: 'Mar', current: 75, benchmark: 72 },
@@ -20,40 +20,7 @@ const performanceTrendData = [
   { month: 'Jun', current: 88, benchmark: 76 },
 ];
 
-const initialMembers = [
-  {
-    id: 1,
-    name: "Elena Foster",
-    role: "Senior UX Designer",
-    score: "9.2",
-    trend: "+0.4",
-    readiness: "96%",
-    rating: "Excellent",
-    avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=80&h=80&q=80"
-  },
-  {
-    id: 2,
-    name: "David Kumar",
-    role: "DevOps Engineer",
-    score: "6.4",
-    trend: "-1.2",
-    readiness: "72%",
-    rating: "At Risk",
-    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=80&h=80&q=80"
-  },
-  {
-    id: 3,
-    name: "Sarah Jenkins",
-    role: "React Specialist",
-    score: "8.8",
-    trend: "+0.8",
-    readiness: "92%",
-    rating: "Good",
-    avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=80&h=80&q=80"
-  }
-];
-
-const distributionData = [
+const defaultDistribution = [
   { range: '0-2', count: 0 },
   { range: '3-4', count: 0 },
   { range: '5-6', count: 1 },
@@ -61,7 +28,7 @@ const distributionData = [
   { range: '9-10', count: 8 },
 ];
 
-const breakdownData = [
+const defaultBreakdown = [
   { name: 'High', value: 9, color: '#6366f1' },
   { name: 'Medium', value: 4, color: '#3b82f6' },
   { name: 'Low', value: 1, color: '#ef4444' }
@@ -69,21 +36,105 @@ const breakdownData = [
 
 export default function PerformanceMonitor() {
   const [activeTab, setActiveTab] = useState('performance');
+  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [timeRange, setTimeRange] = useState('Last 30 Days');
   const [isGeneratingReport, setIsGeneratingReport] = useState(false);
   const [activeModal, setActiveModal] = useState(null); // 'plan', 'report', 'gaps'
   const [selectedMemberForPlan, setSelectedMemberForPlan] = useState(null);
+  const [assigningPlan, setAssigningPlan] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
 
-  // Filter members dynamically
-  const filteredMembers = initialMembers.filter(member => 
-    member.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    member.role.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // Live Performance State
+  const [members, setMembers] = useState([]);
+  const [summary, setSummary] = useState({
+    overallTeamScorePct: '80%',
+    avgMemberPerf: '8.4',
+    highPerformersCount: 0,
+    riskAlertsCount: 0
+  });
+  const [distributionData, setDistributionData] = useState(defaultDistribution);
+  const [breakdownData, setBreakdownData] = useState(defaultBreakdown);
+  const [trendData, setTrendData] = useState(defaultTrendData);
+  const [atRiskMembers, setAtRiskMembers] = useState([]);
+
+  // Fetch live performance data on mount
+  useEffect(() => {
+    const loadPerformanceData = async () => {
+      try {
+        setLoading(true);
+        const res = await teamLeaderAPI.getPerformance();
+        if (res?.success && res.data) {
+          const d = res.data;
+          setSummary(d.summary || summary);
+          setMembers(d.members || []);
+          if (d.distribution) setDistributionData(d.distribution);
+          if (d.breakdown) setBreakdownData(d.breakdown);
+          if (d.trendData) setTrendData(d.trendData);
+          if (d.atRiskMembers) setAtRiskMembers(d.atRiskMembers);
+        }
+      } catch (err) {
+        console.warn('Failed to fetch team performance data:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadPerformanceData();
+  }, []);
+
+  const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
+  const leaderName = storedUser.firstName ? `${storedUser.firstName} ${storedUser.lastName}` : 'Team Lead';
+  const leaderAvatar = storedUser.avatarUrl || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=80&h=80&q=80";
+
+  const [metricFilter, setMetricFilter] = useState('All Metrics');
+
+  // Filter members dynamically by search query and metric category
+  const filteredMembers = members.filter(member => {
+    const matchesSearch = member.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      member.role.toLowerCase().includes(searchQuery.toLowerCase());
+    if (!matchesSearch) return false;
+
+    if (metricFilter === 'High Performers') return member.rating === 'Excellent';
+    if (metricFilter === 'Good Standing') return member.rating === 'Good';
+    if (metricFilter === 'At Risk Only') return member.rating === 'At Risk';
+
+    return true;
+  });
+
+  // Filter trend chart data dynamically based on selected timeframe
+  const filteredTrendData = React.useMemo(() => {
+    if (timeRange === 'Last 30 Days') {
+      return trendData.slice(-3); // Last 3 months window
+    }
+    if (timeRange === 'Last Quarter (Q2)') {
+      return trendData.filter(d => ['Apr', 'May', 'Jun'].includes(d.month));
+    }
+    return trendData; // Year to Date (full period)
+  }, [timeRange, trendData]);
 
   const handleOpenPlan = (member) => {
     setSelectedMemberForPlan(member);
     setActiveModal('plan');
+  };
+
+  const handleAssignPlanSubmit = async () => {
+    if (!selectedMemberForPlan) return;
+    try {
+      setAssigningPlan(true);
+      await teamLeaderAPI.assignTraining({
+        userId: selectedMemberForPlan.id,
+        courseId: 'default-perf-course'
+      });
+      setToastMessage(`Performance improvement training assigned to ${selectedMemberForPlan.name}!`);
+      setTimeout(() => setToastMessage(''), 4000);
+      setActiveModal(null);
+    } catch (err) {
+      console.warn('Assign training error:', err);
+      setActiveModal(null);
+    } finally {
+      setAssigningPlan(false);
+    }
   };
 
   const handleGenerateReport = () => {
@@ -99,9 +150,22 @@ export default function PerformanceMonitor() {
       {/* 1. Constant Sidebar */}
       <TeamLeaderSidebar activeTab={activeTab} setActiveTab={setActiveTab} />
       
-      {/* 2. Main Content Area */}
-      <main className="flex-1 ml-72 p-12 max-w-[1600px] mx-auto space-y-10">
+      {/* 2. Main Content Area - Fluid Full Width */}
+      <main className="flex-1 ml-72 p-10 w-full space-y-8">
         
+        {/* Toast Notification */}
+        {toastMessage && (
+          <div className="bg-emerald-600 text-white px-6 py-3 rounded-2xl shadow-lg flex items-center justify-between font-bold text-sm">
+            <div className="flex items-center gap-2">
+              <CheckCircle2 size={18} />
+              <span>{toastMessage}</span>
+            </div>
+            <button onClick={() => setToastMessage('')} className="hover:opacity-80 cursor-pointer">
+              <X size={16} />
+            </button>
+          </div>
+        )}
+
         {/* Header Bar */}
         <header className="flex flex-col md:flex-row md:items-center md:justify-between border-b border-slate-200/60 pb-6 gap-4">
           <div>
@@ -117,25 +181,35 @@ export default function PerformanceMonitor() {
                 onChange={(e) => setTimeRange(e.target.value)}
                 className="appearance-none bg-white border border-slate-200 pl-10 pr-8 py-3 rounded-xl text-sm font-bold text-slate-700 shadow-sm hover:bg-slate-50 transition-all cursor-pointer focus:outline-none"
               >
-                <option>Last 30 Days</option>
-                <option>Last Quarter (Q2)</option>
-                <option>Year to Date</option>
+                <option value="Last 30 Days">Last 30 Days</option>
+                <option value="Last Quarter (Q2)">Last Quarter (Q2)</option>
+                <option value="Year to Date">Year to Date</option>
               </select>
               <Calendar className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5 pointer-events-none" />
             </div>
 
-            <button className="flex items-center gap-2 bg-white border border-slate-200 px-5 py-3 rounded-xl text-sm font-bold text-slate-700 shadow-sm hover:bg-slate-50 transition-all">
-              <SlidersHorizontal className="w-4 h-4 text-slate-400" />
-              <span>All Metrics</span>
-            </button>
+            {/* Metrics Filter Selector */}
+            <div className="relative">
+              <select 
+                value={metricFilter} 
+                onChange={(e) => setMetricFilter(e.target.value)}
+                className="appearance-none bg-white border border-slate-200 pl-10 pr-8 py-3 rounded-xl text-sm font-bold text-slate-700 shadow-sm hover:bg-slate-50 transition-all cursor-pointer focus:outline-none"
+              >
+                <option value="All Metrics">All Metrics</option>
+                <option value="High Performers">High Performers (Excellent)</option>
+                <option value="Good Standing">Good Standing</option>
+                <option value="At Risk Only">At Risk Only</option>
+              </select>
+              <SlidersHorizontal className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5 pointer-events-none" />
+            </div>
             
             <div className="flex items-center gap-4 pl-4 border-l border-slate-200">
                <div className="text-right">
-                  <p className="text-base font-black text-slate-900 leading-none">Alex Morgan</p>
+                  <p className="text-base font-black text-slate-900 leading-none">{leaderName}</p>
                   <p className="text-sm font-bold text-slate-400 mt-1.5">Team Lead</p>
                </div>
                <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-slate-200 shadow-sm">
-                  <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=80&h=80&q=80" alt="Profile" className="w-full h-full object-cover" />
+                  <img src={leaderAvatar} alt={leaderName} className="w-full h-full object-cover" />
                </div>
             </div>
           </div>
@@ -149,7 +223,7 @@ export default function PerformanceMonitor() {
               <h3 className="text-3xl font-black text-slate-900 mt-3 tracking-tight">High Perform</h3>
             </div>
             <div className="w-16 h-16 rounded-full border-[5px] border-indigo-600 flex items-center justify-center text-base font-black text-indigo-600 shadow-inner">
-              80%
+              {summary.overallTeamScorePct}
             </div>
           </div>
 
@@ -157,7 +231,7 @@ export default function PerformanceMonitor() {
             <p className="text-xs font-black text-slate-400 uppercase tracking-widest">Avg Member Perf.</p>
             <div className="mt-2">
               <div className="flex items-baseline gap-1.5">
-                <span className="text-4xl font-black text-slate-900 tracking-tight">8.4</span>
+                <span className="text-4xl font-black text-slate-900 tracking-tight">{summary.avgMemberPerf}</span>
                 <span className="text-base font-black text-slate-400">/ 10</span>
               </div>
               <div className="flex items-center gap-1 text-emerald-600 text-sm font-bold mt-2">
@@ -170,9 +244,9 @@ export default function PerformanceMonitor() {
           <div className="bg-white p-7 rounded-[2rem] border border-slate-100 shadow-sm flex flex-col justify-between min-h-[160px]">
             <p className="text-xs font-black text-slate-400 uppercase tracking-widest">High Performers</p>
             <div className="mt-2">
-              <h3 className="text-4xl font-black text-slate-900 tracking-tight">12</h3>
+              <h3 className="text-4xl font-black text-slate-900 tracking-tight">{summary.highPerformersCount}</h3>
               <span className="inline-block bg-indigo-50 border border-indigo-100 text-indigo-600 text-xs font-black px-3 py-1 rounded-xl mt-3">
-                Top 20%
+                Top Performers
               </span>
             </div>
           </div>
@@ -180,7 +254,7 @@ export default function PerformanceMonitor() {
           <div className="bg-white p-7 rounded-[2rem] border border-slate-100 shadow-sm flex flex-col justify-between min-h-[160px]">
             <p className="text-xs font-black text-slate-400 uppercase tracking-widest">Risk Alerts</p>
             <div className="mt-2">
-              <h3 className="text-4xl font-black text-slate-900 tracking-tight">2</h3>
+              <h3 className="text-4xl font-black text-slate-900 tracking-tight">{summary.riskAlertsCount}</h3>
               <span className="inline-flex items-center gap-1.5 bg-rose-50 border border-rose-100 text-rose-600 text-xs font-black px-3 py-1 rounded-xl mt-3 animate-pulse">
                 <AlertTriangle className="w-3.5 h-3.5" /> Action Required
               </span>
@@ -215,7 +289,7 @@ export default function PerformanceMonitor() {
               
               <div className="h-64 w-full mt-4">
                 <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={performanceTrendData} margin={{ left: -15, right: 10 }}>
+                  <LineChart data={filteredTrendData} margin={{ left: -15, right: 10 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
                     <XAxis dataKey="month" stroke="#94a3b8" fontSize={12} fontWeight="bold" tickLine={false} />
                     <YAxis domain={[50, 100]} stroke="#94a3b8" fontSize={12} fontWeight="bold" tickLine={false} />
@@ -359,7 +433,7 @@ export default function PerformanceMonitor() {
                       </PieChart>
                     </ResponsiveContainer>
                     <div className="absolute inset-0 flex flex-col items-center justify-center">
-                      <span className="text-2xl font-black text-slate-900">14</span>
+                      <span className="text-2xl font-black text-slate-900">{members.length}</span>
                       <span className="text-[10px] text-slate-400 uppercase tracking-widest font-black mt-0.5">Total</span>
                     </div>
                   </div>
@@ -384,31 +458,41 @@ export default function PerformanceMonitor() {
             
             {/* Performance Risks Breakdown Block */}
             <div className="bg-white rounded-[2.5rem] border border-slate-100 p-8 shadow-sm">
-              <h3 className="text-xs font-black tracking-widest uppercase text-rose-600 mb-5">Performance Risks</h3>
+              <h3 className="text-xs font-black tracking-widest uppercase text-rose-600 mb-5">Performance Risks ({atRiskMembers.length})</h3>
               
-              <div className="border border-slate-100 rounded-2xl p-5 bg-slate-50/50">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=80&h=80&q=80" alt="David" className="w-10 h-10 rounded-full object-cover border-2 border-white shadow-sm" />
-                    <div>
-                      <h4 className="text-base font-black text-slate-900 leading-tight">David Kumar</h4>
-                      <p className="text-xs text-rose-600 font-extrabold mt-0.5">Score: 6.4/10</p>
+              {atRiskMembers.length > 0 ? (
+                <div className="space-y-4">
+                  {atRiskMembers.map((atRisk) => (
+                    <div key={atRisk.id} className="border border-slate-100 rounded-2xl p-5 bg-slate-50/50">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <img src={atRisk.avatar} alt={atRisk.name} className="w-10 h-10 rounded-full object-cover border-2 border-white shadow-sm" />
+                          <div>
+                            <h4 className="text-base font-black text-slate-900 leading-tight">{atRisk.name}</h4>
+                            <p className="text-xs text-rose-600 font-extrabold mt-0.5">Score: {atRisk.score}</p>
+                          </div>
+                        </div>
+                        <span className="bg-rose-100 text-rose-700 text-[10px] font-black px-2.5 py-1 rounded-lg uppercase tracking-wider">
+                          At Risk
+                        </span>
+                      </div>
+                      <p className="text-sm text-slate-500 font-semibold mt-4 leading-relaxed">
+                        {atRisk.reason}
+                      </p>
+                      <button 
+                        onClick={() => handleOpenPlan(atRisk)}
+                        className="w-full mt-5 bg-white border border-rose-200 text-rose-600 text-xs font-black py-3 px-4 rounded-xl shadow-sm hover:bg-rose-50 transition-all uppercase tracking-wider cursor-pointer"
+                      >
+                        Improvement Plan
+                      </button>
                     </div>
-                  </div>
-                  <span className="bg-rose-100 text-rose-700 text-[10px] font-black px-2.5 py-1 rounded-lg uppercase tracking-wider">
-                    Critical
-                  </span>
+                  ))}
                 </div>
-                <p className="text-sm text-slate-500 font-semibold mt-4 leading-relaxed">
-                  Decline in CI/CD automation efficiency. High error rate observed in recent deployment scripts.
-                </p>
-                <button 
-                  onClick={() => handleOpenPlan(initialMembers[1])}
-                  className="w-full mt-5 bg-white border border-rose-200 text-rose-600 text-xs font-black py-3 px-4 rounded-xl shadow-sm hover:bg-rose-50 transition-all uppercase tracking-wider"
-                >
-                  Improvement Plan
-                </button>
-              </div>
+              ) : (
+                <div className="p-6 text-center text-xs font-bold text-emerald-600 bg-emerald-50 rounded-2xl border border-emerald-100">
+                  ✓ No performance risk alerts detected in your team!
+                </div>
+              )}
             </div>
 
             {/* AI Performance Intelligence Card */}
@@ -445,7 +529,7 @@ export default function PerformanceMonitor() {
                   <ArrowUpRight className="w-4 h-4 text-slate-400" />
                 </button>
                 <button 
-                  onClick={() => handleOpenPlan(initialMembers[1])}
+                  onClick={() => handleOpenPlan(atRiskMembers[0] || members[0])}
                   className="w-full bg-[#172033] text-slate-200 text-xs font-black py-4 px-5 rounded-xl hover:bg-[#202b44] transition-colors text-left flex items-center justify-between uppercase tracking-wider"
                 >
                   <span>Assign Training (Risks)</span>
@@ -511,11 +595,16 @@ export default function PerformanceMonitor() {
               )}
 
               <div className="flex gap-3 pt-2">
-                <button onClick={() => setActiveModal(null)} className="w-1/2 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl">
+                <button onClick={() => setActiveModal(null)} className="w-1/2 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl cursor-pointer">
                   Cancel
                 </button>
-                <button onClick={() => setActiveModal(null)} className="w-1/2 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-md">
-                  Assign Plan
+                <button 
+                  onClick={handleAssignPlanSubmit} 
+                  disabled={assigningPlan}
+                  className="w-1/2 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-md cursor-pointer flex items-center justify-center gap-2"
+                >
+                  {assigningPlan ? <Loader2 size={14} className="animate-spin" /> : null}
+                  <span>{assigningPlan ? 'Assigning...' : 'Assign Plan'}</span>
                 </button>
               </div>
             </div>
