@@ -383,7 +383,7 @@ const TrainingProgramManagement = () => {
     <div style={{ fontFamily: "'Segoe UI', system-ui, sans-serif" }} className="flex min-h-screen bg-[#f8fafc]">
       <HRSidebar />
 
-      <div className="flex-1 ml-64 overflow-auto pb-12">
+      <div className="flex-1 ml-0 lg:ml-64 pt-20 lg:pt-0 overflow-auto pb-12">
         {/* HEADER */}
         <header className="bg-white border-b border-slate-100 px-8 py-4 flex items-center justify-between sticky top-0 z-10">
           <div className="flex items-center gap-2 text-base text-slate-500 font-medium">

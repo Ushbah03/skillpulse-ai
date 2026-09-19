@@ -57,12 +57,10 @@ const SecuritySettings = () => {
   return (
     <div className="flex min-h-screen bg-slate-50">
       {/* Sidebar */}
-      <div className="fixed left-0 top-0 h-full w-64 z-50">
-        <SuperadminSidebar />
-      </div>
+      <SuperadminSidebar />
 
       {/* Main Content */}
-      <div className="flex-1 ml-64">
+      <div className="flex-1 ml-0 lg:ml-64 pt-20 lg:pt-0">
         {/* Header */}
         <header className="bg-white border-b border-slate-200 px-8 py-6 flex items-center justify-between sticky top-0 z-40">
           <div>

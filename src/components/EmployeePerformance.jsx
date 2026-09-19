@@ -303,7 +303,7 @@ const EmployeePerformance = () => {
     <div style={{ fontFamily: "'Segoe UI', system-ui, sans-serif" }} className="flex min-h-screen bg-[#f8fafc] relative">
       <HRSidebar />
 
-      <div className="flex-1 ml-64 overflow-auto">
+      <div className="flex-1 ml-0 lg:ml-64 pt-20 lg:pt-0 overflow-auto">
         
         {activeNotification && (
           <div className="fixed top-5 right-8 z-50 bg-slate-900 text-white text-xs font-bold px-4 py-3 rounded-xl shadow-lg flex items-center gap-2 transition-all">

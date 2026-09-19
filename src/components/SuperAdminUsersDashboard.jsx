@@ -150,7 +150,7 @@ const UserManagement = () => {
     <div className="flex min-h-screen bg-[#f8fafc]" style={{ fontFamily: "'Segoe UI',system-ui,sans-serif" }}>
       <SuperadminSidebar />
 
-      <div className="flex-1 pl-64 flex flex-col min-h-screen overflow-hidden">
+      <div className="flex-1 pl-0 lg:pl-64 pt-20 lg:pt-0 flex flex-col min-h-screen overflow-hidden">
 
         {/* ── TOP HEADER ── */}
         <header className="bg-white border-b border-slate-200 px-8 py-4 flex items-center justify-between flex-shrink-0 sticky top-0 z-20">

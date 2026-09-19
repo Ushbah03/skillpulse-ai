@@ -57,7 +57,7 @@ const HRISIntegrationDashboard = () => {
 
       {/* ── MAIN SCROLLABLE CONTENT WRAPPER ── */}
       {/* pl-64 ensures content clears the sidebar nicely */}
-      <div className="flex-1 pl-64 flex flex-col min-h-screen overflow-hidden">
+      <div className="flex-1 pl-0 lg:pl-64 pt-20 lg:pt-0 flex flex-col min-h-screen overflow-hidden">
         
         {/* sticky top bar inside dashboard container */}
         <header className="bg-white border-b border-slate-200 px-8 py-4 flex items-center justify-between sticky top-0 z-20 backdrop-blur-md bg-white/90">

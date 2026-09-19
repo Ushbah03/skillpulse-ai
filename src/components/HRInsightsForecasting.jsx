@@ -263,7 +263,7 @@ const HRInsightsForecasting = () => {
       {/* HRSidebar Navigation */}
       <HRSidebar currentTenant={displayTenantName} currentScreen="HR Insights & Forecasting" />
 
-      <main className="flex-1 ml-64 p-6 w-full space-y-5 relative">
+      <main className="flex-1 ml-0 lg:ml-64 pt-20 lg:pt-6 p-4 md:p-6 w-full space-y-5 relative">
         
         {/* TOAST NOTIFICATION LAYER */}
         <AnimatePresence>

@@ -142,7 +142,7 @@ const DepartmentComparison = () => {
     <div style={{ fontFamily: "'Inter', 'Segoe UI', system-ui, sans-serif" }} className="flex min-h-screen bg-[#f8fafc] text-slate-800 antialiased">
       <HRSidebar />
 
-      <div className="flex-1 ml-64 overflow-auto">
+      <div className="flex-1 ml-0 lg:ml-64 pt-20 lg:pt-0 overflow-auto">
         
         {/* HEADER NAVIGATION BAR */}
         <header className="bg-white border-b border-slate-200 px-6 py-3.5 flex items-center justify-between sticky top-0 z-20 shadow-xs">

@@ -202,7 +202,7 @@ const TeamLeaderDashboard = () => {
       <TeamLeaderSidebar />
 
       {/* Main Content Area */}
-      <main className="flex-1 ml-72 p-10">
+      <main className="flex-1 ml-0 lg:ml-64 pt-20 lg:pt-8 p-4 md:p-8 w-full">
         
         {/* Top Header */}
         <header className="flex justify-between items-center mb-10">

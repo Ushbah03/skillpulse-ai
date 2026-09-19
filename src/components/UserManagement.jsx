@@ -209,7 +209,7 @@ const UserManagement = () => {
         </div>
       )}
 
-      <main className="flex-1 ml-64 p-8 w-full">
+      <main className="flex-1 ml-0 lg:ml-64 pt-20 lg:pt-8 p-4 md:p-8 w-full">
         
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4 border-b border-slate-800/80 pb-6">

@@ -194,7 +194,7 @@ const TenantManagement = () => {
     <div className="flex min-h-screen bg-[#0B1120]">
       <SuperadminSidebar />
 
-      <main className="flex-1 text-slate-100 ml-64 p-8 w-full font-sans">
+      <main className="flex-1 text-slate-100 ml-0 lg:ml-64 pt-20 lg:pt-8 p-4 md:p-8 w-full font-sans">
         
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4 border-b border-slate-800/80 pb-6">

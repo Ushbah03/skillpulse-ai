@@ -160,6 +160,7 @@ const CompanyAdminSidebar = () => {
                 isItemActive ? 'text-white font-semibold' : 'text-slate-400 hover:text-slate-200'
               } ${locked ? 'opacity-60 cursor-not-allowed hover:bg-slate-800/50' : ''}`}
               onClick={(e) => {
+                setMobileOpen(false);
                 if (locked) {
                   e.preventDefault();
                   navigate('/company-admin/settings', { state: { planRestricted: true } });

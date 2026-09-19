@@ -184,7 +184,7 @@ const TeamFormation = () => {
       <TeamLeaderSidebar activeTab={activeTab} setActiveTab={setActiveTab} />
 
       {/* Main Form & Squad Studio Area - Fluid Full Width Container */}
-      <main className="flex-1 ml-72 p-10 w-full space-y-8">
+      <main className="flex-1 ml-0 lg:ml-64 pt-20 lg:pt-8 p-4 md:p-8 w-full space-y-8">
         
         {/* Toast Notification */}
         {toastMessage && (

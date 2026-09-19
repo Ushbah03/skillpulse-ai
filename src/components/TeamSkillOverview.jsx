@@ -107,7 +107,7 @@ const TeamSkillOverview = () => {
     return (
       <div className="flex min-h-screen bg-[#F8F9FE]">
         <TeamLeaderSidebar activeTab={activeTab} setActiveTab={setActiveTab} />
-        <main className="flex-1 ml-72 p-10 flex items-center justify-center">
+        <main className="flex-1 ml-0 lg:ml-64 pt-20 lg:pt-8 p-4 md:p-8 flex items-center justify-center">
           <div className="flex flex-col items-center gap-3 text-blue-600">
             <Loader2 className="w-10 h-10 animate-spin" />
             <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Querying Neon Cloud Database...</span>
@@ -123,7 +123,7 @@ const TeamSkillOverview = () => {
       <TeamLeaderSidebar activeTab={activeTab} setActiveTab={setActiveTab} />
       
       {/* Main Content Area */}
-      <main className="flex-1 ml-72 p-10 w-full space-y-8">
+      <main className="flex-1 ml-0 lg:ml-64 pt-20 lg:pt-8 p-4 md:p-8 w-full space-y-8">
         
         {/* Top Header Section */}
         <header className="flex justify-between items-center">

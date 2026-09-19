@@ -137,6 +137,7 @@ const Sidebar = () => {
             <NavLink
               key={item.name}
               to={item.path}
+              onClick={() => setMobileOpen(false)}
               className={({ isActive }) =>
                 `flex items-center gap-3 px-4 py-3 rounded-xl transition-colors duration-300 relative group border-0 outline-none ${
                   isActive ? 'text-white' : 'text-slate-400 hover:text-white'
