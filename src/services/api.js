@@ -297,6 +297,11 @@ export const paymentAPI = {
       method: 'POST',
       body: JSON.stringify({ tenantId, plan, seats }),
     }),
+  completeSimulatedCheckout: (tenantId, plan, seats) =>
+    apiRequest('/payment/complete-simulated-checkout', {
+      method: 'POST',
+      body: JSON.stringify({ tenantId, plan, seats }),
+    }),
   verifySession: (sessionId) =>
     apiRequest(`/payment/verify?session_id=${sessionId}`),
 };

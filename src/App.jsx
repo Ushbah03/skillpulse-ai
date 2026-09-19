@@ -14,6 +14,7 @@ import SignUp from './components/SignUp';
 import Login from './components/Login';
 import RoleSelection from './components/RoleSelection';
 import ProtectedRoute from './components/ProtectedRoute';
+import CheckoutPage from './components/CheckoutPage';
 
 // Employee Dashboard Components
 import DashboardLayout from './components/Layout';
@@ -92,6 +93,7 @@ function LayoutWrapper({ children }) {
   const excludePaths = [
     '/signup', 
     '/login', 
+    '/checkout',
     '/select-role', 
     '/dashboard', 
     '/team-leader', 
@@ -137,6 +139,7 @@ function App() {
           <Route path="faq" element={<FAQPage />} />
           <Route path="contact" element={<ContactPage />}/>
           <Route path="signup" element={<SignUp />} />
+          <Route path="checkout" element={<CheckoutPage />} />
           <Route path="login" element={<Login />} />
           {/* Role Selection (Admin only - regular users redirected to their dashboard) */}
           <Route element={<ProtectedRoute allowedRoles={['SUPER_ADMIN']} />}>
