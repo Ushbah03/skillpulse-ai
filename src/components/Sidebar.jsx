@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
   LayoutDashboard, UserCircle, 
   ClipboardCheck, 
@@ -11,7 +11,9 @@ import {
   Award, 
   Navigation, 
   LogOut,
-  Activity
+  Activity,
+  Menu,
+  X
 } from 'lucide-react';
 
 import logo from '../assets/images/logo.png';
@@ -32,6 +34,7 @@ const Sidebar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [imgFailed, setImgFailed] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -42,7 +45,54 @@ const Sidebar = () => {
   };
 
   return (
-    <div className="h-full bg-[#0F172A] text-slate-400 p-6 flex flex-col shadow-2xl relative select-none">
+    <>
+      {/* Mobile Top Navbar (Visible only on < lg screens) */}
+      <header className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-[#0F172A] border-b border-slate-800/80 px-4 flex items-center justify-between z-40 select-none">
+        <div className="flex items-center gap-2.5 cursor-pointer" onClick={() => navigate('/dashboard')}>
+          <img src={logo} alt="SkillPulse Logo" className="w-8 h-8 object-contain" />
+          <div>
+            <h1 className="text-white text-sm font-bold leading-none">SkillPulse AI</h1>
+            <span className="text-[9px] font-mono text-indigo-400 font-semibold uppercase">Employee Dashboard</span>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2">
+          {/* Quick Mobile Logout Button */}
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-rose-500/10 text-rose-400 border border-rose-500/20 text-xs font-medium cursor-pointer"
+          >
+            <LogOut className="w-3.5 h-3.5" />
+            <span>Logout</span>
+          </button>
+
+          {/* Menu Drawer Toggle */}
+          <button
+            onClick={() => setMobileOpen(!mobileOpen)}
+            className="p-2 rounded-lg bg-slate-800 text-slate-200 border border-slate-700 cursor-pointer"
+            aria-label="Toggle menu"
+          >
+            {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </button>
+        </div>
+      </header>
+
+      {/* Mobile Backdrop Overlay */}
+      <AnimatePresence>
+        {mobileOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setMobileOpen(false)}
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 lg:hidden"
+          />
+        )}
+      </AnimatePresence>
+
+      <aside className={`h-screen bg-[#0F172A] text-slate-400 p-6 flex flex-col shadow-2xl fixed left-0 top-0 w-64 border-r border-slate-800/40 select-none z-50 transition-transform duration-300 ${
+        mobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+      }`}>
       
       <style>{`
         .custom-sidebar-nav::-webkit-scrollbar { width: 0px; display: none; }
@@ -123,14 +173,14 @@ const Sidebar = () => {
       <div className="pt-4 z-10">
         <button
           onClick={handleLogout}
-          className="flex items-center gap-3 px-4 py-3 w-full rounded-xl text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 transition-colors duration-300 font-semibold text-sm tracking-wide"
+          className="flex items-center gap-3 px-4 py-3 w-full rounded-xl text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 transition-colors duration-300 font-semibold text-sm tracking-wide cursor-pointer"
         >
           <LogOut className="w-5 h-5 shrink-0" />
           <span>Logout</span>
         </button>
       </div>
-
-    </div>
+    </aside>
+  </>
   );
 };
 

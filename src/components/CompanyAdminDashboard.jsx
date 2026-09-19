@@ -89,7 +89,7 @@ const CompanyAdminDashboard = () => {
         initial="hidden"
         animate="visible"
         variants={containerVariants}
-        className="flex-1 text-slate-100 p-8 pl-80 font-sans"
+        className="flex-1 text-slate-100 pl-0 lg:pl-80 pt-20 lg:pt-8 p-4 md:p-8 w-full font-sans"
       >
         {/* Header Banner */}
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4 border-b border-slate-800/80 pb-6">

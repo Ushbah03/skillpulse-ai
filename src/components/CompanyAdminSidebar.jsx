@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   LayoutDashboard,
   Users,
@@ -9,7 +9,9 @@ import {
   ShieldCheck,
   Building2,
   LogOut,
-  Lock
+  Lock,
+  Menu,
+  X
 } from 'lucide-react';
 
 import logo from '../assets/images/logo.png';
@@ -27,6 +29,7 @@ const CompanyAdminSidebar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [userState, setUserState] = useState(localStorage.getItem('user'));
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
     const handleUserUpdate = () => setUserState(localStorage.getItem('user'));
@@ -57,7 +60,54 @@ const CompanyAdminSidebar = () => {
   };
 
   return (
-    <aside className="h-screen bg-[#0F172A] text-slate-400 flex flex-col shadow-2xl fixed left-0 top-0 w-72 border-r border-slate-800/40 select-none z-50">
+    <>
+      {/* Mobile Top Navbar (Visible only on < lg screens) */}
+      <header className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-[#0F172A] border-b border-slate-800/80 px-4 flex items-center justify-between z-40 select-none">
+        <div className="flex items-center gap-2.5 cursor-pointer" onClick={() => navigate('/company-admin')}>
+          <img src={logo} alt="SkillPulse Logo" className="w-8 h-8 object-contain" />
+          <div>
+            <h1 className="text-white text-sm font-bold leading-none">SkillPulse AI</h1>
+            <span className="text-[9px] font-mono text-indigo-400 font-semibold uppercase">Company Admin</span>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2">
+          {/* Quick Mobile Logout Button */}
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-rose-500/10 text-rose-400 border border-rose-500/20 text-xs font-medium"
+          >
+            <LogOut className="w-3.5 h-3.5" />
+            <span>Logout</span>
+          </button>
+
+          {/* Menu Drawer Toggle */}
+          <button
+            onClick={() => setMobileOpen(!mobileOpen)}
+            className="p-2 rounded-lg bg-slate-800 text-slate-200 border border-slate-700"
+            aria-label="Toggle menu"
+          >
+            {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </button>
+        </div>
+      </header>
+
+      {/* Mobile Backdrop Overlay */}
+      <AnimatePresence>
+        {mobileOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setMobileOpen(false)}
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 lg:hidden"
+          />
+        )}
+      </AnimatePresence>
+
+      <aside className={`h-screen bg-[#0F172A] text-slate-400 flex flex-col shadow-2xl fixed left-0 top-0 w-72 border-r border-slate-800/40 select-none z-50 transition-transform duration-300 ${
+        mobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+      }`}>
 
       {/* Scrollbar styling */}
       <style>{`
@@ -149,7 +199,7 @@ const CompanyAdminSidebar = () => {
         <motion.button
           onClick={handleLogout}
           whileTap={{ scale: 0.98 }}
-          className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition-all duration-300 group border-0 outline-none relative"
+          className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition-all duration-300 group border-0 outline-none relative cursor-pointer"
         >
           <LogOut className="w-5 h-5 text-slate-500 group-hover:text-red-400 transition-transform duration-300 group-hover:-translate-x-0.5 shrink-0" />
           <span className="text-sm font-medium tracking-wide transition-transform duration-300 group-hover:translate-x-0.5">
@@ -157,8 +207,8 @@ const CompanyAdminSidebar = () => {
           </span>
         </motion.button>
       </div>
-
     </aside>
+  </>
   );
 };
 

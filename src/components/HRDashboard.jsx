@@ -89,7 +89,7 @@ const HRDashboard = () => {
       <HRSidebar currentTenant={displayTenantName} currentScreen="Dashboard" />
 
       {/* 2. Main Dashboard Panel */}
-      <main className="flex-1 ml-64 p-6 w-full space-y-5 relative">
+      <main className="flex-1 ml-0 lg:ml-64 pt-20 lg:pt-6 p-4 md:p-6 w-full space-y-5 relative">
         
         {/* Toast Notification Layer */}
         <AnimatePresence>

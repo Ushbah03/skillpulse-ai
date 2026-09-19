@@ -5,14 +5,12 @@ import Sidebar from './Sidebar'; // Aapki Sidebar component
 const Layout = () => {
   return (
     <div className="flex min-h-screen bg-[#F8FAFC]">
-      {/* Sidebar - Fixed width */}
-      <div className="w-64 fixed inset-y-0">
-        <Sidebar />
-      </div>
+      {/* Sidebar Component */}
+      <Sidebar />
 
-      {/* Main Content - Sidebar ki width ke barabar margin left pe */}
-      <main className="flex-1 ml-64 p-8">
-        <Outlet /> {/* Yahan har screen (Profile, Assessment etc.) load hogi */}
+      {/* Main Content Area */}
+      <main className="flex-1 ml-0 lg:ml-64 pt-20 lg:pt-8 p-4 md:p-8 w-full">
+        <Outlet />
       </main>
     </div>
   );
