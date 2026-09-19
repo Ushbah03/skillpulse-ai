@@ -88,7 +88,7 @@ const SkillPulseLanding = () => {
 
               <motion.h1 
                 variants={intenseUp}
-                className="text-4xl md:text-6xl lg:text-7xl font-extrabold leading-[1.1] tracking-tight text-white mb-6"
+                className="text-3xl md:text-4xl lg:text-5xl font-extrabold leading-tight tracking-tight text-white mb-5"
               >
                 AI-Powered Skill <br />
                 <span className="bg-gradient-to-r from-indigo-300 via-indigo-200 to-purple-300 bg-clip-text text-transparent">
@@ -99,7 +99,7 @@ const SkillPulseLanding = () => {
 
               <motion.p 
                 variants={intenseUp}
-                className="text-slate-300 text-base md:text-lg leading-relaxed max-w-md mb-8 opacity-90 font-light"
+                className="text-slate-300 text-sm md:text-base leading-relaxed max-w-md mb-6 opacity-90 font-light"
               >
                 Measure readiness. Close skill gaps. Accelerate workforce growth with tenant-isolated data insights.
               </motion.p>

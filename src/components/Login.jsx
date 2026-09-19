@@ -168,30 +168,30 @@ const Login = () => {
       
       <div className="absolute inset-0 bg-white/[0.01] pointer-events-none" />
 
-      <div className="container mx-auto max-w-7xl grid lg:grid-cols-2 gap-12 items-center relative z-10">
+      <div className="container mx-auto max-w-6xl grid lg:grid-cols-2 gap-8 items-center relative z-10 py-6">
         
         {/* LEFT SIDE: Content & Branding */}
         <motion.div 
           initial="hidden"
           animate="visible"
           variants={staggerContainer}
-          className="hidden lg:block space-y-10 text-left"
+          className="hidden lg:block space-y-6 text-left"
         >
-          <motion.div variants={intenseUp} className="flex items-center gap-3 group cursor-pointer">
-            <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-600/40 group-hover:bg-indigo-500 transform group-hover:scale-110 group-hover:rotate-[5deg] transition-all duration-300">
-              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5">
+          <motion.div variants={intenseUp} className="flex items-center gap-2.5 group cursor-pointer">
+            <div className="w-9 h-9 bg-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-600/40 group-hover:bg-indigo-500 transform group-hover:scale-105 group-hover:rotate-[5deg] transition-all duration-300">
+              <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5">
                 <path d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
               </svg>
             </div>
-            <span className="text-2xl font-bold tracking-tight text-white bg-clip-text bg-gradient-to-r from-white to-slate-200">SkillPulse-AI</span>
+            <span className="text-xl font-bold tracking-tight text-white bg-clip-text bg-gradient-to-r from-white to-slate-200">SkillPulse-AI</span>
           </motion.div>
 
-          <div className="space-y-6">
-            <motion.h1 variants={intenseUp} className="text-[52px] font-bold leading-tight text-white tracking-tight">
+          <div className="space-y-4">
+            <motion.h1 variants={intenseUp} className="text-3xl lg:text-4xl font-bold leading-tight text-white tracking-tight">
               Welcome to <br />
               <span className="text-indigo-400 bg-clip-text bg-gradient-to-r from-indigo-400 via-purple-400 to-blue-400">SkillPulse-AI</span>
             </motion.h1>
-            <motion.p variants={intenseUp} className="text-slate-400 text-lg max-w-md leading-relaxed opacity-90">
+            <motion.p variants={intenseUp} className="text-slate-400 text-sm max-w-md leading-relaxed opacity-90">
               AI-Powered Skill Intelligence Platform for Modern Organizations.
             </motion.p>
           </div>

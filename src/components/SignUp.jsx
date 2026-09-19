@@ -338,29 +338,29 @@ const SignUp = () => {
         )}
       </AnimatePresence>
 
-      <div className="container mx-auto max-w-7xl grid lg:grid-cols-2 gap-12 items-center relative z-10">
+      <div className="container mx-auto max-w-6xl grid lg:grid-cols-2 gap-8 items-center relative z-10 py-6">
         
         {/* LEFT BRANDING */}
-        <motion.div initial="hidden" animate="visible" variants={staggerContainer} className="hidden lg:block space-y-8 text-left">
+        <motion.div initial="hidden" animate="visible" variants={staggerContainer} className="hidden lg:block space-y-6 text-left">
           <motion.div variants={fadeInUp}>
-            <Link to="/" className="inline-flex items-center gap-3 mb-8 group">
-              <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center group-hover:bg-indigo-500 shadow-xl shadow-indigo-600/30 group-hover:scale-110 transform transition-all duration-300">
-                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <Link to="/" className="inline-flex items-center gap-2.5 mb-6 group">
+              <div className="w-9 h-9 bg-indigo-600 rounded-xl flex items-center justify-center group-hover:bg-indigo-500 shadow-lg shadow-indigo-600/30 group-hover:scale-105 transform transition-all duration-300">
+                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                 </svg>
               </div>
-              <span className="text-4xl font-bold tracking-tight bg-clip-text bg-gradient-to-r from-white to-slate-200 group-hover:text-indigo-300 transition-colors">
+              <span className="text-2xl font-bold tracking-tight bg-clip-text bg-gradient-to-r from-white to-slate-200 group-hover:text-indigo-300 transition-colors">
                 SkillPulse-AI
               </span>
             </Link>
           </motion.div>
 
-          <motion.h1 variants={fadeInUp} className="text-[56px] font-bold leading-[1.1] tracking-tight bg-clip-text bg-gradient-to-r from-white via-white to-slate-400">
+          <motion.h1 variants={fadeInUp} className="text-3xl lg:text-4xl font-bold leading-tight tracking-tight bg-clip-text bg-gradient-to-r from-white via-white to-slate-400">
             Enterprise Skill <br />
             <span className="bg-clip-text bg-gradient-to-r from-indigo-400 via-purple-400 to-blue-400 text-transparent">Intelligence SaaS</span>
           </motion.h1>
 
-          <motion.p variants={fadeInUp} className="text-slate-400 text-lg max-w-md opacity-90 leading-relaxed">
+          <motion.p variants={fadeInUp} className="text-slate-400 text-sm max-w-md opacity-90 leading-relaxed">
             Provision isolated multi-tenant organization workspaces, bridge skill gaps with AI analytics, and construct optimized career paths.
           </motion.p>
         </motion.div>
@@ -370,10 +370,10 @@ const SignUp = () => {
           initial={{ opacity: 0, y: 60, scale: 0.95 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-          className="bg-[#111827]/60 backdrop-blur-3xl border border-white/10 rounded-[2.5rem] p-8 shadow-[0_30px_70px_rgba(0,0,0,0.5)] w-full max-w-xl mx-auto hover:border-white/20 transition-all duration-500"
+          className="bg-[#111827]/70 backdrop-blur-2xl border border-white/10 rounded-2xl md:rounded-3xl p-6 md:p-7 shadow-xl w-full max-w-lg mx-auto hover:border-white/20 transition-all duration-500"
         >
-          <div className="mb-6 text-left">
-            <h2 className="text-3xl font-bold mb-1 tracking-tight bg-clip-text bg-gradient-to-r from-white to-slate-200">
+          <div className="mb-5 text-left">
+            <h2 className="text-2xl font-bold mb-1 tracking-tight bg-clip-text bg-gradient-to-r from-white to-slate-200">
               Create your account
             </h2>
             <p className="text-slate-400 text-xs font-medium">Join or setup your SkillPulse-AI enterprise workspace</p>

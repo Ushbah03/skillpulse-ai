@@ -2,7 +2,8 @@
 
 @layer base {
   html {
-    font-size: 14.5px; /* Compact enterprise scaling for sleek UI density */
+    font-size: 13.5px; /* Moderated compact root scaling for sleek enterprise aesthetic */
+    -webkit-text-size-adjust: 100%;
   }
   body {
     margin: 0;
