@@ -92,7 +92,7 @@ const FeaturePage = () => {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.9, delay: 0.1 }}
-            className="text-4xl md:text-6xl lg:text-7xl font-extrabold mb-6 tracking-tight leading-tight text-white"
+            className="text-3xl md:text-4xl lg:text-5xl font-extrabold mb-5 tracking-tight leading-tight text-white"
           >
             Powerful Features Built for <br />
             <span className="bg-gradient-to-r from-indigo-300 via-indigo-200 to-purple-300 bg-clip-text text-transparent">
@@ -302,7 +302,7 @@ const FeaturePage = () => {
                   whileInView={{ scale: 1, opacity: 1 }}
                   viewport={{ once: true }}
                   transition={{ delay: 0.3 }}
-                  className="text-6xl font-extrabold text-white tracking-tighter"
+                  className="text-4xl font-extrabold text-white tracking-tighter"
                 >
                   {tenant.readinessScore}
                 </motion.span>

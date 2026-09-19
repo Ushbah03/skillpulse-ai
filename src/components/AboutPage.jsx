@@ -55,13 +55,13 @@ const AboutPage = () => {
               </span>
             </div>
 
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-extrabold leading-tight mb-6 tracking-tight">
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold leading-tight mb-5 tracking-tight">
               Redefining Workforce <br /> 
               <span className="bg-gradient-to-r from-indigo-300 via-indigo-200 to-purple-300 bg-clip-text text-transparent">
                 Intelligence with AI
               </span>
             </h1>
-            <p className="text-slate-400 text-lg mb-6 font-light leading-relaxed">
+            <p className="text-slate-400 text-sm md:text-base mb-5 font-light leading-relaxed">
               SkillPulse AI bridges the gap between talent potential and organizational growth using real-time skill analytics and PostgreSQL-backed workforce telemetry.
             </p>
             <p className="text-slate-400 text-xs border-l-2 border-indigo-500 pl-4 py-1 font-mono italic">

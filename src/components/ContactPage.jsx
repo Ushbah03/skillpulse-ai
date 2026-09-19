@@ -44,7 +44,7 @@ const ContactPage = () => {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-            className="text-7xl font-bold mb-8 tracking-tight"
+            className="text-4xl lg:text-5xl font-bold mb-6 tracking-tight"
           >
             Let's <span className="text-[#94A3B8] drop-shadow-[0_0_30px_rgba(148,163,184,0.15)]">Connect</span>
           </motion.h1>
@@ -52,7 +52,7 @@ const ContactPage = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.9, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-            className="text-slate-400 text-xl max-w-2xl mx-auto leading-relaxed opacity-90 font-light"
+            className="text-slate-400 text-base max-w-xl mx-auto leading-relaxed opacity-90 font-light"
           >
             Have questions about SkillPulse-AI? Our team is here to help you transform your workforce skills.
           </motion.p>
@@ -243,7 +243,7 @@ const ContactPage = () => {
         >
           <div className="absolute top-0 right-0 w-80 h-80 bg-indigo-500/10 blur-[100px] pointer-events-none rounded-full" />
           
-          <h2 className="text-4xl md:text-6xl font-bold mb-12 tracking-tight relative z-10 leading-tight">
+          <h2 className="text-2xl md:text-3xl font-bold mb-8 tracking-tight relative z-10 leading-tight">
             Ready to Transform <br /> Workforce Skills?
           </h2>
           <div className="flex flex-wrap justify-center gap-6 relative z-10">
