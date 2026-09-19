@@ -9,32 +9,108 @@ import {
   Building2, 
   ArrowRight,
   Zap,
-  Sparkles
+  Sparkles,
+  Edit3,
+  RefreshCw,
+  Check,
+  ChevronDown
 } from 'lucide-react';
+
+const PLAN_CONFIGS = {
+  'Starter': {
+    name: 'Starter',
+    basePrice: 600,
+    seats: 30,
+    badge: 'Popular for Small Teams',
+    features: [
+      'Full Access to Employee & HR Dashboards',
+      'Up to 30 Employee Seats',
+      'AI Skill Gap Inference & Assessment Engine',
+      'Basic Course Recommendations & Analytics'
+    ]
+  },
+  'Professional': {
+    name: 'Professional',
+    basePrice: 1200,
+    seats: 250,
+    badge: 'Best for Growing Companies',
+    features: [
+      'Everything in Starter + Team Leader Views',
+      'Up to 250 Employee Seats',
+      'Autonomous Team Formation & Skill Taxonomy',
+      'HRIS & LMS Integration Connectors',
+      'Succession & Compliance Management'
+    ]
+  },
+  'Enterprise AI': {
+    name: 'Enterprise AI',
+    basePrice: 2500,
+    seats: 1000,
+    badge: 'Full Enterprise Suite',
+    features: [
+      'Everything in Professional + SuperAdmin',
+      'Up to 1,000 Employee Seats',
+      'Dedicated Custom AI Model Finetuning',
+      '24/7 SLA Priority Support & Custom Domain'
+    ]
+  }
+};
 
 export default function CheckoutPage() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
   const tenantId = searchParams.get('tenantId') || '';
-  const plan = searchParams.get('plan') || 'Professional';
-  const seats = parseInt(searchParams.get('seats') || '30', 10);
+  const initialPlan = searchParams.get('plan') || 'Starter';
 
-  const [cardNumber, setCardNumber] = useState('4242 •••• •••• 4242');
+  // Interactive Plan & Card State
+  const [selectedPlanKey, setSelectedPlanKey] = useState(
+    PLAN_CONFIGS[initialPlan] ? initialPlan : (initialPlan === 'PRO' ? 'Professional' : initialPlan === 'ENTERPRISE' ? 'Enterprise AI' : 'Starter')
+  );
+  
+  const currentPlanConfig = PLAN_CONFIGS[selectedPlanKey] || PLAN_CONFIGS['Starter'];
+
   const [cardHolder, setCardHolder] = useState('Organization Administrator');
+  const [cardNumber, setCardNumber] = useState('4242 4242 4242 4242');
   const [expiry, setExpiry] = useState('12/28');
   const [cvc, setCvc] = useState('888');
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
+  const [isChangingPlan, setIsChangingPlan] = useState(false);
 
-  // Pricing logic
-  let basePrice = 600;
-  if (plan === 'Professional' || plan === 'PRO') basePrice = 1200;
-  if (plan === 'Enterprise AI' || plan === 'ENTERPRISE') basePrice = 2500;
-
+  // Dynamic pricing calculations
+  const basePrice = currentPlanConfig.basePrice;
+  const seats = currentPlanConfig.seats;
   const tax = Math.round(basePrice * 0.05);
   const totalPrice = basePrice + tax;
+
+  const handleCardNumberChange = (e) => {
+    let value = e.target.value.replace(/\D/g, '').substring(0, 16);
+    let formatted = value.match(/.{1,4}/g)?.join(' ') || value;
+    setCardNumber(formatted);
+  };
+
+  const handleExpiryChange = (e) => {
+    let value = e.target.value.replace(/\D/g, '').substring(0, 4);
+    if (value.length >= 3) {
+      value = `${value.substring(0, 2)}/${value.substring(2)}`;
+    }
+    setExpiry(value);
+  };
+
+  const handleCvcChange = (e) => {
+    let value = e.target.value.replace(/\D/g, '').substring(0, 4);
+    setCvc(value);
+  };
+
+  const fillTestCard = () => {
+    setCardHolder('Verified Enterprise Admin');
+    setCardNumber('4242 4242 4242 4242');
+    setExpiry('12/28');
+    setCvc('888');
+  };
 
   const handlePayment = async (e) => {
     e.preventDefault();
@@ -43,11 +119,16 @@ export default function CheckoutPage() {
       return;
     }
 
+    if (!cardNumber || cardNumber.replace(/\s/g, '').length < 15) {
+      setError('Please enter a valid 16-digit payment card number.');
+      return;
+    }
+
     setLoading(true);
     setError('');
 
     try {
-      const response = await paymentAPI.completeSimulatedCheckout(tenantId, plan, seats);
+      const response = await paymentAPI.completeSimulatedCheckout(tenantId, selectedPlanKey, seats);
       if (response.success) {
         setSuccess(true);
         setTimeout(() => {
@@ -83,18 +164,71 @@ export default function CheckoutPage() {
       {/* Main Checkout Grid */}
       <div className="max-w-6xl mx-auto w-full px-4 py-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         
-        {/* Left Column: Order Summary & Features */}
+        {/* Left Column: Order Summary & Plan Selector */}
         <div className="lg:col-span-5 space-y-6">
-          <div className="bg-[#0F172A] border border-slate-800 rounded-2xl p-6 shadow-xl">
-            <div className="flex items-center gap-2 text-indigo-400 text-xs font-semibold uppercase tracking-wider mb-2">
-              <Building2 className="w-4 h-4" /> Subscription Summary
+          <div className="bg-[#0F172A] border border-slate-800 rounded-2xl p-6 shadow-xl relative overflow-hidden">
+            <div className="flex items-center justify-between text-indigo-400 text-xs font-semibold uppercase tracking-wider mb-3">
+              <span className="flex items-center gap-2">
+                <Building2 className="w-4 h-4" /> Subscription Summary
+              </span>
+              <button
+                type="button"
+                onClick={() => setIsChangingPlan(!isChangingPlan)}
+                className="text-xs text-indigo-400 hover:text-indigo-300 flex items-center gap-1 font-medium bg-indigo-500/10 border border-indigo-500/30 px-2.5 py-1 rounded-lg transition"
+              >
+                <Edit3 className="w-3.5 h-3.5" /> Change Plan
+              </button>
             </div>
-            <h2 className="text-2xl font-bold text-white mb-1">{plan} Plan</h2>
-            <p className="text-xs text-slate-400 mb-6">Annual organization workspace billing</p>
+
+            {/* Plan Selector Toggle Drawer */}
+            {isChangingPlan && (
+              <div className="mb-6 p-4 bg-[#0B1120] border border-indigo-500/30 rounded-xl space-y-3 animate-in fade-in slide-in-from-top-2 duration-200">
+                <div className="text-xs font-semibold text-white mb-2">Select Your Organization Plan:</div>
+                {Object.keys(PLAN_CONFIGS).map((planKey) => {
+                  const cfg = PLAN_CONFIGS[planKey];
+                  const isSelected = selectedPlanKey === planKey;
+                  return (
+                    <button
+                      key={planKey}
+                      type="button"
+                      onClick={() => {
+                        setSelectedPlanKey(planKey);
+                        setIsChangingPlan(false);
+                      }}
+                      className={`w-full text-left p-3 rounded-xl border text-xs flex items-center justify-between transition ${
+                        isSelected 
+                          ? 'bg-indigo-600/20 border-indigo-500 text-white font-semibold' 
+                          : 'bg-[#0F172A] border-slate-800 text-slate-300 hover:border-slate-700'
+                      }`}
+                    >
+                      <div>
+                        <div className="font-bold flex items-center gap-2">
+                          {cfg.name} Plan
+                          {isSelected && <Check className="w-3.5 h-3.5 text-indigo-400" />}
+                        </div>
+                        <div className="text-[11px] text-slate-400">{cfg.seats} Seats • {cfg.badge}</div>
+                      </div>
+                      <div className="text-right">
+                        <div className="font-extrabold text-white">${cfg.basePrice.toLocaleString()}</div>
+                        <div className="text-[10px] text-slate-400">/ yr</div>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+
+            <div className="flex items-baseline justify-between mb-1">
+              <h2 className="text-2xl font-bold text-white">{currentPlanConfig.name} Plan</h2>
+              <span className="text-xs font-medium text-indigo-300 bg-indigo-500/20 border border-indigo-500/30 px-2.5 py-0.5 rounded-full">
+                {currentPlanConfig.seats} Seats
+              </span>
+            </div>
+            <p className="text-xs text-slate-400 mb-6">Annual organization workspace subscription</p>
 
             <div className="space-y-3 text-sm border-t border-b border-slate-800/80 py-4">
               <div className="flex justify-between text-slate-300">
-                <span>Base Subscription ({seats} Seats Included)</span>
+                <span>Base Subscription ({currentPlanConfig.seats} Seats Included)</span>
                 <span className="font-semibold text-white">${basePrice.toLocaleString()}.00 / yr</span>
               </div>
               <div className="flex justify-between text-slate-400 text-xs">
@@ -121,26 +255,19 @@ export default function CheckoutPage() {
           {/* Included Features Card */}
           <div className="bg-[#0F172A]/50 border border-slate-800/80 rounded-2xl p-6">
             <h3 className="text-xs font-semibold text-slate-300 uppercase tracking-wider mb-4 flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-amber-400" /> What's Included in Your Plan
+              <Sparkles className="w-4 h-4 text-amber-400" /> What's Included in {currentPlanConfig.name}
             </h3>
             <ul className="space-y-2.5 text-xs text-slate-300">
-              <li className="flex items-center gap-2.5">
-                <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0" /> Full Access to HR & SuperAdmin Dashboards
-              </li>
-              <li className="flex items-center gap-2.5">
-                <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0" /> Autonomous Team Formation & AI Skill Gap Inference
-              </li>
-              <li className="flex items-center gap-2.5">
-                <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0" /> Multi-Tenant Role Security & Granular Governance
-              </li>
-              <li className="flex items-center gap-2.5">
-                <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0" /> 24/7 Dedicated Support & HRIS Integration Engine
-              </li>
+              {currentPlanConfig.features.map((feat, idx) => (
+                <li key={idx} className="flex items-center gap-2.5">
+                  <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0" /> {feat}
+                </li>
+              ))}
             </ul>
           </div>
         </div>
 
-        {/* Right Column: Payment Form */}
+        {/* Right Column: Editable Payment Form */}
         <div className="lg:col-span-7 bg-[#0F172A] border border-slate-800 rounded-2xl p-8 shadow-2xl">
           {success ? (
             <div className="text-center py-12 space-y-4">
@@ -149,18 +276,27 @@ export default function CheckoutPage() {
               </div>
               <h2 className="text-2xl font-bold text-white">Payment Successful!</h2>
               <p className="text-sm text-slate-300 max-w-md mx-auto">
-                Your organization workspace has been fully activated. Redirecting you to the portal login...
+                Your organization workspace under the <strong>{currentPlanConfig.name} Plan</strong> has been fully activated. Redirecting you to login...
               </p>
             </div>
           ) : (
             <form onSubmit={handlePayment} className="space-y-6">
-              <div>
-                <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                  <CreditCard className="w-5 h-5 text-indigo-400" /> Payment Details
-                </h2>
-                <p className="text-xs text-slate-400 mt-1">
-                  Complete your payment to instantly activate your organization tenant workspace.
-                </p>
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                    <CreditCard className="w-5 h-5 text-indigo-400" /> Payment Details
+                  </h2>
+                  <p className="text-xs text-slate-400 mt-1">
+                    Enter or edit your payment card details below to activate your workspace.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={fillTestCard}
+                  className="text-[11px] font-semibold text-indigo-300 hover:text-white bg-indigo-600/20 hover:bg-indigo-600/40 border border-indigo-500/40 px-3 py-1.5 rounded-lg transition flex items-center gap-1.5"
+                >
+                  <RefreshCw className="w-3.5 h-3.5" /> Quick Fill Demo Card
+                </button>
               </div>
 
               {error && (
@@ -177,8 +313,8 @@ export default function CheckoutPage() {
                     required
                     value={cardHolder}
                     onChange={(e) => setCardHolder(e.target.value)}
-                    className="w-full bg-[#0B1120] border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500 transition"
-                    placeholder="e.g. Acme Corp Billing"
+                    className="w-full bg-[#0B1120] border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500 transition font-medium"
+                    placeholder="e.g. John Doe / Acme Corp Billing"
                   />
                 </div>
 
@@ -189,11 +325,12 @@ export default function CheckoutPage() {
                       type="text"
                       required
                       value={cardNumber}
-                      onChange={(e) => setCardNumber(e.target.value)}
-                      className="w-full bg-[#0B1120] border border-slate-700 rounded-xl pl-4 pr-10 py-2.5 text-sm text-white font-mono focus:outline-none focus:border-indigo-500 transition"
+                      onChange={handleCardNumberChange}
+                      maxLength={19}
+                      className="w-full bg-[#0B1120] border border-slate-700 rounded-xl pl-4 pr-10 py-2.5 text-sm text-white font-mono focus:outline-none focus:border-indigo-500 transition tracking-wider"
                       placeholder="4242 4242 4242 4242"
                     />
-                    <CreditCard className="w-5 h-5 text-slate-400 absolute right-3 top-3" />
+                    <CreditCard className="w-5 h-5 text-indigo-400 absolute right-3 top-3" />
                   </div>
                 </div>
 
@@ -204,8 +341,9 @@ export default function CheckoutPage() {
                       type="text"
                       required
                       value={expiry}
-                      onChange={(e) => setExpiry(e.target.value)}
-                      className="w-full bg-[#0B1120] border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white font-mono focus:outline-none focus:border-indigo-500 transition"
+                      onChange={handleExpiryChange}
+                      maxLength={5}
+                      className="w-full bg-[#0B1120] border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white font-mono focus:outline-none focus:border-indigo-500 transition tracking-wider"
                       placeholder="MM/YY"
                     />
                   </div>
@@ -215,8 +353,9 @@ export default function CheckoutPage() {
                       type="text"
                       required
                       value={cvc}
-                      onChange={(e) => setCvc(e.target.value)}
-                      className="w-full bg-[#0B1120] border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white font-mono focus:outline-none focus:border-indigo-500 transition"
+                      onChange={handleCvcChange}
+                      maxLength={4}
+                      className="w-full bg-[#0B1120] border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white font-mono focus:outline-none focus:border-indigo-500 transition tracking-wider"
                       placeholder="123"
                     />
                   </div>
