@@ -129,7 +129,7 @@ const SkillPulseLanding = () => {
               initial={{ opacity: 0, x: 80, y: 20 }}
               animate={{ opacity: 1, x: 0, y: 0 }}
               transition={{ duration: 1.4, cubicBezier: [0.16, 1, 0.3, 1], delay: 0.1 }}
-              className="relative group hidden lg:block animate-float-1"
+              className="relative group mt-10 lg:mt-0 animate-float-1"
             >
                <div className="absolute -inset-12 bg-gradient-to-r from-indigo-500/30 to-purple-500/30 blur-[100px] rounded-full opacity-70 group-hover:opacity-100 transition-opacity duration-700"></div>
                <div className="relative bg-[#0F172A]/90 backdrop-blur-xl border border-indigo-500/30 rounded-[2rem] p-4 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.8)] transition-all duration-700 group-hover:border-indigo-400/60 group-hover:shadow-indigo-500/20 group-hover:scale-[1.02]">
@@ -143,14 +143,14 @@ const SkillPulseLanding = () => {
                   <motion.div
                     animate={{ y: [-6, 6, -6] }}
                     transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                    className="absolute -top-6 -right-6 bg-[#0F172A]/95 border border-emerald-500/30 backdrop-blur-md px-4 py-2.5 rounded-2xl shadow-2xl flex items-center gap-3"
+                    className="absolute -top-4 sm:-top-6 right-2 sm:-right-6 bg-[#0F172A]/95 border border-emerald-500/30 backdrop-blur-md px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-2xl shadow-2xl flex items-center gap-2.5 sm:gap-3"
                   >
-                    <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-400">
-                      <Zap className="w-4 h-4 animate-pulse" />
+                    <div className="p-1.5 sm:p-2 rounded-xl bg-emerald-500/10 text-emerald-400">
+                      <Zap className="w-3.5 h-3.5 sm:w-4 sm:h-4 animate-pulse" />
                     </div>
                     <div>
-                      <div className="text-[10px] text-slate-400 uppercase font-mono font-bold">Accuracy Model</div>
-                      <div className="text-xs font-bold text-emerald-400">98.4% Precision</div>
+                      <div className="text-[9px] sm:text-[10px] text-slate-400 uppercase font-mono font-bold">Accuracy Model</div>
+                      <div className="text-[11px] sm:text-xs font-bold text-emerald-400">98.4% Precision</div>
                     </div>
                   </motion.div>
 
@@ -158,7 +158,7 @@ const SkillPulseLanding = () => {
                   <motion.div
                     animate={{ y: [6, -6, 6] }}
                     transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
-                    className="absolute -bottom-6 -left-6 bg-[#0F172A]/95 border border-indigo-500/30 backdrop-blur-md px-4 py-2.5 rounded-2xl shadow-2xl flex items-center gap-3"
+                    className="absolute -bottom-4 sm:-bottom-6 left-2 sm:-left-6 bg-[#0F172A]/95 border border-indigo-500/30 backdrop-blur-md px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-2xl shadow-2xl flex items-center gap-2.5 sm:gap-3"
                   >
                     <div className="p-2 rounded-xl bg-indigo-500/10 text-indigo-400">
                       <Building2 className="w-4 h-4" />
