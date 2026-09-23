@@ -104,19 +104,19 @@ const SkillPulseLanding = () => {
                 Measure readiness. Close skill gaps. Accelerate workforce growth with tenant-isolated data insights.
               </motion.p>
 
-              <motion.div variants={intenseUp} className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 w-full sm:w-auto">
-                <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }} className="w-full sm:w-auto">
+              <motion.div variants={intenseUp} className="flex flex-row items-center justify-start gap-2.5 sm:gap-4 w-full">
+                <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }} className="flex-1 sm:flex-initial">
                   <Link 
                     to="/signup" 
-                    className="w-full sm:w-auto justify-center bg-indigo-600 hover:bg-indigo-500 text-white px-7 py-3.5 rounded-full font-bold text-sm sm:text-base transition-all shadow-xl shadow-indigo-600/30 hover:shadow-indigo-500/50 inline-flex items-center gap-2 text-center"
+                    className="w-full sm:w-auto justify-center bg-indigo-600 hover:bg-indigo-500 text-white px-5 sm:px-7 py-2.5 sm:py-3.5 rounded-full font-bold text-xs sm:text-base transition-all shadow-xl shadow-indigo-600/30 hover:shadow-indigo-500/50 inline-flex items-center gap-1.5 text-center"
                   >
-                    Get Started <ArrowRight className="w-4 h-4" />
+                    Get Started <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                   </Link>
                 </motion.div>
-                <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }} className="w-full sm:w-auto">
+                <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }} className="flex-1 sm:flex-initial">
                   <Link 
                     to="/contact" 
-                    className="w-full sm:w-auto text-center justify-center bg-white/5 hover:bg-white/10 border border-white/10 text-white px-7 py-3.5 rounded-full font-bold text-sm sm:text-base transition-all backdrop-blur-sm shadow-lg inline-block"
+                    className="w-full sm:w-auto text-center justify-center bg-white/5 hover:bg-white/10 border border-white/10 text-white px-5 sm:px-7 py-2.5 sm:py-3.5 rounded-full font-bold text-xs sm:text-base transition-all backdrop-blur-sm shadow-lg inline-block"
                   >
                     Request Demo
                   </Link>
@@ -249,7 +249,7 @@ const SkillPulseLanding = () => {
             whileInView="visible"
             viewport={{ once: true, margin: "-100px" }}
             variants={staggerContainer}
-            className="grid md:grid-cols-4 gap-8 relative"
+            className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-8 relative"
           >
             {[
               { num: "01", t: "Assess Skills", d: "Baseline evaluations using role-specific frameworks." },
@@ -257,17 +257,15 @@ const SkillPulseLanding = () => {
               { num: "03", t: "Recommend Learning", d: "Targeted courses and personalized growth tasks." },
               { num: "04", t: "Improve Readiness", d: "Monitor growth and updated enterprise readiness scores." }
             ].map((step, i) => (
-              <motion.div key={i} variants={intenseUp} className="flex flex-col items-center text-center group">
+              <motion.div key={i} variants={intenseUp} className="bg-[#0F172A]/90 border border-slate-800/80 hover:border-indigo-500/50 p-4 sm:p-6 rounded-2xl flex flex-col items-center text-center group relative overflow-hidden transition-all duration-300">
                 <motion.div 
-                  whileHover={{ scale: 1.2, rotate: 360, boxShadow: "0 0 35px rgba(99,102,241,0.6)" }}
-                  transition={{ type: "spring", stiffness: 200, damping: 15 }}
-                  className="w-16 h-16 bg-[#0F172A] border-2 border-indigo-500 text-indigo-400 rounded-full flex items-center justify-center text-xl font-bold mb-6 z-10 shadow-xl group-hover:bg-indigo-600 group-hover:text-white transition-all duration-500 cursor-pointer relative"
+                  whileHover={{ scale: 1.1, rotate: 5 }}
+                  className="w-10 h-10 sm:w-14 sm:h-14 bg-indigo-500/10 border border-indigo-500/30 text-indigo-400 rounded-full flex items-center justify-center text-sm sm:text-lg font-bold mb-3 shadow-lg group-hover:bg-indigo-600 group-hover:text-white transition-all duration-300"
                 >
                   {step.num}
-                  <span className="absolute -inset-1 rounded-full border border-indigo-500/30 opacity-0 group-hover:opacity-100 group-hover:scale-125 transition-all duration-500" />
                 </motion.div>
-                <h4 className="font-bold text-lg text-white mb-2 group-hover:text-indigo-300 transition-colors duration-300">{step.t}</h4>
-                <p className="text-slate-400 text-sm px-4 font-light leading-relaxed">{step.d}</p>
+                <h4 className="font-bold text-xs sm:text-base text-white mb-1 group-hover:text-indigo-300 transition-colors duration-300">{step.t}</h4>
+                <p className="text-slate-400 text-[11px] sm:text-xs font-light leading-relaxed">{step.d}</p>
               </motion.div>
             ))}
           </motion.div>

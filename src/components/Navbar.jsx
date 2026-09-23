@@ -123,19 +123,19 @@ const Navbar = () => {
               ))}
             </div>
 
-            {/* In-Menu Responsive Alternative Auth Triggers */}
-            <div className="flex flex-col sm:hidden gap-3 mt-4">
+            {/* In-Menu Responsive Side-by-side Auth Buttons */}
+            <div className="flex flex-row gap-3 mt-4 px-4">
               <Link 
                 to="/login" 
                 onClick={() => setIsOpen(false)}
-                className="w-full text-center py-3 rounded-full text-sm font-bold text-slate-200 border border-slate-700 bg-slate-900/60 hover:bg-slate-800 transition-all"
+                className="flex-1 text-center py-2.5 rounded-full text-xs font-bold text-slate-200 border border-slate-700 bg-slate-900/60 hover:bg-slate-800 transition-all"
               >
                 Login
               </Link>
               <Link 
                 to="/signup" 
                 onClick={() => setIsOpen(false)}
-                className="w-full text-center bg-indigo-600 py-3 rounded-full text-sm font-bold text-white hover:bg-indigo-500 transition shadow-md shadow-indigo-600/30"
+                className="flex-1 text-center bg-indigo-600 py-2.5 rounded-full text-xs font-bold text-white hover:bg-indigo-500 transition shadow-md shadow-indigo-600/30"
               >
                 Sign Up
               </Link>
