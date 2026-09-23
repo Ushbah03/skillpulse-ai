@@ -303,7 +303,7 @@ const SignUp = () => {
 
   return (
     <div
-      className="min-h-screen flex items-center justify-center p-4 md:p-10 font-sans text-white relative overflow-hidden selection:bg-indigo-600"
+      className="min-h-screen flex items-center justify-center p-3 sm:p-6 md:p-10 font-sans text-white relative overflow-hidden selection:bg-indigo-600"
       style={{ background: `linear-gradient(135deg, #0F172A 0%, #1E293B 50%, #312E81 100%)` }}
     >
       <style>{`
@@ -338,7 +338,7 @@ const SignUp = () => {
         )}
       </AnimatePresence>
 
-      <div className="container mx-auto max-w-6xl grid lg:grid-cols-2 gap-8 items-center relative z-10 py-6">
+      <div className="container mx-auto max-w-6xl grid lg:grid-cols-2 gap-8 items-center relative z-10 py-3 sm:py-6">
         
         {/* LEFT BRANDING */}
         <motion.div initial="hidden" animate="visible" variants={staggerContainer} className="hidden lg:block space-y-6 text-left">
@@ -370,7 +370,7 @@ const SignUp = () => {
           initial={{ opacity: 0, y: 60, scale: 0.95 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-          className="bg-[#111827]/70 backdrop-blur-2xl border border-white/10 rounded-2xl md:rounded-3xl p-6 md:p-7 shadow-xl w-full max-w-lg mx-auto hover:border-white/20 transition-all duration-500"
+          className="bg-[#111827]/80 backdrop-blur-2xl border border-white/10 rounded-3xl md:rounded-[2.5rem] p-5 sm:p-8 md:p-10 shadow-xl w-full max-w-lg mx-auto hover:border-white/20 transition-all duration-500"
         >
           <div className="mb-5 text-left">
             <h2 className="text-2xl font-bold mb-1 tracking-tight bg-clip-text bg-gradient-to-r from-white to-slate-200">

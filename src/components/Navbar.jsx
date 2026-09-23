@@ -33,7 +33,7 @@ const Navbar = () => {
   const dashboardPath = currentUser?.role ? getRoleDefaultPath(currentUser.role) : '/dashboard';
 
   return (
-    <nav className="flex justify-between items-center px-6 md:px-16 py-4 bg-[#0B1120]/90 sticky top-0 z-50 border-b border-slate-800/80 backdrop-blur-md">      
+    <nav className="flex justify-between items-center px-4 sm:px-8 md:px-16 py-4 bg-[#0B1120]/90 sticky top-0 z-50 border-b border-slate-800/80 backdrop-blur-md select-none">      
       
       {/* Logo Section */}
       <Link to="/" className="flex items-center gap-2.5 cursor-pointer group relative z-50">

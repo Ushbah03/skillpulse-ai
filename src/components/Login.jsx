@@ -154,7 +154,7 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-6 relative overflow-hidden selection:bg-indigo-600 text-white" style={bgStyle}>
+    <div className="min-h-screen flex items-center justify-center p-3 sm:p-6 relative overflow-hidden selection:bg-indigo-600 text-white" style={bgStyle}>
       
       <style>{`
         @keyframes liquidDriftOne { 0%, 100% { transform: translate(0px, 0px) scale(1); } 50% { transform: translate(50px, -40px) scale(1.15); } }
@@ -168,7 +168,7 @@ const Login = () => {
       
       <div className="absolute inset-0 bg-white/[0.01] pointer-events-none" />
 
-      <div className="container mx-auto max-w-6xl grid lg:grid-cols-2 gap-8 items-center relative z-10 py-6">
+      <div className="container mx-auto max-w-6xl grid lg:grid-cols-2 gap-8 items-center relative z-10 py-3 sm:py-6">
         
         {/* LEFT SIDE: Content & Branding */}
         <motion.div 
@@ -247,11 +247,11 @@ const Login = () => {
           initial={{ opacity: 0, y: 70, scale: 0.96 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ duration: 0.9, cubicBezier: [0.16, 1, 0.3, 1] }}
-          className="bg-[#111827]/60 border border-white/10 rounded-[2.5rem] p-8 md:p-12 backdrop-blur-3xl shadow-[0_30px_70px_rgba(0,0,0,0.5)] w-full max-w-lg mx-auto hover:border-white/15 transition-all duration-500"
+          className="bg-[#111827]/80 border border-white/10 rounded-3xl md:rounded-[2.5rem] p-5 sm:p-8 md:p-12 backdrop-blur-3xl shadow-[0_30px_70px_rgba(0,0,0,0.5)] w-full max-w-lg mx-auto hover:border-white/15 transition-all duration-500"
         >
-          <div className="mb-8 text-left">
-            <h2 className="text-3xl font-bold mb-2 text-white tracking-tight">Sign in to your account</h2>
-            <p className="text-slate-500 text-sm font-medium">Enter your credentials to continue</p>
+          <div className="mb-6 sm:mb-8 text-left">
+            <h2 className="text-2xl sm:text-3xl font-bold mb-1.5 sm:mb-2 text-white tracking-tight">Sign in to your account</h2>
+            <p className="text-slate-400 text-xs sm:text-sm font-medium">Enter your credentials to continue</p>
           </div>
 
           <form className="space-y-5" onSubmit={handleLogin}>

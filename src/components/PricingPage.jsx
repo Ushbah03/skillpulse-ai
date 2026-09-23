@@ -199,20 +199,20 @@ const PricingPage = () => {
       </section>
 
       {/* 2. PRICING CARDS SECTION */}
-      <section className="py-12 px-6 md:px-12 relative z-10">
+      <section className="py-8 sm:py-12 px-3 sm:px-6 md:px-12 relative z-10">
         <div className="container mx-auto max-w-7xl">
           <motion.div 
             variants={containerVariants}
             initial="hidden"
             animate="visible"
-            className="grid md:grid-cols-3 gap-8 items-stretch"
+            className="grid md:grid-cols-3 gap-6 sm:gap-8 items-stretch"
           >
             {plans.map((plan, i) => (
               <motion.div 
                 key={i} 
                 variants={cardVariants}
                 whileHover={{ y: -10, transition: { duration: 0.3 } }}
-                className={`relative flex flex-col bg-[#0F172B]/90 backdrop-blur-xl rounded-3xl p-8 md:p-10 border transition-all duration-300 ${
+                className={`relative flex flex-col bg-[#0F172B]/90 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-5 sm:p-8 md:p-10 border transition-all duration-300 ${
                   plan.featured 
                     ? 'border-indigo-500/80 shadow-[0_0_50px_rgba(79,70,229,0.25)] ring-1 ring-indigo-500/50 bg-gradient-to-b from-indigo-950/40 via-[#0F172B] to-[#0F172B]' 
                     : 'border-slate-800/80 hover:border-slate-700 hover:shadow-xl'

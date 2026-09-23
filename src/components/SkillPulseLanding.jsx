@@ -53,12 +53,12 @@ const SkillPulseLanding = () => {
       </div>
 
       {/* 1. HERO SECTION */}
-      <section className="pt-8 pb-12 px-4 md:px-8 relative z-10">
+      <section className="pt-4 sm:pt-8 pb-8 sm:pb-12 px-3 sm:px-6 md:px-8 relative z-10">
         <motion.div 
           initial={{ opacity: 0, y: 40, scale: 0.96 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ duration: 1.2, cubicBezier: [0.16, 1, 0.3, 1] }}
-          className="relative w-full rounded-[2.5rem] md:rounded-[4rem] py-16 md:py-24 px-6 md:px-16 overflow-hidden shadow-2xl border border-slate-800/80"
+          className="relative w-full rounded-3xl md:rounded-[4rem] py-10 sm:py-16 md:py-24 px-4 sm:px-8 md:px-16 overflow-hidden shadow-2xl border border-slate-800/80"
           style={{
             background: `radial-gradient(circle at 75% 50%, #2E3759 0%, #171E35 50%, #0F172B 100%)`
           }}
@@ -78,45 +78,45 @@ const SkillPulseLanding = () => {
               <motion.div 
                 variants={intenseUp}
                 whileHover={{ scale: 1.05, borderColor: "rgba(129,140,248,0.4)" }}
-                className="inline-flex items-center gap-2 bg-indigo-500/10 border border-indigo-500/20 px-3.5 py-1.5 rounded-full mb-6 backdrop-blur-md cursor-pointer transition-all shadow-[0_0_15px_rgba(99,102,241,0.15)]"
+                className="inline-flex items-center gap-2 bg-indigo-500/10 border border-indigo-500/20 px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full mb-4 sm:mb-6 backdrop-blur-md cursor-pointer transition-all shadow-[0_0_15px_rgba(99,102,241,0.15)]"
               >
                 <span className="w-2 h-2 bg-indigo-400 rounded-full animate-ping"></span>
-                <span className="text-indigo-300 text-[11px] font-bold uppercase tracking-wider font-mono">
+                <span className="text-indigo-300 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider font-mono">
                   {tenantId ? `${tenantId} Enterprise Workspace` : "SkillPulse-AI Multi-Tenant Platform"}
                 </span>
               </motion.div>
 
               <motion.h1 
                 variants={intenseUp}
-                className="text-3xl md:text-4xl lg:text-5xl font-extrabold leading-tight tracking-tight text-white mb-5"
+                className="text-2.5xl sm:text-4xl lg:text-5xl font-extrabold leading-tight tracking-tight text-white mb-4 sm:mb-5"
               >
-                AI-Powered Skill <br />
+                AI-Powered Skill <br className="hidden sm:inline" />
                 <span className="bg-gradient-to-r from-indigo-300 via-indigo-200 to-purple-300 bg-clip-text text-transparent">
                   Intelligence for
-                </span> <br />
+                </span> <br className="hidden sm:inline" />
                 Modern Teams
               </motion.h1>
 
               <motion.p 
                 variants={intenseUp}
-                className="text-slate-300 text-sm md:text-base leading-relaxed max-w-md mb-6 opacity-90 font-light"
+                className="text-slate-300 text-xs sm:text-sm md:text-base leading-relaxed max-w-md mb-6 opacity-90 font-light"
               >
                 Measure readiness. Close skill gaps. Accelerate workforce growth with tenant-isolated data insights.
               </motion.p>
 
-              <motion.div variants={intenseUp} className="flex flex-wrap gap-4">
-                <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}>
+              <motion.div variants={intenseUp} className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 w-full sm:w-auto">
+                <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }} className="w-full sm:w-auto">
                   <Link 
                     to="/signup" 
-                    className="bg-indigo-600 hover:bg-indigo-500 text-white px-8 py-3.5 rounded-full font-bold text-base transition-all shadow-xl shadow-indigo-600/30 hover:shadow-indigo-500/50 inline-flex items-center gap-2"
+                    className="w-full sm:w-auto justify-center bg-indigo-600 hover:bg-indigo-500 text-white px-7 py-3.5 rounded-full font-bold text-sm sm:text-base transition-all shadow-xl shadow-indigo-600/30 hover:shadow-indigo-500/50 inline-flex items-center gap-2 text-center"
                   >
                     Get Started <ArrowRight className="w-4 h-4" />
                   </Link>
                 </motion.div>
-                <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}>
+                <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }} className="w-full sm:w-auto">
                   <Link 
                     to="/contact" 
-                    className="bg-white/5 hover:bg-white/10 border border-white/10 text-white px-8 py-3.5 rounded-full font-bold text-base transition-all backdrop-blur-sm shadow-lg inline-block"
+                    className="w-full sm:w-auto text-center justify-center bg-white/5 hover:bg-white/10 border border-white/10 text-white px-7 py-3.5 rounded-full font-bold text-sm sm:text-base transition-all backdrop-blur-sm shadow-lg inline-block"
                   >
                     Request Demo
                   </Link>
