@@ -300,44 +300,26 @@ const ForgotPasswordScreen = () => {
                 <CheckCircle className="w-6 h-6 text-emerald-400" />
               </div>
               <h2 className="text-3xl font-bold mb-2 text-white tracking-tight">Check Your Email</h2>
-              <p className="text-slate-400 text-sm max-w-sm">We've generated a secure password recovery token for:</p>
+              <p className="text-slate-400 text-sm max-w-sm">We've dispatched password recovery instructions to:</p>
               <p className="text-xs font-semibold text-indigo-400 mt-2 bg-indigo-500/10 border border-indigo-500/20 px-4 py-2 rounded-xl inline-block font-mono">
                 {email}
               </p>
+              <p className="text-xs text-slate-400 mt-4 max-w-xs leading-relaxed">
+                Please check your inbox or spam folder. Click the secure link inside the email to reset your password.
+              </p>
             </div>
-
-            {/* Direct Token & Reset Link Box for convenience */}
-            {generatedToken && (
-              <div className="bg-[#1A2234] border border-indigo-500/30 rounded-2xl p-4 text-left space-y-2">
-                <p className="text-xs text-indigo-300 font-semibold uppercase tracking-wider">Your Reset Token:</p>
-                <div className="bg-black/40 p-2.5 rounded-xl font-mono text-xs text-indigo-200 select-all break-all border border-white/5">
-                  {generatedToken}
-                </div>
-                <div className="pt-2 flex gap-2">
-                  <button
-                    onClick={() => {
-                      setToken(generatedToken);
-                      setMode('reset');
-                    }}
-                    className="w-full bg-indigo-600 hover:bg-indigo-500 text-white text-xs py-2.5 rounded-xl font-bold transition-all flex items-center justify-center gap-1.5"
-                  >
-                    Reset Password Now <ArrowRight size={14} />
-                  </button>
-                </div>
-              </div>
-            )}
 
             <hr className="border-white/5" />
 
             <div className="space-y-3">
               <p className="text-sm text-slate-400">
-                Didn't catch the token?
+                Have a reset token code?
               </p>
               <button
-                onClick={handleRequestReset}
-                className="text-sm font-bold text-indigo-400 hover:text-indigo-300 transition-colors"
+                onClick={() => setMode('reset')}
+                className="text-sm font-bold text-indigo-400 hover:text-indigo-300 transition-colors underline underline-offset-4"
               >
-                Resend Reset Link
+                Enter Reset Token Manually
               </button>
             </div>
 
