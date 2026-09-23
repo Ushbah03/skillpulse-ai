@@ -34,13 +34,13 @@ const ForgotPasswordScreen = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-6 relative overflow-hidden" style={bgStyle}>
+    <div className="min-h-screen flex items-center justify-center p-3 sm:p-6 relative overflow-hidden" style={bgStyle}>
       
       {/* Dynamic Background Noise Overlays (image_c0a928.jpg) */}
       <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'url("https://www.transparenttextures.com/patterns/black-noise.png")' }}></div>
 
       {/* ── CENTRAL AUTHENTICATION CARD (image_c0a928.jpg) ── */}
-      <div className="bg-[#111827]/60 border border-white/10 rounded-[2.5rem] p-8 md:p-12 backdrop-blur-3xl shadow-2xl w-full max-w-lg mx-auto relative z-10 text-left">
+      <div className="bg-[#111827]/80 border border-white/10 rounded-3xl md:rounded-[2.5rem] p-5 sm:p-8 md:p-12 backdrop-blur-3xl shadow-2xl w-full max-w-lg mx-auto relative z-10 text-left">
         
         {/* STATE A: ACTIVE REQUEST RESET FORM */}
         {!isSubmitted ? (
