@@ -23,6 +23,13 @@ const MySkillProfile = () => {
   const [savingSkill, setSavingSkill] = useState(false);
   const [skillForm, setSkillForm] = useState({ id: '', name: '', category: 'Technical', level: 3 });
 
+  // AI Skill Extractor Modal State
+  const [showAiExtractor, setShowAiExtractor] = useState(false);
+  const [aiInputText, setAiInputText] = useState('');
+  const [extractingAi, setExtractingAi] = useState(false);
+  const [aiExtractSuccessMsg, setAiExtractSuccessMsg] = useState('');
+  const [aiExtractErrorMsg, setAiExtractErrorMsg] = useState('');
+
   // Action dropdown state
   const [activeMenuId, setActiveMenuId] = useState(null);
 
@@ -179,6 +186,38 @@ const MySkillProfile = () => {
     setShowAddSkill(true);
   };
 
+  // --- AI Skill Extraction Handler ---
+  const handleAiExtractSkills = async (e) => {
+    e.preventDefault();
+    if (!aiInputText || aiInputText.trim().length < 10) {
+      setAiExtractErrorMsg('Please paste at least 10 characters of resume or project text.');
+      return;
+    }
+
+    setAiExtractErrorMsg('');
+    setAiExtractSuccessMsg('');
+    setExtractingAi(true);
+
+    try {
+      const res = await employeeAPI.aiExtractSkills(aiInputText);
+      setExtractingAi(false);
+      if (res?.success) {
+        setAiExtractSuccessMsg(res.message || 'Skills successfully extracted and added to your profile!');
+        setAiInputText('');
+        await loadData();
+        setTimeout(() => {
+          setShowAiExtractor(false);
+          setAiExtractSuccessMsg('');
+        }, 2000);
+      } else {
+        setAiExtractErrorMsg(res?.message || 'Failed to extract skills via AI.');
+      }
+    } catch (err) {
+      setExtractingAi(false);
+      setAiExtractErrorMsg(err.message || 'AI extraction failed. Please try again.');
+    }
+  };
+
   // --- Enroll in Course for Gap ---
   const handleEnrollGapCourse = async (gap) => {
     if (gap.assignedCourseId) {
@@ -229,9 +268,15 @@ const MySkillProfile = () => {
               setSkillForm({ id: '', name: '', category: 'Technical', level: 3 });
               setShowAddSkill(true);
             }}
-            className="flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-2xl font-black text-sm uppercase tracking-wider hover:bg-blue-700 transition-all shadow-lg shadow-blue-900/20"
+            className="flex items-center gap-2 bg-blue-600 text-white px-5 py-3 rounded-2xl font-black text-sm uppercase tracking-wider hover:bg-blue-700 transition-all shadow-lg shadow-blue-900/20"
           >
             <Plus className="w-5 h-5" /> Add Skill
+          </button>
+          <button 
+            onClick={() => setShowAiExtractor(true)}
+            className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-5 py-3 rounded-2xl font-black text-sm uppercase tracking-wider hover:from-purple-700 hover:to-indigo-700 transition-all shadow-lg shadow-purple-900/20"
+          >
+            <Sparkles className="w-5 h-5 text-amber-300 animate-pulse" /> AI Skill Extractor
           </button>
           <img 
             src={user.avatarUrl || "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=150"} 
@@ -547,6 +592,94 @@ const MySkillProfile = () => {
                 >
                   {savingSkill && <Loader2 className="w-4 h-4 animate-spin" />}
                   {savingSkill ? 'Saving...' : (editingSkill ? 'Update Skill' : 'Save Skill')}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* --- AI SKILL EXTRACTOR MODAL --- */}
+      {showAiExtractor && (
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in">
+          <div className="bg-white rounded-3xl max-w-2xl w-full p-8 shadow-2xl border border-slate-100 relative">
+            <button
+              onClick={() => { setShowAiExtractor(false); setAiExtractErrorMsg(''); setAiExtractSuccessMsg(''); }}
+              className="absolute top-6 right-6 text-slate-400 hover:text-slate-600 p-2 rounded-full hover:bg-slate-100"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-2xl bg-purple-100 border border-purple-200 flex items-center justify-center text-purple-600">
+                <Sparkles className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="text-xl font-black text-slate-900">AI Resume & Project Skill Extractor</h3>
+                <p className="text-xs text-slate-500 font-medium">Powered by Groq LPU / Gemini LLM Talent Engine</p>
+              </div>
+            </div>
+
+            <p className="text-slate-600 text-sm mb-6 leading-relaxed">
+              Paste your Resume, CV summary, LinkedIn experience, or recent project description below. SkillPulse AI will automatically analyze your text, identify all technical & soft skills, rate proficiency levels, and update your database inventory!
+            </p>
+
+            {aiExtractErrorMsg && (
+              <div className="mb-4 p-4 bg-rose-50 border border-rose-200 text-rose-600 rounded-2xl text-xs font-bold flex items-center gap-2">
+                <X className="w-4 h-4 shrink-0" /> {aiExtractErrorMsg}
+              </div>
+            )}
+
+            {aiExtractSuccessMsg && (
+              <div className="mb-4 p-4 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-2xl text-xs font-bold flex items-center gap-2">
+                <CheckCircle className="w-4 h-4 shrink-0" /> {aiExtractSuccessMsg}
+              </div>
+            )}
+
+            <form onSubmit={handleAiExtractSkills} className="space-y-6">
+              <div>
+                <div className="flex justify-between items-center mb-2">
+                  <label className="text-xs font-black uppercase text-slate-500 tracking-wider">Paste Resume / Project Experience Text</label>
+                  <button
+                    type="button"
+                    onClick={() => setAiInputText("Senior Fullstack Software Engineer with 3+ years experience. Expert in React.js, Node.js REST APIs, PostgreSQL database architecture, Docker containerization, Tailwind CSS UI design, TypeScript, and Agile Team Leadership.")}
+                    className="text-[11px] font-bold text-purple-600 hover:underline"
+                  >
+                    Insert Sample Resume
+                  </button>
+                </div>
+                <textarea
+                  rows={6}
+                  value={aiInputText}
+                  onChange={(e) => setAiInputText(e.target.value)}
+                  required
+                  placeholder="Paste your resume work experience, tech stack, or project description here..."
+                  className="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 text-sm font-medium text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+                />
+              </div>
+
+              <div className="flex justify-end gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowAiExtractor(false)}
+                  className="px-6 py-3 rounded-2xl text-sm font-bold text-slate-500 hover:bg-slate-100"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={extractingAi}
+                  className="px-6 py-3 rounded-2xl text-sm font-black uppercase tracking-wider bg-gradient-to-r from-purple-600 to-indigo-600 text-white hover:from-purple-700 hover:to-indigo-700 shadow-lg shadow-purple-900/20 flex items-center gap-2 disabled:opacity-50"
+                >
+                  {extractingAi ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" /> AI Analyzing Text...
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="w-4 h-4" /> Extract & Add Skills
+                    </>
+                  )}
                 </button>
               </div>
             </form>

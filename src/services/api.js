@@ -94,6 +94,11 @@ export const employeeAPI = {
       method: 'POST',
       body: JSON.stringify(skillData),
     }),
+  aiExtractSkills: (text) =>
+    apiRequest('/employee/ai-extract-skills', {
+      method: 'POST',
+      body: JSON.stringify({ text }),
+    }),
   getGaps: () => apiRequest('/employee/gaps'),
   getLearningRecs: () => apiRequest('/employee/learning'),
   enrollCourse: (courseId) =>
