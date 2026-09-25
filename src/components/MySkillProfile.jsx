@@ -498,16 +498,18 @@ const MySkillProfile = () => {
               </span>
             </h2>
             
-            <p className="text-slate-400 text-base mb-8 leading-relaxed">
-              {topCriticalGap?.assignedCourse?.title 
-                ? `Recommended Course: "${topCriticalGap.assignedCourse.title}" to achieve target level ${topCriticalGap.requiredLevel}.`
-                : `Focusing on ${topCriticalGap?.skill?.name || 'core competencies'} will increase your role alignment index by up to 25%.`}
+            <p className="text-slate-300 text-sm mb-8 leading-relaxed font-medium">
+              {topCriticalGap
+                ? `Recommended Course: "${topCriticalGap.assignedCourse?.title || `${topCriticalGap.skill?.name || 'Skill'} Mastery & Practical Application`}" to achieve target level ${topCriticalGap.requiredLevel || 4.5}.`
+                : `Your verified skill inventory meets current role requirements. Explore new catalog tracks.`}
             </p>
 
-            <div className="flex gap-10 mb-10">
+            <div className="flex gap-10 mb-8">
               <div>
                 <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Impact</p>
-                <p className="text-emerald-400 font-bold text-lg">+25% Readiness</p>
+                <p className="text-emerald-400 font-bold text-lg">
+                  +{topCriticalGap ? Math.round(((topCriticalGap.requiredLevel - topCriticalGap.currentLevel) / 5.0) * 100) || 25 : 100}% Readiness
+                </p>
               </div>
               <div>
                 <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Status</p>
@@ -516,7 +518,7 @@ const MySkillProfile = () => {
             </div>
 
             <button 
-              onClick={() => navigate('/dashboard/learning')}
+              onClick={() => topCriticalGap ? handleEnrollGapCourse(topCriticalGap) : navigate('/dashboard/learning')}
               className="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-2xl font-black text-sm uppercase tracking-wider transition-all flex items-center justify-center gap-2 group shadow-lg shadow-blue-600/20"
             >
               Explore Learning Paths <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
