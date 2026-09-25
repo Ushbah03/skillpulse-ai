@@ -106,6 +106,27 @@ const MySkillProfile = () => {
   // Top Critical Gap for AI Recommendation Banner
   const topCriticalGap = rawGaps.find(g => g.severity === 'CRITICAL') || rawGaps[0] || null;
 
+  // Compute Dynamic AI Career Advisor Insight based on real DB skills portfolio
+  const techSkills = rawSkills.filter(s => (s.skill?.category?.name || '').toLowerCase().includes('tech') || (s.skill?.category?.name || '').toLowerCase().includes('design'));
+  const softSkills = rawSkills.filter(s => (s.skill?.category?.name || '').toLowerCase().includes('soft') || (s.skill?.category?.name || '').toLowerCase().includes('lead'));
+  
+  const avgTech = techSkills.length > 0 ? (techSkills.reduce((a, b) => a + (b.proficiencyLevel || 0), 0) / techSkills.length) : 3.0;
+  const avgSoft = softSkills.length > 0 ? (softSkills.reduce((a, b) => a + (b.proficiencyLevel || 0), 0) / softSkills.length) : 3.0;
+
+  let aiAdvisorTitle = "Career Velocity & Promotion Insight";
+  let aiAdvisorText = "Your verified skill inventory shows balanced competency. Continue building high-impact technical & leadership capabilities to unlock senior promotion tracks.";
+
+  if (avgTech >= 3.8 && avgSoft < 3.5) {
+    aiAdvisorTitle = "High Technical Mastery • Soft Skills Opportunity";
+    aiAdvisorText = `Your technical proficiency is strong (${Math.round(avgTech * 20)}%). Elevating Workplace Communication & Problem Solving will accelerate your eligibility for Senior Lead roles.`;
+  } else if (avgSoft >= 3.8 && avgTech < 3.5) {
+    aiAdvisorTitle = "Strong Leadership Profile • Technical Growth Needed";
+    aiAdvisorText = `Your leadership & collaboration capabilities are key assets (${Math.round(avgSoft * 20)}%). Strengthening core technical skills will maximize your overall role alignment index.`;
+  } else if (rawGaps.length > 0) {
+    aiAdvisorTitle = `Focus Track: ${topCriticalGap?.skill?.name || 'Skill Alignment'}`;
+    aiAdvisorText = `Bridging your ${topCriticalGap?.severity || 'HIGH'} priority gap in ${topCriticalGap?.skill?.name || 'core areas'} will increase your promotion readiness index by +${Math.round(((topCriticalGap?.requiredLevel - topCriticalGap?.currentLevel) / 5.0) * 100) || 25}%.`;
+  }
+
   // --- Export to CSV ---
   const handleExport = () => {
     const headers = ['Skill Name', 'Category', 'Proficiency', 'Status', 'Readiness %', 'Last Updated'];
@@ -482,46 +503,39 @@ const MySkillProfile = () => {
           )}
         </div>
 
-        {/* Dynamic AI Recommendations Card */}
+        {/* Dynamic AI Career Advisor Card */}
         <div className="bg-[#0F172A] p-8 rounded-[2.5rem] shadow-xl relative overflow-hidden group">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 blur-[100px] rounded-full -mr-20 -mt-20"></div>
+          <div className="absolute top-0 right-0 w-64 h-64 bg-purple-500/10 blur-[100px] rounded-full -mr-20 -mt-20"></div>
           
           <div className="relative z-10">
-            <div className="inline-flex items-center gap-2 bg-blue-500/20 text-blue-400 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest mb-6 border border-blue-500/30">
-              <Sparkles className="w-3 h-3" /> AI Recommendation
+            <div className="inline-flex items-center gap-2 bg-purple-500/20 text-purple-300 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest mb-6 border border-purple-500/30">
+              <Sparkles className="w-3 h-3 text-amber-300 animate-pulse" /> AI Career Advisor
             </div>
             
-            <h2 className="text-2xl font-bold text-white mb-4 leading-tight">
-              Bridge your top gap: <br /> 
-              <span className="text-blue-400">
-                "{topCriticalGap?.skill?.name || 'Continuous Learning'}"
-              </span>
+            <h2 className="text-2xl font-bold text-white mb-3 leading-tight">
+              {aiAdvisorTitle}
             </h2>
             
             <p className="text-slate-300 text-sm mb-8 leading-relaxed font-medium">
-              {topCriticalGap
-                ? `Recommended Course: "${topCriticalGap.assignedCourse?.title || `${topCriticalGap.skill?.name || 'Skill'} Mastery & Practical Application`}" to achieve target level ${topCriticalGap.requiredLevel || 4.5}.`
-                : `Your verified skill inventory meets current role requirements. Explore new catalog tracks.`}
+              {aiAdvisorText}
             </p>
 
-            <div className="flex gap-10 mb-8">
+            <div className="flex gap-10 mb-8 border-t border-white/10 pt-6">
               <div>
-                <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Impact</p>
-                <p className="text-emerald-400 font-bold text-lg">
-                  +{topCriticalGap ? Math.round(((topCriticalGap.requiredLevel - topCriticalGap.currentLevel) / 5.0) * 100) || 25 : 100}% Readiness
-                </p>
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Role Alignment</p>
+                <p className="text-emerald-400 font-bold text-lg">{alignmentPct}% Index</p>
               </div>
               <div>
-                <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Status</p>
-                <p className="text-white font-bold text-lg">{topCriticalGap ? `${topCriticalGap.severity} Priority` : 'Optimal'}</p>
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Career Goal</p>
+                <p className="text-purple-300 font-bold text-lg">{user.jobTitle ? `Senior ${user.jobTitle}` : 'Lead Specialist'}</p>
               </div>
             </div>
 
             <button 
-              onClick={() => topCriticalGap ? handleEnrollGapCourse(topCriticalGap) : navigate('/dashboard/learning')}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-2xl font-black text-sm uppercase tracking-wider transition-all flex items-center justify-center gap-2 group shadow-lg shadow-blue-600/20"
+              onClick={() => navigate('/dashboard/career')}
+              className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white py-4 rounded-2xl font-black text-sm uppercase tracking-wider transition-all flex items-center justify-center gap-2 group shadow-lg shadow-purple-900/30"
             >
-              Explore Learning Paths <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              View AI Career Roadmap <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </button>
           </div>
         </div>
