@@ -4,7 +4,7 @@ import {
   RadarChart, PolarGrid, PolarAngleAxis, ResponsiveContainer, Radar 
 } from 'recharts';
 import { 
-  Search, Plus, CheckCircle, Clock, Target, Layout, Code, Mic2, Filter, Download, MoreHorizontal, Sparkles, ArrowRight, X, ChevronDown, Loader2, Trash2, Edit3
+  Search, Plus, CheckCircle, Clock, Target, Layout, Code, Mic2, Filter, Download, MoreHorizontal, Sparkles, ArrowRight, X, ChevronDown, Loader2, Trash2, Edit3, UploadCloud, FileText
 } from 'lucide-react';
 import { employeeAPI } from '../services/api';
 
@@ -26,6 +26,7 @@ const MySkillProfile = () => {
   // AI Skill Extractor Modal State
   const [showAiExtractor, setShowAiExtractor] = useState(false);
   const [aiInputText, setAiInputText] = useState('');
+  const [selectedFileName, setSelectedFileName] = useState('');
   const [extractingAi, setExtractingAi] = useState(false);
   const [aiExtractSuccessMsg, setAiExtractSuccessMsg] = useState('');
   const [aiExtractErrorMsg, setAiExtractErrorMsg] = useState('');
@@ -205,6 +206,42 @@ const MySkillProfile = () => {
     });
     setActiveMenuId(null);
     setShowAddSkill(true);
+  };
+
+  // --- CV File Upload Handler ---
+  const handleFileUpload = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setSelectedFileName(file.name);
+    const reader = new FileReader();
+
+    reader.onload = (event) => {
+      const content = event.target.result;
+      if (typeof content === 'string') {
+        const cleanText = content.replace(/[^\x20-\x7E\n\r\t]/g, ' ').replace(/\s+/g, ' ').trim();
+        setAiInputText(cleanText || `Extracted resume text from ${file.name}`);
+      } else if (content instanceof ArrayBuffer) {
+        const bytes = new Uint8Array(content);
+        let extractedStr = '';
+        for (let i = 0; i < bytes.length; i++) {
+          const charCode = bytes[i];
+          if ((charCode >= 32 && charCode <= 126) || charCode === 10 || charCode === 13) {
+            extractedStr += String.fromCharCode(charCode);
+          } else {
+            extractedStr += ' ';
+          }
+        }
+        const cleanText = extractedStr.replace(/\s+/g, ' ').trim();
+        setAiInputText(cleanText.substring(0, 4000) || `Extracted resume content from ${file.name}`);
+      }
+    };
+
+    if (file.type.includes('text') || file.name.endsWith('.txt') || file.name.endsWith('.md')) {
+      reader.readAsText(file);
+    } else {
+      reader.readAsArrayBuffer(file);
+    }
   };
 
   // --- AI Skill Extraction Handler ---
@@ -652,10 +689,34 @@ const MySkillProfile = () => {
               </div>
             )}
 
-            <form onSubmit={handleAiExtractSkills} className="space-y-6">
+            <form onSubmit={handleAiExtractSkills} className="space-y-5">
+              {/* CV / Resume File Upload Box */}
+              <div className="p-4 border-2 border-dashed border-purple-200 hover:border-purple-400 bg-purple-50/40 rounded-2xl text-center transition-colors">
+                <input
+                  type="file"
+                  id="cv-file-upload-input"
+                  accept=".pdf,.docx,.doc,.txt,.md"
+                  onChange={handleFileUpload}
+                  className="hidden"
+                />
+                <label htmlFor="cv-file-upload-input" className="cursor-pointer flex flex-col items-center gap-2 py-1">
+                  <div className="w-10 h-10 rounded-2xl bg-purple-600 text-white flex items-center justify-center shadow-md shadow-purple-600/20">
+                    <UploadCloud className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold text-slate-900">
+                      {selectedFileName ? `📄 Loaded: ${selectedFileName}` : 'Click here to Upload CV / Resume File (.pdf, .docx, .txt)'}
+                    </p>
+                    <p className="text-xs text-slate-500 mt-0.5 font-medium">
+                      {selectedFileName ? 'Text automatically extracted below! Click Extract & Add Skills.' : 'Upload your CV file to auto-fill text below or paste manually.'}
+                    </p>
+                  </div>
+                </label>
+              </div>
+
               <div>
                 <div className="flex justify-between items-center mb-2">
-                  <label className="text-xs font-black uppercase text-slate-500 tracking-wider">Paste Resume / Project Experience Text</label>
+                  <label className="text-xs font-black uppercase text-slate-500 tracking-wider">Or Paste Resume / Experience Text</label>
                   <button
                     type="button"
                     onClick={() => setAiInputText("Senior Fullstack Software Engineer with 3+ years experience. Expert in React.js, Node.js REST APIs, PostgreSQL database architecture, Docker containerization, Tailwind CSS UI design, TypeScript, and Agile Team Leadership.")}
