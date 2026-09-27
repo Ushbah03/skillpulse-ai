@@ -400,7 +400,12 @@ const MySkillProfile = () => {
       {/* Skills Inventory Table */}
       <div className="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden mb-10">
         <div className="p-8 border-b border-slate-50 flex justify-between items-center">
-          <h3 className="text-xl font-bold text-slate-800">My Skills Inventory</h3>
+          <div className="flex items-center gap-3">
+            <h3 className="text-xl font-bold text-slate-800">My Skills Inventory</h3>
+            <span className="bg-blue-50 text-blue-600 px-3 py-1 rounded-full text-xs font-black border border-blue-100">
+              {filteredSkills.length} {filteredSkills.length === 1 ? 'Skill' : 'Skills'}
+            </span>
+          </div>
           <div className="flex gap-3 relative">
             <button 
               onClick={() => setShowFilterPanel(p => !p)}
@@ -435,18 +440,19 @@ const MySkillProfile = () => {
         </div>
 
         {filteredSkills.length > 0 ? (
-          <table className="w-full text-left">
-            <thead className="bg-slate-50/50 text-slate-400 text-[11px] font-black uppercase tracking-widest">
-              <tr>
-                <th className="px-8 py-4">Skill Name</th>
-                <th className="px-8 py-4">Category</th>
-                <th className="px-8 py-4">Proficiency</th>
-                <th className="px-8 py-4">Status</th>
-                <th className="px-8 py-4">Readiness %</th>
-                <th className="px-8 py-4">Last Updated</th>
-                <th className="px-8 py-4 text-right">Actions</th>
-              </tr>
-            </thead>
+          <div className="overflow-x-auto overflow-y-auto max-h-[480px] scrollbar-thin scrollbar-thumb-slate-200">
+            <table className="w-full text-left border-collapse">
+              <thead className="bg-slate-50 sticky top-0 z-10 text-slate-400 text-[11px] font-black uppercase tracking-widest border-b border-slate-100 shadow-xs">
+                <tr>
+                  <th className="px-8 py-4 bg-slate-50">Skill Name</th>
+                  <th className="px-8 py-4 bg-slate-50">Category</th>
+                  <th className="px-8 py-4 bg-slate-50">Proficiency</th>
+                  <th className="px-8 py-4 bg-slate-50">Status</th>
+                  <th className="px-8 py-4 bg-slate-50">Readiness %</th>
+                  <th className="px-8 py-4 bg-slate-50">Last Updated</th>
+                  <th className="px-8 py-4 text-right bg-slate-50">Actions</th>
+                </tr>
+              </thead>
             <tbody className="divide-y divide-slate-50">
               {filteredSkills.map((us, idx) => {
                 const skillName = us.skill?.name || 'Unnamed Skill';
@@ -507,6 +513,7 @@ const MySkillProfile = () => {
               })}
             </tbody>
           </table>
+        </div>
         ) : (
           <div className="py-16 text-center text-slate-400 font-medium">
             No skills found. Click "Add Skill" above to build your profile inventory.
