@@ -400,12 +400,7 @@ const MySkillProfile = () => {
       {/* Skills Inventory Table */}
       <div className="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden mb-10">
         <div className="p-8 border-b border-slate-50 flex justify-between items-center">
-          <div className="flex items-center gap-3">
-            <h3 className="text-xl font-bold text-slate-800">My Skills Inventory</h3>
-            <span className="bg-blue-50 text-blue-600 px-3 py-1 rounded-full text-xs font-black border border-blue-100">
-              {filteredSkills.length} {filteredSkills.length === 1 ? 'Skill' : 'Skills'}
-            </span>
-          </div>
+          <h3 className="text-xl font-bold text-slate-800">My Skills Inventory</h3>
           <div className="flex gap-3 relative">
             <button 
               onClick={() => setShowFilterPanel(p => !p)}
@@ -440,80 +435,80 @@ const MySkillProfile = () => {
         </div>
 
         {filteredSkills.length > 0 ? (
-          <div className="overflow-x-auto overflow-y-auto max-h-[480px] scrollbar-thin scrollbar-thumb-slate-200">
+          <div className="max-h-[440px] overflow-y-auto overflow-x-auto scrollbar-thin scrollbar-thumb-slate-200 scrollbar-track-transparent">
             <table className="w-full text-left border-collapse">
-              <thead className="bg-slate-50 sticky top-0 z-10 text-slate-400 text-[11px] font-black uppercase tracking-widest border-b border-slate-100 shadow-xs">
+              <thead className="bg-slate-50 border-b border-slate-100 text-slate-400 text-[11px] font-black uppercase tracking-widest sticky top-0 z-20 shadow-sm">
                 <tr>
-                  <th className="px-8 py-4 bg-slate-50">Skill Name</th>
-                  <th className="px-8 py-4 bg-slate-50">Category</th>
-                  <th className="px-8 py-4 bg-slate-50">Proficiency</th>
-                  <th className="px-8 py-4 bg-slate-50">Status</th>
-                  <th className="px-8 py-4 bg-slate-50">Readiness %</th>
-                  <th className="px-8 py-4 bg-slate-50">Last Updated</th>
-                  <th className="px-8 py-4 text-right bg-slate-50">Actions</th>
+                  <th className="px-8 py-4 bg-slate-50/95 backdrop-blur-md">Skill Name</th>
+                  <th className="px-8 py-4 bg-slate-50/95 backdrop-blur-md">Category</th>
+                  <th className="px-8 py-4 bg-slate-50/95 backdrop-blur-md">Proficiency</th>
+                  <th className="px-8 py-4 bg-slate-50/95 backdrop-blur-md">Status</th>
+                  <th className="px-8 py-4 bg-slate-50/95 backdrop-blur-md">Readiness %</th>
+                  <th className="px-8 py-4 bg-slate-50/95 backdrop-blur-md">Last Updated</th>
+                  <th className="px-8 py-4 bg-slate-50/95 backdrop-blur-md text-right">Actions</th>
                 </tr>
               </thead>
-            <tbody className="divide-y divide-slate-50">
-              {filteredSkills.map((us, idx) => {
-                const skillName = us.skill?.name || 'Unnamed Skill';
-                const catName = us.skill?.category?.name || 'Technical';
-                const prof = us.proficiencyLevel || 3.0;
-                const levelLabel = prof >= 4.5 ? 'Expert' : prof >= 3.5 ? 'Advanced' : prof >= 2.5 ? 'Intermediate' : 'Beginner';
-                const statusLabel = us.verified ? 'Validated' : 'Pending';
+              <tbody className="divide-y divide-slate-50">
+                {filteredSkills.map((us, idx) => {
+                  const skillName = us.skill?.name || 'Unnamed Skill';
+                  const catName = us.skill?.category?.name || 'Technical';
+                  const prof = us.proficiencyLevel || 3.0;
+                  const levelLabel = prof >= 4.5 ? 'Expert' : prof >= 3.5 ? 'Advanced' : prof >= 2.5 ? 'Intermediate' : 'Beginner';
+                  const statusLabel = us.verified ? 'Validated' : 'Pending';
 
-                return (
-                  <tr key={us.id || idx} className="hover:bg-slate-50/50 transition-colors text-sm relative">
-                    <td className="px-8 py-5 flex items-center gap-3">
-                      <div className={`w-2.5 h-2.5 rounded-full ${prof >= 4.0 ? 'bg-blue-500' : prof >= 2.5 ? 'bg-violet-500' : 'bg-orange-500'}`}></div>
-                      <span className="font-bold text-slate-800">{skillName}</span>
-                    </td>
-                    <td className="px-8 py-5 text-slate-500 font-medium">{catName}</td>
-                    <td className="px-8 py-5">
-                      <span className="bg-slate-100 text-slate-600 px-3 py-1 rounded-lg font-bold text-[11px]">{levelLabel} ({prof})</span>
-                    </td>
-                    <td className="px-8 py-5">
-                      <span className={`px-3 py-1 rounded-lg font-black text-[10px] uppercase tracking-wider ${
-                        statusLabel === 'Validated' ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-100 text-slate-500'
-                      }`}>
-                        {statusLabel}
-                      </span>
-                    </td>
-                    <td className="px-8 py-5 font-black text-slate-800">{Math.round(prof * 20)}%</td>
-                    <td className="px-8 py-5 text-slate-400 font-medium">{us.lastAssessedAt ? new Date(us.lastAssessedAt).toLocaleDateString() : 'Active'}</td>
-                    <td className="px-8 py-5 text-right relative">
-                      <div className="relative inline-block text-left">
-                        <button 
-                          onClick={() => setActiveMenuId(activeMenuId === us.id ? null : us.id)}
-                          className="p-2 hover:bg-slate-100 rounded-lg text-slate-400 hover:text-slate-700 transition-all"
-                        >
-                          <MoreHorizontal className="w-5 h-5" />
-                        </button>
-                        
-                        {/* Action Menu Dropdown */}
-                        {activeMenuId === us.id && (
-                          <div className="absolute right-0 top-10 z-40 bg-white border border-slate-200 rounded-xl shadow-xl p-2 w-36 text-left">
-                            <button
-                              onClick={() => handleOpenEdit(us)}
-                              className="w-full flex items-center gap-2 px-3 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50 rounded-lg"
-                            >
-                              <Edit3 className="w-3.5 h-3.5 text-blue-600" /> Edit Level
-                            </button>
-                            <button
-                              onClick={() => handleDeleteSkill(us.id)}
-                              className="w-full flex items-center gap-2 px-3 py-2 text-xs font-bold text-rose-600 hover:bg-rose-50 rounded-lg"
-                            >
-                              <Trash2 className="w-3.5 h-3.5 text-rose-600" /> Remove
-                            </button>
-                          </div>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
+                  return (
+                    <tr key={us.id || idx} className="hover:bg-slate-50/50 transition-colors text-sm relative">
+                      <td className="px-8 py-5 flex items-center gap-3">
+                        <div className={`w-2.5 h-2.5 rounded-full ${prof >= 4.0 ? 'bg-blue-500' : prof >= 2.5 ? 'bg-violet-500' : 'bg-orange-500'}`}></div>
+                        <span className="font-bold text-slate-800">{skillName}</span>
+                      </td>
+                      <td className="px-8 py-5 text-slate-500 font-medium">{catName}</td>
+                      <td className="px-8 py-5">
+                        <span className="bg-slate-100 text-slate-600 px-3 py-1 rounded-lg font-bold text-[11px]">{levelLabel} ({prof})</span>
+                      </td>
+                      <td className="px-8 py-5">
+                        <span className={`px-3 py-1 rounded-lg font-black text-[10px] uppercase tracking-wider ${
+                          statusLabel === 'Validated' ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-100 text-slate-500'
+                        }`}>
+                          {statusLabel}
+                        </span>
+                      </td>
+                      <td className="px-8 py-5 font-black text-slate-800">{Math.round(prof * 20)}%</td>
+                      <td className="px-8 py-5 text-slate-400 font-medium">{us.lastAssessedAt ? new Date(us.lastAssessedAt).toLocaleDateString() : 'Active'}</td>
+                      <td className="px-8 py-5 text-right relative">
+                        <div className="relative inline-block text-left">
+                          <button 
+                            onClick={() => setActiveMenuId(activeMenuId === us.id ? null : us.id)}
+                            className="p-2 hover:bg-slate-100 rounded-lg text-slate-400 hover:text-slate-700 transition-all"
+                          >
+                            <MoreHorizontal className="w-5 h-5" />
+                          </button>
+                          
+                          {/* Action Menu Dropdown */}
+                          {activeMenuId === us.id && (
+                            <div className="absolute right-0 top-10 z-40 bg-white border border-slate-200 rounded-xl shadow-xl p-2 w-36 text-left">
+                              <button
+                                onClick={() => handleOpenEdit(us)}
+                                className="w-full flex items-center gap-2 px-3 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50 rounded-lg"
+                              >
+                                <Edit3 className="w-3.5 h-3.5 text-blue-600" /> Edit Level
+                              </button>
+                              <button
+                                onClick={() => handleDeleteSkill(us.id)}
+                                className="w-full flex items-center gap-2 px-3 py-2 text-xs font-bold text-rose-600 hover:bg-rose-50 rounded-lg"
+                              >
+                                <Trash2 className="w-3.5 h-3.5 text-rose-600" /> Remove
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         ) : (
           <div className="py-16 text-center text-slate-400 font-medium">
             No skills found. Click "Add Skill" above to build your profile inventory.
