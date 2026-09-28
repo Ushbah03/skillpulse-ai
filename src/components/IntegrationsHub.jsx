@@ -459,10 +459,17 @@ const IntegrationsHub = () => {
 
                 <button
                   type="button"
-                  onClick={() => setIsConfigModalOpen(false)}
-                  className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold transition-colors"
+                  onClick={() => {
+                    if (selectedHub?.type === 'lms') {
+                      handleSyncLMS();
+                    } else if (selectedHub?.type === 'hris') {
+                      handleSyncHRIS();
+                    }
+                    setIsConfigModalOpen(false);
+                  }}
+                  className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold transition-colors shadow-md shadow-indigo-900/30"
                 >
-                  Save Configuration
+                  Save & Sync Configuration
                 </button>
               </div>
             </motion.div>
