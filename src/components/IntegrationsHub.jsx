@@ -407,41 +407,68 @@ const IntegrationsHub = () => {
                   <span className="text-xs font-mono font-bold text-indigo-400">6 Hours</span>
                 </div>
 
-                {selectedHub.type === 'hris' && (
-                  <div className="space-y-3">
-                    <div className="p-3 rounded-xl bg-blue-500/10 border border-blue-500/20 text-xs text-blue-300 flex items-center justify-between">
-                      <span>Live API Provider</span>
-                      <span className="font-bold bg-blue-500/20 px-2 py-0.5 rounded text-[10px]">randomuser.me (Live REST API)</span>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={handleSyncHRIS}
-                      disabled={isSyncing}
-                      className="w-full py-2.5 rounded-xl bg-blue-600/20 hover:bg-blue-600/30 text-blue-300 border border-blue-500/30 text-xs font-semibold flex items-center justify-center gap-2 transition-all"
-                    >
-                      <RefreshCw className={`w-3.5 h-3.5 ${isSyncing ? 'animate-spin' : ''}`} />
-                      {isSyncing ? 'Syncing HRIS Directory...' : 'Run Real HRIS Employee Directory Sync'}
-                    </button>
-                  </div>
-                )}
+                {(() => {
+                  const hubName = (selectedHub?.name || '').toLowerCase();
+                  const hubCat = (selectedHub?.category || '').toLowerCase();
+                  const hubType = (selectedHub?.type || '').toLowerCase();
 
-                {selectedHub.type === 'lms' && (
-                  <div className="space-y-3">
-                    <div className="p-3 rounded-xl bg-purple-500/10 border border-purple-500/20 text-xs text-purple-300 flex items-center justify-between">
-                      <span>Live API Provider</span>
-                      <span className="font-bold bg-purple-500/20 px-2 py-0.5 rounded text-[10px]">YouTube Data API v3 (Live)</span>
+                  const isLms = hubType === 'lms' || hubName.includes('lms') || hubName.includes('youtube') || hubCat.includes('lms') || hubCat.includes('learning');
+                  const isHris = hubType === 'hris' || hubName.includes('hris') || hubName.includes('workday') || hubName.includes('bamboohr') || hubCat.includes('hris');
+
+                  if (isHris) {
+                    return (
+                      <div className="space-y-3 pt-2">
+                        <div className="p-3 rounded-xl bg-blue-500/10 border border-blue-500/20 text-xs text-blue-300 flex items-center justify-between">
+                          <span>Live API Provider</span>
+                          <span className="font-bold bg-blue-500/20 px-2 py-0.5 rounded text-[10px]">randomuser.me (Live REST API)</span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={handleSyncHRIS}
+                          disabled={isSyncing}
+                          className="w-full py-3 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-xs font-bold flex items-center justify-center gap-2 transition-all shadow-lg shadow-blue-900/30"
+                        >
+                          <RefreshCw className={`w-4 h-4 ${isSyncing ? 'animate-spin' : ''}`} />
+                          {isSyncing ? 'Syncing HRIS Directory...' : '⚡ Run Real HRIS Employee Directory Sync'}
+                        </button>
+                      </div>
+                    );
+                  }
+
+                  if (isLms) {
+                    return (
+                      <div className="space-y-3 pt-2">
+                        <div className="p-3 rounded-xl bg-purple-500/10 border border-purple-500/20 text-xs text-purple-300 flex items-center justify-between">
+                          <span>Live API Provider</span>
+                          <span className="font-bold bg-purple-500/20 px-2 py-0.5 rounded text-[10px]">YouTube Data API v3 (Live)</span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={handleSyncLMS}
+                          disabled={isSyncing}
+                          className="w-full py-3 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white text-xs font-bold flex items-center justify-center gap-2 transition-all shadow-lg shadow-purple-900/40"
+                        >
+                          <RefreshCw className={`w-4 h-4 ${isSyncing ? 'animate-spin' : ''}`} />
+                          {isSyncing ? 'Syncing LMS Catalog...' : '⚡ Run Real LMS Course Catalog Sync'}
+                        </button>
+                      </div>
+                    );
+                  }
+
+                  return (
+                    <div className="pt-2">
+                      <button
+                        type="button"
+                        onClick={handleSyncLMS}
+                        disabled={isSyncing}
+                        className="w-full py-3 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white text-xs font-bold flex items-center justify-center gap-2 transition-all shadow-lg shadow-purple-900/40"
+                      >
+                        <RefreshCw className={`w-4 h-4 ${isSyncing ? 'animate-spin' : ''}`} />
+                        {isSyncing ? 'Syncing LMS Catalog...' : '⚡ Run Real LMS Course Catalog Sync'}
+                      </button>
                     </div>
-                    <button
-                      type="button"
-                      onClick={handleSyncLMS}
-                      disabled={isSyncing}
-                      className="w-full py-2.5 rounded-xl bg-purple-600/20 hover:bg-purple-600/30 text-purple-300 border border-purple-500/30 text-xs font-semibold flex items-center justify-center gap-2 transition-all"
-                    >
-                      <RefreshCw className={`w-3.5 h-3.5 ${isSyncing ? 'animate-spin' : ''}`} />
-                      {isSyncing ? 'Syncing LMS Catalog...' : 'Run Real LMS Course Catalog Sync'}
-                    </button>
-                  </div>
-                )}
+                  );
+                })()}
               </div>
 
               <div className="pt-6 mt-6 border-t border-slate-800 flex items-center justify-between gap-3">
