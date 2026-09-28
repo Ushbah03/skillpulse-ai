@@ -409,13 +409,13 @@ const AssessmentResults = () => {
           <div>
             <h3 className="text-xl font-bold text-slate-800 mb-4 text-left">Skill Validation Status</h3>
             <div className="relative w-32 h-32 mx-auto mb-4">
-              <svg className="w-full h-full transform -rotate-90">
-                <circle cx="64" cy="64" r="56" stroke="currentColor" strokeWidth="10" fill="transparent" className="text-slate-100" />
+              <svg viewBox="0 0 120 120" className="w-full h-full transform -rotate-90">
+                <circle cx="60" cy="60" r="48" stroke="currentColor" strokeWidth="8" fill="transparent" className="text-slate-100" />
                 <circle 
-                  cx="64" cy="64" r="56" stroke="currentColor" strokeWidth="10" fill="transparent" 
-                  strokeDasharray={351} 
-                  strokeDashoffset={351 - (351 * (highestScore / 100))} 
-                  className={highestScore >= 75 ? "text-emerald-500" : "text-slate-300"} 
+                  cx="60" cy="60" r="48" stroke="currentColor" strokeWidth="8" fill="transparent" 
+                  strokeDasharray={301.59} 
+                  strokeDashoffset={301.59 - (301.59 * (highestScore / 100))} 
+                  className={highestScore >= 75 ? "text-emerald-500" : "text-blue-600"} 
                   strokeLinecap="round" 
                 />
               </svg>
