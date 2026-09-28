@@ -12,6 +12,26 @@ const LearningRecommendations = () => {
   const [enrollingId, setEnrollingId] = useState(null);
   const [toastMsg, setToastMsg] = useState('');
 
+  // AI 30-Day Roadmap Modal State
+  const [showRoadmapModal, setShowRoadmapModal] = useState(false);
+  const [roadmapData, setRoadmapData] = useState(null);
+  const [generatingRoadmap, setGeneratingRoadmap] = useState(false);
+
+  const handleGenerateRoadmap = async () => {
+    setGeneratingRoadmap(true);
+    setShowRoadmapModal(true);
+    try {
+      const res = await employeeAPI.getAiLearningRoadmap();
+      if (res?.success && res?.data) {
+        setRoadmapData(res.data);
+      }
+    } catch (err) {
+      console.warn('Roadmap generation error:', err);
+    } finally {
+      setGeneratingRoadmap(false);
+    }
+  };
+
   // Course Player Modal State
   const [activeCourse, setActiveCourse] = useState(null);
   const [activeTab, setActiveTab] = useState('video'); // 'video' | 'modules' | 'assignment'
@@ -256,14 +276,23 @@ const LearningRecommendations = () => {
         
         {/* Prominent High-Contrast Search Bar & Dropdown Filter */}
         <div className="flex items-center gap-3">
+          <button
+            onClick={handleGenerateRoadmap}
+            disabled={generatingRoadmap}
+            className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white px-5 py-3 rounded-2xl font-black text-xs uppercase tracking-wider transition-all shadow-lg shadow-purple-900/20 shrink-0"
+          >
+            <Sparkles className={`w-4 h-4 text-amber-300 ${generatingRoadmap ? 'animate-spin' : 'animate-pulse'}`} />
+            {generatingRoadmap ? 'Generating AI Plan...' : '✨ 30-Day AI Learning Roadmap'}
+          </button>
+
           <div className="relative">
             <Search className="absolute left-4 top-3.5 text-blue-600 w-5 h-5" />
             <input 
               type="text" 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search 27+ video courses or skills..." 
-              className="pl-12 pr-10 py-3 bg-white border-2 border-slate-300 hover:border-blue-400 focus:border-blue-600 rounded-2xl w-80 text-sm font-semibold text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-4 focus:ring-blue-500/10 shadow-md transition-all" 
+              placeholder={`Search ${courses.length || 45}+ video courses or skills...`} 
+              className="pl-12 pr-10 py-3 bg-white border-2 border-slate-300 hover:border-blue-400 focus:border-blue-600 rounded-2xl w-72 text-sm font-semibold text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-4 focus:ring-blue-500/10 shadow-md transition-all" 
             />
             {searchQuery && (
               <button 
@@ -311,7 +340,7 @@ const LearningRecommendations = () => {
                 : 'bg-white text-slate-600 hover:text-blue-600 border-slate-200 hover:border-blue-300 shadow-sm'
             }`}
           >
-            {cat === 'All' ? '⚡ All 27 Courses' : cat}
+            {cat === 'All' ? `⚡ All ${courses.length || 45} Courses` : cat}
           </button>
         ))}
       </div>
@@ -472,6 +501,76 @@ const LearningRecommendations = () => {
           )}
         </div>
       </div>
+
+      {/* 30-Day AI Personalized Learning Roadmap Modal */}
+      {showRoadmapModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 md:p-6 overflow-y-auto animate-in fade-in duration-200">
+          <div className="bg-[#0F172A] rounded-[2.5rem] shadow-2xl w-full max-w-3xl overflow-hidden border border-purple-500/20 text-white p-8">
+            <div className="flex justify-between items-start mb-6 border-b border-white/10 pb-6">
+              <div>
+                <div className="inline-flex items-center gap-2 bg-purple-500/20 text-purple-300 px-3.5 py-1 rounded-full text-[10px] font-black uppercase tracking-widest mb-3 border border-purple-500/30">
+                  <Sparkles className="w-3.5 h-3.5 text-amber-300 animate-pulse" /> SkillPulse AI Learning Coach
+                </div>
+                <h2 className="text-2xl font-black text-white tracking-tight">30-Day AI Personalized Learning Roadmap</h2>
+                <p className="text-slate-300 text-sm mt-1 font-medium">{roadmapData?.summary || 'Targeted 30-day learning plan to bridge critical skill gaps.'}</p>
+              </div>
+              <button 
+                onClick={() => setShowRoadmapModal(false)}
+                className="p-2.5 rounded-2xl bg-white/10 text-slate-300 hover:text-white hover:bg-white/20 transition-all"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {generatingRoadmap ? (
+              <div className="py-20 text-center space-y-4">
+                <Loader2 className="w-10 h-10 animate-spin text-purple-400 mx-auto" />
+                <p className="text-purple-300 font-bold text-sm">Generating real-time LLM Learning Roadmap from your DB Skill Gaps...</p>
+              </div>
+            ) : (
+              <div className="space-y-6">
+                <div className="bg-purple-900/30 border border-purple-500/30 p-4 rounded-2xl flex items-center justify-between">
+                  <div>
+                    <p className="text-[10px] font-black text-purple-300 uppercase tracking-widest">Target Role Trajectory</p>
+                    <p className="text-lg font-bold text-white">{roadmapData?.targetRole || 'Senior Specialist'}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-[10px] font-black text-purple-300 uppercase tracking-widest">Duration</p>
+                    <p className="text-lg font-bold text-emerald-400">{roadmapData?.estimatedCompletionDays || 30} Days</p>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <h4 className="text-sm font-black uppercase tracking-wider text-slate-400">Weekly Milestones & Actions</h4>
+                  {roadmapData?.weeklyMilestones?.map((m, idx) => (
+                    <div key={idx} className="p-4 bg-white/5 border border-white/10 rounded-2xl flex items-start gap-4 hover:border-purple-500/40 transition-all">
+                      <div className="w-9 h-9 rounded-xl bg-purple-600 text-white font-black text-sm flex items-center justify-center shrink-0 shadow-lg shadow-purple-900/50">
+                        W{m.week}
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between mb-1">
+                          <h5 className="font-bold text-white text-sm">{m.focus}</h5>
+                          <span className="text-[10px] font-black uppercase bg-purple-500/20 text-purple-300 px-2 py-0.5 rounded border border-purple-500/30">
+                            {m.recommendedSkill}
+                          </span>
+                        </div>
+                        <p className="text-slate-300 text-xs font-medium leading-relaxed">{m.action}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <button
+                  onClick={() => setShowRoadmapModal(false)}
+                  className="w-full py-4 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white rounded-2xl font-black text-sm uppercase tracking-wider transition-all shadow-lg shadow-purple-900/40"
+                >
+                  Start 30-Day Learning Plan
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* 5. Interactive Dual Video + AI Course Player Modal (Sleek Enterprise Dark UI) */}
       {activeCourse && (
