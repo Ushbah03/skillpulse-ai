@@ -380,9 +380,11 @@ const LearningRecommendations = () => {
                   key={c.id}
                   title={c.title} 
                   category={c.provider || 'SkillPulse Academy'} 
-                  match={`${Math.round((c.rating || 4.9) * 20)}% Match`} 
+                  match={c.matchScore ? `${c.matchScore}% Match` : `${Math.round((c.rating || 4.9) * 20)}% Match`} 
                   duration={`${c.durationHours || 12}h total`} 
                   readiness="+20% Readiness" 
+                  isGapMatch={c.isGapMatch}
+                  matchedGapSkill={c.matchedGapSkill}
                   isLmsLocked={isLmsLocked}
                   isEnrolled={isEnrolled}
                   isCompleted={isCompleted}
@@ -900,13 +902,13 @@ const LearningStat = ({ label, value, sub }) => (
   </div>
 );
 
-const CourseCard = ({ title, category, match, duration, readiness, isLmsLocked, isEnrolled, isPending, isCompleted, progressPct = 0, isLoading, onEnroll, onLaunch }) => {
+const CourseCard = ({ title, category, match, duration, readiness, isGapMatch, matchedGapSkill, isLmsLocked, isEnrolled, isPending, isCompleted, progressPct = 0, isLoading, onEnroll, onLaunch }) => {
   const isInProgress = (progressPct > 0 && progressPct < 100);
 
   return (
-    <div className="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden group hover:border-blue-200 transition-all flex flex-col justify-between">
+    <div className={`bg-white rounded-[2.5rem] border ${isGapMatch ? 'border-purple-200 shadow-md ring-1 ring-purple-100' : 'border-slate-100 shadow-sm'} overflow-hidden group hover:border-blue-200 transition-all flex flex-col justify-between`}>
       <div className="bg-slate-900 h-36 relative flex items-center justify-center p-6 text-center">
-        <span className="absolute top-4 right-4 bg-white/20 backdrop-blur-md text-white text-[9px] font-black px-2.5 py-1 rounded-full border border-white/20">{match}</span>
+        <span className={`absolute top-4 right-4 text-[9px] font-black px-2.5 py-1 rounded-full border ${isGapMatch ? 'bg-purple-600 text-white border-purple-400 shadow-sm' : 'bg-white/20 backdrop-blur-md text-white border-white/20'}`}>{match}</span>
         
         {/* Course Lifecycle Badges */}
         {isCompleted ? (
@@ -920,6 +922,10 @@ const CourseCard = ({ title, category, match, duration, readiness, isLmsLocked, 
         ) : isPending ? (
           <span className="absolute top-4 left-4 bg-amber-500 text-white text-[9px] font-black px-2.5 py-1 rounded-full border border-amber-400 flex items-center gap-1 shadow-sm">
             <Clock className="w-3 h-3" /> PENDING APPROVAL
+          </span>
+        ) : isGapMatch ? (
+          <span className="absolute top-4 left-4 bg-purple-600 text-white text-[9px] font-black px-2.5 py-1 rounded-full border border-purple-400 flex items-center gap-1 shadow-sm animate-pulse">
+            <Sparkles className="w-3 h-3 text-amber-300" /> AI GAP TARGET
           </span>
         ) : isEnrolled ? (
           <span className="absolute top-4 left-4 bg-blue-600 text-white text-[9px] font-black px-2.5 py-1 rounded-full border border-blue-400 flex items-center gap-1 shadow-sm">
@@ -935,9 +941,15 @@ const CourseCard = ({ title, category, match, duration, readiness, isLmsLocked, 
       </div>
       <div className="p-6 flex-1 flex flex-col justify-between">
         <div>
-          <div className="flex gap-2 mb-3">
+          <div className="flex flex-wrap gap-2 mb-3">
             <span className="bg-blue-50 text-blue-600 text-[9px] font-black px-2 py-1 rounded uppercase tracking-wider">{category}</span>
-            <span className="bg-emerald-50 text-emerald-600 text-[9px] font-black px-2 py-1 rounded uppercase tracking-wider">AI Verified</span>
+            {isGapMatch ? (
+              <span className="bg-purple-100 text-purple-700 text-[9px] font-black px-2 py-1 rounded uppercase tracking-wider flex items-center gap-1 border border-purple-200">
+                <Sparkles className="w-2.5 h-2.5 text-purple-600" /> Gap: {matchedGapSkill}
+              </span>
+            ) : (
+              <span className="bg-emerald-50 text-emerald-600 text-[9px] font-black px-2 py-1 rounded uppercase tracking-wider">AI Verified</span>
+            )}
           </div>
           <h4 className="text-base font-bold text-slate-800 mb-4 leading-tight">{title}</h4>
         </div>
