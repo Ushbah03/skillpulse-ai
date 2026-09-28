@@ -4,7 +4,7 @@ import {
   RadarChart, PolarGrid, PolarAngleAxis, ResponsiveContainer, Radar 
 } from 'recharts';
 import { 
-  Search, Plus, CheckCircle, Clock, Target, Layout, Code, Mic2, Filter, Download, MoreHorizontal, Sparkles, ArrowRight, X, ChevronDown, Loader2, Trash2, Edit3, UploadCloud, FileText
+  Search, Plus, CheckCircle, Clock, Target, Layout, Code, Mic2, Filter, Download, MoreHorizontal, Sparkles, ArrowRight, X, ChevronDown, Loader2, Trash2, Edit3, UploadCloud, FileText, RefreshCw
 } from 'lucide-react';
 import { employeeAPI } from '../services/api';
 
@@ -16,6 +16,10 @@ const MySkillProfile = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [filterCategory, setFilterCategory] = useState('All');
   const [showFilterPanel, setShowFilterPanel] = useState(false);
+  
+  // Live AI Career Advice State
+  const [liveAiAdvice, setLiveAiAdvice] = useState(null);
+  const [fetchingAdvice, setFetchingAdvice] = useState(false);
   
   // Add/Edit Skill Modal State
   const [showAddSkill, setShowAddSkill] = useState(false);
@@ -34,6 +38,20 @@ const MySkillProfile = () => {
   // Action dropdown state
   const [activeMenuId, setActiveMenuId] = useState(null);
 
+  const fetchLiveAiAdvice = async () => {
+    setFetchingAdvice(true);
+    try {
+      const res = await employeeAPI.getAiCareerAdvice();
+      if (res?.success && res?.data) {
+        setLiveAiAdvice(res.data);
+      }
+    } catch (err) {
+      console.warn('Live AI Advice fetch error:', err);
+    } finally {
+      setFetchingAdvice(false);
+    }
+  };
+
   const loadData = async () => {
     setLoading(true);
     try {
@@ -48,6 +66,7 @@ const MySkillProfile = () => {
       if (gapsRes.status === 'fulfilled' && gapsRes.value?.success && gapsRes.value?.data) {
         setGaps(gapsRes.value.data);
       }
+      fetchLiveAiAdvice();
     } catch (err) {
       console.warn('Profile fetch error:', err);
     } finally {
@@ -547,26 +566,37 @@ const MySkillProfile = () => {
           <div className="absolute top-0 right-0 w-64 h-64 bg-purple-500/10 blur-[100px] rounded-full -mr-20 -mt-20"></div>
           
           <div className="relative z-10">
-            <div className="inline-flex items-center gap-2 bg-purple-500/20 text-purple-300 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest mb-6 border border-purple-500/30">
-              <Sparkles className="w-3 h-3 text-amber-300 animate-pulse" /> AI Career Advisor
+            <div className="flex items-center justify-between mb-6">
+              <div className="inline-flex items-center gap-2 bg-purple-500/20 text-purple-300 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border border-purple-500/30">
+                <Sparkles className="w-3.5 h-3.5 text-amber-300 animate-pulse" /> AI Career Advisor
+              </div>
+              <button
+                onClick={fetchLiveAiAdvice}
+                disabled={fetchingAdvice}
+                className="text-xs font-bold text-purple-300 hover:text-white flex items-center gap-1.5 bg-white/5 hover:bg-white/10 px-3 py-1.5 rounded-xl transition-all border border-white/10"
+                title="Re-run live Groq / Gemini AI inference"
+              >
+                <RefreshCw className={`w-3.5 h-3.5 ${fetchingAdvice ? 'animate-spin' : ''}`} />
+                {fetchingAdvice ? 'Analyzing...' : 'Refresh AI Guidance'}
+              </button>
             </div>
             
             <h2 className="text-2xl font-bold text-white mb-3 leading-tight">
-              {aiAdvisorTitle}
+              {liveAiAdvice?.title || aiAdvisorTitle}
             </h2>
             
             <p className="text-slate-300 text-sm mb-8 leading-relaxed font-medium">
-              {aiAdvisorText}
+              {liveAiAdvice?.text || aiAdvisorText}
             </p>
 
             <div className="flex gap-10 mb-8 border-t border-white/10 pt-6">
               <div>
                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Role Alignment</p>
-                <p className="text-emerald-400 font-bold text-lg">{alignmentPct}% Index</p>
+                <p className="text-emerald-400 font-bold text-lg">{liveAiAdvice?.roleAlignmentIndex || alignmentPct}% Index</p>
               </div>
               <div>
                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Career Goal</p>
-                <p className="text-purple-300 font-bold text-lg">{user.jobTitle ? `Senior ${user.jobTitle}` : 'Lead Specialist'}</p>
+                <p className="text-purple-300 font-bold text-lg">{liveAiAdvice?.careerGoal || (user.jobTitle ? `Senior ${user.jobTitle}` : 'Lead Specialist')}</p>
               </div>
             </div>
 

@@ -99,6 +99,7 @@ export const employeeAPI = {
       method: 'POST',
       body: JSON.stringify({ text }),
     }),
+  getAiCareerAdvice: () => apiRequest('/employee/ai-career-advice'),
   getGaps: () => apiRequest('/employee/gaps'),
   getLearningRecs: () => apiRequest('/employee/learning'),
   enrollCourse: (courseId) =>
