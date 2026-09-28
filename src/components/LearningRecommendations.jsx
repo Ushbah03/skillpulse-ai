@@ -344,14 +344,19 @@ const LearningRecommendations = () => {
         <LearningStat label="AI Confidence" value="98%" sub="Based on career trajectory" color="orange" />
       </div>
 
-      {/* 3. Top AI Recommendations */}
-      <div className="mb-12">
+      {/* 3. Top 5 AI Recommendations */}
+      <div className="mb-14">
         <div className="flex justify-between items-center mb-6">
-          <div className="flex items-center gap-3">
-            <h3 className="text-2xl font-bold text-slate-800">Top Recommended Courses</h3>
-            <span className="bg-blue-600 text-white text-[10px] font-black px-3 py-1 rounded-md uppercase tracking-widest flex items-center gap-1">
-              <Sparkles className="w-3 h-3" /> Live Skill-Gap Catalog
-            </span>
+          <div>
+            <div className="flex items-center gap-3 mb-1">
+              <h3 className="text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2">
+                <Sparkles className="w-6 h-6 text-purple-600" /> Top Recommended Courses for You
+              </h3>
+              <span className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white text-[10px] font-black px-3 py-1 rounded-md uppercase tracking-widest flex items-center gap-1 shadow-sm">
+                <Sparkles className="w-3 h-3 text-amber-300" /> AI Skill-Gap Recommendation Engine
+              </span>
+            </div>
+            <p className="text-slate-500 text-sm font-medium">Scored in real-time based on your active skill gaps, department role, and career growth requirements.</p>
           </div>
         </div>
 
@@ -360,15 +365,15 @@ const LearningRecommendations = () => {
             <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
           </div>
         ) : filteredCourses.length > 0 ? (
-          <div className="grid grid-cols-3 gap-8">
-            {filteredCourses.map((c) => {
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {filteredCourses.slice(0, 5).map((c, idx) => {
               const progressPct = c.progressPct || 0;
               const isEnrolled = c.enrollmentStatus === 'ENROLLED' || c.enrollmentStatus === 'IN_PROGRESS' || progressPct > 0;
               const isCompleted = c.enrollmentStatus === 'COMPLETED' || progressPct >= 100;
 
               return (
                 <CourseCard 
-                  key={c.id}
+                  key={`top-${c.id}`}
                   title={c.title} 
                   category={c.provider || 'SkillPulse Academy'} 
                   match={c.matchScore ? `${c.matchScore}% Match` : `${Math.round((c.rating || 4.9) * 20)}% Match`} 
@@ -376,6 +381,9 @@ const LearningRecommendations = () => {
                   readiness="+20% Readiness" 
                   isGapMatch={c.isGapMatch}
                   matchedGapSkill={c.matchedGapSkill}
+                  aiRank={c.aiRank || idx + 1}
+                  aiReason={c.aiReason}
+                  isTopAiRecommendation={true}
                   isLmsLocked={isLmsLocked}
                   isEnrolled={isEnrolled}
                   isCompleted={isCompleted}
@@ -394,6 +402,52 @@ const LearningRecommendations = () => {
             <p className="text-slate-500 text-sm max-w-md mx-auto">
               Great job! All your skill gaps are currently resolved. Take a new assessment to benchmark higher proficiency levels.
             </p>
+          </div>
+        )}
+      </div>
+
+      {/* 4. All Available Catalog Courses */}
+      <div className="mb-12 border-t border-slate-200/60 pt-10">
+        <div className="flex justify-between items-center mb-6">
+          <div>
+            <h3 className="text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2">
+              <BookOpen className="w-6 h-6 text-blue-600" /> All Available Courses
+            </h3>
+            <p className="text-slate-500 text-sm font-medium">Browse all training modules and catalog courses across your organization.</p>
+          </div>
+          <span className="text-xs font-bold text-slate-500 bg-slate-100 px-3.5 py-1.5 rounded-full border border-slate-200">
+            Showing {filteredCourses.length} total courses
+          </span>
+        </div>
+
+        {filteredCourses.length > 0 && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {filteredCourses.map((c) => {
+              const progressPct = c.progressPct || 0;
+              const isEnrolled = c.enrollmentStatus === 'ENROLLED' || c.enrollmentStatus === 'IN_PROGRESS' || progressPct > 0;
+              const isCompleted = c.enrollmentStatus === 'COMPLETED' || progressPct >= 100;
+
+              return (
+                <CourseCard 
+                  key={`catalog-${c.id}`}
+                  title={c.title} 
+                  category={c.provider || 'SkillPulse Academy'} 
+                  match={`${c.matchScore || 79}% Match`} 
+                  duration={`${c.durationHours || 12}h total`} 
+                  readiness="+20% Readiness" 
+                  isGapMatch={c.isGapMatch}
+                  matchedGapSkill={c.matchedGapSkill}
+                  aiReason={c.aiReason}
+                  isLmsLocked={isLmsLocked}
+                  isEnrolled={isEnrolled}
+                  isCompleted={isCompleted}
+                  progressPct={progressPct}
+                  isLoading={enrollingId === c.id}
+                  onEnroll={() => handleEnroll(c.id)}
+                  onLaunch={() => handleLaunchCourse(c)}
+                />
+              );
+            })}
           </div>
         )}
       </div>
@@ -893,16 +947,24 @@ const LearningStat = ({ label, value, sub }) => (
   </div>
 );
 
-const CourseCard = ({ title, category, match, duration, readiness, isGapMatch, matchedGapSkill, isLmsLocked, isEnrolled, isPending, isCompleted, progressPct = 0, isLoading, onEnroll, onLaunch }) => {
+const CourseCard = ({ 
+  title, category, match, duration, readiness, isGapMatch, matchedGapSkill, 
+  aiRank, aiReason, isTopAiRecommendation,
+  isLmsLocked, isEnrolled, isPending, isCompleted, progressPct = 0, isLoading, onEnroll, onLaunch 
+}) => {
   const isInProgress = (progressPct > 0 && progressPct < 100);
 
   return (
-    <div className={`bg-white rounded-[2.5rem] border ${isGapMatch ? 'border-purple-200 shadow-md ring-1 ring-purple-100' : 'border-slate-100 shadow-sm'} overflow-hidden group hover:border-blue-200 transition-all flex flex-col justify-between`}>
+    <div className={`bg-white rounded-[2.5rem] border ${isTopAiRecommendation ? 'border-purple-300 shadow-lg ring-2 ring-purple-500/10' : isGapMatch ? 'border-purple-200 shadow-md ring-1 ring-purple-100' : 'border-slate-100 shadow-sm'} overflow-hidden group hover:border-blue-300 transition-all flex flex-col justify-between`}>
       <div className="bg-slate-900 h-36 relative flex items-center justify-center p-6 text-center">
-        <span className={`absolute top-4 right-4 text-[9px] font-black px-2.5 py-1 rounded-full border ${isGapMatch ? 'bg-purple-600 text-white border-purple-400 shadow-sm' : 'bg-white/20 backdrop-blur-md text-white border-white/20'}`}>{match}</span>
+        <span className={`absolute top-4 right-4 text-[9px] font-black px-2.5 py-1 rounded-full border ${isTopAiRecommendation || isGapMatch ? 'bg-purple-600 text-white border-purple-400 shadow-sm' : 'bg-white/20 backdrop-blur-md text-white border-white/20'}`}>{match}</span>
         
         {/* Course Lifecycle Badges */}
-        {isCompleted ? (
+        {isTopAiRecommendation && aiRank ? (
+          <span className="absolute top-4 left-4 bg-gradient-to-r from-purple-600 to-indigo-600 text-white text-[9px] font-black px-2.5 py-1 rounded-full border border-purple-300 flex items-center gap-1 shadow-md">
+            <Sparkles className="w-3 h-3 text-amber-300" /> #{aiRank} AI RECOMMENDATION
+          </span>
+        ) : isCompleted ? (
           <span className="absolute top-4 left-4 bg-emerald-500 text-white text-[9px] font-black px-2.5 py-1 rounded-full border border-emerald-400 flex items-center gap-1 shadow-sm">
             <CheckCircle2 className="w-3 h-3" /> COMPLETED (100%)
           </span>
@@ -934,7 +996,11 @@ const CourseCard = ({ title, category, match, duration, readiness, isGapMatch, m
         <div>
           <div className="flex flex-wrap gap-2 mb-3">
             <span className="bg-blue-50 text-blue-600 text-[9px] font-black px-2 py-1 rounded uppercase tracking-wider">{category}</span>
-            {isGapMatch ? (
+            {aiReason ? (
+              <span className="bg-purple-50 text-purple-700 text-[9px] font-black px-2 py-1 rounded uppercase tracking-wider flex items-center gap-1 border border-purple-100">
+                {aiReason}
+              </span>
+            ) : isGapMatch ? (
               <span className="bg-purple-100 text-purple-700 text-[9px] font-black px-2 py-1 rounded uppercase tracking-wider flex items-center gap-1 border border-purple-200">
                 <Sparkles className="w-2.5 h-2.5 text-purple-600" /> Gap: {matchedGapSkill}
               </span>
