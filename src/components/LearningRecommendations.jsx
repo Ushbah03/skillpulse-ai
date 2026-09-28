@@ -276,15 +276,6 @@ const LearningRecommendations = () => {
         
         {/* Prominent High-Contrast Search Bar & Dropdown Filter */}
         <div className="flex items-center gap-3">
-          <button
-            onClick={handleGenerateRoadmap}
-            disabled={generatingRoadmap}
-            className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white px-5 py-3 rounded-2xl font-black text-xs uppercase tracking-wider transition-all shadow-lg shadow-purple-900/20 shrink-0"
-          >
-            <Sparkles className={`w-4 h-4 text-amber-300 ${generatingRoadmap ? 'animate-spin' : 'animate-pulse'}`} />
-            {generatingRoadmap ? 'Generating AI Plan...' : '✨ 30-Day AI Learning Roadmap'}
-          </button>
-
           <div className="relative">
             <Search className="absolute left-4 top-3.5 text-blue-600 w-5 h-5" />
             <input 
