@@ -325,9 +325,9 @@ const AssessmentResults = () => {
       </div>
 
       {/* Main Analysis Section */}
-      <div className="grid grid-cols-3 gap-8 mb-10">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10 items-stretch">
         {/* Score History */}
-        <div className="col-span-2 bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
+        <div className="lg:col-span-2 bg-white p-6 sm:p-8 rounded-[2.5rem] border border-slate-100 shadow-sm flex flex-col">
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-xl font-bold text-slate-800 flex items-center gap-3">
               <FileText className="w-5 h-5 text-indigo-600" /> Completed Attempts & Score History
@@ -338,11 +338,11 @@ const AssessmentResults = () => {
           </div>
           
           {loading ? (
-            <div className="flex justify-center items-center py-16">
+            <div className="flex justify-center items-center py-16 flex-1">
               <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
             </div>
           ) : filteredTaken.length > 0 ? (
-            <div className="space-y-4 max-h-[380px] overflow-y-auto pr-2">
+            <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2 flex-1">
               {filteredTaken.map((t) => {
                 const isPassed = t.score >= 75;
                 const difficulty = t.resultsJson?.difficulty || (t.score >= 80 ? 'ADVANCED' : 'INTERMEDIATE');
@@ -398,41 +398,41 @@ const AssessmentResults = () => {
               })}
             </div>
           ) : (
-            <div className="text-center py-16 text-slate-400 font-medium">
+            <div className="text-center py-16 text-slate-400 font-medium flex-1 flex items-center justify-center">
               No assessment results found in the database. Take your first assessment to view results.
             </div>
           )}
         </div>
 
         {/* Skill Validation Status */}
-        <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm text-center flex flex-col justify-between">
+        <div className="bg-white p-6 sm:p-8 rounded-[2.5rem] border border-slate-100 shadow-sm text-center flex flex-col justify-between">
           <div>
-            <h3 className="text-xl font-bold text-slate-800 mb-6 text-left">Skill Validation Status</h3>
-            <div className="relative w-36 h-36 mx-auto mb-6">
+            <h3 className="text-xl font-bold text-slate-800 mb-4 text-left">Skill Validation Status</h3>
+            <div className="relative w-32 h-32 mx-auto mb-4">
               <svg className="w-full h-full transform -rotate-90">
-                <circle cx="72" cy="72" r="64" stroke="currentColor" strokeWidth="10" fill="transparent" className="text-slate-100" />
+                <circle cx="64" cy="64" r="56" stroke="currentColor" strokeWidth="10" fill="transparent" className="text-slate-100" />
                 <circle 
-                  cx="72" cy="72" r="64" stroke="currentColor" strokeWidth="10" fill="transparent" 
-                  strokeDasharray={402} 
-                  strokeDashoffset={402 - (402 * (highestScore / 100))} 
+                  cx="64" cy="64" r="56" stroke="currentColor" strokeWidth="10" fill="transparent" 
+                  strokeDasharray={351} 
+                  strokeDashoffset={351 - (351 * (highestScore / 100))} 
                   className={highestScore >= 75 ? "text-emerald-500" : "text-slate-300"} 
                   strokeLinecap="round" 
                 />
               </svg>
               <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className="text-3xl font-black text-slate-800">{highestScore}%</span>
+                <span className="text-2xl font-black text-slate-800">{highestScore}%</span>
                 <span className="text-[9px] font-black text-slate-400 uppercase tracking-wider">Confidence</span>
               </div>
             </div>
 
-            <div className={`px-4 py-2 rounded-xl text-xs font-bold inline-flex items-center gap-2 mb-6 border ${
+            <div className={`px-4 py-1.5 rounded-xl text-xs font-bold inline-flex items-center gap-2 mb-4 border ${
               totalTaken > 0 && highestScore >= 75 ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 'bg-slate-100 text-slate-500 border-slate-200'
             }`}>
               {totalTaken > 0 && highestScore >= 75 ? <CheckCircle className="w-4 h-4 text-emerald-500" /> : <AlertCircle className="w-4 h-4 text-slate-400" />}
               {totalTaken > 0 ? `${levelLabel} Skill Validated` : 'Pending Verification'}
             </div>
 
-            <div className="space-y-3 text-left border-t border-slate-50 pt-6">
+            <div className="space-y-2.5 text-left border-t border-slate-100 pt-4">
               <StatusRow label="Validation Status" value={totalTaken > 0 ? "Active & Verified" : "Verification Required"} color={totalTaken > 0 ? "text-emerald-600" : "text-slate-400"} />
               <StatusRow label="Role Readiness Impact" value={`+${Math.round(highestScore * 0.1)} Points`} color={totalTaken > 0 ? "text-emerald-500" : "text-slate-400"} />
               <StatusRow label="Certificate Code" value={totalTaken > 0 ? `SP-${taken[0]?.id.substring(0, 6).toUpperCase()}` : "N/A"} />
@@ -442,7 +442,7 @@ const AssessmentResults = () => {
           {totalTaken > 0 && taken[0]?.score >= 80 && (
             <button
               onClick={() => handleDownloadCertificate(taken[0])}
-              className="w-full mt-6 py-3.5 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl text-xs font-black uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-lg shadow-blue-600/20"
+              className="w-full mt-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl text-xs font-black uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-lg shadow-blue-600/20"
             >
               <Download className="w-4 h-4" /> Download Certificate
             </button>
