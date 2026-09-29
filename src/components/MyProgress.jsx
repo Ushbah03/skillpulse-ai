@@ -80,8 +80,12 @@ const MyProgress = () => {
       ]);
 
       if (recsRes.status === 'fulfilled' && recsRes.value?.success && Array.isArray(recsRes.value.data)) {
-        // Show enrolled, pending approval, and rejected courses
-        const activeOrEnrolled = recsRes.value.data.filter(c => c.enrollmentStatus !== 'NOT_ENROLLED');
+        // Show approved, in-progress, and completed courses only
+        const activeOrEnrolled = recsRes.value.data.filter(c => {
+          const isRejected = c.isRejected || c.enrollmentStatus === 'REJECTED' || c.enrollmentStatus === 'DENIED' || c.progressPct === -1.0;
+          const isApprovedOrActive = c.isApproved || c.enrollmentStatus === 'ENROLLED' || c.enrollmentStatus === 'IN_PROGRESS' || c.enrollmentStatus === 'COMPLETED' || (c.progressPct && c.progressPct > 0);
+          return !isRejected && isApprovedOrActive;
+        });
         setCourses(activeOrEnrolled);
       }
       if (gapsRes.status === 'fulfilled' && gapsRes.value?.success && Array.isArray(gapsRes.value.data)) {
