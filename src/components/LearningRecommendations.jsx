@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  Search, Target, Zap, Clock, TrendingUp, CheckCircle2, Lock, Sparkles, Check, Play, BookOpen, Award, X, Loader2, Video, ExternalLink, RotateCcw, RefreshCw
+  Search, Target, Zap, Clock, TrendingUp, CheckCircle2, Lock, Sparkles, Check, Play, BookOpen, Award, X, Loader2, Video, ExternalLink, RotateCcw, RefreshCw, XCircle
 } from 'lucide-react';
 import { employeeAPI } from '../services/api';
 
