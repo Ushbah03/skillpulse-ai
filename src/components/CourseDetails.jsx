@@ -138,10 +138,9 @@ const CourseDetails = () => {
     try {
       const res = await employeeAPI.enrollCourse(course.id);
       if (res.success) {
-        setToastMsg(`Successfully enrolled in "${course.title}"!`);
-        setTimeout(() => setToastMsg(''), 4000);
-        setCourse(prev => ({ ...prev, enrollmentStatus: 'ENROLLED', progressPct: 0 }));
-        loadCourseData();
+        setToastMsg(res.message || `Training request for "${course.title}" submitted for approval!`);
+        setTimeout(() => setToastMsg(''), 4500);
+        await loadCourseData();
       }
     } catch (err) {
       console.error('Enrollment error:', err);
