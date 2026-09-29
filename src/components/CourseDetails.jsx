@@ -21,7 +21,8 @@ import {
   Sparkles,
   ArrowLeft,
   Search,
-  X
+  X,
+  XCircle
 } from 'lucide-react';
 import { employeeAPI } from '../services/api';
 
@@ -263,10 +264,13 @@ const CourseDetails = () => {
   }
 
   const progressPct = course.progressPct || 0;
-  const isCompleted = course.enrollmentStatus === 'COMPLETED' || progressPct >= 100;
-  const isInProgress = (progressPct > 0 && progressPct < 100);
-  const isPending = course.enrollmentStatus === 'NOT_STARTED';
-  const isEnrolled = course.enrollmentStatus === 'ENROLLED' || course.enrollmentStatus === 'IN_PROGRESS' || progressPct > 0;
+  const isRejected = course.isRejected || course.enrollmentStatus === 'REJECTED' || course.enrollmentStatus === 'DENIED' || progressPct === -1.0;
+  const isCompleted = !isRejected && (course.enrollmentStatus === 'COMPLETED' || progressPct >= 100);
+  const isInProgress = !isRejected && (progressPct > 0 && progressPct < 100);
+  const isPending = !isRejected && (course.isPending || course.enrollmentStatus === 'NOT_STARTED' || course.enrollmentStatus === 'PENDING');
+  const isApproved = !isRejected && (course.isApproved || course.enrollmentStatus === 'ENROLLED' || course.enrollmentStatus === 'IN_PROGRESS' || progressPct > 0);
+  const isEnrolled = isApproved || isCompleted || isInProgress;
+  const approvalTarget = course.approvalTarget || (course.hasTeam ? 'Leader' : 'HR');
 
   return (
     <div className="bg-[#F8FAFC] min-h-screen p-8 font-sans">
@@ -522,13 +526,17 @@ const CourseDetails = () => {
                   <span className="bg-indigo-100 text-indigo-700 text-[10px] font-black px-2.5 py-0.5 rounded-full border border-indigo-200 flex items-center gap-1">
                     <Play className="w-3 h-3 fill-current" /> IN PROGRESS ({progressPct}%)
                   </span>
+                ) : isRejected ? (
+                  <span className="bg-rose-100 text-rose-700 text-[10px] font-black px-2.5 py-0.5 rounded-full border border-rose-200 flex items-center gap-1">
+                    <XCircle className="w-3 h-3 text-rose-600" /> REQUEST REJECTED
+                  </span>
                 ) : isPending ? (
                   <span className="bg-amber-100 text-amber-700 text-[10px] font-black px-2.5 py-0.5 rounded-full border border-amber-200 flex items-center gap-1">
-                    <Clock className="w-3 h-3" /> PENDING APPROVAL
+                    <Clock className="w-3 h-3" /> PENDING {approvalTarget.toUpperCase()} APPROVAL
                   </span>
-                ) : isEnrolled ? (
+                ) : isApproved ? (
                   <span className="bg-blue-100 text-blue-700 text-[10px] font-black px-2.5 py-0.5 rounded-full border border-blue-200 flex items-center gap-1">
-                    <Check className="w-3 h-3" /> ENROLLED
+                    <Check className="w-3 h-3" /> AUTHORIZED & ENROLLED
                   </span>
                 ) : (
                   <span className="bg-slate-100 text-slate-600 text-[10px] font-black px-2.5 py-0.5 rounded-full border border-slate-200">
@@ -575,21 +583,30 @@ const CourseDetails = () => {
                   onClick={handleLaunchPlayer}
                   className="w-full py-3.5 rounded-xl font-bold text-xs bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white shadow-lg shadow-indigo-600/30 transition-all flex items-center justify-center gap-2"
                 >
-                  <Play className="w-4 h-4 fill-current" /> Continue Course ({progressPct}%)
+                  <Play className="w-4 h-4 fill-current" /> ▶ Continue Course ({progressPct}%)
+                </button>
+              ) : isRejected ? (
+                <button 
+                  onClick={handleEnroll}
+                  disabled={isEnrolling}
+                  className="w-full py-3.5 rounded-xl font-bold text-xs bg-rose-600 hover:bg-rose-700 text-white transition-all shadow-md flex items-center justify-center gap-2"
+                >
+                  {isEnrolling && <Loader2 className="w-4 h-4 animate-spin" />}
+                  {isEnrolling ? 'Re-Submitting Request...' : '🔄 Try Again (Re-Request Enrollment)'}
                 </button>
               ) : isPending ? (
                 <button 
                   disabled
                   className="w-full py-3.5 rounded-xl font-bold text-xs bg-amber-50 text-amber-700 border border-amber-200 cursor-not-allowed flex items-center justify-center gap-2"
                 >
-                  <Clock className="w-4 h-4 text-amber-600" /> Request Pending Leader Approval
+                  <Clock className="w-4 h-4 text-amber-600" /> Pending {approvalTarget} Approval
                 </button>
-              ) : isEnrolled ? (
+              ) : isApproved ? (
                 <button 
                   onClick={handleLaunchPlayer}
                   className="w-full py-3.5 rounded-xl font-bold text-xs bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-200 transition-all flex items-center justify-center gap-2"
                 >
-                  <Play className="w-4 h-4 fill-current" /> Start Course Player
+                  <Play className="w-4 h-4 fill-current" /> ▶ Start Course Player
                 </button>
               ) : (
                 <button 
