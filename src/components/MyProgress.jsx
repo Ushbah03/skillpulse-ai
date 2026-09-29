@@ -19,7 +19,8 @@ import {
   Zap,
   ArrowRight,
   ExternalLink,
-  XCircle
+  XCircle,
+  Lock
 } from 'lucide-react';
 import { employeeAPI } from '../services/api';
 
