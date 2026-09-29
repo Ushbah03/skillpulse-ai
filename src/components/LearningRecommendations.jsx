@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  Search, Target, Zap, Clock, TrendingUp, CheckCircle2, Lock, Sparkles, Check, Play, BookOpen, Award, X, Loader2, Video, ExternalLink, RotateCcw, RefreshCw, XCircle
+  Search, Target, Zap, Clock, TrendingUp, CheckCircle2, Lock, Sparkles, Check, Play, BookOpen, Award, X, Loader2, Video, ExternalLink, RotateCcw, RefreshCw, XCircle, ChevronLeft, ChevronRight
 } from 'lucide-react';
 import { employeeAPI } from '../services/api';
 
@@ -251,6 +251,20 @@ const LearningRecommendations = () => {
     return matchesSearch && matchesCategory && matchesLevel;
   });
 
+  // Pagination State for All Available Catalog Courses
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 6;
+
+  // Reset to page 1 when search query or dropdown filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, selectedCategory, selectedLevel]);
+
+  const totalCatalogPages = Math.ceil(filteredCourses.length / itemsPerPage) || 1;
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedCatalogCourses = filteredCourses.slice(startIndex, endIndex);
+
   return (
     <div className="bg-[#F8FAFC] min-h-screen p-10 font-sans">
       
@@ -412,7 +426,7 @@ const LearningRecommendations = () => {
         )}
       </div>
 
-      {/* 4. All Available Catalog Courses */}
+      {/* 4. All Available Catalog Courses with Pagination */}
       <div className="mb-12 border-t border-slate-200/60 pt-10">
         <div className="flex justify-between items-center mb-6">
           <div>
@@ -422,44 +436,99 @@ const LearningRecommendations = () => {
             <p className="text-slate-500 text-sm font-medium">Browse all training modules and catalog courses across your organization.</p>
           </div>
           <span className="text-xs font-bold text-slate-500 bg-slate-100 px-3.5 py-1.5 rounded-full border border-slate-200">
-            Showing {filteredCourses.length} total courses
+            Showing {filteredCourses.length > 0 ? `${startIndex + 1}-${Math.min(endIndex, filteredCourses.length)} of ${filteredCourses.length}` : '0'} total courses
           </span>
         </div>
 
-        {filteredCourses.length > 0 && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredCourses.map((c) => {
-              const progressPct = c.progressPct || 0;
-              const isPending = c.isPending || c.enrollmentStatus === 'NOT_STARTED' || c.enrollmentStatus === 'PENDING';
-              const isApproved = c.isApproved || c.enrollmentStatus === 'ENROLLED' || c.enrollmentStatus === 'IN_PROGRESS';
-              const isRejected = c.isRejected || c.enrollmentStatus === 'REJECTED' || c.enrollmentStatus === 'DENIED';
-              const isCompleted = c.enrollmentStatus === 'COMPLETED' || progressPct >= 100;
-              const approvalTarget = c.approvalTarget || (c.hasTeam ? 'Leader' : 'HR');
+        {filteredCourses.length > 0 ? (
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {paginatedCatalogCourses.map((c) => {
+                const progressPct = c.progressPct || 0;
+                const isPending = c.isPending || c.enrollmentStatus === 'NOT_STARTED' || c.enrollmentStatus === 'PENDING';
+                const isApproved = c.isApproved || c.enrollmentStatus === 'ENROLLED' || c.enrollmentStatus === 'IN_PROGRESS';
+                const isRejected = c.isRejected || c.enrollmentStatus === 'REJECTED' || c.enrollmentStatus === 'DENIED';
+                const isCompleted = c.enrollmentStatus === 'COMPLETED' || progressPct >= 100;
+                const approvalTarget = c.approvalTarget || (c.hasTeam ? 'Leader' : 'HR');
 
-              return (
-                <CourseCard 
-                  key={`catalog-${c.id}`}
-                  title={c.title} 
-                  category={c.provider || 'SkillPulse Academy'} 
-                  match={`${c.matchScore || 79}% Match`} 
-                  duration={`${c.durationHours || 12}h total`} 
-                  readiness="+20% Readiness" 
-                  isGapMatch={c.isGapMatch}
-                  matchedGapSkill={c.matchedGapSkill}
-                  aiReason={c.aiReason}
-                  isLmsLocked={isLmsLocked}
-                  isEnrolled={isApproved}
-                  isPending={isPending}
-                  isRejected={isRejected}
-                  approvalTarget={approvalTarget}
-                  isCompleted={isCompleted}
-                  progressPct={progressPct}
-                  isLoading={enrollingId === c.id}
-                  onEnroll={() => handleEnroll(c.id)}
-                  onLaunch={() => handleLaunchCourse(c)}
-                />
-              );
-            })}
+                return (
+                  <CourseCard 
+                    key={`catalog-${c.id}`}
+                    title={c.title} 
+                    category={c.provider || 'SkillPulse Academy'} 
+                    match={`${c.matchScore || 79}% Match`} 
+                    duration={`${c.durationHours || 12}h total`} 
+                    readiness="+20% Readiness" 
+                    isGapMatch={c.isGapMatch}
+                    matchedGapSkill={c.matchedGapSkill}
+                    aiReason={c.aiReason}
+                    isLmsLocked={isLmsLocked}
+                    isEnrolled={isApproved}
+                    isPending={isPending}
+                    isRejected={isRejected}
+                    approvalTarget={approvalTarget}
+                    isCompleted={isCompleted}
+                    progressPct={progressPct}
+                    isLoading={enrollingId === c.id}
+                    onEnroll={() => handleEnroll(c.id)}
+                    onLaunch={() => handleLaunchCourse(c)}
+                  />
+                );
+              })}
+            </div>
+
+            {/* Catalog Pagination Navigation Bar */}
+            {totalCatalogPages > 1 && (
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-10 pt-6 border-t border-slate-200/60">
+                <div className="text-xs font-bold text-slate-500">
+                  Showing <span className="text-slate-900 font-extrabold">{startIndex + 1}</span> to <span className="text-slate-900 font-extrabold">{Math.min(endIndex, filteredCourses.length)}</span> of <span className="text-slate-900 font-extrabold">{filteredCourses.length}</span> courses (Page {currentPage} of {totalCatalogPages})
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => {
+                      setCurrentPage(prev => Math.max(prev - 1, 1));
+                    }}
+                    disabled={currentPage === 1}
+                    className="p-2.5 rounded-xl border border-slate-200 text-slate-600 hover:text-blue-600 hover:border-blue-300 disabled:opacity-40 disabled:cursor-not-allowed bg-white shadow-sm transition-all"
+                    title="Previous Page"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                  </button>
+
+                  {Array.from({ length: totalCatalogPages }, (_, i) => i + 1).map((pageNum) => (
+                    <button
+                      key={pageNum}
+                      onClick={() => {
+                        setCurrentPage(pageNum);
+                      }}
+                      className={`w-9 h-9 rounded-xl text-xs font-extrabold transition-all border ${
+                        currentPage === pageNum
+                          ? 'bg-blue-600 text-white border-blue-600 shadow-md shadow-blue-600/20 scale-105'
+                          : 'bg-white text-slate-600 hover:text-blue-600 border-slate-200 hover:border-blue-300 shadow-sm'
+                      }`}
+                    >
+                      {pageNum}
+                    </button>
+                  ))}
+
+                  <button
+                    onClick={() => {
+                      setCurrentPage(prev => Math.min(prev + 1, totalCatalogPages));
+                    }}
+                    disabled={currentPage === totalCatalogPages}
+                    className="p-2.5 rounded-xl border border-slate-200 text-slate-600 hover:text-blue-600 hover:border-blue-300 disabled:opacity-40 disabled:cursor-not-allowed bg-white shadow-sm transition-all"
+                    title="Next Page"
+                  >
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            )}
+          </>
+        ) : (
+          <div className="bg-white p-8 rounded-2xl border border-slate-200 text-center text-slate-500 font-medium text-sm">
+            No catalog courses found matching your filter criteria.
           </div>
         )}
       </div>
