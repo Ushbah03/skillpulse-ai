@@ -18,7 +18,8 @@ import {
   ShieldCheck,
   Zap,
   ArrowRight,
-  ExternalLink
+  ExternalLink,
+  XCircle
 } from 'lucide-react';
 import { employeeAPI } from '../services/api';
 
@@ -79,9 +80,9 @@ const MyProgress = () => {
       ]);
 
       if (recsRes.status === 'fulfilled' && recsRes.value?.success && Array.isArray(recsRes.value.data)) {
-        // Enrolled courses only (progressPct > 0 or status ENROLLED/IN_PROGRESS/COMPLETED)
-        const enrolledOnly = recsRes.value.data.filter(c => c.enrollmentStatus !== 'NOT_STARTED' || (c.progressPct && c.progressPct > 0));
-        setCourses(enrolledOnly);
+        // Show enrolled, pending approval, and rejected courses
+        const activeOrEnrolled = recsRes.value.data.filter(c => c.enrollmentStatus !== 'NOT_ENROLLED');
+        setCourses(activeOrEnrolled);
       }
       if (gapsRes.status === 'fulfilled' && gapsRes.value?.success && Array.isArray(gapsRes.value.data)) {
         setGaps(gapsRes.value.data);
@@ -90,6 +91,22 @@ const MyProgress = () => {
       console.warn('Error loading progress:', err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleReEnroll = async (courseId) => {
+    setUpdatingId(courseId);
+    try {
+      const res = await employeeAPI.enrollCourse(courseId);
+      if (res.success) {
+        setToastMsg(res.message || 'Training request submitted for approval!');
+        setTimeout(() => setToastMsg(''), 4000);
+        await loadProgress();
+      }
+    } catch (err) {
+      console.error('Error re-requesting enrollment:', err);
+    } finally {
+      setUpdatingId(null);
     }
   };
 
@@ -267,24 +284,43 @@ const MyProgress = () => {
             </div>
           ) : filteredCourses.length > 0 ? (
             filteredCourses.map((c) => {
-              const pct = c.progressPct || 0;
-              const isDone = c.enrollmentStatus === 'COMPLETED' || pct >= 100;
+              const pct = isNaN(c.progressPct) || c.progressPct < 0 ? 0 : c.progressPct;
+              const isRejected = c.isRejected || c.enrollmentStatus === 'REJECTED' || c.enrollmentStatus === 'DENIED' || c.progressPct === -1.0;
+              const isDone = !isRejected && (c.enrollmentStatus === 'COMPLETED' || pct >= 100);
+              const isInProgress = !isRejected && (c.enrollmentStatus === 'IN_PROGRESS' || (pct > 0 && pct < 100));
+              const isPending = !isRejected && (c.isPending || c.enrollmentStatus === 'NOT_STARTED' || c.enrollmentStatus === 'PENDING');
+              const isApproved = !isRejected && (c.isApproved || c.enrollmentStatus === 'ENROLLED' || c.enrollmentStatus === 'IN_PROGRESS' || pct > 0);
+              const approvalTarget = c.approvalTarget || (c.hasTeam ? 'Leader' : 'HR');
 
               return (
-                <div key={c.id} className="bg-white p-6 rounded-[2.5rem] shadow-sm border border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-6 hover:shadow-md transition-all">
+                <div key={c.id} className={`bg-white p-6 rounded-[2.5rem] shadow-sm border ${isRejected ? 'border-rose-200 ring-1 ring-rose-100' : 'border-slate-100'} flex flex-col md:flex-row md:items-center justify-between gap-6 hover:shadow-md transition-all`}>
                   <div className="flex gap-5 items-start flex-1">
-                    <div className={`p-4 rounded-2xl border shrink-0 ${isDone ? 'bg-emerald-50 border-emerald-100 text-emerald-600' : 'bg-indigo-50 border-indigo-100 text-indigo-600'}`}>
-                      {isDone ? <CheckCircle2 className="w-6 h-6" /> : <Cpu className="w-6 h-6" />}
+                    <div className={`p-4 rounded-2xl border shrink-0 ${isDone ? 'bg-emerald-50 border-emerald-100 text-emerald-600' : isRejected ? 'bg-rose-50 border-rose-100 text-rose-600' : isPending ? 'bg-amber-50 border-amber-100 text-amber-600' : 'bg-indigo-50 border-indigo-100 text-indigo-600'}`}>
+                      {isDone ? <CheckCircle2 className="w-6 h-6" /> : isRejected ? <XCircle className="w-6 h-6" /> : isPending ? <Clock className="w-6 h-6" /> : <Cpu className="w-6 h-6" />}
                     </div>
                     <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-2">
-                        <span className={`text-[9px] font-black px-2.5 py-0.5 rounded uppercase tracking-wider ${
-                          isDone 
-                            ? 'bg-emerald-100 text-emerald-700 border border-emerald-200' 
-                            : 'bg-indigo-100 text-indigo-700 border border-indigo-200'
-                        }`}>
-                          {isDone ? 'COMPLETED (100%)' : `IN PROGRESS (${pct}%)`}
-                        </span>
+                      <div className="flex items-center gap-3 mb-2 flex-wrap">
+                        {isDone ? (
+                          <span className="bg-emerald-100 text-emerald-700 border border-emerald-200 text-[9px] font-black px-2.5 py-0.5 rounded uppercase tracking-wider flex items-center gap-1">
+                            <CheckCircle2 className="w-3 h-3" /> COMPLETED (100%)
+                          </span>
+                        ) : isInProgress ? (
+                          <span className="bg-indigo-100 text-indigo-700 border border-indigo-200 text-[9px] font-black px-2.5 py-0.5 rounded uppercase tracking-wider flex items-center gap-1">
+                            <Play className="w-3 h-3 fill-current" /> IN PROGRESS ({pct}%)
+                          </span>
+                        ) : isRejected ? (
+                          <span className="bg-rose-100 text-rose-700 border border-rose-200 text-[9px] font-black px-2.5 py-0.5 rounded uppercase tracking-wider flex items-center gap-1">
+                            <XCircle className="w-3 h-3 text-rose-600" /> REQUEST REJECTED
+                          </span>
+                        ) : isPending ? (
+                          <span className="bg-amber-100 text-amber-700 border border-amber-200 text-[9px] font-black px-2.5 py-0.5 rounded uppercase tracking-wider flex items-center gap-1">
+                            <Clock className="w-3 h-3" /> PENDING {approvalTarget.toUpperCase()} APPROVAL
+                          </span>
+                        ) : (
+                          <span className="bg-blue-100 text-blue-700 border border-blue-200 text-[9px] font-black px-2.5 py-0.5 rounded uppercase tracking-wider flex items-center gap-1">
+                            <Check className="w-3 h-3" /> AUTHORIZED & ENROLLED
+                          </span>
+                        )}
                         <span className="text-xs text-slate-400 flex items-center gap-1 font-bold">
                           <Clock className="w-3.5 h-3.5" /> {c.durationHours || 12}h total
                         </span>
@@ -297,7 +333,7 @@ const MyProgress = () => {
                       <div className="flex items-center gap-4">
                         <div className="h-2 flex-1 bg-slate-100 rounded-full overflow-hidden">
                           <div 
-                            className={`h-full rounded-full transition-all duration-500 ${isDone ? 'bg-emerald-500' : 'bg-gradient-to-r from-indigo-500 to-blue-600'}`} 
+                            className={`h-full rounded-full transition-all duration-500 ${isDone ? 'bg-emerald-500' : isRejected ? 'bg-rose-400' : 'bg-gradient-to-r from-indigo-500 to-blue-600'}`} 
                             style={{ width: `${pct}%` }}
                           />
                         </div>
@@ -307,24 +343,44 @@ const MyProgress = () => {
                   </div>
 
                   <div className="flex flex-col sm:flex-row md:flex-col gap-2 shrink-0">
-                    <button 
-                      onClick={() => handleLaunchCourse(c)}
-                      className={`flex items-center justify-center gap-2 px-5 py-3 rounded-2xl font-bold text-xs uppercase tracking-wider transition-all shadow-sm ${
-                        isDone
-                          ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-200'
-                          : 'bg-[#0F172A] hover:bg-slate-800 text-white'
-                      }`}
-                    >
-                      {isDone ? (
-                        <>
-                          <CheckCircle2 className="w-4 h-4" /> Review Course
-                        </>
-                      ) : (
-                        <>
-                          <Play className="w-3.5 h-3.5 fill-current" /> Resume Player
-                        </>
-                      )}
-                    </button>
+                    {isDone ? (
+                      <button 
+                        onClick={() => handleLaunchCourse(c)}
+                        className="flex items-center justify-center gap-2 px-5 py-3 rounded-2xl font-bold text-xs uppercase tracking-wider bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm transition-all"
+                      >
+                        <CheckCircle2 className="w-4 h-4" /> Review Course
+                      </button>
+                    ) : isInProgress ? (
+                      <button 
+                        onClick={() => handleLaunchCourse(c)}
+                        className="flex items-center justify-center gap-2 px-5 py-3 rounded-2xl font-bold text-xs uppercase tracking-wider bg-[#0F172A] hover:bg-slate-800 text-white shadow-sm transition-all"
+                      >
+                        <Play className="w-3.5 h-3.5 fill-current" /> Resume Player
+                      </button>
+                    ) : isRejected ? (
+                      <button 
+                        onClick={() => handleReEnroll(c.id)}
+                        disabled={updatingId === c.id}
+                        className="flex items-center justify-center gap-2 px-5 py-3 rounded-2xl font-bold text-xs uppercase tracking-wider bg-rose-600 hover:bg-rose-700 text-white shadow-sm transition-all"
+                      >
+                        {updatingId === c.id && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+                        {updatingId === c.id ? 'Re-Submitting...' : '🔄 Try Again'}
+                      </button>
+                    ) : isPending ? (
+                      <button 
+                        disabled
+                        className="flex items-center justify-center gap-2 px-5 py-3 rounded-2xl font-bold text-xs uppercase tracking-wider bg-amber-50 text-amber-700 border border-amber-200 cursor-not-allowed shadow-sm"
+                      >
+                        <Clock className="w-3.5 h-3.5 text-amber-600" /> Pending {approvalTarget}
+                      </button>
+                    ) : (
+                      <button 
+                        onClick={() => handleLaunchCourse(c)}
+                        className="flex items-center justify-center gap-2 px-5 py-3 rounded-2xl font-bold text-xs uppercase tracking-wider bg-blue-600 hover:bg-blue-700 text-white shadow-sm transition-all"
+                      >
+                        <Play className="w-3.5 h-3.5 fill-current" /> ▶ Start Course
+                      </button>
+                    )}
 
                     <button 
                       onClick={() => navigate(`/dashboard/courses?id=${c.id}`)}
