@@ -368,7 +368,8 @@ const LearningRecommendations = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredCourses.slice(0, 5).map((c, idx) => {
               const progressPct = c.progressPct || 0;
-              const isEnrolled = c.enrollmentStatus === 'ENROLLED' || c.enrollmentStatus === 'IN_PROGRESS' || progressPct > 0;
+              const isEnrolled = c.enrollmentStatus === 'ENROLLED' || c.enrollmentStatus === 'NOT_STARTED' || c.enrollmentStatus === 'IN_PROGRESS' || progressPct > 0;
+              const isPending = c.enrollmentStatus === 'PENDING';
               const isCompleted = c.enrollmentStatus === 'COMPLETED' || progressPct >= 100;
 
               return (
@@ -386,6 +387,7 @@ const LearningRecommendations = () => {
                   isTopAiRecommendation={true}
                   isLmsLocked={isLmsLocked}
                   isEnrolled={isEnrolled}
+                  isPending={isPending}
                   isCompleted={isCompleted}
                   progressPct={progressPct}
                   isLoading={enrollingId === c.id}
@@ -424,7 +426,8 @@ const LearningRecommendations = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredCourses.map((c) => {
               const progressPct = c.progressPct || 0;
-              const isEnrolled = c.enrollmentStatus === 'ENROLLED' || c.enrollmentStatus === 'IN_PROGRESS' || progressPct > 0;
+              const isEnrolled = c.enrollmentStatus === 'ENROLLED' || c.enrollmentStatus === 'NOT_STARTED' || c.enrollmentStatus === 'IN_PROGRESS' || progressPct > 0;
+              const isPending = c.enrollmentStatus === 'PENDING';
               const isCompleted = c.enrollmentStatus === 'COMPLETED' || progressPct >= 100;
 
               return (
@@ -440,6 +443,7 @@ const LearningRecommendations = () => {
                   aiReason={c.aiReason}
                   isLmsLocked={isLmsLocked}
                   isEnrolled={isEnrolled}
+                  isPending={isPending}
                   isCompleted={isCompleted}
                   progressPct={progressPct}
                   isLoading={enrollingId === c.id}
