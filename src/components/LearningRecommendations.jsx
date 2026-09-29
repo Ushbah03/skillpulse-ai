@@ -368,7 +368,7 @@ const LearningRecommendations = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredCourses.slice(0, 5).map((c, idx) => {
               const progressPct = c.progressPct || 0;
-              const isPending = c.isPending || c.enrollmentStatus === 'PENDING';
+              const isPending = c.isPending || c.enrollmentStatus === 'NOT_STARTED' || c.enrollmentStatus === 'PENDING';
               const isApproved = c.isApproved || c.enrollmentStatus === 'ENROLLED' || c.enrollmentStatus === 'IN_PROGRESS';
               const isRejected = c.isRejected || c.enrollmentStatus === 'REJECTED' || c.enrollmentStatus === 'DENIED';
               const isCompleted = c.enrollmentStatus === 'COMPLETED' || progressPct >= 100;
@@ -430,7 +430,7 @@ const LearningRecommendations = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredCourses.map((c) => {
               const progressPct = c.progressPct || 0;
-              const isPending = c.isPending || c.enrollmentStatus === 'PENDING';
+              const isPending = c.isPending || c.enrollmentStatus === 'NOT_STARTED' || c.enrollmentStatus === 'PENDING';
               const isApproved = c.isApproved || c.enrollmentStatus === 'ENROLLED' || c.enrollmentStatus === 'IN_PROGRESS';
               const isRejected = c.isRejected || c.enrollmentStatus === 'REJECTED' || c.enrollmentStatus === 'DENIED';
               const isCompleted = c.enrollmentStatus === 'COMPLETED' || progressPct >= 100;
