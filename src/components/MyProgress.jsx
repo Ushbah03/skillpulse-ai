@@ -237,7 +237,7 @@ const MyProgress = () => {
             </span>
           </div>
           <h1 className="text-3xl font-black text-slate-900 tracking-tight">My Learning Progress</h1>
-          <p className="text-sm text-slate-500 font-medium mt-1">Real-time course metrics, video progress, and PostgreSQL skill gap resolutions</p>
+          <p className="text-sm text-slate-500 font-medium mt-1">Real-time course metrics, video progress, and skill gap resolutions</p>
         </div>
 
         {/* High Contrast Search Bar */}
@@ -266,7 +266,7 @@ const MyProgress = () => {
         <StatCard icon={<Clock className="text-blue-600 w-6 h-6" />} label="Learning Time" value={`${totalHoursSpent.toFixed(1)}h`} subtext="Accumulated Hours" />
         <StatCard icon={<Play className="text-indigo-600 w-6 h-6 fill-current" />} label="In-Progress" value={`${activeCoursesCount}`} subtext="Active Courses" />
         <StatCard icon={<CheckCircle2 className="text-emerald-600 w-6 h-6" />} label="Completed Courses" value={`${completedCoursesCount}`} subtext="100% Finished" />
-        <StatCard icon={<Award className="text-amber-500 w-6 h-6" />} label="Resolved Skill Gaps" value={`${gaps.length === 0 ? 'All Clear' : `${gaps.length} Active`}`} subtext="PostgreSQL Verified" />
+        <StatCard icon={<Award className="text-amber-500 w-6 h-6" />} label="Resolved Skill Gaps" value={`${gaps.length === 0 ? 'All Clear' : `${gaps.length} Active`}`} subtext="AI Verified" />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -424,12 +424,12 @@ const MyProgress = () => {
             
             <div className="relative z-10 space-y-6">
               <div className="inline-flex items-center gap-2 bg-indigo-500/20 text-indigo-300 px-3.5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border border-indigo-500/30">
-                <Sparkles className="w-3.5 h-3.5 text-indigo-400" /> PostgreSQL Skill Verification
+                <Sparkles className="w-3.5 h-3.5 text-indigo-400" /> AI Skill Verification
               </div>
               
               <h3 className="text-2xl font-black leading-tight">Skill Gap Resolution Engine</h3>
               <p className="text-slate-400 text-xs leading-relaxed">
-                Completing 100% courseware automatically deletes matching skill gaps and verifies your user skill profile in PostgreSQL DB.
+                Completing 100% courseware automatically resolves matching skill gaps and verifies your user skill profile.
               </p>
               
               <div className="space-y-3 pt-2">
@@ -449,7 +449,7 @@ const MyProgress = () => {
                     );
                   })
                 ) : (
-                  <SkillGainer label="All Profile Skill Gaps" status="100% Resolved & DB Verified 🎉" isResolved={true} />
+                  <SkillGainer label="All Profile Skill Gaps" status="100% Resolved & Verified 🎉" isResolved={true} />
                 )}
               </div>
             </div>
@@ -472,8 +472,8 @@ const MyProgress = () => {
                 <span className="font-bold text-slate-800">{completedCoursesCount} Issued</span>
               </div>
               <div className="flex justify-between">
-                <span>Database Engine:</span>
-                <span className="font-bold text-emerald-600">Neon PostgreSQL</span>
+                <span>Credential Status:</span>
+                <span className="font-bold text-emerald-600">Verified & Active</span>
               </div>
             </div>
           </div>
