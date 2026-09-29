@@ -370,6 +370,7 @@ const LearningRecommendations = () => {
               const progressPct = c.progressPct || 0;
               const isPending = c.isPending || c.enrollmentStatus === 'PENDING';
               const isApproved = c.isApproved || c.enrollmentStatus === 'ENROLLED' || c.enrollmentStatus === 'IN_PROGRESS';
+              const isRejected = c.isRejected || c.enrollmentStatus === 'REJECTED' || c.enrollmentStatus === 'DENIED';
               const isCompleted = c.enrollmentStatus === 'COMPLETED' || progressPct >= 100;
               const approvalTarget = c.approvalTarget || (c.hasTeam ? 'Leader' : 'HR');
 
@@ -389,6 +390,7 @@ const LearningRecommendations = () => {
                   isLmsLocked={isLmsLocked}
                   isEnrolled={isApproved}
                   isPending={isPending}
+                  isRejected={isRejected}
                   approvalTarget={approvalTarget}
                   isCompleted={isCompleted}
                   progressPct={progressPct}
@@ -430,6 +432,7 @@ const LearningRecommendations = () => {
               const progressPct = c.progressPct || 0;
               const isPending = c.isPending || c.enrollmentStatus === 'PENDING';
               const isApproved = c.isApproved || c.enrollmentStatus === 'ENROLLED' || c.enrollmentStatus === 'IN_PROGRESS';
+              const isRejected = c.isRejected || c.enrollmentStatus === 'REJECTED' || c.enrollmentStatus === 'DENIED';
               const isCompleted = c.enrollmentStatus === 'COMPLETED' || progressPct >= 100;
               const approvalTarget = c.approvalTarget || (c.hasTeam ? 'Leader' : 'HR');
 
@@ -447,6 +450,7 @@ const LearningRecommendations = () => {
                   isLmsLocked={isLmsLocked}
                   isEnrolled={isApproved}
                   isPending={isPending}
+                  isRejected={isRejected}
                   approvalTarget={approvalTarget}
                   isCompleted={isCompleted}
                   progressPct={progressPct}
@@ -958,17 +962,21 @@ const LearningStat = ({ label, value, sub }) => (
 const CourseCard = ({ 
   title, category, match, duration, readiness, isGapMatch, matchedGapSkill, 
   aiRank, aiReason, isTopAiRecommendation, approvalTarget = 'Leader',
-  isLmsLocked, isEnrolled, isPending, isCompleted, progressPct = 0, isLoading, onEnroll, onLaunch 
+  isLmsLocked, isEnrolled, isPending, isRejected, isCompleted, progressPct = 0, isLoading, onEnroll, onLaunch 
 }) => {
   const isInProgress = (progressPct > 0 && progressPct < 100);
 
   return (
-    <div className={`bg-white rounded-[2.5rem] border ${isTopAiRecommendation ? 'border-purple-300 shadow-lg ring-2 ring-purple-500/10' : isGapMatch ? 'border-purple-200 shadow-md ring-1 ring-purple-100' : 'border-slate-100 shadow-sm'} overflow-hidden group hover:border-blue-300 transition-all flex flex-col justify-between`}>
+    <div className={`bg-white rounded-[2.5rem] border ${isRejected ? 'border-rose-200 shadow-md ring-1 ring-rose-100' : isTopAiRecommendation ? 'border-purple-300 shadow-lg ring-2 ring-purple-500/10' : isGapMatch ? 'border-purple-200 shadow-md ring-1 ring-purple-100' : 'border-slate-100 shadow-sm'} overflow-hidden group hover:border-blue-300 transition-all flex flex-col justify-between`}>
       <div className="bg-slate-900 h-36 relative flex items-center justify-center p-6 text-center">
         <span className={`absolute top-4 right-4 text-[9px] font-black px-2.5 py-1 rounded-full border ${isTopAiRecommendation || isGapMatch ? 'bg-purple-600 text-white border-purple-400 shadow-sm' : 'bg-white/20 backdrop-blur-md text-white border-white/20'}`}>{match}</span>
         
         {/* Course Lifecycle Badges */}
-        {isTopAiRecommendation && aiRank ? (
+        {isRejected ? (
+          <span className="absolute top-4 left-4 bg-rose-600 text-white text-[9px] font-black px-2.5 py-1 rounded-full border border-rose-400 flex items-center gap-1 shadow-sm">
+            <XCircle className="w-3 h-3" /> REQUEST REJECTED
+          </span>
+        ) : isTopAiRecommendation && aiRank ? (
           <span className="absolute top-4 left-4 bg-gradient-to-r from-purple-600 to-indigo-600 text-white text-[9px] font-black px-2.5 py-1 rounded-full border border-purple-300 flex items-center gap-1 shadow-md">
             <Sparkles className="w-3 h-3 text-amber-300" /> #{aiRank} AI RECOMMENDATION
           </span>
@@ -1060,6 +1068,15 @@ const CourseCard = ({
               className="w-full py-3 rounded-xl font-bold text-xs bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white shadow-lg shadow-indigo-600/25 transition-all flex items-center justify-center gap-2"
             >
               <Play className="w-3.5 h-3.5 fill-current" /> ▶ Continue Course ({progressPct}%)
+            </button>
+          ) : isRejected ? (
+            <button 
+              onClick={onEnroll}
+              disabled={isLoading}
+              className="w-full py-3 rounded-xl font-bold text-xs bg-rose-600 hover:bg-rose-700 text-white transition-all shadow-md flex items-center justify-center gap-2"
+            >
+              {isLoading && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+              {isLoading ? 'Re-Submitting Request...' : '🔄 Try Again (Re-Request Enrollment)'}
             </button>
           ) : isPending ? (
             <button 
