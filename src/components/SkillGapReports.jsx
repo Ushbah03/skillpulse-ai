@@ -218,13 +218,13 @@ const SkillGapReports = () => {
   }, []);
 
   const handleApproveEnrollment = async (requestId, reqName, courseName, targetUserId) => {
-    const apiId = targetUserId || requestId;
+    const apiId = requestId || targetUserId;
     try {
       await hrAPI.updateRequestStatus(apiId, 'Approved');
     } catch (err) {
       console.warn('Backend status update error handled:', err);
     }
-    setEnrollmentRequests(prev => prev.map(r => (r.id === requestId || r.enrollmentId === requestId || r.userId === targetUserId) ? { ...r, status: 'Approved' } : r));
+    setEnrollmentRequests(prev => prev.map(r => (r.id === requestId || r.enrollmentId === requestId) ? { ...r, status: 'Approved' } : r));
     setGapAnalytics(prev => {
       if (!prev || !prev.members) return prev;
       return {
@@ -244,13 +244,13 @@ const SkillGapReports = () => {
   };
 
   const handleRejectEnrollment = async (requestId, reqName, targetUserId) => {
-    const apiId = targetUserId || requestId;
+    const apiId = requestId || targetUserId;
     try {
       await hrAPI.updateRequestStatus(apiId, 'Rejected');
     } catch (err) {
       console.warn('Backend status update error handled:', err);
     }
-    setEnrollmentRequests(prev => prev.map(r => (r.id === requestId || r.enrollmentId === requestId || r.userId === targetUserId) ? { ...r, status: 'Rejected' } : r));
+    setEnrollmentRequests(prev => prev.map(r => (r.id === requestId || r.enrollmentId === requestId) ? { ...r, status: 'Rejected' } : r));
     setGapAnalytics(prev => {
       if (!prev || !prev.members) return prev;
       return {
@@ -259,7 +259,7 @@ const SkillGapReports = () => {
           if (m.id === targetUserId || m.id === requestId) {
             return {
               ...m,
-              enrollments: [{ status: 'NOT_STARTED' }]
+              enrollments: [{ status: 'NOT_STARTED', progressPct: -1.0 }]
             };
           }
           return m;
@@ -285,7 +285,7 @@ const SkillGapReports = () => {
       const initials = (m.firstName ? `${m.firstName[0]}${m.lastName ? m.lastName[0] : ''}` : name.substring(0, 2)).toUpperCase();
       
       const hasApproved = m.enrollments && m.enrollments.some(e => e.status === 'IN_PROGRESS' || e.status === 'COMPLETED');
-      const hasRejected = m.enrollments && m.enrollments.some(e => e.status === 'NOT_STARTED');
+      const hasRejected = m.enrollments && m.enrollments.some(e => e.progressPct === -1.0 || e.status === 'REJECTED');
       const computedStatus = hasApproved ? 'Approved' : (hasRejected ? 'Rejected' : 'Pending');
 
       return {
