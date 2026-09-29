@@ -368,9 +368,10 @@ const LearningRecommendations = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredCourses.slice(0, 5).map((c, idx) => {
               const progressPct = c.progressPct || 0;
-              const isEnrolled = c.enrollmentStatus === 'ENROLLED' || c.enrollmentStatus === 'NOT_STARTED' || c.enrollmentStatus === 'IN_PROGRESS' || progressPct > 0;
-              const isPending = c.enrollmentStatus === 'PENDING';
+              const isPending = c.isPending || c.enrollmentStatus === 'PENDING';
+              const isApproved = c.isApproved || c.enrollmentStatus === 'ENROLLED' || c.enrollmentStatus === 'IN_PROGRESS';
               const isCompleted = c.enrollmentStatus === 'COMPLETED' || progressPct >= 100;
+              const approvalTarget = c.approvalTarget || (c.hasTeam ? 'Leader' : 'HR');
 
               return (
                 <CourseCard 
@@ -386,8 +387,9 @@ const LearningRecommendations = () => {
                   aiReason={c.aiReason}
                   isTopAiRecommendation={true}
                   isLmsLocked={isLmsLocked}
-                  isEnrolled={isEnrolled}
+                  isEnrolled={isApproved}
                   isPending={isPending}
+                  approvalTarget={approvalTarget}
                   isCompleted={isCompleted}
                   progressPct={progressPct}
                   isLoading={enrollingId === c.id}
@@ -426,9 +428,10 @@ const LearningRecommendations = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredCourses.map((c) => {
               const progressPct = c.progressPct || 0;
-              const isEnrolled = c.enrollmentStatus === 'ENROLLED' || c.enrollmentStatus === 'NOT_STARTED' || c.enrollmentStatus === 'IN_PROGRESS' || progressPct > 0;
-              const isPending = c.enrollmentStatus === 'PENDING';
+              const isPending = c.isPending || c.enrollmentStatus === 'PENDING';
+              const isApproved = c.isApproved || c.enrollmentStatus === 'ENROLLED' || c.enrollmentStatus === 'IN_PROGRESS';
               const isCompleted = c.enrollmentStatus === 'COMPLETED' || progressPct >= 100;
+              const approvalTarget = c.approvalTarget || (c.hasTeam ? 'Leader' : 'HR');
 
               return (
                 <CourseCard 
@@ -442,8 +445,9 @@ const LearningRecommendations = () => {
                   matchedGapSkill={c.matchedGapSkill}
                   aiReason={c.aiReason}
                   isLmsLocked={isLmsLocked}
-                  isEnrolled={isEnrolled}
+                  isEnrolled={isApproved}
                   isPending={isPending}
+                  approvalTarget={approvalTarget}
                   isCompleted={isCompleted}
                   progressPct={progressPct}
                   isLoading={enrollingId === c.id}
@@ -953,7 +957,7 @@ const LearningStat = ({ label, value, sub }) => (
 
 const CourseCard = ({ 
   title, category, match, duration, readiness, isGapMatch, matchedGapSkill, 
-  aiRank, aiReason, isTopAiRecommendation,
+  aiRank, aiReason, isTopAiRecommendation, approvalTarget = 'Leader',
   isLmsLocked, isEnrolled, isPending, isCompleted, progressPct = 0, isLoading, onEnroll, onLaunch 
 }) => {
   const isInProgress = (progressPct > 0 && progressPct < 100);
@@ -978,7 +982,7 @@ const CourseCard = ({
           </span>
         ) : isPending ? (
           <span className="absolute top-4 left-4 bg-amber-500 text-white text-[9px] font-black px-2.5 py-1 rounded-full border border-amber-400 flex items-center gap-1 shadow-sm">
-            <Clock className="w-3 h-3" /> PENDING APPROVAL
+            <Clock className="w-3 h-3" /> PENDING {approvalTarget.toUpperCase()} APPROVAL
           </span>
         ) : isGapMatch ? (
           <span className="absolute top-4 left-4 bg-purple-600 text-white text-[9px] font-black px-2.5 py-1 rounded-full border border-purple-400 flex items-center gap-1 shadow-sm animate-pulse">
@@ -1062,7 +1066,7 @@ const CourseCard = ({
               disabled
               className="w-full py-3 rounded-xl font-bold text-xs bg-amber-50 text-amber-700 border border-amber-200 cursor-not-allowed transition-all shadow-sm flex items-center justify-center gap-2"
             >
-              <Clock className="w-3.5 h-3.5 text-amber-600" /> Pending Leader Approval
+              <Clock className="w-3.5 h-3.5 text-amber-600" /> Pending {approvalTarget} Approval
             </button>
           ) : isEnrolled ? (
             <button 
