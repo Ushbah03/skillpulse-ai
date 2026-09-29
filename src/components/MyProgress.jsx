@@ -433,9 +433,24 @@ const MyProgress = () => {
               </p>
               
               <div className="space-y-3 pt-2">
-                <SkillGainer label="Frontend & Responsive Web" status={completedCoursesCount > 0 ? "Resolved" : "In Progress"} />
-                <SkillGainer label="Backend Microservices & Databases" status="PostgreSQL Verified" />
-                <SkillGainer label="DevOps & Security Hardening" status="Target 4.5/5" />
+                {gaps.length > 0 ? (
+                  gaps.slice(0, 4).map((g) => {
+                    const isResolved = g.currentLevel >= g.requiredLevel;
+                    const statusText = isResolved
+                      ? 'Resolved & Verified'
+                      : `Target ${g.requiredLevel || 4.5} (${g.severity || 'Medium'})`;
+                    return (
+                      <SkillGainer 
+                        key={g.id} 
+                        label={g.skill?.name || 'Skill Gap'} 
+                        status={statusText} 
+                        isResolved={isResolved}
+                      />
+                    );
+                  })
+                ) : (
+                  <SkillGainer label="All Profile Skill Gaps" status="100% Resolved & DB Verified 🎉" isResolved={true} />
+                )}
               </div>
             </div>
           </div>
@@ -657,10 +672,10 @@ const StatCard = ({ icon, label, value, subtext }) => (
   </div>
 );
 
-const SkillGainer = ({ label, status }) => (
+const SkillGainer = ({ label, status, isResolved }) => (
   <div className="flex justify-between items-center bg-white/5 border border-white/5 p-4 rounded-2xl">
     <span className="text-xs font-bold text-slate-200">{label}</span>
-    <span className="text-xs font-black text-emerald-400">{status}</span>
+    <span className={`text-xs font-black ${isResolved ? 'text-emerald-400' : 'text-indigo-300'}`}>{status}</span>
   </div>
 );
 
