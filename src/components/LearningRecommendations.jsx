@@ -589,46 +589,7 @@ const LearningRecommendations = () => {
         </div>
       )}
 
-      {/* 4. Skill Gap Driven Recommendations */}
-      <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm mb-10">
-        <div className="flex items-center gap-4 mb-8">
-          <div className="bg-blue-600 p-3 rounded-xl shadow-md shadow-blue-200">
-            <Target className="text-white w-6 h-6" />
-          </div>
-          <div>
-            <h3 className="text-xl font-bold text-slate-800">Skill Gap Driven Recommendations</h3>
-            <p className="text-xs text-slate-400 font-medium">Courses automatically assigned based on your PostgreSQL skill gap records</p>
-          </div>
-        </div>
 
-        <div className="space-y-4">
-          {gaps.length > 0 ? (
-            gaps.map((g) => (
-              <GapRow 
-                key={g.id}
-                title={g.skill?.name || 'Skill Gap'} 
-                tag={g.severity || 'HIGH'} 
-                gain="+25%" 
-                desc={`Target: ${g.requiredLevel || 4.5} • Current: ${g.currentLevel || 2.0} • Recommended training program available`}
-                onEnroll={() => {
-                  const matchedCourse = courses.find(c => c.skillsTaught.includes(g.skill?.name));
-                  if (matchedCourse) {
-                    if (matchedCourse.enrollmentStatus === 'ENROLLED' || matchedCourse.enrollmentStatus === 'IN_PROGRESS' || matchedCourse.enrollmentStatus === 'COMPLETED') {
-                      handleLaunchCourse(matchedCourse);
-                    } else {
-                      handleEnroll(matchedCourse.id);
-                    }
-                  }
-                }}
-              />
-            ))
-          ) : (
-            <div className="text-center py-6 text-slate-400 font-medium">
-              No critical skill gaps recorded in your profile.
-            </div>
-          )}
-        </div>
-      </div>
 
       {/* 30-Day AI Personalized Learning Roadmap Modal */}
       {showRoadmapModal && (
