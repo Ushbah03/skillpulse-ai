@@ -42,16 +42,22 @@ const CareerPaths = () => {
 
   const profile = data?.userProfile || {};
   const currentTitle = profile.jobTitle || storedUser.jobTitle || 'Software Specialist';
-  const targetReadiness = data?.targetReadiness ?? 75;
-  const roadmapSteps = data?.roadmap || [];
+  const targetReadiness = data?.targetReadiness ?? 25;
   const recommendedPaths = data?.recommendedPaths || [];
   const monthlyProgress = data?.monthlyProgress || [];
   const gaps = data?.gaps || [];
-  const acceleration = data?.accelerationPlan || {};
 
   const activeSelectedPath = recommendedPaths.find(p => p.id === selectedPathId) || recommendedPaths[0] || {};
-  const heroTargetRole = activeSelectedPath.title || data?.primaryTargetRole || 'Lead Architect';
+  const heroTargetRole = activeSelectedPath.title || data?.primaryTargetRole || 'Lead Development Architect';
   const heroReadiness = activeSelectedPath.readiness || `${targetReadiness}%`;
+  const roadmapSteps = activeSelectedPath.roadmap || data?.roadmap || [];
+
+  const acceleration = {
+    recommendedCourse: activeSelectedPath.targetCourseTitle || data?.accelerationPlan?.recommendedCourse || 'Enterprise Skill Mastery Course',
+    targetCertification: activeSelectedPath.targetCertTitle || data?.accelerationPlan?.targetCertification || 'Enterprise Certified Professional',
+    estimatedIncrease: data?.accelerationPlan?.estimatedIncrease || '+25% upon Course Completion',
+    targetCourseId: activeSelectedPath.targetCourseId || data?.accelerationPlan?.targetCourseId
+  };
 
   return (
     <div className="p-4 md:p-8 bg-[#F8F9FE] min-h-screen font-sans text-slate-900">
@@ -84,15 +90,23 @@ const CareerPaths = () => {
           <h2 className="text-3xl md:text-5xl font-black mb-6 leading-[1.15]">
             You are <span className="text-blue-200">{heroReadiness}</span> ready for a {heroTargetRole} role.
           </h2>
-          <p className="text-blue-100 text-sm md:text-lg leading-relaxed mb-8 opacity-90">
+          <p className="text-blue-100 text-sm md:text-lg leading-relaxed mb-6 opacity-90">
             {gaps.length > 0 
-              ? `Based on your verified skills in ${profile.department || 'Engineering'}, you have high potential for ${heroTargetRole} tracks. Bridging your ${gaps.length} remaining skill gaps will unlock this position.`
+              ? `Based on your verified skills in ${profile.department || 'Development'}, your current readiness is ${heroReadiness}. Bridging your ${gaps.length} remaining skill gaps through active courseware will unlock 100% readiness for this position.`
               : `Your verified skill inventory meets 100% of benchmark criteria for advanced ${heroTargetRole} tracks. You are eligible for immediate career promotion review.`
             }
           </p>
+
+          {activeSelectedPath.aiRationale && (
+            <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4 mb-8 text-xs text-blue-100 font-medium">
+              <span className="font-bold text-white uppercase tracking-wider block mb-1">AI Recommendation Rationale:</span>
+              {activeSelectedPath.aiRationale}
+            </div>
+          )}
+
           <div className="flex flex-wrap gap-4">
             <button 
-              onClick={() => navigate('/dashboard/learning')}
+              onClick={() => navigate('/dashboard/learning', { state: { courseId: acceleration.targetCourseId } })}
               className="px-7 py-3.5 bg-white text-blue-600 rounded-2xl font-black text-sm md:text-base shadow-lg hover:bg-blue-50 transition-all active:scale-95 flex items-center gap-2"
             >
               <Navigation className="w-4 h-4" />
@@ -219,7 +233,9 @@ const CareerPaths = () => {
                 {gaps.map((g) => {
                   const current = g.currentLevel || 1.0;
                   const required = g.requiredLevel || 4.5;
-                  const pct = `${Math.min(100, Math.round((current / required) * 100))}%`;
+                  const progressPct = g.progressPct || 0;
+                  const effectiveLevel = current + ((required - current) * (progressPct / 100));
+                  const pct = `${Math.min(100, Math.round((effectiveLevel / required) * 100))}%`;
                   return (
                     <GapMetric 
                       key={g.id} 
@@ -234,7 +250,7 @@ const CareerPaths = () => {
             ) : (
               <div className="text-center py-6 bg-slate-50 rounded-2xl p-4">
                 <p className="text-xs font-bold text-emerald-600">✓ 100% Skills Aligned</p>
-                <p className="text-[11px] text-slate-400 mt-1">No active skill gaps found in your DB profile.</p>
+                <p className="text-[11px] text-slate-400 mt-1">No active skill gaps found in your skill profile.</p>
               </div>
             )}
           </div>
@@ -249,17 +265,17 @@ const CareerPaths = () => {
             </div>
             
             <div className="space-y-3.5 mb-6">
-              <PlanItem label="RECOMMENDED COURSE" value={acceleration.recommendedCourse || 'Advanced Skill Acceleration'} />
-              <PlanItem label="TARGET CERTIFICATION" value={acceleration.targetCertification || 'Enterprise Certified Professional'} />
+              <PlanItem label="RECOMMENDED COURSE" value={acceleration.recommendedCourse} />
+              <PlanItem label="TARGET CERTIFICATION" value={acceleration.targetCertification} />
               
               <div className="bg-white/10 rounded-2xl p-5 text-center border border-white/10 mt-4">
                 <p className="text-blue-200 text-[10px] font-bold uppercase tracking-widest mb-1">Estimated Readiness Increase</p>
-                <h5 className="text-2xl md:text-3xl font-black text-emerald-400">{acceleration.estimatedIncrease || '+15% in 30 Days'}</h5>
+                <h5 className="text-2xl md:text-3xl font-black text-emerald-400">{acceleration.estimatedIncrease}</h5>
               </div>
             </div>
 
             <button 
-              onClick={() => navigate('/dashboard/learning')}
+              onClick={() => navigate('/dashboard/learning', { state: { courseId: acceleration.targetCourseId } })}
               className="w-full py-3.5 bg-white text-[#1E0B4B] rounded-xl font-bold text-sm hover:bg-slate-100 transition-all active:scale-95"
             >
               Start Acceleration
