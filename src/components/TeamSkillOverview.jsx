@@ -5,7 +5,11 @@ import {
   Search, 
   SlidersHorizontal,
   Sparkles,
-  Loader2
+  Loader2,
+  AlertTriangle,
+  ShieldAlert,
+  CheckCircle2,
+  Zap
 } from 'lucide-react';
 import { teamLeaderAPI } from '../services/api';
 
@@ -110,7 +114,7 @@ const TeamSkillOverview = () => {
         <main className="flex-1 ml-0 lg:ml-64 pt-20 lg:pt-8 p-4 md:p-8 flex items-center justify-center">
           <div className="flex flex-col items-center gap-3 text-blue-600">
             <Loader2 className="w-10 h-10 animate-spin" />
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Querying Neon Cloud Database...</span>
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Querying Team Skill Intelligence...</span>
           </div>
         </main>
       </div>
@@ -185,6 +189,52 @@ const TeamSkillOverview = () => {
           />
         </div>
 
+        {/* AI Squad Capability & Risk Alert Banner */}
+        {overviewData?.aiInsights && (
+          <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 p-6 md:p-8 rounded-[2.5rem] text-white shadow-xl border border-indigo-500/20 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
+            
+            <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+              <div className="space-y-3 max-w-2xl">
+                <div className="flex items-center gap-2 text-indigo-400 font-black text-xs uppercase tracking-widest">
+                  <Sparkles className="w-4 h-4 text-indigo-400" /> AI Squad Risk & Synergy Intelligence
+                </div>
+                <h3 className="text-xl md:text-2xl font-black text-white leading-tight">
+                  {overviewData.aiInsights.spofCount > 0 
+                    ? `${overviewData.aiInsights.spofCount} Single Point of Failure (SPOF) Risk Detected`
+                    : 'Optimal Team Synergy & Balance'}
+                </h3>
+                <p className="text-slate-300 text-xs md:text-sm leading-relaxed">
+                  {overviewData.aiInsights.aiRecommendation}
+                </p>
+                
+                {overviewData.aiInsights.spofSkills?.length > 0 && (
+                  <div className="flex flex-wrap items-center gap-2 pt-1">
+                    <span className="text-[10px] font-extrabold text-amber-400 uppercase tracking-wider">SPOF Skills (1 Expert):</span>
+                    {overviewData.aiInsights.spofSkills.map((s, idx) => (
+                      <span key={idx} className="bg-amber-500/20 text-amber-300 border border-amber-500/30 px-2.5 py-0.5 rounded-full text-xs font-bold flex items-center gap-1">
+                        <AlertTriangle className="w-3 h-3 text-amber-400" /> {s}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <div className="flex items-center gap-4 bg-white/5 border border-white/10 p-5 rounded-2xl shrink-0 justify-around min-w-[260px]">
+                <div className="text-center">
+                  <p className="text-[10px] font-black uppercase text-indigo-300 tracking-wider mb-1">Squad Synergy</p>
+                  <p className="text-3xl font-black text-emerald-400">{overviewData.aiInsights.synergyScore || '82%'}</p>
+                </div>
+                <div className="w-px h-10 bg-white/10"></div>
+                <div className="text-center">
+                  <p className="text-[10px] font-black uppercase text-indigo-300 tracking-wider mb-1">SPOF Risks</p>
+                  <p className="text-3xl font-black text-amber-400">{overviewData.aiInsights.spofCount || 0}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Filters Panel */}
         <div className="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -216,7 +266,7 @@ const TeamSkillOverview = () => {
           <div className="flex justify-between items-center mb-6">
             <div>
               <h3 className="text-xl font-bold text-slate-900 tracking-tight">Live Squad Skill Matrix</h3>
-              <p className="text-xs text-slate-500 font-medium">Real-time skill proficiencies queried directly from Neon Cloud Database</p>
+              <p className="text-xs text-slate-500 font-medium">Real-time skill proficiencies and competency distribution across team members</p>
             </div>
             <button 
               onClick={() => navigate('/team-leader/assign-learning')}
