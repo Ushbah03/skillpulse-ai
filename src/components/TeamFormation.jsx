@@ -43,17 +43,20 @@ const TeamFormation = () => {
       const isFullCapacity = cand.isFullCapacity || activeProjectsCount >= 2;
       const capacityPct = cand.capacityPct ?? (activeProjectsCount >= 2 ? 100 : activeProjectsCount === 1 ? 50 : 0);
       const capacityLabel = cand.capacityLabel || (isFullCapacity ? '100% Capacity (Full)' : activeProjectsCount === 1 ? '50% Capacity' : '0% Available');
+      const matchVal = Math.round(cand.matchScore || 0);
 
       return {
         id: cand.userId || `cand-${i}`,
         name: cand.name,
         role: cand.jobTitle || 'Engineer',
-        match: Math.round(cand.matchScore || 85),
-        comp: Math.min(98, Math.max(75, (cand.matchScore || 85) + 4)),
-        ready: Math.min(99, Math.max(70, (cand.matchScore || 85) - 2)),
-        selected: !isFullCapacity, // auto-select available members (not full capacity)
+        match: matchVal,
+        comp: matchVal,
+        ready: matchVal,
+        selected: !isFullCapacity && matchVal > 0, // auto-select available members with >0% match
         img: cand.avatarUrl || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=150",
         skillsRecorded: cand.skillsRecorded || [],
+        matchedSkills: cand.matchedSkills || [],
+        missingSkills: cand.missingSkills || [],
         activeProjectsCount,
         capacityPct,
         isFullCapacity,
@@ -314,12 +317,53 @@ const TeamFormation = () => {
               </div>
             </div>
 
+            {/* AI Skill Deficiency & Hiring Prompt Alert Banner */}
+            {aiReport?.hasDeficiency && (
+              <div className="bg-amber-500/10 border-2 border-amber-500/30 rounded-[2.5rem] p-6 md:p-8 space-y-4 shadow-sm">
+                <div className="flex items-start gap-4">
+                  <div className="p-3 bg-amber-500 text-white rounded-2xl shrink-0 mt-0.5 shadow-md">
+                    <AlertTriangle className="w-6 h-6" />
+                  </div>
+                  <div className="space-y-2 flex-1">
+                    <div className="flex items-center gap-2">
+                      <span className="bg-amber-500 text-white text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full tracking-wider">
+                        AI Skill Deficit Warning
+                      </span>
+                      <span className="text-xs font-extrabold text-amber-900">
+                        Target Skill Coverage: {aiReport.skillCoveragePct || 0}%
+                      </span>
+                    </div>
+                    <h4 className="text-lg font-black text-amber-950 leading-tight">
+                      Team Missing Verified Skills in [{aiReport.missingInTeam.join(', ')}]
+                    </h4>
+                    <p className="text-xs md:text-sm font-medium text-amber-900/90 leading-relaxed">
+                      {aiReport.aiHiringRecommendation}
+                    </p>
+                    <div className="flex flex-wrap gap-3 pt-2">
+                      <button 
+                        onClick={() => navigate('/team-leader/assign-learning')}
+                        className="px-5 py-2.5 bg-amber-600 hover:bg-amber-700 text-white rounded-xl font-bold text-xs shadow-md transition-all flex items-center gap-2 cursor-pointer"
+                      >
+                        <Sparkles className="w-4 h-4" /> Assign LMS Training
+                      </button>
+                      <button 
+                        onClick={() => navigate('/team-leader/requests')}
+                        className="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-bold text-xs shadow-md transition-all flex items-center gap-2 cursor-pointer"
+                      >
+                        <UserCheck className="w-4 h-4" /> Initiate Hire Requisition
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* AI Matched Squad Results */}
             <div className="bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm space-y-6">
               <div className="flex justify-between items-center">
                 <div>
                   <h3 className="text-xl font-bold text-slate-900 tracking-tight">AI Recommended Project Squad</h3>
-                  <p className="text-xs text-slate-500 font-medium">Ranked by deep competency match and project readiness scores</p>
+                  <p className="text-xs text-slate-500 font-medium">Ranked strictly by verified database skill proficiencies and project readiness</p>
                 </div>
                 <div className="flex items-center gap-3">
                   <span className="text-xs font-black text-slate-400 uppercase tracking-wider">Average Readiness:</span>
@@ -376,6 +420,21 @@ const TeamFormation = () => {
                           <p className="text-[9px] font-black text-slate-400 uppercase">Readiness</p>
                           <p className="text-sm font-bold text-emerald-600">{c.ready}%</p>
                         </div>
+                      </div>
+
+                      {/* Matched Skills Badges */}
+                      <div className="mt-3 pt-3 border-t border-slate-100 flex flex-wrap gap-1.5">
+                        {c.matchedSkills && c.matchedSkills.length > 0 ? (
+                          c.matchedSkills.map((ms, idx) => (
+                            <span key={idx} className="bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-bold px-2 py-0.5 rounded-md">
+                              ✓ {ms}
+                            </span>
+                          ))
+                        ) : (
+                          <span className="bg-slate-100 text-slate-500 text-[10px] font-bold px-2 py-0.5 rounded-md">
+                            0 Target Skills Matched
+                          </span>
+                        )}
                       </div>
 
                       {/* Option B Capacity Badge Pill */}
