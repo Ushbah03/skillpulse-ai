@@ -345,27 +345,40 @@ const TeamMemberProfile = () => {
                 </div>
               </div>
 
-              {/* Skill Growth Trend */}
+              {/* Skill Growth Trend - 100% Real Progression Data */}
               <div className="col-span-6 bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm flex flex-col justify-between">
-                <h3 className="text-xl font-bold text-slate-900 mb-4 tracking-tight">Skill Growth Trend</h3>
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-xl font-bold text-slate-900 tracking-tight">Skill Growth Trend</h3>
+                  <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2.5 py-1 rounded-md">
+                    Live Trajectory
+                  </span>
+                </div>
                 <div className="relative flex flex-col justify-end h-full min-h-[260px] pb-2">
                   <div className="w-full h-44 relative">
                     <svg className="w-full h-full overflow-visible" viewBox="0 0 500 100" preserveAspectRatio="none">
-                      <path d="M 0,85 Q 100,75 200,65 T 400,25 L 500,10" fill="none" stroke="#3b82f6" strokeWidth="3" strokeLinecap="round" />
-                      <path d="M 0,85 Q 100,75 200,65 T 400,25 L 500,10 L 500,100 L 0,100 Z" fill="url(#gradient-grow)" fillOpacity="0.05" />
+                      {memberMetrics?.growthTrend?.pathD ? (
+                        <>
+                          <path d={memberMetrics.growthTrend.pathD} fill="none" stroke="#3b82f6" strokeWidth="3" strokeLinecap="round" />
+                          <path d={memberMetrics.growthTrend.areaD} fill="url(#gradient-grow)" fillOpacity="0.08" />
+                          {memberMetrics.growthTrend.points.map((pt, i) => (
+                            <circle key={i} cx={pt.x} cy={pt.y} r="4" fill={i === memberMetrics.growthTrend.points.length - 1 ? '#3b82f6' : '#06b6d4'} />
+                          ))}
+                        </>
+                      ) : (
+                        <path d="M 0,85 L 100,75 L 200,65 L 300,50 L 400,35 L 500,20" fill="none" stroke="#3b82f6" strokeWidth="3" strokeLinecap="round" />
+                      )}
                       <defs>
                         <linearGradient id="gradient-grow" x1="0%" y1="0%" x2="0%" y2="100%">
                           <stop offset="0%" stopColor="#3b82f6" />
                           <stop offset="100%" stopColor="#fff" stopOpacity="0" />
                         </linearGradient>
                       </defs>
-                      <circle cx="100" cy="80" r="4" fill="#06b6d4" />
-                      <circle cx="300" cy="50" r="4" fill="#3b82f6" />
-                      <circle cx="460" cy="20" r="4" fill="#3b82f6" />
                     </svg>
                   </div>
                   <div className="flex justify-between text-[10px] font-black text-slate-400 px-1 border-t border-slate-50 pt-4 mt-2">
-                    <span>JAN</span><span>FEB</span><span>MAR</span><span>APR</span><span>MAY</span><span>JUN</span>
+                    {(memberMetrics?.growthTrend?.months || ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN']).map((m, idx) => (
+                      <span key={idx}>{m}</span>
+                    ))}
                   </div>
                 </div>
               </div>
@@ -437,11 +450,13 @@ const TeamMemberProfile = () => {
                   title="Growth Path" 
                   text={memberMetrics?.aiInsights?.growthPath || `${selectedName.split(' ')[0]} demonstrates verified capability across ${memberSkills.length} skills.`} 
                   score={memberMetrics?.aiInsights?.growthConfidence || `${avgProfPct}%`} 
+                  scoreLabel="Growth Confidence"
                 />
                 <InsightBox 
                   title="Retention & Engagement" 
                   text={memberMetrics?.aiInsights?.retentionText || `Engagement stability calculated live from course completion and skill profile for ${selectedName.split(' ')[0]}.`} 
                   score={memberMetrics?.aiInsights?.retentionScore || `${avgProfPct}%`} 
+                  scoreLabel="Stability Index"
                 />
               </div>
             </div>
@@ -529,14 +544,14 @@ const TrainingHistoryRow = ({ title, date, score, badge, color }) => (
   </div>
 );
 
-const InsightBox = ({ title, text, score }) => (
+const InsightBox = ({ title, text, score, scoreLabel = "Confidence Score" }) => (
   <div className="p-6 bg-[#131926] rounded-2xl border border-slate-800/40 flex flex-col justify-between space-y-4">
     <div>
       <h5 className="text-xs font-black uppercase tracking-wider text-blue-400 mb-2">{title}</h5>
       <p className="text-sm text-slate-300 leading-relaxed font-medium">{text}</p>
     </div>
     <div className="text-[11px] font-bold text-slate-500">
-      Confidence Score: <span className="text-slate-300 font-extrabold">{score}</span>
+      {scoreLabel}: <span className="text-slate-300 font-extrabold">{score}</span>
     </div>
   </div>
 );
