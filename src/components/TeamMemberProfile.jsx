@@ -23,6 +23,8 @@ const TeamMemberProfile = () => {
   const [selectedMemberObj, setSelectedMemberObj] = useState(null);
   const [memberDetail, setMemberDetail] = useState(null);
   const [memberMetrics, setMemberMetrics] = useState(null);
+  const [selectedRadarSkill, setSelectedRadarSkill] = useState(null);
+  const [selectedTrendPoint, setSelectedTrendPoint] = useState(null);
 
   // 1. Fetch team members list
   useEffect(() => {
@@ -128,20 +130,32 @@ const TeamMemberProfile = () => {
         deduplicatedSkills[4]?.skill?.name?.toUpperCase() || 'ANALYTICS',
       ];
 
-  const dynamicRadarPolygon = useMemo(() => {
-    if (memberMetrics?.radarPolygon) return memberMetrics.radarPolygon;
-    const pts = [];
-    for (let i = 0; i < 5; i++) {
+  const radarCompetencies = useMemo(() => {
+    if (memberMetrics?.radarSkills?.length === 5) {
+      return memberMetrics.radarSkills.map((s, idx) => {
+        const parts = (s.point || '').split(',');
+        const x = Number(parts[0]) || 50;
+        const y = Number(parts[1]) || 50;
+        return { ...s, x, y, idx };
+      });
+    }
+    return [0, 1, 2, 3, 4].map(i => {
       const s = deduplicatedSkills[i];
-      const prof = s ? Math.min(5.0, Math.max(0.5, s.proficiencyLevel || 1.0)) : 1.5;
+      const name = displayRadarLabels[i];
+      const level = s ? Number(s.proficiencyLevel || 1.0).toFixed(1) : '1.5';
+      const category = s?.skill?.category?.name || 'Competency';
       const angle = (2 * Math.PI * i) / 5 - Math.PI / 2;
-      const radius = (prof / 5.0) * 38;
+      const radius = (Number(level) / 5.0) * 38;
       const x = Number((50 + radius * Math.cos(angle)).toFixed(1));
       const y = Number((50 + radius * Math.sin(angle)).toFixed(1));
-      pts.push(`${x},${y}`);
-    }
-    return pts.join(' ');
-  }, [memberMetrics?.radarPolygon, deduplicatedSkills]);
+      return { name, level, category, point: `${x},${y}`, x, y, idx: i };
+    });
+  }, [memberMetrics?.radarSkills, deduplicatedSkills, displayRadarLabels]);
+
+  const dynamicRadarPolygon = useMemo(() => {
+    if (memberMetrics?.radarPolygon) return memberMetrics.radarPolygon;
+    return radarCompetencies.map(c => `${c.x},${c.y}`).join(' ');
+  }, [memberMetrics?.radarPolygon, radarCompetencies]);
 
   // Calculate dynamic readiness & proficiency
   let totalProf = 0;
@@ -359,13 +373,27 @@ const TeamMemberProfile = () => {
               </div>
             </div>
 
-            {/* 4. Charts Twin Grid (Radar + Growth) */}
+            {/* 4. Charts Twin Grid (Radar + Growth) - Interactive & Responsive on Click */}
             <div className="grid grid-cols-12 gap-8">
               {/* Skill Proficiency Radar */}
-              <div className="col-span-6 bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm flex flex-col justify-between">
-                <h3 className="text-xl font-bold text-slate-900 mb-4 tracking-tight">Skill Proficiency Radar</h3>
+              <div className="col-span-6 bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm flex flex-col justify-between transition-all">
+                <div className="flex justify-between items-center mb-4">
+                  <div>
+                    <h3 className="text-xl font-bold text-slate-900 tracking-tight">Skill Proficiency Radar</h3>
+                    <p className="text-xs text-slate-400 font-medium mt-0.5">Click any skill point or label to inspect proficiency</p>
+                  </div>
+                  {selectedRadarSkill && (
+                    <button 
+                      onClick={() => setSelectedRadarSkill(null)}
+                      className="text-[11px] font-bold text-blue-600 bg-blue-50 px-2.5 py-1 rounded-md hover:bg-blue-100 transition-all cursor-pointer"
+                    >
+                      Reset Focus
+                    </button>
+                  )}
+                </div>
+
                 <div className="flex items-center justify-center p-4 relative min-h-[260px]">
-                  <svg className="w-64 h-64 text-slate-200" viewBox="0 0 100 100">
+                  <svg className="w-64 h-64 text-slate-200 overflow-visible" viewBox="0 0 100 100">
                     <polygon points="50,10 88,38 73,82 27,82 12,38" fill="none" stroke="currentColor" strokeWidth="0.5" />
                     <polygon points="50,22 80,44 68,76 32,76 20,44" fill="none" stroke="currentColor" strokeWidth="0.5" />
                     <polygon points="50,34 72,50 63,70 37,70 28,50" fill="none" stroke="currentColor" strokeWidth="0.5" />
@@ -375,39 +403,164 @@ const TeamMemberProfile = () => {
                     <line x1="50" y1="50" x2="73" y2="82" stroke="currentColor" strokeWidth="0.5" strokeDasharray="2" />
                     <line x1="50" y1="50" x2="27" y2="82" stroke="currentColor" strokeWidth="0.5" strokeDasharray="2" />
                     <line x1="50" y1="50" x2="12" y2="38" stroke="currentColor" strokeWidth="0.5" strokeDasharray="2" />
-                    {dynamicRadarPolygon ? (
-                      <polygon points={dynamicRadarPolygon} fill="#3b82f6" fillOpacity="0.25" stroke="#2563eb" strokeWidth="1.8" />
-                    ) : null}
+                    
+                    {dynamicRadarPolygon && (
+                      <polygon 
+                        points={dynamicRadarPolygon} 
+                        fill="#3b82f6" 
+                        fillOpacity="0.25" 
+                        stroke="#2563eb" 
+                        strokeWidth="1.8" 
+                        className="transition-all duration-300"
+                      />
+                    )}
+
+                    {/* Interactive Clickable Vertex Nodes */}
+                    {radarCompetencies.map((comp, idx) => {
+                      const isFocused = selectedRadarSkill?.name === comp.name;
+                      return (
+                        <g 
+                          key={idx} 
+                          className="cursor-pointer group"
+                          onClick={() => setSelectedRadarSkill(isFocused ? null : comp)}
+                        >
+                          {isFocused && (
+                            <circle cx={comp.x} cy={comp.y} r="9" fill="#2563eb" fillOpacity="0.3" className="animate-ping" />
+                          )}
+                          <circle 
+                            cx={comp.x} 
+                            cy={comp.y} 
+                            r={isFocused ? "6" : "4.5"} 
+                            fill={isFocused ? "#1d4ed8" : "#3b82f6"} 
+                            stroke="#ffffff" 
+                            strokeWidth="1.8" 
+                            className="transition-all duration-200 group-hover:scale-125"
+                          />
+                        </g>
+                      );
+                    })}
                   </svg>
-                  <span className="absolute top-0 text-[10px] font-black text-slate-600 max-w-[120px] text-center truncate bg-white/95 px-2 py-0.5 rounded-md border border-slate-100 shadow-xs">
-                    {displayRadarLabels[0]}
-                  </span>
-                  <span className="absolute right-1 top-1/3 text-[10px] font-black text-slate-600 max-w-[110px] text-center truncate bg-white/95 px-2 py-0.5 rounded-md border border-slate-100 shadow-xs">
-                    {displayRadarLabels[1]}
-                  </span>
-                  <span className="absolute right-6 bottom-1 text-[10px] font-black text-slate-600 max-w-[110px] text-center truncate bg-white/95 px-2 py-0.5 rounded-md border border-slate-100 shadow-xs">
-                    {displayRadarLabels[2]}
-                  </span>
-                  <span className="absolute left-6 bottom-1 text-[10px] font-black text-slate-600 max-w-[110px] text-center truncate bg-white/95 px-2 py-0.5 rounded-md border border-slate-100 shadow-xs">
-                    {displayRadarLabels[3]}
-                  </span>
-                  <span className="absolute left-1 top-1/3 text-[10px] font-black text-slate-600 max-w-[110px] text-center truncate bg-white/95 px-2 py-0.5 rounded-md border border-slate-100 shadow-xs">
-                    {displayRadarLabels[4]}
-                  </span>
+
+                  {/* 5 Interactive Axis Buttons */}
+                  <button
+                    onClick={() => setSelectedRadarSkill(selectedRadarSkill?.name === radarCompetencies[0]?.name ? null : radarCompetencies[0])}
+                    className={`absolute top-0 text-[10px] font-black max-w-[120px] text-center truncate px-2.5 py-1 rounded-md border transition-all cursor-pointer ${
+                      selectedRadarSkill?.name === radarCompetencies[0]?.name 
+                        ? 'bg-blue-600 text-white border-blue-600 shadow-md scale-105 ring-2 ring-blue-300' 
+                        : 'bg-white/95 text-slate-700 border-slate-200 hover:border-blue-300 hover:bg-blue-50/50 shadow-xs'
+                    }`}
+                  >
+                    {radarCompetencies[0]?.name}
+                  </button>
+                  <button
+                    onClick={() => setSelectedRadarSkill(selectedRadarSkill?.name === radarCompetencies[1]?.name ? null : radarCompetencies[1])}
+                    className={`absolute right-1 top-1/3 text-[10px] font-black max-w-[110px] text-center truncate px-2.5 py-1 rounded-md border transition-all cursor-pointer ${
+                      selectedRadarSkill?.name === radarCompetencies[1]?.name 
+                        ? 'bg-blue-600 text-white border-blue-600 shadow-md scale-105 ring-2 ring-blue-300' 
+                        : 'bg-white/95 text-slate-700 border-slate-200 hover:border-blue-300 hover:bg-blue-50/50 shadow-xs'
+                    }`}
+                  >
+                    {radarCompetencies[1]?.name}
+                  </button>
+                  <button
+                    onClick={() => setSelectedRadarSkill(selectedRadarSkill?.name === radarCompetencies[2]?.name ? null : radarCompetencies[2])}
+                    className={`absolute right-6 bottom-1 text-[10px] font-black max-w-[110px] text-center truncate px-2.5 py-1 rounded-md border transition-all cursor-pointer ${
+                      selectedRadarSkill?.name === radarCompetencies[2]?.name 
+                        ? 'bg-blue-600 text-white border-blue-600 shadow-md scale-105 ring-2 ring-blue-300' 
+                        : 'bg-white/95 text-slate-700 border-slate-200 hover:border-blue-300 hover:bg-blue-50/50 shadow-xs'
+                    }`}
+                  >
+                    {radarCompetencies[2]?.name}
+                  </button>
+                  <button
+                    onClick={() => setSelectedRadarSkill(selectedRadarSkill?.name === radarCompetencies[3]?.name ? null : radarCompetencies[3])}
+                    className={`absolute left-6 bottom-1 text-[10px] font-black max-w-[110px] text-center truncate px-2.5 py-1 rounded-md border transition-all cursor-pointer ${
+                      selectedRadarSkill?.name === radarCompetencies[3]?.name 
+                        ? 'bg-blue-600 text-white border-blue-600 shadow-md scale-105 ring-2 ring-blue-300' 
+                        : 'bg-white/95 text-slate-700 border-slate-200 hover:border-blue-300 hover:bg-blue-50/50 shadow-xs'
+                    }`}
+                  >
+                    {radarCompetencies[3]?.name}
+                  </button>
+                  <button
+                    onClick={() => setSelectedRadarSkill(selectedRadarSkill?.name === radarCompetencies[4]?.name ? null : radarCompetencies[4])}
+                    className={`absolute left-1 top-1/3 text-[10px] font-black max-w-[110px] text-center truncate px-2.5 py-1 rounded-md border transition-all cursor-pointer ${
+                      selectedRadarSkill?.name === radarCompetencies[4]?.name 
+                        ? 'bg-blue-600 text-white border-blue-600 shadow-md scale-105 ring-2 ring-blue-300' 
+                        : 'bg-white/95 text-slate-700 border-slate-200 hover:border-blue-300 hover:bg-blue-50/50 shadow-xs'
+                    }`}
+                  >
+                    {radarCompetencies[4]?.name}
+                  </button>
                 </div>
+
+                {/* Interactive Feedback Drawer on Skill Click */}
+                {selectedRadarSkill ? (
+                  <div className="mt-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50/70 border border-blue-200/90 rounded-2xl animate-in fade-in zoom-in-95 duration-150 shadow-xs">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <span className="w-2.5 h-2.5 rounded-full bg-blue-600 animate-pulse"></span>
+                        <span className="text-xs font-black text-slate-900 uppercase tracking-tight">{selectedRadarSkill.name}</span>
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-100 text-blue-700">
+                          {selectedRadarSkill.level} / 5.0
+                        </span>
+                      </div>
+                      <button 
+                        onClick={() => setSelectedRadarSkill(null)}
+                        className="text-xs text-slate-400 hover:text-slate-600 font-bold px-1.5 py-0.5 cursor-pointer"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                    <div className="mt-2.5 flex items-center justify-between text-xs">
+                      <div className="w-2/3 pr-3">
+                        <div className="w-full bg-slate-200 rounded-full h-2 overflow-hidden">
+                          <div 
+                            className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                            style={{ width: `${Math.min(100, Math.round((Number(selectedRadarSkill.level) / 5) * 100))}%` }}
+                          ></div>
+                        </div>
+                        <span className="text-[10px] text-slate-500 font-semibold mt-1 inline-block">
+                          Proficiency: {Math.min(100, Math.round((Number(selectedRadarSkill.level) / 5) * 100))}% • Category: {selectedRadarSkill.category}
+                        </span>
+                      </div>
+                      <button
+                        onClick={() => navigate(`/team-leader/assign-learning?userId=${activeMember.id}`)}
+                        className="text-[10px] font-black uppercase tracking-wider bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg shadow-xs transition-all cursor-pointer whitespace-nowrap"
+                      >
+                        Assign Training
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="mt-4 p-2.5 bg-slate-50/70 border border-slate-100 rounded-xl text-center text-[11px] font-bold text-slate-400">
+                    💡 Click any skill point or label to inspect live proficiency details
+                  </div>
+                )}
               </div>
 
-              {/* Skill Growth Trend - 100% Real Progression Data */}
-              <div className="col-span-6 bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm flex flex-col justify-between">
+              {/* Skill Growth Trend - 100% Real Progression Data & Responsive on Click */}
+              <div className="col-span-6 bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm flex flex-col justify-between transition-all">
                 <div className="flex justify-between items-center mb-4">
                   <div>
                     <h3 className="text-xl font-bold text-slate-900 tracking-tight">Skill Growth Trend</h3>
                     <p className="text-xs text-slate-400 font-medium mt-0.5">Rolling 6-month skill mastery & learning velocity</p>
                   </div>
-                  <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2.5 py-1 rounded-md">
-                    Live Trajectory
-                  </span>
+                  <div className="flex items-center gap-2">
+                    {selectedTrendPoint && (
+                      <button 
+                        onClick={() => setSelectedTrendPoint(null)}
+                        className="text-[11px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md hover:bg-blue-100 transition-all cursor-pointer"
+                      >
+                        Reset Month
+                      </button>
+                    )}
+                    <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2.5 py-1 rounded-md">
+                      Live Trajectory
+                    </span>
+                  </div>
                 </div>
+
                 <div className="relative flex flex-col justify-end h-full min-h-[260px] pb-2">
                   <div className="w-full h-44 relative">
                     {memberMetrics?.growthTrend?.pathD ? (
@@ -420,26 +573,43 @@ const TeamMemberProfile = () => {
                         </defs>
                         <path d={memberMetrics.growthTrend.areaD} fill="url(#gradient-grow)" />
                         <path d={memberMetrics.growthTrend.pathD} fill="none" stroke="#2563eb" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
-                        {memberMetrics.growthTrend.points.map((pt, i) => (
-                          <g key={i} className="group">
-                            <circle 
-                              cx={pt.x} 
-                              cy={pt.y} 
-                              r="5" 
-                              fill={i === memberMetrics.growthTrend.points.length - 1 ? '#2563eb' : '#0ea5e9'} 
-                              stroke="#ffffff" 
-                              strokeWidth="2" 
-                            />
-                            <text 
-                              x={pt.x} 
-                              y={Math.max(12, pt.y - 9)} 
-                              textAnchor="middle" 
-                              className="text-[10px] font-black fill-slate-700 select-none pointer-events-none"
+                        
+                        {memberMetrics.growthTrend.points.map((pt, i) => {
+                          const isSelected = selectedTrendPoint?.month === pt.month;
+                          return (
+                            <g 
+                              key={i} 
+                              className="group cursor-pointer"
+                              onClick={() => setSelectedTrendPoint(isSelected ? null : pt)}
                             >
-                              {pt.score}%
-                            </text>
-                          </g>
-                        ))}
+                              {isSelected && (
+                                <>
+                                  <circle cx={pt.x} cy={pt.y} r="10" fill="#2563eb" fillOpacity="0.25" className="animate-ping" />
+                                  <line x1={pt.x} y1={pt.y} x2={pt.x} y2="92" stroke="#2563eb" strokeWidth="1.5" strokeDasharray="3 3" />
+                                </>
+                              )}
+                              <circle 
+                                cx={pt.x} 
+                                cy={pt.y} 
+                                r={isSelected ? "6.5" : "5"} 
+                                fill={isSelected ? '#1d4ed8' : (i === memberMetrics.growthTrend.points.length - 1 ? '#2563eb' : '#0ea5e9')} 
+                                stroke="#ffffff" 
+                                strokeWidth="2" 
+                                className="transition-all hover:scale-125"
+                              />
+                              <text 
+                                x={pt.x} 
+                                y={Math.max(12, pt.y - 9)} 
+                                textAnchor="middle" 
+                                className={`text-[10px] font-black select-none pointer-events-none transition-all ${
+                                  isSelected ? 'fill-blue-700 font-extrabold scale-110' : 'fill-slate-700'
+                                }`}
+                              >
+                                {pt.score}%
+                              </text>
+                            </g>
+                          );
+                        })}
                       </svg>
                     ) : (
                       <div className="flex flex-col items-center justify-center h-full gap-2 text-slate-400">
@@ -448,12 +618,58 @@ const TeamMemberProfile = () => {
                       </div>
                     )}
                   </div>
-                  <div className="flex justify-between text-[10px] font-black text-slate-500 px-1 border-t border-slate-100 pt-4 mt-2">
-                    {(memberMetrics?.growthTrend?.months || ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN']).map((m, idx) => (
-                      <span key={idx}>{m}</span>
-                    ))}
+
+                  {/* Interactive Clickable Months Axis */}
+                  <div className="flex justify-between text-[10px] font-black text-slate-500 px-1 border-t border-slate-100 pt-3 mt-2">
+                    {(memberMetrics?.growthTrend?.months || ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN']).map((m, idx) => {
+                      const isSelected = selectedTrendPoint?.month === m;
+                      const pt = memberMetrics?.growthTrend?.points?.[idx];
+                      return (
+                        <button 
+                          key={idx}
+                          onClick={() => pt && setSelectedTrendPoint(isSelected ? null : pt)}
+                          className={`px-2.5 py-1 rounded-md text-[10px] font-black transition-all cursor-pointer ${
+                            isSelected 
+                              ? 'bg-blue-600 text-white shadow-xs scale-105' 
+                              : 'text-slate-500 hover:text-blue-600 hover:bg-blue-50'
+                          }`}
+                        >
+                          {m}
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
+
+                {/* Interactive Feedback Drawer on Milestone Click */}
+                {selectedTrendPoint ? (
+                  <div className="mt-3 p-4 bg-gradient-to-r from-[#0b1221] to-[#1e293b] text-white rounded-2xl flex items-center justify-between animate-in fade-in slide-in-from-bottom-2 duration-150 shadow-md">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded bg-blue-500/20 text-blue-300 border border-blue-400/30">
+                          {selectedTrendPoint.month} Milestone
+                        </span>
+                        <span className="text-sm font-black text-white">Score: {selectedTrendPoint.score}%</span>
+                        <span className="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded">
+                          Live Verified
+                        </span>
+                      </div>
+                      <p className="text-xs text-slate-300 font-medium mt-1">
+                        {selectedTrendPoint.milestone || 'Skill Assessment & Verification Cycle'}
+                      </p>
+                    </div>
+                    <button 
+                      onClick={() => setSelectedTrendPoint(null)}
+                      className="text-xs font-bold text-slate-400 hover:text-white px-2 py-1 cursor-pointer"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ) : (
+                  <div className="mt-3 p-2.5 bg-slate-50/70 border border-slate-100 rounded-xl text-center text-[11px] font-bold text-slate-400">
+                    📈 Click any month point or dot to inspect the milestone assessment score
+                  </div>
+                )}
               </div>
             </div>
 
