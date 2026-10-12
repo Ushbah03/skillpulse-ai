@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import TeamLeaderSidebar from './TeamLeaderSidebar'; 
 import { teamLeaderAPI } from '../services/api';
@@ -88,6 +88,60 @@ const TeamMemberProfile = () => {
   const memberSkills = activeMember?.skills || [];
   const memberGaps = activeMember?.skillGaps || [];
   const memberEnrollments = activeMember?.enrollments || [];
+
+  // Deduplicate skills by normalized name to guarantee unique competency axes
+  const deduplicatedSkills = useMemo(() => {
+    const map = new Map();
+    memberSkills.forEach(us => {
+      const name = (us.skill?.name || '').trim();
+      if (!name) return;
+      const key = name.toLowerCase();
+      if (!map.has(key) || (us.proficiencyLevel || 0) > (map.get(key).proficiencyLevel || 0)) {
+        map.set(key, us);
+      }
+    });
+
+    // Supplement from skill gaps if fewer than 5 unique skills
+    memberGaps.forEach(g => {
+      if (map.size >= 5) return;
+      const name = (g.skill?.name || '').trim();
+      if (!name) return;
+      const key = name.toLowerCase();
+      if (!map.has(key)) {
+        map.set(key, {
+          skill: { name },
+          proficiencyLevel: g.currentLevel || 1.0
+        });
+      }
+    });
+
+    return Array.from(map.values());
+  }, [memberSkills, memberGaps]);
+
+  const displayRadarLabels = memberMetrics?.radarLabels?.length === 5 
+    ? memberMetrics.radarLabels 
+    : [
+        deduplicatedSkills[0]?.skill?.name?.toUpperCase() || 'CORE SKILLS',
+        deduplicatedSkills[1]?.skill?.name?.toUpperCase() || 'SPECIALIZATION',
+        deduplicatedSkills[2]?.skill?.name?.toUpperCase() || 'FRAMEWORKS',
+        deduplicatedSkills[3]?.skill?.name?.toUpperCase() || 'SYSTEM DESIGN',
+        deduplicatedSkills[4]?.skill?.name?.toUpperCase() || 'ANALYTICS',
+      ];
+
+  const dynamicRadarPolygon = useMemo(() => {
+    if (memberMetrics?.radarPolygon) return memberMetrics.radarPolygon;
+    const pts = [];
+    for (let i = 0; i < 5; i++) {
+      const s = deduplicatedSkills[i];
+      const prof = s ? Math.min(5.0, Math.max(0.5, s.proficiencyLevel || 1.0)) : 1.5;
+      const angle = (2 * Math.PI * i) / 5 - Math.PI / 2;
+      const radius = (prof / 5.0) * 38;
+      const x = Number((50 + radius * Math.cos(angle)).toFixed(1));
+      const y = Number((50 + radius * Math.sin(angle)).toFixed(1));
+      pts.push(`${x},${y}`);
+    }
+    return pts.join(' ');
+  }, [memberMetrics?.radarPolygon, deduplicatedSkills]);
 
   // Calculate dynamic readiness & proficiency
   let totalProf = 0;
@@ -321,26 +375,24 @@ const TeamMemberProfile = () => {
                     <line x1="50" y1="50" x2="73" y2="82" stroke="currentColor" strokeWidth="0.5" strokeDasharray="2" />
                     <line x1="50" y1="50" x2="27" y2="82" stroke="currentColor" strokeWidth="0.5" strokeDasharray="2" />
                     <line x1="50" y1="50" x2="12" y2="38" stroke="currentColor" strokeWidth="0.5" strokeDasharray="2" />
-                    {memberMetrics?.radarPolygon ? (
-                      <polygon points={memberMetrics.radarPolygon} fill="#3b82f6" fillOpacity="0.2" stroke="#3b82f6" strokeWidth="1.5" />
-                    ) : memberSkills.length > 0 ? (
-                      <polygon points="50,15 82,40 65,72 35,76 22,42" fill="#3b82f6" fillOpacity="0.2" stroke="#3b82f6" strokeWidth="1.5" />
+                    {dynamicRadarPolygon ? (
+                      <polygon points={dynamicRadarPolygon} fill="#3b82f6" fillOpacity="0.25" stroke="#2563eb" strokeWidth="1.8" />
                     ) : null}
                   </svg>
-                  <span className="absolute top-0 text-[10px] font-black text-slate-500 max-w-[120px] text-center truncate">
-                    {memberMetrics?.radarLabels?.[0] || memberSkills[0]?.skill?.name?.toUpperCase() || 'CORE SKILLS'}
+                  <span className="absolute top-0 text-[10px] font-black text-slate-600 max-w-[120px] text-center truncate bg-white/95 px-2 py-0.5 rounded-md border border-slate-100 shadow-xs">
+                    {displayRadarLabels[0]}
                   </span>
-                  <span className="absolute right-2 top-1/3 text-[10px] font-black text-slate-500 max-w-[100px] text-center truncate">
-                    {memberMetrics?.radarLabels?.[1] || memberSkills[1]?.skill?.name?.toUpperCase() || 'ARCHITECTURE'}
+                  <span className="absolute right-1 top-1/3 text-[10px] font-black text-slate-600 max-w-[110px] text-center truncate bg-white/95 px-2 py-0.5 rounded-md border border-slate-100 shadow-xs">
+                    {displayRadarLabels[1]}
                   </span>
-                  <span className="absolute right-12 bottom-2 text-[10px] font-black text-slate-500 max-w-[100px] text-center truncate">
-                    {memberMetrics?.radarLabels?.[2] || memberSkills[2]?.skill?.name?.toUpperCase() || 'FRAMEWORKS'}
+                  <span className="absolute right-6 bottom-1 text-[10px] font-black text-slate-600 max-w-[110px] text-center truncate bg-white/95 px-2 py-0.5 rounded-md border border-slate-100 shadow-xs">
+                    {displayRadarLabels[2]}
                   </span>
-                  <span className="absolute left-16 bottom-2 text-[10px] font-black text-slate-500 max-w-[100px] text-center truncate">
-                    {memberMetrics?.radarLabels?.[3] || memberSkills[3]?.skill?.name?.toUpperCase() || 'UI/UX'}
+                  <span className="absolute left-6 bottom-1 text-[10px] font-black text-slate-600 max-w-[110px] text-center truncate bg-white/95 px-2 py-0.5 rounded-md border border-slate-100 shadow-xs">
+                    {displayRadarLabels[3]}
                   </span>
-                  <span className="absolute left-2 top-1/3 text-[10px] font-black text-slate-500 max-w-[100px] text-center truncate">
-                    {memberMetrics?.radarLabels?.[4] || memberSkills[4]?.skill?.name?.toUpperCase() || 'DEVOPS'}
+                  <span className="absolute left-1 top-1/3 text-[10px] font-black text-slate-600 max-w-[110px] text-center truncate bg-white/95 px-2 py-0.5 rounded-md border border-slate-100 shadow-xs">
+                    {displayRadarLabels[4]}
                   </span>
                 </div>
               </div>
@@ -348,34 +400,55 @@ const TeamMemberProfile = () => {
               {/* Skill Growth Trend - 100% Real Progression Data */}
               <div className="col-span-6 bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm flex flex-col justify-between">
                 <div className="flex justify-between items-center mb-4">
-                  <h3 className="text-xl font-bold text-slate-900 tracking-tight">Skill Growth Trend</h3>
+                  <div>
+                    <h3 className="text-xl font-bold text-slate-900 tracking-tight">Skill Growth Trend</h3>
+                    <p className="text-xs text-slate-400 font-medium mt-0.5">Rolling 6-month skill mastery & learning velocity</p>
+                  </div>
                   <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2.5 py-1 rounded-md">
                     Live Trajectory
                   </span>
                 </div>
                 <div className="relative flex flex-col justify-end h-full min-h-[260px] pb-2">
                   <div className="w-full h-44 relative">
-                    <svg className="w-full h-full overflow-visible" viewBox="0 0 500 100" preserveAspectRatio="none">
-                      {memberMetrics?.growthTrend?.pathD ? (
-                        <>
-                          <path d={memberMetrics.growthTrend.pathD} fill="none" stroke="#3b82f6" strokeWidth="3" strokeLinecap="round" />
-                          <path d={memberMetrics.growthTrend.areaD} fill="url(#gradient-grow)" fillOpacity="0.08" />
-                          {memberMetrics.growthTrend.points.map((pt, i) => (
-                            <circle key={i} cx={pt.x} cy={pt.y} r="4" fill={i === memberMetrics.growthTrend.points.length - 1 ? '#3b82f6' : '#06b6d4'} />
-                          ))}
-                        </>
-                      ) : (
-                        <path d="M 0,85 L 100,75 L 200,65 L 300,50 L 400,35 L 500,20" fill="none" stroke="#3b82f6" strokeWidth="3" strokeLinecap="round" />
-                      )}
-                      <defs>
-                        <linearGradient id="gradient-grow" x1="0%" y1="0%" x2="0%" y2="100%">
-                          <stop offset="0%" stopColor="#3b82f6" />
-                          <stop offset="100%" stopColor="#fff" stopOpacity="0" />
-                        </linearGradient>
-                      </defs>
-                    </svg>
+                    {memberMetrics?.growthTrend?.pathD ? (
+                      <svg className="w-full h-full overflow-visible" viewBox="0 0 500 100" preserveAspectRatio="none">
+                        <defs>
+                          <linearGradient id="gradient-grow" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.25" />
+                            <stop offset="100%" stopColor="#3b82f6" stopOpacity="0.0" />
+                          </linearGradient>
+                        </defs>
+                        <path d={memberMetrics.growthTrend.areaD} fill="url(#gradient-grow)" />
+                        <path d={memberMetrics.growthTrend.pathD} fill="none" stroke="#2563eb" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+                        {memberMetrics.growthTrend.points.map((pt, i) => (
+                          <g key={i} className="group">
+                            <circle 
+                              cx={pt.x} 
+                              cy={pt.y} 
+                              r="5" 
+                              fill={i === memberMetrics.growthTrend.points.length - 1 ? '#2563eb' : '#0ea5e9'} 
+                              stroke="#ffffff" 
+                              strokeWidth="2" 
+                            />
+                            <text 
+                              x={pt.x} 
+                              y={Math.max(12, pt.y - 9)} 
+                              textAnchor="middle" 
+                              className="text-[10px] font-black fill-slate-700 select-none pointer-events-none"
+                            >
+                              {pt.score}%
+                            </text>
+                          </g>
+                        ))}
+                      </svg>
+                    ) : (
+                      <div className="flex flex-col items-center justify-center h-full gap-2 text-slate-400">
+                        <Loader2 className="animate-spin text-blue-500" size={24} />
+                        <span className="text-xs font-semibold">Calculating learning trajectory...</span>
+                      </div>
+                    )}
                   </div>
-                  <div className="flex justify-between text-[10px] font-black text-slate-400 px-1 border-t border-slate-50 pt-4 mt-2">
+                  <div className="flex justify-between text-[10px] font-black text-slate-500 px-1 border-t border-slate-100 pt-4 mt-2">
                     {(memberMetrics?.growthTrend?.months || ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN']).map((m, idx) => (
                       <span key={idx}>{m}</span>
                     ))}
