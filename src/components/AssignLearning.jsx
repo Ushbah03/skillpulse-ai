@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import TeamLeaderSidebar from './TeamLeaderSidebar'; 
 import { teamLeaderAPI } from '../services/api';
 import { 
@@ -87,9 +87,103 @@ const AssignLearning = () => {
     }
   };
 
+  // 100% Real Multi-Factor AI Recommendation Engine for currently selected team recipients
+  const dynamicRecommendations = useMemo(() => {
+    const targetMembers = members.filter(m => selectedMemberIds.includes(m.id));
+    const activeEvalMembers = targetMembers.length > 0 ? targetMembers : members;
+
+    // Collect verified skill gaps for evaluated members
+    const activeGaps = [];
+    activeEvalMembers.forEach(m => {
+      (m.skillGaps || []).forEach(g => {
+        const sName = (g.skill?.name || '').trim();
+        if (sName) {
+          activeGaps.push({
+            userId: m.id,
+            userName: `${m.firstName} ${m.lastName}`.trim(),
+            skillName: sName,
+            severity: (g.severity || 'MEDIUM').toUpperCase(),
+            currentLevel: Number(g.currentLevel) || 1.0,
+            targetLevel: Number(g.targetLevel) || 4.0
+          });
+        }
+      });
+    });
+
+    if (activeGaps.length === 0) {
+      return [];
+    }
+
+    // Match and score available programs against active gaps
+    const scoredMap = new Map();
+
+    availablePrograms.forEach(prog => {
+      const titleLower = (prog.title || '').toLowerCase();
+      const descLower = (prog.description || '').toLowerCase();
+      const progSkills = (prog.skillsTaught || []).map(st => (st.skill?.name || '').toLowerCase());
+
+      let bestScore = 0;
+      let matchedGap = null;
+      const beneficiaries = new Set();
+      let maxSeverity = 'NONE';
+
+      activeGaps.forEach(gap => {
+        const gapLower = gap.skillName.toLowerCase();
+        const isMatch = progSkills.some(s => s.includes(gapLower) || gapLower.includes(s)) ||
+                        titleLower.includes(gapLower) ||
+                        descLower.includes(gapLower);
+
+        if (isMatch) {
+          beneficiaries.add(gap.userName);
+          const sevBonus = gap.severity === 'CRITICAL' ? 40 : gap.severity === 'HIGH' ? 30 : 15;
+          const deltaL = Math.max(0.5, gap.targetLevel - gap.currentLevel);
+          const score = 55 + sevBonus + Math.min(10, deltaL * 2.5);
+
+          if (score > bestScore) {
+            bestScore = score;
+            matchedGap = gap;
+            maxSeverity = gap.severity;
+          }
+        }
+      });
+
+      if (bestScore >= 70 && matchedGap) {
+        const impactTier = (maxSeverity === 'CRITICAL' || maxSeverity === 'HIGH') ? 'HIGH IMPACT' : 'MED IMPACT';
+        const beneficiariesArr = Array.from(beneficiaries);
+        const namesStr = beneficiariesArr.length === 1 
+          ? beneficiariesArr[0] 
+          : `${beneficiariesArr.length} selected members (${beneficiariesArr.slice(0, 2).join(', ')}${beneficiariesArr.length > 2 ? '...' : ''})`;
+
+        const text = maxSeverity === 'CRITICAL'
+          ? `Directly bridges CRITICAL skill gap in ${matchedGap.skillName} (Current: ${matchedGap.currentLevel}, Target: ${matchedGap.targetLevel}) for ${namesStr}. Eliminates active capability deficit.`
+          : `Targeted training program designed to bridge ${maxSeverity} gap in ${matchedGap.skillName} for ${namesStr}.`;
+
+        scoredMap.set(prog.id, {
+          program: prog,
+          impactTier,
+          impactScore: bestScore,
+          matchedSkill: matchedGap.skillName,
+          text,
+          severity: maxSeverity
+        });
+      }
+    });
+
+    const results = Array.from(scoredMap.values());
+    results.sort((a, b) => b.impactScore - a.impactScore);
+    return results;
+  }, [availablePrograms, members, selectedMemberIds]);
+
   const openAssignModal = (program = null) => {
     setModalError('');
     setActiveProgramToAssign(program);
+    // If program resolves critical/high gap, preselect High priority
+    const matchingRec = dynamicRecommendations.find(r => r.program.id === program?.id);
+    if (matchingRec && (matchingRec.severity === 'CRITICAL' || matchingRec.severity === 'HIGH')) {
+      setPriority('High');
+    } else {
+      setPriority('Medium');
+    }
     setIsAssignModalOpen(true);
   };
 
@@ -139,11 +233,23 @@ const AssignLearning = () => {
   const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
   const leaderName = storedUser.firstName ? `${storedUser.firstName} ${storedUser.lastName}` : 'Team Leader';
 
-  // Filtered Programs
-  const filteredPrograms = availablePrograms.filter(p => 
-    p.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    p.description?.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // Filtered Programs - prioritized by AI Gap Closure relevance
+  const filteredPrograms = useMemo(() => {
+    const list = availablePrograms.filter(p => 
+      p.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      p.description?.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+    // Sort matching AI Recommendations first
+    const recIdSet = new Set(dynamicRecommendations.map(r => r.program.id));
+    return list.sort((a, b) => {
+      const aMatch = recIdSet.has(a.id);
+      const bMatch = recIdSet.has(b.id);
+      if (aMatch && !bMatch) return -1;
+      if (!aMatch && bMatch) return 1;
+      return 0;
+    });
+  }, [availablePrograms, searchQuery, dynamicRecommendations]);
 
   return (
     <div className="flex min-h-screen bg-[#F8F9FE]">
@@ -270,6 +376,8 @@ const AssignLearning = () => {
                             ? 'text-amber-500' 
                             : 'text-emerald-500';
 
+                          const recMatch = dynamicRecommendations.find(r => r.program.id === program.id);
+
                           return (
                             <TrainingRow 
                               key={program.id}
@@ -280,6 +388,7 @@ const AssignLearning = () => {
                               diff={diffLevel} 
                               diffColor={diffColor} 
                               duration={`${program.durationHours || 6}h`} 
+                              aiBadge={recMatch ? recMatch.impactTier : null}
                               onAssign={() => openAssignModal(program)}
                             />
                           );
@@ -393,22 +502,44 @@ const AssignLearning = () => {
 
                 {/* Box 2: AI Recommended Block */}
                 <div className="bg-white rounded-[2.5rem] p-6 border border-slate-100 shadow-sm space-y-4">
-                  <div className="flex items-center gap-2 text-purple-600">
-                    <Zap size={18} fill="currentColor" />
-                    <h3 className="text-base font-black tracking-tight">AI Recommended</h3>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2 text-purple-600">
+                      <Zap size={18} fill="currentColor" />
+                      <h3 className="text-base font-black tracking-tight">AI Recommended</h3>
+                    </div>
+                    {dynamicRecommendations.length > 0 && (
+                      <span className="text-[10px] font-black uppercase tracking-wider bg-purple-50 text-purple-700 px-2 py-0.5 rounded-full border border-purple-200">
+                        {dynamicRecommendations.length} Gap {dynamicRecommendations.length === 1 ? 'Match' : 'Matches'}
+                      </span>
+                    )}
                   </div>
 
                   <div className="space-y-4">
-                    {availablePrograms.slice(0, 2).map((prog, idx) => (
-                      <RecommendationCard 
-                        key={prog.id}
-                        title={prog.title} 
-                        level={idx === 0 ? "HIGH IMPACT" : "MED IMPACT"} 
-                        levelStyle={idx === 0 ? "text-purple-600 bg-purple-50" : "text-amber-600 bg-amber-50"} 
-                        text={`Recommended to bridge team capability gaps in ${prog.skillsTaught?.[0]?.skill?.name || 'key tech'}.`} 
-                        onAction={() => openAssignModal(prog)}
-                      />
-                    ))}
+                    {dynamicRecommendations.length > 0 ? (
+                      dynamicRecommendations.slice(0, 3).map((rec) => (
+                        <RecommendationCard 
+                          key={rec.program.id}
+                          title={rec.program.title} 
+                          level={rec.impactTier} 
+                          levelStyle={rec.impactTier === "HIGH IMPACT" 
+                            ? "text-purple-700 bg-purple-50 border border-purple-200" 
+                            : "text-amber-700 bg-amber-50 border border-amber-200"
+                          } 
+                          text={rec.text} 
+                          onAction={() => openAssignModal(rec.program)}
+                        />
+                      ))
+                    ) : (
+                      <div className="p-4 bg-emerald-50/60 rounded-2xl border border-emerald-100 text-center space-y-2">
+                        <div className="flex items-center justify-center gap-1.5 text-emerald-700 font-bold text-xs">
+                          <Check size={16} />
+                          <span>No Active Skill Gaps</span>
+                        </div>
+                        <p className="text-xs text-slate-500 font-medium leading-relaxed">
+                          Selected team members currently meet verified proficiency targets. Browse the training catalog on the left for optional development courses.
+                        </p>
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -572,10 +703,21 @@ const TopMetricCard = ({ title, value, extra, color, extraColor = "text-slate-40
   </div>
 );
 
-const TrainingRow = ({ name, domain, skill, skillColor, diff, diffColor, duration, onAssign }) => (
+const TrainingRow = ({ name, domain, skill, skillColor, diff, diffColor, duration, aiBadge, onAssign }) => (
   <tr className="hover:bg-slate-50/50 transition-colors">
     <td className="py-4 px-6">
-      <div className="font-extrabold text-slate-900 leading-tight">{name}</div>
+      <div className="flex items-center gap-2">
+        <span className="font-extrabold text-slate-900 leading-tight">{name}</span>
+        {aiBadge && (
+          <span className={`text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded border shrink-0 ${
+            aiBadge === 'HIGH IMPACT'
+              ? 'bg-purple-50 text-purple-700 border-purple-200'
+              : 'bg-amber-50 text-amber-700 border-amber-200'
+          }`}>
+            {aiBadge}
+          </span>
+        )}
+      </div>
       <div className="text-xs text-slate-400 font-medium mt-0.5">{domain}</div>
     </td>
     <td className="py-4 px-6">
@@ -593,7 +735,7 @@ const TrainingRow = ({ name, domain, skill, skillColor, diff, diffColor, duratio
     <td className="py-4 px-6 text-center">
       <button 
         onClick={onAssign}
-        className="bg-[#0b1221] hover:bg-[#151f33] text-white text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-sm cursor-pointer"
+        className="bg-[#0b1221] hover:bg-[#151f33] text-white text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-sm cursor-pointer whitespace-nowrap"
       >
         Assign
       </button>
