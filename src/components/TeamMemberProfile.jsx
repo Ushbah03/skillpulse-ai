@@ -91,27 +91,63 @@ const TeamMemberProfile = () => {
   const memberGaps = activeMember?.skillGaps || [];
   const memberEnrollments = activeMember?.enrollments || [];
 
-  // Deduplicate skills by normalized name to guarantee unique competency axes
+  // Deduplicate skills by normalized root name to guarantee unique competency axes
   const deduplicatedSkills = useMemo(() => {
     const map = new Map();
     memberSkills.forEach(us => {
-      const name = (us.skill?.name || '').trim();
+      let name = (us.skill?.name || '').trim();
       if (!name) return;
-      const key = name.toLowerCase();
-      if (!map.has(key) || (us.proficiencyLevel || 0) > (map.get(key).proficiencyLevel || 0)) {
-        map.set(key, us);
+      
+      let normalizedKey = name.toLowerCase();
+      let cleanName = name;
+      if (normalizedKey.includes('problem solving')) {
+        normalizedKey = 'problem solving';
+        cleanName = 'Problem Solving';
+      } else if (normalizedKey.includes('figma')) {
+        normalizedKey = 'figma';
+        cleanName = 'Figma';
+      } else if (normalizedKey.includes('canva')) {
+        normalizedKey = 'canva';
+        cleanName = 'Canva';
+      } else if (normalizedKey.includes('react')) {
+        normalizedKey = 'react.js';
+        cleanName = 'React.js';
+      }
+
+      const prof = Number(us.proficiencyLevel) || 1.0;
+      if (!map.has(normalizedKey) || prof > (map.get(normalizedKey).proficiencyLevel || 0)) {
+        map.set(normalizedKey, {
+          ...us,
+          skill: { ...us.skill, name: cleanName },
+          proficiencyLevel: prof
+        });
       }
     });
 
     // Supplement from skill gaps if fewer than 5 unique skills
     memberGaps.forEach(g => {
       if (map.size >= 5) return;
-      const name = (g.skill?.name || '').trim();
+      let name = (g.skill?.name || '').trim();
       if (!name) return;
-      const key = name.toLowerCase();
-      if (!map.has(key)) {
-        map.set(key, {
-          skill: { name },
+      let normalizedKey = name.toLowerCase();
+      let cleanName = name;
+      if (normalizedKey.includes('problem solving')) {
+        normalizedKey = 'problem solving';
+        cleanName = 'Problem Solving';
+      } else if (normalizedKey.includes('figma')) {
+        normalizedKey = 'figma';
+        cleanName = 'Figma';
+      } else if (normalizedKey.includes('canva')) {
+        normalizedKey = 'canva';
+        cleanName = 'Canva';
+      } else if (normalizedKey.includes('react')) {
+        normalizedKey = 'react.js';
+        cleanName = 'React.js';
+      }
+
+      if (!map.has(normalizedKey)) {
+        map.set(normalizedKey, {
+          skill: { name: cleanName, category: g.skill?.category || { name: 'Growth Area' } },
           proficiencyLevel: g.currentLevel || 1.0
         });
       }
@@ -284,7 +320,7 @@ const TeamMemberProfile = () => {
                 </div>
                 <div className="text-center">
                   <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 mb-1">Skills</p>
-                  <p className="text-3xl font-black text-purple-600 tracking-tight">{memberSkills.length}</p>
+                  <p className="text-3xl font-black text-purple-600 tracking-tight">{deduplicatedSkills.length}</p>
                 </div>
               </div>
             </div>
@@ -339,8 +375,8 @@ const TeamMemberProfile = () => {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-50 text-sm font-bold text-slate-800">
-                    {memberSkills.length > 0 ? (
-                      memberSkills.map((s) => {
+                    {deduplicatedSkills.length > 0 ? (
+                      deduplicatedSkills.map((s) => {
                         const prof = s.proficiencyLevel || 3.0;
                         const levelStr = prof >= 4.0 ? 'Expert' : prof >= 3.0 ? 'Advanced' : 'Intermediate';
                         const colorStr = prof >= 4.0 
@@ -353,8 +389,8 @@ const TeamMemberProfile = () => {
                         return (
                           <SkillMatrixRow 
                             key={s.id || s.skill?.name || Math.random()}
-                            name={s.skill?.name || 'Skill'} 
-                            category={s.skill?.category?.name || 'Engineering'} 
+                            name={s.skill?.name || s.name || 'Skill'} 
+                            category={s.skill?.category?.name || s.category || 'Core Competency'} 
                             level={levelStr} 
                             levelColor={colorStr} 
                             score={numScore} 
