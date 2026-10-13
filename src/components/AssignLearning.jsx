@@ -128,10 +128,21 @@ const AssignLearning = () => {
       let maxSeverity = 'NONE';
 
       activeGaps.forEach(gap => {
-        const gapLower = gap.skillName.toLowerCase();
-        const isMatch = progSkills.some(s => s.includes(gapLower) || gapLower.includes(s)) ||
-                        titleLower.includes(gapLower) ||
-                        descLower.includes(gapLower);
+        const gapClean = gap.skillName.replace(/\s+/g, ' ').trim().toLowerCase();
+
+        // High-Precision Match: Direct Taught Skill OR Direct Course Title Focus
+        const directSkillMatch = progSkills.some(s => {
+          const sClean = s.replace(/\s+/g, ' ').trim();
+          return sClean === gapClean || sClean.includes(gapClean) || gapClean.includes(sClean);
+        });
+
+        const titleMatch = titleLower.includes(gapClean) || 
+          (gapClean.includes('react') && titleLower.includes('react')) ||
+          (gapClean.includes('figma') && titleLower.includes('figma')) ||
+          (gapClean.includes('canva') && titleLower.includes('canva')) ||
+          (gapClean.includes('problem solving') && titleLower.includes('problem solving'));
+
+        const isMatch = directSkillMatch || titleMatch;
 
         if (isMatch) {
           beneficiaries.add(gap.userName);
@@ -141,7 +152,7 @@ const AssignLearning = () => {
 
           if (score > bestScore) {
             bestScore = score;
-            matchedGap = gap;
+            matchedGap = { ...gap, skillName: gap.skillName.replace(/\s+/g, ' ').trim() };
             maxSeverity = gap.severity;
           }
         }
