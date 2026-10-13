@@ -293,7 +293,7 @@ const AssignLearning = () => {
           
           {/* Header Controls */}
           <div className="flex items-center gap-4">
-            <div className="relative w-72">
+            <div className="relative w-64 md:w-72">
               <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-slate-400">
                 <Search size={18} />
               </span>
@@ -302,16 +302,25 @@ const AssignLearning = () => {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search training program..." 
-                className="w-full bg-white border border-slate-200/80 pl-10 pr-4 py-2.5 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-slate-400"
+                className="w-full bg-white text-slate-900 border border-slate-200/80 pl-10 pr-9 py-2.5 rounded-xl text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-slate-400"
               />
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={() => setSearchQuery('')}
+                  className="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-slate-600 cursor-pointer"
+                >
+                  <X size={15} />
+                </button>
+              )}
             </div>
 
-            <div className="flex items-center gap-3 pl-4 border-l border-slate-200">
+            <div className="flex items-center gap-3 pl-4 border-l border-slate-200 shrink-0">
               <div className="text-right">
-                <p className="text-sm font-bold text-slate-900">{leaderName}</p>
+                <p className="text-sm font-bold text-slate-900 leading-tight">{leaderName}</p>
                 <span className="text-[10px] font-black uppercase text-blue-600 tracking-wider">Team Leader</span>
               </div>
-              <div className="w-10 h-10 rounded-full border border-slate-200 bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-xs font-black text-white">
+              <div className="w-10 h-10 rounded-full border border-slate-200 bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-xs font-black text-white shrink-0">
                 TL
               </div>
             </div>
