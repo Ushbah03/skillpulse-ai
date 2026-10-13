@@ -118,6 +118,14 @@ const AssignLearning = () => {
     const scoredMap = new Map();
 
     availablePrograms.forEach(prog => {
+      // Pedagogical Logic: Do not recommend courses the member has already completed
+      const isAlreadyCompleted = enrollments.some(en => 
+        en.courseId === prog.id && 
+        selectedMemberIds.includes(en.userId) && 
+        (en.status === 'COMPLETED' || en.progressPct >= 100)
+      );
+      if (isAlreadyCompleted) return;
+
       const titleLower = (prog.title || '').toLowerCase();
       const descLower = (prog.description || '').toLowerCase();
       const progSkills = (prog.skillsTaught || []).map(st => (st.skill?.name || '').toLowerCase());
