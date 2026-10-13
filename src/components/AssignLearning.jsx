@@ -363,10 +363,10 @@ const AssignLearning = () => {
                   <span className="text-xs font-bold text-slate-400">{filteredPrograms.length} Programs</span>
                 </div>
 
-                <div className="overflow-hidden border border-slate-100 rounded-2xl">
+                <div className="overflow-x-auto overflow-y-auto max-h-[420px] border border-slate-100 rounded-2xl shadow-xs scrollbar-thin">
                   <table className="w-full text-left border-collapse">
-                    <thead>
-                      <tr className="border-b border-slate-100 text-[11px] font-black uppercase tracking-wider text-slate-400 bg-slate-50/50">
+                    <thead className="sticky top-0 bg-slate-50/95 backdrop-blur-xs z-10 border-b border-slate-200">
+                      <tr className="text-[11px] font-black uppercase tracking-wider text-slate-500">
                         <th className="py-4 px-6">Training Name</th>
                         <th className="py-4 px-6">Skill Covered</th>
                         <th className="py-4 px-6">Difficulty</th>
@@ -374,7 +374,7 @@ const AssignLearning = () => {
                         <th className="py-4 px-6 text-center">Action</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-50 text-sm font-bold text-slate-800">
+                    <tbody className="divide-y divide-slate-50 text-sm font-bold text-slate-800 bg-white">
                       {filteredPrograms.length > 0 ? (
                         filteredPrograms.map((program) => {
                           const skillTag = program.skillsTaught?.[0]?.skill?.name || 'Technical';
@@ -413,13 +413,16 @@ const AssignLearning = () => {
                   </table>
                 </div>
 
-                {/* Sub-Section: Assigned Training Tracker */}
-                <div className="pt-4 space-y-6">
-                  <h3 className="text-xl font-bold text-slate-900 tracking-tight">Assigned Training Tracker</h3>
-                  <div className="overflow-hidden border border-slate-100 rounded-2xl">
+                {/* Sub-Section: Assigned Training Tracker with Vertical Scroll */}
+                <div className="pt-4 space-y-4">
+                  <div className="flex justify-between items-center">
+                    <h3 className="text-xl font-bold text-slate-900 tracking-tight">Assigned Training Tracker</h3>
+                    <span className="text-xs font-bold text-slate-400">{enrollments.length} Assignments</span>
+                  </div>
+                  <div className="overflow-x-auto overflow-y-auto max-h-[360px] border border-slate-100 rounded-2xl shadow-xs scrollbar-thin">
                     <table className="w-full text-left border-collapse">
-                      <thead>
-                        <tr className="border-b border-slate-100 text-[11px] font-black uppercase tracking-wider text-slate-400 bg-slate-50/50">
+                      <thead className="sticky top-0 bg-slate-50/95 backdrop-blur-xs z-10 border-b border-slate-200">
+                        <tr className="text-[11px] font-black uppercase tracking-wider text-slate-500">
                           <th className="py-4 px-6">Training Name</th>
                           <th className="py-4 px-6">Assigned To</th>
                           <th className="py-4 px-6">Date</th>
@@ -427,7 +430,7 @@ const AssignLearning = () => {
                           <th className="py-4 px-6">Status</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-slate-50 text-sm font-bold text-slate-800">
+                      <tbody className="divide-y divide-slate-50 text-sm font-bold text-slate-800 bg-white">
                         {enrollments.length > 0 ? (
                           enrollments.map((en) => {
                             const isDone = en.status === 'COMPLETED' || en.progressPct >= 100;
@@ -437,13 +440,15 @@ const AssignLearning = () => {
                               : 'bg-blue-50 text-blue-600 border-blue-100/50';
                             const progressColor = isDone ? 'bg-emerald-500' : 'bg-blue-500';
                             const userName = en.user ? `${en.user.firstName} ${en.user.lastName}` : 'Team Member';
+                            const initials = en.user ? `${en.user.firstName?.[0] || 'T'}${en.user.lastName?.[0] || 'M'}` : 'TM';
 
                             return (
                               <TrackerRow 
                                 key={en.id}
                                 name={en.course?.title || 'Assigned Training'} 
                                 user={userName} 
-                                img={en.user?.avatarUrl || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=80"} 
+                                img={en.user?.avatarUrl}
+                                initials={initials}
                                 date={new Date(en.createdAt).toLocaleDateString()} 
                                 progress={Math.round(en.progressPct || 0)} 
                                 status={statusLabel} 
@@ -487,6 +492,7 @@ const AssignLearning = () => {
                         const gapCount = member.skillGaps?.length || 0;
                         const gapTag = gapCount > 0 ? `GAP: ${gapCount}` : 'NO GAPS';
                         const gapStyle = gapCount > 0 ? 'text-amber-600 bg-amber-50 border-amber-200' : 'text-emerald-600 bg-emerald-50 border-emerald-200';
+                        const initials = `${member.firstName?.[0] || 'T'}${member.lastName?.[0] || 'M'}`;
 
                         return (
                           <MemberCheckRow 
@@ -495,7 +501,8 @@ const AssignLearning = () => {
                             role={member.jobTitle || member.role || 'Member'} 
                             gap={gapTag} 
                             gapStyle={gapStyle}
-                            img={member.avatarUrl || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=80"}
+                            img={member.avatarUrl}
+                            initials={initials}
                             isSelected={selectedMemberIds.includes(member.id)}
                             onToggle={() => toggleMemberSelection(member.id)}
                           />
@@ -752,12 +759,18 @@ const TrainingRow = ({ name, domain, skill, skillColor, diff, diffColor, duratio
   </tr>
 );
 
-const TrackerRow = ({ name, user, img, date, progress, status, statusStyle, progressColor }) => (
+const TrackerRow = ({ name, user, img, initials, date, progress, status, statusStyle, progressColor }) => (
   <tr className="hover:bg-slate-50/50 transition-colors">
     <td className="py-4 px-6 text-slate-900 font-extrabold">{name}</td>
     <td className="py-4 px-6">
       <div className="flex items-center gap-2.5">
-        <img src={img} alt={user} className="w-6 h-6 rounded-full object-cover" />
+        {img ? (
+          <img src={img} alt={user} className="w-6 h-6 rounded-full object-cover" />
+        ) : (
+          <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-black text-[9px] flex items-center justify-center shrink-0 shadow-xs">
+            {initials || user.slice(0, 2).toUpperCase()}
+          </div>
+        )}
         <span className="text-slate-700 text-xs font-bold">{user}</span>
       </div>
     </td>
@@ -778,7 +791,7 @@ const TrackerRow = ({ name, user, img, date, progress, status, statusStyle, prog
   </tr>
 );
 
-const MemberCheckRow = ({ name, role, gap, gapStyle, img, isSelected, onToggle }) => (
+const MemberCheckRow = ({ name, role, gap, gapStyle, img, initials, isSelected, onToggle }) => (
   <div 
     onClick={onToggle}
     className={`flex items-center justify-between p-3.5 rounded-2xl border transition-all cursor-pointer ${
@@ -791,7 +804,13 @@ const MemberCheckRow = ({ name, role, gap, gapStyle, img, isSelected, onToggle }
       }`}>
         {isSelected && <Check size={12} strokeWidth={3} />}
       </div>
-      <img src={img} alt={name} className="w-9 h-9 rounded-full object-cover" />
+      {img ? (
+        <img src={img} alt={name} className="w-9 h-9 rounded-full object-cover" />
+      ) : (
+        <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-black text-xs flex items-center justify-center shrink-0 shadow-xs">
+          {initials || name.slice(0, 2).toUpperCase()}
+        </div>
+      )}
       <div>
         <h4 className="text-sm font-extrabold text-slate-900 leading-tight">{name}</h4>
         <p className="text-xs text-slate-400 font-medium">{role}</p>
