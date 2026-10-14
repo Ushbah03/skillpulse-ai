@@ -7,32 +7,9 @@ import {
 } from 'recharts';
 import { 
   TrendingUp, AlertTriangle, ArrowUpRight, Download, Search, 
-  SlidersHorizontal, Calendar, X, CheckCircle2, Loader2, Sparkles, BookOpen
+  SlidersHorizontal, Calendar, X, CheckCircle2, Loader2, Sparkles, BookOpen, Printer
 } from 'lucide-react';
 import { teamLeaderAPI } from '../services/api';
-
-const defaultTrendData = [
-  { month: 'Jan', current: 62, benchmark: 70 },
-  { month: 'Feb', current: 68, benchmark: 71 },
-  { month: 'Mar', current: 75, benchmark: 72 },
-  { month: 'Apr', current: 74, benchmark: 73 },
-  { month: 'May', current: 80, benchmark: 75 },
-  { month: 'Jun', current: 88, benchmark: 76 },
-];
-
-const defaultDistribution = [
-  { range: '0-2', count: 0 },
-  { range: '3-4', count: 0 },
-  { range: '5-6', count: 1 },
-  { range: '7-8', count: 5 },
-  { range: '9-10', count: 8 },
-];
-
-const defaultBreakdown = [
-  { name: 'High', value: 9, color: '#6366f1' },
-  { name: 'Medium', value: 4, color: '#3b82f6' },
-  { name: 'Low', value: 1, color: '#ef4444' }
-];
 
 export default function PerformanceMonitor() {
   const [activeTab, setActiveTab] = useState('performance');
@@ -42,50 +19,74 @@ export default function PerformanceMonitor() {
   const [isGeneratingReport, setIsGeneratingReport] = useState(false);
   const [activeModal, setActiveModal] = useState(null); // 'plan', 'report', 'gaps'
   const [selectedMemberForPlan, setSelectedMemberForPlan] = useState(null);
+  const [selectedCourseIdForPlan, setSelectedCourseIdForPlan] = useState('');
+  const [planTargetDate, setPlanTargetDate] = useState(() => {
+    const d = new Date();
+    d.setDate(d.getDate() + 30);
+    return d.toISOString().split('T')[0];
+  });
   const [assigningPlan, setAssigningPlan] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
 
-  // Live Performance State
+  // Live Performance State from DB
   const [members, setMembers] = useState([]);
   const [summary, setSummary] = useState({
-    overallTeamScorePct: '80%',
-    avgMemberPerf: '8.4',
+    overallTeamScorePct: '0%',
+    overallTier: 'Evaluating',
+    avgMemberPerf: '0.0',
     highPerformersCount: 0,
-    riskAlertsCount: 0
+    riskAlertsCount: 0,
+    performanceDelta: '+0.0%'
   });
-  const [distributionData, setDistributionData] = useState(defaultDistribution);
-  const [breakdownData, setBreakdownData] = useState(defaultBreakdown);
-  const [trendData, setTrendData] = useState(defaultTrendData);
+  const [distributionData, setDistributionData] = useState([]);
+  const [breakdownData, setBreakdownData] = useState([]);
+  const [trendData, setTrendData] = useState([]);
   const [atRiskMembers, setAtRiskMembers] = useState([]);
+  const [aiIntelligence, setAiIntelligence] = useState({
+    velocityIncrease: '0%',
+    confidenceScore: '0%',
+    velocityReason: '',
+    prescriptiveRecommendation: ''
+  });
+  const [availableCourses, setAvailableCourses] = useState([]);
+  const [teamSkillGaps, setTeamSkillGaps] = useState([]);
 
   // Fetch live performance data on mount
-  useEffect(() => {
-    const loadPerformanceData = async () => {
-      try {
-        setLoading(true);
-        const res = await teamLeaderAPI.getPerformance();
-        if (res?.success && res.data) {
-          const d = res.data;
-          setSummary(d.summary || summary);
-          setMembers(d.members || []);
-          if (d.distribution) setDistributionData(d.distribution);
-          if (d.breakdown) setBreakdownData(d.breakdown);
-          if (d.trendData) setTrendData(d.trendData);
-          if (d.atRiskMembers) setAtRiskMembers(d.atRiskMembers);
+  const loadPerformanceData = async () => {
+    try {
+      setLoading(true);
+      const res = await teamLeaderAPI.getPerformance();
+      if (res?.success && res.data) {
+        const d = res.data;
+        if (d.summary) setSummary(d.summary);
+        if (d.members) setMembers(d.members);
+        if (d.distribution) setDistributionData(d.distribution);
+        if (d.breakdown) setBreakdownData(d.breakdown);
+        if (d.trendData) setTrendData(d.trendData);
+        if (d.atRiskMembers) setAtRiskMembers(d.atRiskMembers);
+        if (d.aiIntelligence) setAiIntelligence(d.aiIntelligence);
+        if (d.availableCourses) {
+          setAvailableCourses(d.availableCourses);
+          if (d.availableCourses.length > 0 && !selectedCourseIdForPlan) {
+            setSelectedCourseIdForPlan(d.availableCourses[0].id);
+          }
         }
-      } catch (err) {
-        console.warn('Failed to fetch team performance data:', err);
-      } finally {
-        setLoading(false);
+        if (d.teamSkillGaps) setTeamSkillGaps(d.teamSkillGaps);
       }
-    };
+    } catch (err) {
+      console.warn('Failed to fetch team performance data:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     loadPerformanceData();
   }, []);
 
   const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
   const leaderName = storedUser.firstName ? `${storedUser.firstName} ${storedUser.lastName}` : 'Team Lead';
-  const leaderAvatar = storedUser.avatarUrl || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=80&h=80&q=80";
+  const leaderInitials = `${storedUser.firstName?.[0] || 'T'}${storedUser.lastName?.[0] || 'L'}`.toUpperCase();
 
   const [metricFilter, setMetricFilter] = useState('All Metrics');
 
@@ -104,31 +105,39 @@ export default function PerformanceMonitor() {
 
   // Filter trend chart data dynamically based on selected timeframe
   const filteredTrendData = React.useMemo(() => {
+    if (trendData.length === 0) return [];
     if (timeRange === 'Last 30 Days') {
-      return trendData.slice(-3); // Last 3 months window
+      return trendData.slice(-2); // Last 2 periods
     }
     if (timeRange === 'Last Quarter (Q2)') {
-      return trendData.filter(d => ['Apr', 'May', 'Jun'].includes(d.month));
+      return trendData.slice(-3); // Last 3 periods
     }
     return trendData; // Year to Date (full period)
   }, [timeRange, trendData]);
 
   const handleOpenPlan = (member) => {
     setSelectedMemberForPlan(member);
+    const defaultCourse = member?.matchedCourse?.id || (availableCourses.length > 0 ? availableCourses[0].id : '');
+    setSelectedCourseIdForPlan(defaultCourse);
     setActiveModal('plan');
   };
 
   const handleAssignPlanSubmit = async () => {
-    if (!selectedMemberForPlan) return;
+    if (!selectedMemberForPlan || !selectedCourseIdForPlan) return;
     try {
       setAssigningPlan(true);
       await teamLeaderAPI.assignTraining({
         userId: selectedMemberForPlan.id,
-        courseId: 'default-perf-course'
+        courseId: selectedCourseIdForPlan,
+        dueDate: planTargetDate,
+        priority: 'High',
+        note: `Performance Improvement Plan: Focus on closing active proficiency gaps.`
       });
-      setToastMessage(`Performance improvement training assigned to ${selectedMemberForPlan.name}!`);
+      const courseObj = availableCourses.find(c => c.id === selectedCourseIdForPlan);
+      setToastMessage(`Training "${courseObj?.title || 'Program'}" assigned to ${selectedMemberForPlan.name}!`);
       setTimeout(() => setToastMessage(''), 4000);
       setActiveModal(null);
+      loadPerformanceData();
     } catch (err) {
       console.warn('Assign training error:', err);
       setActiveModal(null);
@@ -142,7 +151,7 @@ export default function PerformanceMonitor() {
     setTimeout(() => {
       setIsGeneratingReport(false);
       setActiveModal('report');
-    }, 1200);
+    }, 800);
   };
 
   return (
@@ -208,8 +217,12 @@ export default function PerformanceMonitor() {
                   <p className="text-base font-black text-slate-900 leading-none">{leaderName}</p>
                   <p className="text-sm font-bold text-slate-400 mt-1.5">Team Lead</p>
                </div>
-               <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-slate-200 shadow-sm">
-                  <img src={leaderAvatar} alt={leaderName} className="w-full h-full object-cover" />
+               <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-slate-200 shadow-sm flex items-center justify-center bg-gradient-to-tr from-indigo-600 to-blue-600 text-white font-black text-sm">
+                  {storedUser.avatarUrl && !storedUser.avatarUrl.includes('unsplash.com') ? (
+                    <img src={storedUser.avatarUrl} alt={leaderName} className="w-full h-full object-cover" />
+                  ) : (
+                    leaderInitials
+                  )}
                </div>
             </div>
           </div>
@@ -220,7 +233,7 @@ export default function PerformanceMonitor() {
           <div className="bg-white p-7 rounded-[2rem] border border-slate-100 shadow-sm flex justify-between items-center min-h-[160px] relative overflow-hidden">
             <div>
               <p className="text-xs font-black text-slate-400 uppercase tracking-widest">Overall Team Score</p>
-              <h3 className="text-3xl font-black text-slate-900 mt-3 tracking-tight">High Perform</h3>
+              <h3 className="text-2xl font-black text-slate-900 mt-3 tracking-tight">{summary.overallTier || 'Capability Score'}</h3>
             </div>
             <div className="w-16 h-16 rounded-full border-[5px] border-indigo-600 flex items-center justify-center text-base font-black text-indigo-600 shadow-inner">
               {summary.overallTeamScorePct}
@@ -236,7 +249,7 @@ export default function PerformanceMonitor() {
               </div>
               <div className="flex items-center gap-1 text-emerald-600 text-sm font-bold mt-2">
                 <TrendingUp className="w-4 h-4" />
-                <span>↑ 5.2%</span>
+                <span>{summary.performanceDelta || '+2.5%'}</span>
               </div>
             </div>
           </div>
@@ -354,7 +367,13 @@ export default function PerformanceMonitor() {
                       filteredMembers.map((member) => (
                         <tr key={member.id} className="hover:bg-slate-50/40 transition-all">
                           <td className="py-5 px-8 flex items-center gap-4">
-                            <img src={member.avatar} alt={member.name} className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm" />
+                            {member.avatar && !member.avatar.includes('unsplash.com') ? (
+                              <img src={member.avatar} alt={member.name} className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm" />
+                            ) : (
+                              <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-black text-sm flex items-center justify-center shrink-0 shadow-sm border-2 border-white">
+                                {member.initials || member.name.slice(0, 2).toUpperCase()}
+                              </div>
+                            )}
                             <div>
                               <p className="font-black text-slate-900 text-base leading-tight">{member.name}</p>
                               <p className="text-xs font-bold text-slate-400 mt-1">{member.role}</p>
@@ -379,7 +398,7 @@ export default function PerformanceMonitor() {
                           <td className="py-5 px-8 text-right">
                             <button 
                               onClick={() => handleOpenPlan(member)} 
-                              className="text-xs font-black text-blue-600 hover:underline uppercase tracking-wider"
+                              className="text-xs font-black text-blue-600 hover:underline uppercase tracking-wider cursor-pointer"
                             >
                               Manage Plan
                             </button>
@@ -466,7 +485,13 @@ export default function PerformanceMonitor() {
                     <div key={atRisk.id} className="border border-slate-100 rounded-2xl p-5 bg-slate-50/50">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                          <img src={atRisk.avatar} alt={atRisk.name} className="w-10 h-10 rounded-full object-cover border-2 border-white shadow-sm" />
+                          {atRisk.avatar && !atRisk.avatar.includes('unsplash.com') ? (
+                            <img src={atRisk.avatar} alt={atRisk.name} className="w-10 h-10 rounded-full object-cover border-2 border-white shadow-sm" />
+                          ) : (
+                            <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-rose-600 to-amber-600 text-white font-black text-xs flex items-center justify-center shrink-0 shadow-sm border-2 border-white">
+                              {atRisk.initials || atRisk.name.slice(0, 2).toUpperCase()}
+                            </div>
+                          )}
                           <div>
                             <h4 className="text-base font-black text-slate-900 leading-tight">{atRisk.name}</h4>
                             <p className="text-xs text-rose-600 font-extrabold mt-0.5">Score: {atRisk.score}</p>
@@ -497,21 +522,26 @@ export default function PerformanceMonitor() {
 
             {/* AI Performance Intelligence Card */}
             <div className="bg-white rounded-[2.5rem] border border-slate-100 p-8 shadow-sm">
-              <h3 className="text-lg font-black text-slate-900 tracking-tight mb-5">AI Performance Intelligence</h3>
+              <div className="flex items-center gap-2 mb-5 text-indigo-600">
+                <Sparkles size={20} />
+                <h3 className="text-lg font-black text-slate-900 tracking-tight">AI Performance Intelligence</h3>
+              </div>
               
               <div className="space-y-5">
                 <div className="border-l-4 border-indigo-500 pl-4 py-1">
                   <h4 className="text-xs font-black text-slate-400 uppercase tracking-widest">Velocity Forecast</h4>
                   <p className="text-sm text-slate-600 font-semibold mt-1.5 leading-relaxed">
-                    Predicting a <span className="text-emerald-600 font-black">12% increase</span> in sprint velocity based on recent skill acquisitions.
+                    {aiIntelligence.velocityReason || `Predicting velocity expansion based on verified skill acquisition and training progression.`}
                   </p>
-                  <p className="text-[11px] text-indigo-500 font-bold mt-2">Confidence Score: 94%</p>
+                  <p className="text-[11px] text-indigo-500 font-bold mt-2">
+                    Confidence Score: {aiIntelligence.confidenceScore || '88%'}
+                  </p>
                 </div>
 
                 <div className="border-l-4 border-slate-300 pl-4 py-1">
-                  <h4 className="text-xs font-black text-slate-400 uppercase tracking-widest">Training Recommendation</h4>
+                  <h4 className="text-xs font-black text-slate-400 uppercase tracking-widest">Prescriptive Intervention</h4>
                   <p className="text-sm text-slate-600 font-semibold mt-1.5 leading-relaxed">
-                    Assign <span className="text-slate-900 font-black">"Modern Architecture Patterns"</span> to Marcus Chen to stabilize lead performance.
+                    {aiIntelligence.prescriptiveRecommendation || `All team capability baselines currently stabilized.`}
                   </p>
                 </div>
               </div>
@@ -523,22 +553,23 @@ export default function PerformanceMonitor() {
               <div className="space-y-3.5">
                 <button 
                   onClick={() => setActiveModal('gaps')}
-                  className="w-full bg-[#172033] text-slate-200 text-xs font-black py-4 px-5 rounded-xl hover:bg-[#202b44] transition-colors text-left flex items-center justify-between uppercase tracking-wider"
+                  className="w-full bg-[#172033] text-slate-200 text-xs font-black py-4 px-5 rounded-xl hover:bg-[#202b44] transition-colors text-left flex items-center justify-between uppercase tracking-wider cursor-pointer"
                 >
-                  <span>Analyze Skill Gaps</span>
+                  <span>Analyze Skill Gaps ({teamSkillGaps.length})</span>
                   <ArrowUpRight className="w-4 h-4 text-slate-400" />
                 </button>
                 <button 
                   onClick={() => handleOpenPlan(atRiskMembers[0] || members[0])}
-                  className="w-full bg-[#172033] text-slate-200 text-xs font-black py-4 px-5 rounded-xl hover:bg-[#202b44] transition-colors text-left flex items-center justify-between uppercase tracking-wider"
+                  disabled={members.length === 0}
+                  className="w-full bg-[#172033] disabled:opacity-50 text-slate-200 text-xs font-black py-4 px-5 rounded-xl hover:bg-[#202b44] transition-colors text-left flex items-center justify-between uppercase tracking-wider cursor-pointer"
                 >
-                  <span>Assign Training (Risks)</span>
+                  <span>Assign Training ({atRiskMembers.length} Risks)</span>
                   <ArrowUpRight className="w-4 h-4 text-slate-400" />
                 </button>
                 <button 
                   onClick={handleGenerateReport}
-                  disabled={isGeneratingReport}
-                  className="w-full bg-blue-600 text-white text-xs font-black py-4 px-5 rounded-xl hover:bg-blue-700 transition-all text-center shadow-lg shadow-blue-600/20 uppercase tracking-wider mt-2 flex items-center justify-center gap-2"
+                  disabled={isGeneratingReport || members.length === 0}
+                  className="w-full bg-blue-600 text-white text-xs font-black py-4 px-5 rounded-xl hover:bg-blue-700 transition-all text-center shadow-lg shadow-blue-600/20 uppercase tracking-wider mt-2 flex items-center justify-center gap-2 cursor-pointer disabled:bg-slate-700"
                 >
                   {isGeneratingReport ? <Loader2 size={16} className="animate-spin" /> : null}
                   <span>{isGeneratingReport ? 'Compiling Report...' : 'Generate Performance Report'}</span>
@@ -571,7 +602,9 @@ export default function PerformanceMonitor() {
               {selectedMemberForPlan && (
                 <div className="space-y-4">
                   <div className="flex items-center gap-3 bg-slate-50 p-3.5 rounded-2xl">
-                    <img src={selectedMemberForPlan.avatar} alt={selectedMemberForPlan.name} className="w-10 h-10 rounded-full object-cover" />
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-indigo-500 to-blue-500 text-white flex items-center justify-center font-bold text-sm shadow-sm flex-shrink-0">
+                      {selectedMemberForPlan.name?.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() || 'U'}
+                    </div>
                     <div>
                       <p className="font-bold text-slate-900 text-sm">{selectedMemberForPlan.name}</p>
                       <p className="text-xs text-slate-500">{selectedMemberForPlan.role} • Current Rating: <span className="font-bold text-rose-600">{selectedMemberForPlan.rating}</span></p>
@@ -580,16 +613,31 @@ export default function PerformanceMonitor() {
 
                   <div>
                     <label className="text-xs font-black text-slate-400 uppercase tracking-widest block mb-2">Assign Targeted Course</label>
-                    <select className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs font-bold text-slate-700">
-                      <option>Advanced CI/CD Pipeline Automation & Testing</option>
-                      <option>React State Management & Performance Optimization</option>
-                      <option>Design Systems Architecture</option>
+                    <select 
+                      value={selectedCourseIdForPlan} 
+                      onChange={(e) => setSelectedCourseIdForPlan(e.target.value)}
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                      {availableCourses.length === 0 ? (
+                        <option value="">No courses available</option>
+                      ) : (
+                        availableCourses.map((c) => (
+                          <option key={c.id} value={c.id}>
+                            {c.title} ({c.level || 'Intermediate'})
+                          </option>
+                        ))
+                      )}
                     </select>
                   </div>
 
                   <div>
                     <label className="text-xs font-black text-slate-400 uppercase tracking-widest block mb-2">Milestone Target Date</label>
-                    <input type="date" defaultValue="2026-09-15" className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs font-bold text-slate-700" />
+                    <input 
+                      type="date" 
+                      value={planTargetDate} 
+                      onChange={(e) => setPlanTargetDate(e.target.value)}
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                    />
                   </div>
                 </div>
               )}
@@ -600,8 +648,8 @@ export default function PerformanceMonitor() {
                 </button>
                 <button 
                   onClick={handleAssignPlanSubmit} 
-                  disabled={assigningPlan}
-                  className="w-1/2 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-md cursor-pointer flex items-center justify-center gap-2"
+                  disabled={assigningPlan || !selectedCourseIdForPlan}
+                  className="w-1/2 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-md cursor-pointer flex items-center justify-center gap-2 disabled:bg-slate-300"
                 >
                   {assigningPlan ? <Loader2 size={14} className="animate-spin" /> : null}
                   <span>{assigningPlan ? 'Assigning...' : 'Assign Plan'}</span>
@@ -619,15 +667,45 @@ export default function PerformanceMonitor() {
               <div>
                 <h3 className="text-xl font-black text-slate-900">Performance Report Ready</h3>
                 <p className="text-xs text-slate-500 font-semibold mt-2">
-                  The performance summary report for <span className="text-slate-900 font-bold">{timeRange}</span> has been compiled and exported.
+                  The capability audit for <span className="text-slate-900 font-bold">{timeRange}</span> has been compiled with live database performance indices.
                 </p>
               </div>
-              <button 
-                onClick={() => setActiveModal(null)} 
-                className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-md"
-              >
-                Download PDF Summary
-              </button>
+
+              <div className="bg-slate-50 p-4 rounded-2xl text-left space-y-2 border border-slate-100 text-xs">
+                <div className="flex justify-between py-1 border-b border-slate-200/60">
+                  <span className="text-slate-500 font-medium">Reporting Range:</span>
+                  <span className="font-bold text-slate-800">{timeRange}</span>
+                </div>
+                <div className="flex justify-between py-1 border-b border-slate-200/60">
+                  <span className="text-slate-500 font-medium">Overall Team Score:</span>
+                  <span className="font-bold text-indigo-600">{summary.overallTeamScorePct}% ({summary.overallTier})</span>
+                </div>
+                <div className="flex justify-between py-1 border-b border-slate-200/60">
+                  <span className="text-slate-500 font-medium">Monitored Personnel:</span>
+                  <span className="font-bold text-slate-800">{members.length} Members</span>
+                </div>
+                <div className="flex justify-between py-1">
+                  <span className="text-slate-500 font-medium">Identified Risk Alerts:</span>
+                  <span className={`font-bold ${atRiskMembers.length > 0 ? 'text-rose-600' : 'text-emerald-600'}`}>
+                    {atRiskMembers.length} Requiring Action
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex gap-3">
+                <button 
+                  onClick={() => setActiveModal(null)} 
+                  className="w-1/2 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl cursor-pointer"
+                >
+                  Close
+                </button>
+                <button 
+                  onClick={() => { window.print(); }} 
+                  className="w-1/2 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-md cursor-pointer"
+                >
+                  Print / Save PDF
+                </button>
+              </div>
             </div>
           )}
 
@@ -644,18 +722,32 @@ export default function PerformanceMonitor() {
                 </button>
               </div>
 
-              <div className="space-y-3">
-                <div className="p-3.5 bg-slate-50 rounded-2xl border border-slate-100">
-                  <p className="text-xs font-black text-slate-900">DevOps Automation</p>
-                  <p className="text-xs text-slate-500 font-medium mt-1">20% gap detected vs standard departmental benchmark.</p>
+              {teamSkillGaps.length === 0 ? (
+                <div className="p-5 bg-emerald-50 rounded-2xl border border-emerald-100 text-center">
+                  <p className="text-xs font-bold text-emerald-800">Zero Critical Skill Gaps Detected</p>
+                  <p className="text-[11px] text-emerald-600 mt-1">All monitored team competencies currently fulfill benchmark requirements.</p>
                 </div>
-                <div className="p-3.5 bg-slate-50 rounded-2xl border border-slate-100">
-                  <p className="text-xs font-black text-slate-900">TypeScript Mastery</p>
-                  <p className="text-xs text-slate-500 font-medium mt-1">10% gap detected across junior frontend developers.</p>
+              ) : (
+                <div className="space-y-3 max-h-72 overflow-y-auto pr-1">
+                  {teamSkillGaps.map((g, idx) => (
+                    <div key={idx} className="p-3.5 bg-slate-50 rounded-2xl border border-slate-100 flex items-start justify-between gap-3">
+                      <div>
+                        <p className="text-xs font-black text-slate-900">{g.skillName || g.name}</p>
+                        <p className="text-xs text-slate-500 font-medium mt-1">
+                          {g.description || `${g.deficit || 15}% gap identified against organizational benchmark.`}
+                        </p>
+                      </div>
+                      <span className={`px-2 py-0.5 text-[10px] font-black rounded-md uppercase tracking-wider whitespace-nowrap ${
+                        g.severity === 'Critical' ? 'bg-rose-100 text-rose-700' : 'bg-amber-100 text-amber-700'
+                      }`}>
+                        {g.severity || 'Moderate'}
+                      </span>
+                    </div>
+                  ))}
                 </div>
-              </div>
+              )}
 
-              <button onClick={() => setActiveModal(null)} className="w-full py-3 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl">
+              <button onClick={() => setActiveModal(null)} className="w-full py-3 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl cursor-pointer">
                 Close
               </button>
             </div>
