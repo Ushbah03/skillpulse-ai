@@ -137,6 +137,15 @@ const AssignLearning = () => {
       let maxSeverity = 'NONE';
 
       activeGaps.forEach(gap => {
+        // Pedagogical & System Logic: If this user is ALREADY enrolled or taking this program,
+        // do not recommend this program to them again!
+        const isUserAlreadyAssigned = enrollments.some(en => 
+          en.courseId === prog.id && 
+          en.userId === gap.userId &&
+          en.status !== 'CANCELLED' && en.status !== 'DROPPED'
+        );
+        if (isUserAlreadyAssigned) return;
+
         const gapClean = gap.skillName.replace(/\s+/g, ' ').trim().toLowerCase();
 
         // High-Precision Match: Direct Taught Skill OR Direct Course Title Focus
@@ -167,7 +176,7 @@ const AssignLearning = () => {
         }
       });
 
-      if (bestScore >= 70 && matchedGap) {
+      if (bestScore >= 70 && matchedGap && beneficiaries.size > 0) {
         const impactTier = (maxSeverity === 'CRITICAL' || maxSeverity === 'HIGH') ? 'HIGH IMPACT' : 'MED IMPACT';
         const beneficiariesArr = Array.from(beneficiaries);
         const namesStr = beneficiariesArr.length === 1 
@@ -192,7 +201,7 @@ const AssignLearning = () => {
     const results = Array.from(scoredMap.values());
     results.sort((a, b) => b.impactScore - a.impactScore);
     return results;
-  }, [availablePrograms, members, selectedMemberIds]);
+  }, [availablePrograms, members, selectedMemberIds, enrollments]);
 
   const openAssignModal = (program = null) => {
     setModalError('');
@@ -222,10 +231,20 @@ const AssignLearning = () => {
       return;
     }
 
+    // Filter out members who already have this course assigned
+    const unassignedMemberIds = selectedMemberIds.filter(uid => 
+      !enrollments.some(en => en.courseId === courseId && en.userId === uid && en.status !== 'CANCELLED' && en.status !== 'DROPPED')
+    );
+
+    if (unassignedMemberIds.length === 0) {
+      setModalError('All selected team member(s) already have this training program assigned.');
+      return;
+    }
+
     try {
       setSubmitting(true);
       const payload = {
-        userIds: selectedMemberIds,
+        userIds: unassignedMemberIds,
         courseId,
         dueDate,
         priority,
@@ -408,13 +427,22 @@ const AssignLearning = () => {
                           const recMatch = dynamicRecommendations.find(r => r.program.id === program.id);
 
                           const enrolledUsersForCourse = enrollments
-                            .filter(en => en.courseId === program.id)
+                            .filter(en => en.courseId === program.id && en.status !== 'CANCELLED' && en.status !== 'DROPPED')
                             .map(en => {
                               if (en.user) return `${en.user.firstName} ${en.user.lastName}`.trim();
                               const found = members.find(m => m.id === en.userId);
                               return found ? `${found.firstName} ${found.lastName}`.trim() : 'Team Member';
                             });
                           const assignedUsers = Array.from(new Set(enrolledUsersForCourse));
+
+                          // Check if all selected members already have this training assigned
+                          const isAssignedToSelected = selectedMemberIds.length > 0 &&
+                            selectedMemberIds.every(uid => enrollments.some(en => 
+                              en.courseId === program.id && 
+                              en.userId === uid && 
+                              en.status !== 'CANCELLED' && 
+                              en.status !== 'DROPPED'
+                            ));
 
                           return (
                             <TrainingRow 
@@ -428,6 +456,7 @@ const AssignLearning = () => {
                               duration={`${program.durationHours || 6}h`} 
                               aiBadge={recMatch ? recMatch.impactTier : null}
                               assignedUsers={assignedUsers}
+                              isAssignedToSelected={isAssignedToSelected}
                               onAssign={() => openAssignModal(program)}
                             />
                           );
@@ -562,37 +591,27 @@ const AssignLearning = () => {
 
                     <div className="space-y-4">
                     {dynamicRecommendations.length > 0 ? (
-                      dynamicRecommendations.slice(0, 3).map((rec) => {
-                        const recAssignedEnrollments = enrollments.filter(en => en.courseId === rec.program.id);
-                        const recAssignedUsers = Array.from(new Set(recAssignedEnrollments.map(en => {
-                          if (en.user) return `${en.user.firstName} ${en.user.lastName}`.trim();
-                          const foundMember = members.find(m => m.id === en.userId);
-                          return foundMember ? `${foundMember.firstName} ${foundMember.lastName}`.trim() : 'Team Member';
-                        })));
-
-                        return (
-                          <RecommendationCard 
-                            key={rec.program.id}
-                            title={rec.program.title} 
-                            level={rec.impactTier} 
-                            levelStyle={rec.impactTier === "HIGH IMPACT" 
-                              ? "text-purple-700 bg-purple-50 border border-purple-200" 
-                              : "text-amber-700 bg-amber-50 border border-amber-200"
-                            } 
-                            text={rec.text} 
-                            assignedUsers={recAssignedUsers}
-                            onAction={() => openAssignModal(rec.program)}
-                          />
-                        );
-                      })
+                      dynamicRecommendations.slice(0, 3).map((rec) => (
+                        <RecommendationCard 
+                          key={rec.program.id}
+                          title={rec.program.title} 
+                          level={rec.impactTier} 
+                          levelStyle={rec.impactTier === "HIGH IMPACT" 
+                            ? "text-purple-700 bg-purple-50 border border-purple-200" 
+                            : "text-amber-700 bg-amber-50 border border-amber-200"
+                          } 
+                          text={rec.text} 
+                          onAction={() => openAssignModal(rec.program)}
+                        />
+                      ))
                     ) : (
                       <div className="p-4 bg-emerald-50/60 rounded-2xl border border-emerald-100 text-center space-y-2">
                         <div className="flex items-center justify-center gap-1.5 text-emerald-700 font-bold text-xs">
                           <Check size={16} />
-                          <span>No Active Skill Gaps</span>
+                          <span>All Identified Gaps Covered</span>
                         </div>
                         <p className="text-xs text-slate-500 font-medium leading-relaxed">
-                          Selected team members currently meet verified proficiency targets. Browse the training catalog on the left for optional development courses.
+                          Selected team members currently have active training programs assigned for their skill gaps or meet proficiency targets. Browse the training catalog on the left for optional development courses.
                         </p>
                       </div>
                     )}
@@ -687,14 +706,24 @@ const AssignLearning = () => {
                 {(() => {
                   const currentCourseId = activeProgramToAssign?.id || (availablePrograms.length > 0 ? availablePrograms[0].id : null);
                   const alreadyAssigned = members
-                    .filter(m => selectedMemberIds.includes(m.id) && enrollments.some(en => en.courseId === currentCourseId && en.userId === m.id))
+                    .filter(m => selectedMemberIds.includes(m.id) && enrollments.some(en => en.courseId === currentCourseId && en.userId === m.id && en.status !== 'CANCELLED' && en.status !== 'DROPPED'))
                     .map(m => `${m.firstName} ${m.lastName}`);
 
                   if (alreadyAssigned.length > 0) {
+                    const allAreAssigned = alreadyAssigned.length === selectedMemberIds.length;
                     return (
-                      <div className="mt-2 bg-emerald-50 border border-emerald-200 text-emerald-800 px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-2">
-                        <Check size={15} className="text-emerald-600 shrink-0 stroke-[3]" />
-                        <span>Already assigned to: <strong>{alreadyAssigned.join(', ')}</strong>. Re-assigning will renew their learning enrollment.</span>
+                      <div className={`mt-2 border px-3.5 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 ${
+                        allAreAssigned 
+                          ? 'bg-rose-50 border-rose-200 text-rose-800' 
+                          : 'bg-amber-50 border-amber-200 text-amber-800'
+                      }`}>
+                        <AlertCircle size={15} className={`shrink-0 ${allAreAssigned ? 'text-rose-600' : 'text-amber-600'}`} />
+                        <span>
+                          {allAreAssigned 
+                            ? `Already actively assigned to ${alreadyAssigned.join(', ')}. Duplicate assignment is not allowed.`
+                            : `Already assigned to ${alreadyAssigned.join(', ')}. Training will only be assigned to members without an active enrollment.`
+                          }
+                        </span>
                       </div>
                     );
                   }
@@ -745,13 +774,27 @@ const AssignLearning = () => {
                 >
                   Cancel
                 </button>
-                <button 
-                  type="submit" 
-                  disabled={submitting}
-                  className="w-1/2 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-300 text-white font-bold text-sm rounded-xl transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
-                >
-                  {submitting ? <Loader2 size={16} className="animate-spin" /> : 'Confirm & Send'}
-                </button>
+                {(() => {
+                  const currentCourseId = activeProgramToAssign?.id || (availablePrograms.length > 0 ? availablePrograms[0].id : null);
+                  const isAllAssigned = selectedMemberIds.length > 0 && selectedMemberIds.every(uid => 
+                    enrollments.some(en => en.courseId === currentCourseId && en.userId === uid && en.status !== 'CANCELLED' && en.status !== 'DROPPED')
+                  );
+                  return (
+                    <button 
+                      type="submit" 
+                      disabled={submitting || isAllAssigned || selectedMemberIds.length === 0}
+                      className="w-1/2 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 disabled:text-slate-500 text-white font-bold text-sm rounded-xl transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer disabled:cursor-not-allowed"
+                    >
+                      {submitting ? (
+                        <Loader2 size={16} className="animate-spin" />
+                      ) : isAllAssigned ? (
+                        'Already Assigned'
+                      ) : (
+                        'Confirm & Send'
+                      )}
+                    </button>
+                  );
+                })()}
               </div>
             </form>
           </div>
@@ -775,7 +818,7 @@ const TopMetricCard = ({ title, value, extra, color, extraColor = "text-slate-40
   </div>
 );
 
-const TrainingRow = ({ name, domain, skill, skillColor, diff, diffColor, duration, aiBadge, assignedUsers = [], onAssign }) => (
+const TrainingRow = ({ name, domain, skill, skillColor, diff, diffColor, duration, aiBadge, assignedUsers = [], isAssignedToSelected = false, onAssign }) => (
   <tr className="hover:bg-slate-50/50 transition-colors">
     <td className="py-4 px-6">
       <div className="flex flex-wrap items-center gap-2">
@@ -811,23 +854,14 @@ const TrainingRow = ({ name, domain, skill, skillColor, diff, diffColor, duratio
     </td>
     <td className="py-4 px-6 text-slate-400 font-bold text-xs">{duration}</td>
     <td className="py-4 px-6 text-center">
-      {assignedUsers.length > 0 ? (
-        <div className="flex flex-col items-center gap-0.5">
-          <button 
-            onClick={onAssign}
-            className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-xl transition-all shadow-xs cursor-pointer whitespace-nowrap flex items-center gap-1"
-            title={`Assigned to ${assignedUsers.join(', ')}. Click to re-assign or update.`}
-          >
-            <Check size={12} strokeWidth={3} />
-            Assigned
-          </button>
-          <button
-            onClick={onAssign}
-            className="text-[10px] text-blue-600 font-bold hover:underline cursor-pointer"
-          >
-            Re-assign
-          </button>
-        </div>
+      {isAssignedToSelected ? (
+        <span 
+          className="inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-bold px-3 py-1.5 rounded-xl cursor-default whitespace-nowrap shadow-xs"
+          title="Already assigned to selected team member(s)"
+        >
+          <Check size={12} strokeWidth={3} />
+          Already Assigned
+        </span>
       ) : (
         <button 
           onClick={onAssign}
@@ -903,7 +937,7 @@ const MemberCheckRow = ({ name, role, gap, gapStyle, img, initials, isSelected, 
   </div>
 );
 
-const RecommendationCard = ({ title, level, levelStyle, text, assignedUsers = [], onAction }) => (
+const RecommendationCard = ({ title, level, levelStyle, text, onAction }) => (
   <div className="p-4 bg-slate-50/60 rounded-2xl border border-slate-100 flex flex-col gap-3">
     <div className="flex justify-between items-start gap-2">
       <h4 className="text-sm font-extrabold text-slate-900 leading-snug">{title}</h4>
@@ -911,31 +945,12 @@ const RecommendationCard = ({ title, level, levelStyle, text, assignedUsers = []
         {level}
       </span>
     </div>
-
-    {assignedUsers.length > 0 && (
-      <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-xl">
-        <Check size={13} strokeWidth={3} className="shrink-0" />
-        <span>Currently assigned to {assignedUsers.join(', ')}</span>
-      </div>
-    )}
-
     <p className="text-xs text-slate-500 font-medium leading-relaxed">{text}</p>
     <button 
       onClick={onAction}
-      className={`w-full mt-1 py-2.5 text-white text-xs font-bold rounded-xl transition-all shadow-sm cursor-pointer flex items-center justify-center gap-1.5 ${
-        assignedUsers.length > 0 
-          ? 'bg-emerald-600 hover:bg-emerald-700' 
-          : 'bg-blue-600 hover:bg-blue-700'
-      }`}
+      className="w-full mt-1 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl transition-all shadow-sm cursor-pointer"
     >
-      {assignedUsers.length > 0 ? (
-        <>
-          <Check size={13} strokeWidth={3} />
-          <span>Assigned (Click to Re-assign)</span>
-        </>
-      ) : (
-        'Assign Training'
-      )}
+      Assign Training
     </button>
   </div>
 );
