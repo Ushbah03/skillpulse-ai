@@ -380,10 +380,10 @@ export default function TeamReports() {
         </div>
 
         {/* 3. Skill & Training Proficiency Split Section */}
-        <div className="grid grid-cols-12 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           
           {/* Skill Distribution Segment */}
-          <div className="col-span-6 bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm space-y-6">
+          <div className="lg:col-span-6 bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm space-y-6">
             <h3 className="text-2xl font-bold text-slate-900 tracking-tight">Skill Distribution by Category</h3>
             <div className="space-y-5 pt-2">
               {categoriesDistribution.map((cat, idx) => (
@@ -401,32 +401,125 @@ export default function TeamReports() {
           </div>
 
           {/* Proficiency Donut Breakdown */}
-          <div className="col-span-6 bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm flex flex-col justify-between">
-            <h3 className="text-2xl font-bold text-slate-900 tracking-tight">Skill Proficiency Distribution</h3>
+          <div className="lg:col-span-6 bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm flex flex-col justify-between">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-2xl font-bold text-slate-900 tracking-tight">Skill Proficiency Distribution</h3>
+              <span className="text-xs font-bold text-slate-400 bg-slate-50 px-3 py-1 rounded-full border border-slate-100">Live Breakdown</span>
+            </div>
             
-            <div className="flex items-center justify-around flex-1 py-4">
-              <div className="relative w-36 h-36 flex items-center justify-center">
-                <div className="absolute inset-0 rounded-full border-[14px] border-slate-50"></div>
-                <div className="absolute inset-0 rounded-full border-[14px] border-blue-500 border-t-transparent border-r-transparent rotate-45"></div>
-                <div className="absolute inset-0 rounded-full border-[14px] border-indigo-500 border-b-transparent border-l-transparent -rotate-12"></div>
-                <div className="text-center z-10">
-                  <span className="text-3xl font-black text-slate-900 tracking-tight block">100%</span>
-                  <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mt-0.5">Total Team</span>
-                </div>
-              </div>
+            <div className="flex flex-col sm:flex-row items-center gap-6 sm:gap-8 flex-1 py-2">
+              {/* Dynamic SVG Donut Chart */}
+              {(() => {
+                const adv = reportsData?.proficiencyDonut?.advanced ?? 0;
+                const int = reportsData?.proficiencyDonut?.intermediate ?? 0;
+                const beg = reportsData?.proficiencyDonut?.beginner ?? 0;
+                const circumference = 251.33; // 2 * pi * 40
 
-              <div className="grid grid-cols-3 gap-8 text-center">
-                <div>
-                  <p className="text-[10px] font-black text-slate-400 tracking-widest uppercase">Advanced</p>
-                  <p className="text-xl font-black text-blue-600 mt-1">{reportsData?.proficiencyDonut?.advanced ?? 0}%</p>
+                const advDash = (adv / 100) * circumference;
+                const intDash = (int / 100) * circumference;
+                const begDash = (beg / 100) * circumference;
+
+                const intOffset = -advDash;
+                const begOffset = -(advDash + intDash);
+
+                return (
+                  <div className="relative w-36 h-36 flex items-center justify-center shrink-0">
+                    <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
+                      {/* Background Ring */}
+                      <circle
+                        cx="50"
+                        cy="50"
+                        r="40"
+                        fill="transparent"
+                        stroke="#f1f5f9"
+                        strokeWidth="11"
+                      />
+                      {/* Advanced Arc (Blue) */}
+                      {adv > 0 && (
+                        <circle
+                          cx="50"
+                          cy="50"
+                          r="40"
+                          fill="transparent"
+                          stroke="#2563eb"
+                          strokeWidth="11"
+                          strokeDasharray={`${advDash} ${circumference}`}
+                          strokeDashoffset="0"
+                          className="transition-all duration-700 ease-out"
+                        />
+                      )}
+                      {/* Intermediate Arc (Cyan) */}
+                      {int > 0 && (
+                        <circle
+                          cx="50"
+                          cy="50"
+                          r="40"
+                          fill="transparent"
+                          stroke="#06b6d4"
+                          strokeWidth="11"
+                          strokeDasharray={`${intDash} ${circumference}`}
+                          strokeDashoffset={intOffset}
+                          className="transition-all duration-700 ease-out"
+                        />
+                      )}
+                      {/* Beginner Arc (Indigo) */}
+                      {beg > 0 && (
+                        <circle
+                          cx="50"
+                          cy="50"
+                          r="40"
+                          fill="transparent"
+                          stroke="#6366f1"
+                          strokeWidth="11"
+                          strokeDasharray={`${begDash} ${circumference}`}
+                          strokeDashoffset={begOffset}
+                          className="transition-all duration-700 ease-out"
+                        />
+                      )}
+                    </svg>
+                    <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
+                      <span className="text-2xl font-black text-slate-900 tracking-tight leading-none">
+                        {adv + int + beg > 0 ? '100%' : '0%'}
+                      </span>
+                      <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-1">Total Team</span>
+                    </div>
+                  </div>
+                );
+              })()}
+
+              {/* Clean Legend Breakdown Rows */}
+              <div className="flex-1 w-full space-y-2.5">
+                <div className="flex items-center justify-between p-2.5 sm:p-3 rounded-2xl bg-slate-50/80 border border-slate-100 hover:bg-slate-50 transition-all">
+                  <div className="flex items-center gap-2.5">
+                    <span className="w-2.5 h-2.5 rounded-full bg-blue-600 shrink-0"></span>
+                    <div>
+                      <p className="text-xs font-black text-slate-800 leading-none">Advanced</p>
+                      <p className="text-[10px] font-bold text-slate-400 mt-0.5">Proficiency Level &ge; 4.0</p>
+                    </div>
+                  </div>
+                  <span className="text-base font-black text-blue-600">{reportsData?.proficiencyDonut?.advanced ?? 0}%</span>
                 </div>
-                <div>
-                  <p className="text-[10px] font-black text-slate-400 tracking-widest uppercase">Intermediate</p>
-                  <p className="text-xl font-black text-cyan-500 mt-1">{reportsData?.proficiencyDonut?.intermediate ?? 0}%</p>
+
+                <div className="flex items-center justify-between p-2.5 sm:p-3 rounded-2xl bg-slate-50/80 border border-slate-100 hover:bg-slate-50 transition-all">
+                  <div className="flex items-center gap-2.5">
+                    <span className="w-2.5 h-2.5 rounded-full bg-cyan-500 shrink-0"></span>
+                    <div>
+                      <p className="text-xs font-black text-slate-800 leading-none">Intermediate</p>
+                      <p className="text-[10px] font-bold text-slate-400 mt-0.5">Proficiency Level 2.5 - 3.9</p>
+                    </div>
+                  </div>
+                  <span className="text-base font-black text-cyan-600">{reportsData?.proficiencyDonut?.intermediate ?? 0}%</span>
                 </div>
-                <div>
-                  <p className="text-[10px] font-black text-slate-400 tracking-widest uppercase">Beginner</p>
-                  <p className="text-xl font-black text-indigo-500 mt-1">{reportsData?.proficiencyDonut?.beginner ?? 0}%</p>
+
+                <div className="flex items-center justify-between p-2.5 sm:p-3 rounded-2xl bg-slate-50/80 border border-slate-100 hover:bg-slate-50 transition-all">
+                  <div className="flex items-center gap-2.5">
+                    <span className="w-2.5 h-2.5 rounded-full bg-indigo-500 shrink-0"></span>
+                    <div>
+                      <p className="text-xs font-black text-slate-800 leading-none">Beginner</p>
+                      <p className="text-[10px] font-bold text-slate-400 mt-0.5">Proficiency Level &lt; 2.5</p>
+                    </div>
+                  </div>
+                  <span className="text-base font-black text-indigo-600">{reportsData?.proficiencyDonut?.beginner ?? 0}%</span>
                 </div>
               </div>
             </div>

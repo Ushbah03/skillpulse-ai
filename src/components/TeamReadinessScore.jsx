@@ -7,7 +7,7 @@ import {
   RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar
 } from 'recharts';
 import { 
-  Search, Bell, SlidersHorizontal, ArrowUpRight, ShieldAlert, Calendar, ChevronRight,
+  Search, SlidersHorizontal, ArrowUpRight, ShieldAlert, Calendar, ChevronRight,
   X, CheckCircle2, Loader2, Sparkles, AlertTriangle, Layers, UserCheck
 } from 'lucide-react';
 
@@ -151,10 +151,6 @@ export default function TeamReadinessScore() {
               />
             </div>
             
-            <button className="p-3 bg-white border border-slate-100 rounded-xl shadow-sm hover:bg-slate-50 transition-all text-slate-600">
-              <Bell size={20} />
-            </button>
-
             <div className="flex items-center gap-3 pl-2 border-l border-slate-200">
               <div className="text-right hidden sm:block">
                 <p className="text-xs font-black text-slate-900 leading-none">{leaderName}</p>
