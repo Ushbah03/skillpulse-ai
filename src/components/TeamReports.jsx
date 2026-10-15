@@ -76,25 +76,7 @@ export default function TeamReports() {
   // Workforce Member Metrics Data from DB
   const workforceData = React.useMemo(() => {
     if (reportsData?.members && Array.isArray(reportsData.members) && reportsData.members.length > 0) {
-      return reportsData.members.map(m => {
-        const scoreNum = typeof m.scoreNum === 'number' ? m.scoreNum : parseInt(m.score) || 75;
-        const totalSkills = m.totalSkills || 1;
-        const verifiedSkills = m.verifiedSkills || 0;
-        const completionPct = Math.min(100, Math.max(30, Math.round((verifiedSkills / totalSkills) * 100)));
-        const gapsCount = m.gaps || 0;
-
-        return {
-          id: m.id,
-          name: m.name || 'Team Member',
-          role: m.role || 'Software Engineer',
-          skillScore: `${scoreNum}/100`,
-          performance: (4.0 + (scoreNum % 10) * 0.1).toFixed(1),
-          completion: completionPct,
-          readiness: m.status === 'Ready' ? 'High' : 'Moderate',
-          gapLevel: gapsCount === 0 ? 'Low' : gapsCount <= 2 ? 'Medium' : 'High',
-          img: m.avatar || `https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=150`
-        };
-      });
+      return reportsData.members;
     }
 
     if (!liveTeams || !Array.isArray(liveTeams) || liveTeams.length === 0) {
@@ -109,17 +91,19 @@ export default function TeamReports() {
             const skillCount = m.skills?.length || 0;
             const score = Math.min(98, Math.max(60, 68 + (skillCount * 6)));
             const gapsCount = m.skillGaps?.length || 0;
+            const initials = `${m.firstName?.[0] || ''}${m.lastName?.[0] || ''}`.toUpperCase() || 'EM';
             
             memberList.push({
               id: m.id,
               name: `${m.firstName || ''} ${m.lastName || ''}`.trim() || 'Team Member',
               role: m.jobTitle || (m.role === 'TEAM_LEADER' ? 'Team Lead' : 'Software Engineer'),
               skillScore: `${score}/100`,
-              performance: (4.0 + (score % 10) * 0.1).toFixed(1),
+              performance: (3.5 + (score / 100) * 1.4).toFixed(1),
               completion: Math.min(100, Math.max(40, score - 5)),
               readiness: score >= 85 ? 'High' : score >= 70 ? 'Moderate' : 'Developing',
               gapLevel: gapsCount === 0 ? 'Low' : gapsCount <= 2 ? 'Medium' : 'High',
-              img: m.avatarUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=150'
+              initials,
+              avatarUrl: m.avatarUrl || null
             });
           }
         });
@@ -138,23 +122,12 @@ export default function TeamReports() {
     );
   }, [workforceData, searchQuery]);
 
-  // Category Distribution Metrics from DB Radar Data
+  // Category Distribution Metrics from DB
   const categoriesDistribution = React.useMemo(() => {
-    if (reportsData?.radarData && Array.isArray(reportsData.radarData) && reportsData.radarData.length > 0) {
-      const colors = ['bg-blue-600', 'bg-indigo-500', 'bg-cyan-500', 'bg-emerald-500', 'bg-amber-500'];
-      return reportsData.radarData.map((cat, idx) => ({
-        name: (cat.subject || 'GENERAL').toUpperCase(),
-        score: `${cat.A || 75}% PROFICIENCY`,
-        fill: `w-[${cat.A || 75}%]`,
-        color: colors[idx % colors.length]
-      }));
+    if (reportsData?.categoriesDistribution && Array.isArray(reportsData.categoriesDistribution) && reportsData.categoriesDistribution.length > 0) {
+      return reportsData.categoriesDistribution;
     }
-    return [
-      { name: 'CORE ENGINEERING', score: '88% PROFICIENCY', fill: 'w-[88%]', color: 'bg-blue-600' },
-      { name: 'ARCHITECTURE & DESIGN', score: '72% PROFICIENCY', fill: 'w-[72%]', color: 'bg-indigo-500' },
-      { name: 'DEVOPS & INFRASTRUCTURE', score: '65% PROFICIENCY', fill: 'w-[65%]', color: 'bg-cyan-500' },
-      { name: 'SOFT SKILLS & LEADERSHIP', score: '94% PROFICIENCY', fill: 'w-[94%]', color: 'bg-emerald-500' }
-    ];
+    return [];
   }, [reportsData]);
 
   const handleExportCSV = () => {
@@ -310,7 +283,7 @@ export default function TeamReports() {
           />
           <OverviewReportCard
             title="SKILL MATURITY INDEX"
-            value={reportsData?.overallScore ? (reportsData.overallScore / 20).toFixed(1) : (workforceData.length > 0 ? '4.2' : '0.0')}
+            value={reportsData?.skillMaturity || (reportsData?.overallScore ? (reportsData.overallScore / 20).toFixed(1) : (workforceData.length > 0 ? '4.2' : '0.0'))}
             valueSuffix="/5.0"
             icon={<Award size={18} className="text-blue-600" />}
             iconBg="bg-cyan-50"
@@ -319,7 +292,7 @@ export default function TeamReports() {
           />
           <OverviewReportCard
             title="TRAINING COMPLETION"
-            value={reportsData?.overallScore ? `${Math.min(100, Math.round(reportsData.overallScore * 0.95))}%` : (workforceData.length > 0 ? '92%' : '0%')}
+            value={reportsData?.trainingCompletion || (reportsData?.overallScore ? `${Math.min(100, Math.round(reportsData.overallScore * 0.95))}%` : (workforceData.length > 0 ? '92%' : '0%'))}
             icon={<CheckCircle2 size={18} className="text-indigo-600" />}
             iconBg="bg-indigo-50"
             customRing={true}
@@ -354,21 +327,39 @@ export default function TeamReports() {
 
           {/* Smooth Vector Graph Chart Area */}
           <div className="h-64 relative pt-10 flex flex-col justify-between">
-            <svg className="absolute inset-0 w-full h-full overflow-visible" preserveAspectRatio="none">
+            <svg className="absolute inset-0 w-full h-full overflow-visible" preserveAspectRatio="none" viewBox="0 0 1000 240">
               <path 
-                d="M 50 180 Q 250 150 500 110 T 1000 70 L 1400 40" 
+                d={(() => {
+                  const pts = reportsData?.trendAnalysis?.performance || [65, 70, 74, 78, 82, 88];
+                  const coords = pts.map((val, idx) => {
+                    const x = 50 + idx * (900 / Math.max(1, pts.length - 1));
+                    const y = 220 - (val / 100) * 160;
+                    return `${x} ${y}`;
+                  });
+                  return `M ${coords.join(' L ')}`;
+                })()} 
                 fill="none" 
                 stroke="#3B82F6" 
-                strokeWidth="7" 
+                strokeWidth="5" 
                 strokeLinecap="round"
+                strokeLinejoin="round"
               />
               <path 
-                d="M 50 220 Q 250 190 500 160 T 1000 120 L 1400 90" 
+                d={(() => {
+                  const pts = reportsData?.trendAnalysis?.skillGrowth || [55, 60, 66, 72, 75, 82];
+                  const coords = pts.map((val, idx) => {
+                    const x = 50 + idx * (900 / Math.max(1, pts.length - 1));
+                    const y = 220 - (val / 100) * 160;
+                    return `${x} ${y}`;
+                  });
+                  return `M ${coords.join(' L ')}`;
+                })()} 
                 fill="none" 
                 stroke="#22D3EE" 
-                strokeWidth="5" 
-                strokeDasharray="12,10" 
+                strokeWidth="4" 
+                strokeDasharray="10,8" 
                 strokeLinecap="round"
+                strokeLinejoin="round"
               />
             </svg>
 
@@ -378,12 +369,9 @@ export default function TeamReports() {
             <div className="border-b border-slate-100/80 w-full h-0"></div>
 
             <div className="flex justify-between text-[11px] font-black text-slate-400 uppercase tracking-widest px-2 pt-2">
-              <span>January</span>
-              <span>February</span>
-              <span>March</span>
-              <span>April</span>
-              <span>May</span>
-              <span>June</span>
+              {(reportsData?.trendAnalysis?.months || ['January', 'February', 'March', 'April', 'May', 'June']).map((m, idx) => (
+                <span key={idx}>{m}</span>
+              ))}
             </div>
           </div>
         </div>
@@ -402,7 +390,7 @@ export default function TeamReports() {
                     <span>{cat.score}</span>
                   </div>
                   <div className="w-full bg-amber-50/40 h-2.5 rounded-full border border-amber-100/10 overflow-hidden">
-                    <div className={`h-full ${cat.color} ${cat.fill} rounded-full`}></div>
+                    <div className={`h-full ${cat.color || 'bg-blue-600'} rounded-full transition-all duration-500`} style={{ width: `${cat.percentage || 75}%` }}></div>
                   </div>
                 </div>
               ))}
@@ -427,15 +415,15 @@ export default function TeamReports() {
               <div className="grid grid-cols-3 gap-8 text-center">
                 <div>
                   <p className="text-[10px] font-black text-slate-400 tracking-widest uppercase">Advanced</p>
-                  <p className="text-xl font-black text-blue-600 mt-1">45%</p>
+                  <p className="text-xl font-black text-blue-600 mt-1">{reportsData?.proficiencyDonut?.advanced ?? 45}%</p>
                 </div>
                 <div>
                   <p className="text-[10px] font-black text-slate-400 tracking-widest uppercase">Intermediate</p>
-                  <p className="text-xl font-black text-cyan-500 mt-1">30%</p>
+                  <p className="text-xl font-black text-cyan-500 mt-1">{reportsData?.proficiencyDonut?.intermediate ?? 30}%</p>
                 </div>
                 <div>
                   <p className="text-[10px] font-black text-slate-400 tracking-widest uppercase">Beginner</p>
-                  <p className="text-xl font-black text-indigo-500 mt-1">25%</p>
+                  <p className="text-xl font-black text-indigo-500 mt-1">{reportsData?.proficiencyDonut?.beginner ?? 25}%</p>
                 </div>
               </div>
             </div>
@@ -453,19 +441,25 @@ export default function TeamReports() {
           <div className="grid grid-cols-12 gap-8 items-center pt-2">
             <div className="col-span-3 space-y-5">
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-xl bg-[#0F172A] flex items-center justify-center text-white text-base font-black">+28%</div>
+                <div className="w-12 h-12 rounded-xl bg-[#0F172A] flex items-center justify-center text-white text-base font-black">
+                  {reportsData?.effectiveness?.skillImprovement || '+28%'}
+                </div>
                 <div>
                   <p className="text-sm font-black text-slate-800 leading-tight">Skill Improvement</p>
                 </div>
               </div>
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-xl bg-blue-600 flex items-center justify-center text-white text-base font-black">+18%</div>
+                <div className="w-12 h-12 rounded-xl bg-blue-600 flex items-center justify-center text-white text-base font-black">
+                  {reportsData?.effectiveness?.performanceLift || '+18%'}
+                </div>
                 <div>
                   <p className="text-sm font-black text-slate-800 leading-tight">Performance Lift</p>
                 </div>
               </div>
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-xl bg-emerald-500 flex items-center justify-center text-white text-base font-black">96.4%</div>
+                <div className="w-12 h-12 rounded-xl bg-emerald-500 flex items-center justify-center text-white text-base font-black">
+                  {reportsData?.effectiveness?.completionImpact || '96.4%'}
+                </div>
                 <div>
                   <p className="text-sm font-black text-slate-800 leading-tight">Completion Impact</p>
                 </div>
@@ -474,10 +468,14 @@ export default function TeamReports() {
 
             <div className="col-span-9 bg-slate-50/60 rounded-3xl p-8 border border-slate-100 flex items-end justify-between h-56 relative">
               <div className="flex gap-16 items-end flex-1 justify-around h-full pt-6">
-                <DoubleBarChartGroup label="Cloud Ops" valBefore={40} valAfter={80} />
-                <DoubleBarChartGroup label="Security" valBefore={55} valAfter={85} />
-                <DoubleBarChartGroup label="AI/ML" valBefore={20} valAfter={65} />
-                <DoubleBarChartGroup label="Front-End" valBefore={60} valAfter={90} />
+                {(reportsData?.effectiveness?.bars || [
+                  { label: "Cloud Ops", valBefore: 40, valAfter: 80 },
+                  { label: "Security", valBefore: 55, valAfter: 85 },
+                  { label: "AI/ML", valBefore: 20, valAfter: 65 },
+                  { label: "Front-End", valBefore: 60, valAfter: 90 }
+                ]).map((b, idx) => (
+                  <DoubleBarChartGroup key={idx} label={b.label} valBefore={b.valBefore} valAfter={b.valAfter} />
+                ))}
               </div>
 
               <div className="w-24 border-l border-slate-200/80 pl-6 space-y-3 text-[11px] font-black text-slate-400 uppercase tracking-wider mb-6">
@@ -663,48 +661,51 @@ export default function TeamReports() {
           </div>
 
           <div className="grid grid-cols-3 gap-6">
-            <AIReportInsightCard
-              badge="GROWTH"
-              badgeColor="bg-blue-50 text-blue-600 border-blue-100"
-              confidence="96%"
-              desc={<span>Team performance is projected to increase by <b className="text-blue-600 font-black">14.2%</b> if the current Python microservices certification track is completed by all members by EOM.</span>}
-              onAction={() => {
-                setActiveInsight({
-                  title: "Python Microservices Track Optimization",
-                  recommendation: "Enroll Marcus Wright and Daniel Kim in Python Async Architecture to unlock immediate backend throughput gains.",
-                  impact: "+14.2% Estimated Efficiency"
-                });
-                setActiveModal('insight');
-              }}
-            />
-            <AIReportInsightCard
-              badge="SUCCESS"
-              badgeColor="bg-emerald-50 text-emerald-600 border-emerald-100"
-              confidence="92%"
-              desc={<span>The <b className="text-emerald-600 font-black">"Design Systems"</b> training has yielded the highest ROI to date, reducing design-to-dev handoff cycles by an average of <b className="text-slate-900 font-black">2.4 days</b>.</span>}
-              onAction={() => {
-                setActiveInsight({
-                  title: "Design Systems ROI Analysis",
-                  recommendation: "Standardize tokenized component libraries across the team to sustain the 2.4-day handoff reduction.",
-                  impact: "High ROI Confirmed"
-                });
-                setActiveModal('insight');
-              }}
-            />
-            <AIReportInsightCard
-              badge="ALERT"
-              badgeColor="bg-orange-50 text-orange-600 border-orange-100"
-              confidence="88%"
-              desc={<span>Critical skill gap detected in <b className="text-orange-600 font-black">Cloud Security Compliance</b>. Recommend immediate enrollment for Marcus W. and Lena P. to mitigate Q4 audit risks.</span>}
-              onAction={() => {
-                setActiveInsight({
-                  title: "Cloud Security Risk Mitigation",
-                  recommendation: "Assign SANS Cloud Security Automation training immediately to close Q4 enterprise audit vulnerabilities.",
-                  impact: "Urgent Mitigation Required"
-                });
-                setActiveModal('insight');
-              }}
-            />
+            {(reportsData?.aiInsights && reportsData.aiInsights.length > 0 ? reportsData.aiInsights : [
+              {
+                badge: "GROWTH",
+                badgeColor: "bg-blue-50 text-blue-600 border-blue-100",
+                confidence: "94%",
+                desc: "Team performance is projected to increase through targeted skill track completion.",
+                title: "Skill Track Optimization",
+                recommendation: "Accelerate completion of key technical tracks to unlock immediate delivery velocity.",
+                impact: "+14.2% Estimated Efficiency"
+              },
+              {
+                badge: "SUCCESS",
+                badgeColor: "bg-emerald-50 text-emerald-600 border-emerald-100",
+                confidence: "91%",
+                desc: "Key competency domains have reached high operational stability across sprint milestones.",
+                title: "Domain Proficiency Validation",
+                recommendation: "Standardize best practices across squads to sustain cross-functional agility.",
+                impact: "High ROI Confirmed"
+              },
+              {
+                badge: "ALERT",
+                badgeColor: "bg-orange-50 text-orange-600 border-orange-100",
+                confidence: "89%",
+                desc: "All active team competency requirements currently comply with target operational thresholds.",
+                title: "Compliance Stability Verified",
+                recommendation: "Maintain periodic skill assessment intervals.",
+                impact: "Zero Critical Deficits"
+              }
+            ]).map((insight, idx) => (
+              <AIReportInsightCard
+                key={idx}
+                badge={insight.badge}
+                badgeColor={insight.badgeColor}
+                confidence={insight.confidence}
+                desc={<span>{insight.desc}</span>}
+                onAction={() => {
+                  setActiveInsight({
+                    title: insight.title,
+                    recommendation: insight.recommendation,
+                    impact: insight.impact
+                  });
+                  setActiveModal('insight');
+                }}
+              />
+            ))}
           </div>
         </div>
 
@@ -719,19 +720,22 @@ export default function TeamReports() {
             <div className="flex gap-12 pt-6">
               <div>
                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Skill Index</p>
-                <p className="text-3xl font-black mt-1 flex items-center gap-1.5">92.4 <span className="text-xs font-bold text-emerald-400">+5.2</span></p>
+                <p className="text-3xl font-black mt-1 flex items-center gap-1.5">
+                  {reportsData?.executiveSummary?.skillIndex ?? (reportsData?.overallScore ?? 88)}
+                  <span className="text-xs font-bold text-emerald-400">{reportsData?.executiveSummary?.trendDelta || '+4.8'}</span>
+                </p>
               </div>
               <div>
                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Growth Velocity</p>
-                <p className="text-3xl font-black mt-1">High</p>
+                <p className="text-3xl font-black mt-1">{reportsData?.executiveSummary?.growthVelocity || 'High'}</p>
               </div>
             </div>
           </div>
 
           <div className="w-[420px] bg-[#141b2b] border border-slate-800 p-6 rounded-3xl space-y-4">
-            <DarkBarTrack label="READINESS" percentage={98} color="bg-blue-500" />
-            <DarkBarTrack label="OPTIMIZATION" percentage={84} color="bg-cyan-400" />
-            <DarkBarTrack label="RESILIENCE" percentage={76} color="bg-indigo-500" />
+            <DarkBarTrack label="READINESS" percentage={reportsData?.executiveSummary?.readiness || 90} color="bg-blue-500" />
+            <DarkBarTrack label="OPTIMIZATION" percentage={reportsData?.executiveSummary?.optimization || 85} color="bg-cyan-400" />
+            <DarkBarTrack label="RESILIENCE" percentage={reportsData?.executiveSummary?.resilience || 78} color="bg-indigo-500" />
           </div>
         </div>
 
@@ -904,7 +908,9 @@ const WorkforceRow = ({ member, onClick }) => (
     className="flex items-center justify-between p-4 bg-white rounded-2xl border border-slate-100 hover:border-slate-200 hover:shadow-sm transition-all text-center text-sm font-semibold text-slate-700 cursor-pointer"
   >
     <div className="w-[20%] flex items-center gap-3.5 text-left">
-      <img src={member.img} alt={member.name} className="w-10 h-10 rounded-full object-cover border-2 border-white shadow-sm" />
+      <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-black text-xs flex items-center justify-center border-2 border-white shadow-sm shrink-0">
+        {member.initials || 'EM'}
+      </div>
       <span className="text-base font-black text-slate-900 tracking-tight hover:text-blue-600 transition-colors">{member.name}</span>
     </div>
     <div className="w-[18%] text-left text-slate-400 font-medium">{member.role}</div>
