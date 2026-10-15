@@ -276,31 +276,31 @@ export default function TeamReports() {
         <div className="grid grid-cols-4 gap-6">
           <OverviewReportCard
             title="PERFORMANCE SCORE"
-            value={reportsData?.overallScore ? (reportsData.overallScore * 0.9).toFixed(1) : (workforceData.length > 0 ? '86.4' : '0.0')}
+            value={reportsData?.performanceScore || '0.0'}
             icon={<TrendingUp size={18} className="text-blue-600" />}
             iconBg="bg-blue-50"
-            trend={reportsData?.overallScore ? "+12% TREND" : "STABLE"}
+            trend={reportsData?.overallScore > 0 ? "+12% TREND" : "STABLE"}
             trendColor="text-emerald-600 bg-emerald-50 border border-emerald-100"
           />
           <OverviewReportCard
             title="SKILL MATURITY INDEX"
-            value={reportsData?.skillMaturity || (reportsData?.overallScore ? (reportsData.overallScore / 20).toFixed(1) : (workforceData.length > 0 ? '4.2' : '0.0'))}
+            value={reportsData?.skillMaturity || '0.0'}
             valueSuffix="/5.0"
             icon={<Award size={18} className="text-blue-600" />}
             iconBg="bg-cyan-50"
-            trend="OPTIMAL LEVEL"
+            trend={reportsData?.overallScore >= 70 ? "OPTIMAL LEVEL" : "DEVELOPING"}
             trendColor="text-emerald-600 bg-emerald-50 border border-emerald-100"
           />
           <OverviewReportCard
             title="TRAINING COMPLETION"
-            value={reportsData?.trainingCompletion || (reportsData?.overallScore ? `${Math.min(100, Math.round(reportsData.overallScore * 0.95))}%` : (workforceData.length > 0 ? '92%' : '0%'))}
+            value={reportsData?.trainingCompletion || '0%'}
             icon={<CheckCircle2 size={18} className="text-indigo-600" />}
             iconBg="bg-indigo-50"
             customRing={true}
           />
           <OverviewReportCard
             title="TEAM READINESS SCORE"
-            value={reportsData?.overallScore ? `${reportsData.overallScore}` : (workforceData.length > 0 ? '94.8' : '0.0')}
+            value={reportsData?.overallScore != null ? `${reportsData.overallScore}` : '0'}
             icon={<ShieldCheck size={18} className="text-emerald-600" />}
             iconBg="bg-emerald-50"
           />
@@ -331,7 +331,8 @@ export default function TeamReports() {
             <svg className="absolute inset-0 w-full h-full overflow-visible" preserveAspectRatio="none" viewBox="0 0 1000 240">
               <path 
                 d={(() => {
-                  const pts = reportsData?.trendAnalysis?.performance || [65, 70, 74, 78, 82, 88];
+                  const pts = reportsData?.trendAnalysis?.performance || [];
+                  if (pts.length === 0) return 'M 50 220 L 950 220';
                   const coords = pts.map((val, idx) => {
                     const x = 50 + idx * (900 / Math.max(1, pts.length - 1));
                     const y = 220 - (val / 100) * 160;
@@ -347,7 +348,8 @@ export default function TeamReports() {
               />
               <path 
                 d={(() => {
-                  const pts = reportsData?.trendAnalysis?.skillGrowth || [55, 60, 66, 72, 75, 82];
+                  const pts = reportsData?.trendAnalysis?.skillGrowth || [];
+                  if (pts.length === 0) return 'M 50 220 L 950 220';
                   const coords = pts.map((val, idx) => {
                     const x = 50 + idx * (900 / Math.max(1, pts.length - 1));
                     const y = 220 - (val / 100) * 160;
@@ -416,15 +418,15 @@ export default function TeamReports() {
               <div className="grid grid-cols-3 gap-8 text-center">
                 <div>
                   <p className="text-[10px] font-black text-slate-400 tracking-widest uppercase">Advanced</p>
-                  <p className="text-xl font-black text-blue-600 mt-1">{reportsData?.proficiencyDonut?.advanced ?? 45}%</p>
+                  <p className="text-xl font-black text-blue-600 mt-1">{reportsData?.proficiencyDonut?.advanced ?? 0}%</p>
                 </div>
                 <div>
                   <p className="text-[10px] font-black text-slate-400 tracking-widest uppercase">Intermediate</p>
-                  <p className="text-xl font-black text-cyan-500 mt-1">{reportsData?.proficiencyDonut?.intermediate ?? 30}%</p>
+                  <p className="text-xl font-black text-cyan-500 mt-1">{reportsData?.proficiencyDonut?.intermediate ?? 0}%</p>
                 </div>
                 <div>
                   <p className="text-[10px] font-black text-slate-400 tracking-widest uppercase">Beginner</p>
-                  <p className="text-xl font-black text-indigo-500 mt-1">{reportsData?.proficiencyDonut?.beginner ?? 25}%</p>
+                  <p className="text-xl font-black text-indigo-500 mt-1">{reportsData?.proficiencyDonut?.beginner ?? 0}%</p>
                 </div>
               </div>
             </div>
@@ -443,7 +445,7 @@ export default function TeamReports() {
             <div className="col-span-3 space-y-5">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 rounded-xl bg-[#0F172A] flex items-center justify-center text-white text-base font-black">
-                  {reportsData?.effectiveness?.skillImprovement || '+28%'}
+                  {reportsData?.effectiveness?.skillImprovement || '0%'}
                 </div>
                 <div>
                   <p className="text-sm font-black text-slate-800 leading-tight">Skill Improvement</p>
@@ -451,7 +453,7 @@ export default function TeamReports() {
               </div>
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 rounded-xl bg-blue-600 flex items-center justify-center text-white text-base font-black">
-                  {reportsData?.effectiveness?.performanceLift || '+18%'}
+                  {reportsData?.effectiveness?.performanceLift || '0%'}
                 </div>
                 <div>
                   <p className="text-sm font-black text-slate-800 leading-tight">Performance Lift</p>
@@ -459,7 +461,7 @@ export default function TeamReports() {
               </div>
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 rounded-xl bg-emerald-500 flex items-center justify-center text-white text-base font-black">
-                  {reportsData?.effectiveness?.completionImpact || '96.4%'}
+                  {reportsData?.effectiveness?.completionImpact || '0%'}
                 </div>
                 <div>
                   <p className="text-sm font-black text-slate-800 leading-tight">Completion Impact</p>
@@ -469,14 +471,15 @@ export default function TeamReports() {
 
             <div className="col-span-9 bg-slate-50/60 rounded-3xl p-8 border border-slate-100 flex items-end justify-between h-56 relative">
               <div className="flex gap-16 items-end flex-1 justify-around h-full pt-6">
-                {(reportsData?.effectiveness?.bars || [
-                  { label: "Cloud Ops", valBefore: 40, valAfter: 80 },
-                  { label: "Security", valBefore: 55, valAfter: 85 },
-                  { label: "AI/ML", valBefore: 20, valAfter: 65 },
-                  { label: "Front-End", valBefore: 60, valAfter: 90 }
-                ]).map((b, idx) => (
-                  <DoubleBarChartGroup key={idx} label={b.label} valBefore={b.valBefore} valAfter={b.valAfter} />
-                ))}
+                {(reportsData?.effectiveness?.bars && reportsData.effectiveness.bars.length > 0) ? (
+                  reportsData.effectiveness.bars.map((b, idx) => (
+                    <DoubleBarChartGroup key={idx} label={b.label} valBefore={b.valBefore} valAfter={b.valAfter} />
+                  ))
+                ) : (
+                  <div className="text-slate-400 text-xs font-bold text-center w-full py-8">
+                    No active intervention delta to display.
+                  </div>
+                )}
               </div>
 
               <div className="w-24 border-l border-slate-200/80 pl-6 space-y-3 text-[11px] font-black text-slate-400 uppercase tracking-wider mb-6">
@@ -609,28 +612,30 @@ export default function TeamReports() {
           <div className="max-w-md space-y-2">
             <h3 className="text-3xl font-bold tracking-tight">Executive Visual Summary</h3>
             <p className="text-slate-400 text-sm font-semibold leading-relaxed">
-              Your team's workforce intelligence at a glance. Current trajectory suggests high-readiness for Enterprise-scale deployments in Q2.
+              Real-time team competency intelligence and predictive longitudinal trajectory derived from live workforce evaluation metrics.
             </p>
             
             <div className="flex gap-12 pt-6">
               <div>
                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Skill Index</p>
                 <p className="text-3xl font-black mt-1 flex items-center gap-1.5">
-                  {reportsData?.executiveSummary?.skillIndex ?? (reportsData?.overallScore ?? 88)}
-                  <span className="text-xs font-bold text-emerald-400">{reportsData?.executiveSummary?.trendDelta || '+4.8'}</span>
+                  {reportsData?.executiveSummary?.skillIndex ?? (reportsData?.overallScore ?? 0)}
+                  <span className="text-xs font-bold text-emerald-400">
+                    {reportsData?.executiveSummary?.trendDelta ? (reportsData.executiveSummary.trendDelta.startsWith('+') || reportsData.executiveSummary.trendDelta.startsWith('-') ? reportsData.executiveSummary.trendDelta : `+${reportsData.executiveSummary.trendDelta}`) : '+0.0'}
+                  </span>
                 </p>
               </div>
               <div>
                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Growth Velocity</p>
-                <p className="text-3xl font-black mt-1">{reportsData?.executiveSummary?.growthVelocity || 'High'}</p>
+                <p className="text-3xl font-black mt-1">{reportsData?.executiveSummary?.growthVelocity || 'Developing'}</p>
               </div>
             </div>
           </div>
 
           <div className="w-[420px] bg-[#141b2b] border border-slate-800 p-6 rounded-3xl space-y-4">
-            <DarkBarTrack label="READINESS" percentage={reportsData?.executiveSummary?.readiness || 90} color="bg-blue-500" />
-            <DarkBarTrack label="OPTIMIZATION" percentage={reportsData?.executiveSummary?.optimization || 85} color="bg-cyan-400" />
-            <DarkBarTrack label="RESILIENCE" percentage={reportsData?.executiveSummary?.resilience || 78} color="bg-indigo-500" />
+            <DarkBarTrack label="READINESS" percentage={reportsData?.executiveSummary?.readiness ?? 0} color="bg-blue-500" />
+            <DarkBarTrack label="OPTIMIZATION" percentage={reportsData?.executiveSummary?.optimization ?? 0} color="bg-cyan-400" />
+            <DarkBarTrack label="RESILIENCE" percentage={reportsData?.executiveSummary?.resilience ?? 0} color="bg-indigo-500" />
           </div>
         </div>
 
