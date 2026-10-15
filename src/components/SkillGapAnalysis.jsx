@@ -495,35 +495,58 @@ export default function SkillGapAnalysis() {
               <div className="space-y-4">
                 {selectedGap ? (
                   <div className="flex items-center gap-3 bg-slate-50 p-3.5 rounded-2xl border border-slate-100">
-                    <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-700 font-black text-xs flex items-center justify-center">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-black text-xs flex items-center justify-center shadow-sm shrink-0">
                       {selectedGap.initials || 'EM'}
                     </div>
                     <div>
                       <p className="font-bold text-slate-900 text-sm">{selectedGap.name}</p>
-                      <p className="text-xs text-slate-500">{selectedGap.role} • Skill: <span className="font-bold text-slate-800">{selectedGap.skill}</span></p>
+                      <p className="text-xs text-slate-500">{selectedGap.role} • Skill Gap: <span className="font-bold text-slate-800">{selectedGap.skill}</span> ({selectedGap.severity})</p>
                     </div>
                   </div>
                 ) : (
-                  <p className="text-xs font-semibold text-slate-600">Assign targeted upskilling tracks to all team members with active gaps.</p>
+                  <div className="bg-blue-50 border border-blue-100 p-3.5 rounded-2xl">
+                    <p className="text-xs font-bold text-blue-900">Bulk Team Intervention</p>
+                    <p className="text-[11px] text-blue-700 mt-0.5">Assign targeted upskilling tracks to all team members with active skill gaps.</p>
+                  </div>
                 )}
+
+                {(() => {
+                  const currentTargetCourseId = selectedCourseForAssignment || selectedGap?.courseId || (availableCourses[0]?.id || '');
+                  const isSelectedCourseAlreadyEnrolled = selectedGap && selectedGap.enrolledCourseIds && selectedGap.enrolledCourseIds.includes(currentTargetCourseId);
+                  
+                  if (isSelectedCourseAlreadyEnrolled) {
+                    return (
+                      <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs font-semibold text-amber-900 flex items-center gap-2">
+                        <AlertTriangle size={16} className="text-amber-600 shrink-0" />
+                        <span><strong>{selectedGap.name}</strong> is already enrolled in this course. Select a different module or cancel to avoid duplicate enrollment.</span>
+                      </div>
+                    );
+                  }
+                  return null;
+                })()}
 
                 <div>
                   <label className="text-xs font-black text-slate-400 uppercase tracking-widest block mb-2">Targeted Course Module from Catalog</label>
-                  <select 
-                    value={selectedCourseForAssignment || selectedGap?.courseId || (availableCourses[0]?.id || '')}
-                    onChange={(e) => setSelectedCourseForAssignment(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    {availableCourses.length === 0 ? (
-                      <option value="">{selectedGap ? selectedGap.training : 'Enterprise Skill Gap Resolution Track'}</option>
-                    ) : (
-                      availableCourses.map((c) => (
-                        <option key={c.id} value={c.id}>
-                          {c.title} ({c.level || 'Intermediate'})
-                        </option>
-                      ))
-                    )}
-                  </select>
+                  {availableCourses.length === 0 ? (
+                    <div className="p-3.5 bg-amber-50 border border-amber-200 rounded-xl text-xs font-semibold text-amber-800">
+                      ⚠️ No matching course currently in catalog. A suitable course will be recommended soon.
+                    </div>
+                  ) : (
+                    <select 
+                      value={selectedCourseForAssignment || selectedGap?.courseId || (availableCourses[0]?.id || '')}
+                      onChange={(e) => setSelectedCourseForAssignment(e.target.value)}
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                      {availableCourses.map((c) => {
+                        const isEnrolled = selectedGap?.enrolledCourseIds?.includes(c.id);
+                        return (
+                          <option key={c.id} value={c.id}>
+                            {c.title} ({c.level || 'Intermediate'}) {isEnrolled ? '— [ALREADY ENROLLED]' : ''}
+                          </option>
+                        );
+                      })}
+                    </select>
+                  )}
                 </div>
               </div>
 
@@ -533,8 +556,13 @@ export default function SkillGapAnalysis() {
                 </button>
                 <button 
                   onClick={handleConfirmAssignment} 
-                  disabled={assigningTrack}
-                  className="w-1/2 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-md cursor-pointer flex items-center justify-center gap-2"
+                  disabled={(() => {
+                    if (assigningTrack || availableCourses.length === 0) return true;
+                    const currentTargetCourseId = selectedCourseForAssignment || selectedGap?.courseId || (availableCourses[0]?.id || '');
+                    if (selectedGap && selectedGap.enrolledCourseIds && selectedGap.enrolledCourseIds.includes(currentTargetCourseId)) return true;
+                    return false;
+                  })()}
+                  className="w-1/2 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-md cursor-pointer flex items-center justify-center gap-2 disabled:bg-slate-300 disabled:cursor-not-allowed"
                 >
                   {assigningTrack && <Loader2 size={14} className="animate-spin" />}
                   <span>{assigningTrack ? 'Assigning...' : 'Confirm Assignment'}</span>
@@ -673,7 +701,7 @@ const AnalysisRow = ({ data, onAssign }) => {
   return (
     <div className="flex items-center justify-between p-5 bg-slate-50/50 rounded-2xl border border-transparent hover:border-slate-200/80 hover:bg-white transition-all shadow-sm">
       <div className="flex items-center gap-4 w-[22%]">
-        <div className="w-10 h-10 rounded-full bg-blue-100 border border-blue-200 flex items-center justify-center text-xs font-black text-blue-700 shadow-sm shrink-0">
+        <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 border border-blue-200 flex items-center justify-center text-xs font-black text-white shadow-sm shrink-0">
           {data.initials || 'EM'}
         </div>
         <div>
@@ -698,15 +726,48 @@ const AnalysisRow = ({ data, onAssign }) => {
         </span>
       </div>
 
-      <div className="w-[24%] text-sm font-semibold text-slate-600">{data.training}</div>
+      <div className="w-[24%]">
+        {data.isAlreadyEnrolled ? (
+          <div className="space-y-1">
+            <span className="text-xs font-bold text-slate-800 line-clamp-2">{data.training}</span>
+            <span className="inline-flex items-center gap-1 text-[10px] font-black text-emerald-700 bg-emerald-50 border border-emerald-200/90 px-2 py-0.5 rounded-md">
+              <CheckCircle2 size={11} className="text-emerald-600" /> Already Enrolled
+            </span>
+          </div>
+        ) : data.hasMatchingCourse && data.training ? (
+          <span className="text-xs font-bold text-slate-700 line-clamp-2">{data.training}</span>
+        ) : (
+          <div className="text-[11px] font-medium text-amber-800 bg-amber-50/90 border border-amber-200/60 p-2 rounded-xl leading-tight">
+            ⚠️ No matching course in catalog. A suitable course will be recommended soon.
+          </div>
+        )}
+      </div>
 
       <div className="w-[10%] flex justify-end">
-        <button 
-          onClick={onAssign}
-          className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-black text-xs rounded-xl transition-all shadow-md"
-        >
-          Assign
-        </button>
+        {data.isAlreadyEnrolled ? (
+          <button 
+            disabled
+            className="px-3 py-2 bg-emerald-50 text-emerald-700 border border-emerald-200 font-bold text-xs rounded-xl cursor-not-allowed flex items-center gap-1 opacity-90 shadow-sm"
+            title="User is already enrolled in this course"
+          >
+            <CheckCircle2 size={13} /> Enrolled
+          </button>
+        ) : !data.hasMatchingCourse ? (
+          <button 
+            disabled
+            className="px-3 py-2 bg-slate-100 text-slate-400 font-bold text-xs rounded-xl cursor-not-allowed opacity-80"
+            title="No matching course in catalog"
+          >
+            Pending
+          </button>
+        ) : (
+          <button 
+            onClick={onAssign}
+            className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-black text-xs rounded-xl transition-all shadow-md cursor-pointer"
+          >
+            Assign
+          </button>
+        )}
       </div>
     </div>
   );
