@@ -226,28 +226,6 @@ const TeamLeaderDashboard = () => {
 
     return [];
   }, [filteredMembers, gapsData]);
-
-  // Dynamic performance trend points from live performance engine
-  const trendPoints = React.useMemo(() => {
-    if (perfData?.trendData && Array.isArray(perfData.trendData) && perfData.trendData.length > 0) {
-      return perfData.trendData;
-    }
-    return [];
-  }, [perfData]);
-
-  const { pathD, pts } = React.useMemo(() => {
-    if (!trendPoints.length) return { pathD: '', pts: [] };
-    const n = trendPoints.length;
-    const computedPts = trendPoints.map((pt, i) => {
-      const x = n === 1 ? 50 : 8 + (i / (n - 1)) * 84;
-      const score = Math.min(100, Math.max(0, pt.current || 0));
-      const y = 44 - (score / 100) * 36;
-      return { x, y, score, month: pt.month };
-    });
-    const d = computedPts.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
-    return { pathD: d, pts: computedPts };
-  }, [trendPoints]);
-
   return (
     <div className="flex min-h-screen bg-[#F8F9FE]">
       {/* Sidebar - Fixed Positioned */}
@@ -387,104 +365,60 @@ const TeamLeaderDashboard = () => {
             </div>
           </div>
 
-          {/* Row 3: AI Insights Side-by-Side with Performance Trend */}
-          <div className="grid grid-cols-12 gap-8 items-stretch mt-8">
-            
-            {/* AI Insights Panel */}
-            <div className="col-span-12 lg:col-span-7 bg-[#0b0f19] p-7 rounded-[2rem] text-white relative overflow-hidden shadow-xl flex flex-col justify-between min-h-[380px]">
-              <div>
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="w-9 h-9 bg-indigo-500/10 rounded-lg flex items-center justify-center">
-                    <BrainCircuit className="text-indigo-400" size={20} />
-                  </div>
-                  <div>
-                    <h4 className="text-xl font-bold tracking-tight">AI Team Insights</h4>
-                    <p className="text-xs text-slate-400 font-medium mt-0.5">Automated Squad Synergy & Predictive Intelligence</p>
-                  </div>
+          {/* Row 3: AI Team Insights Module */}
+          <div className="bg-[#0b0f19] p-8 rounded-[2.5rem] text-white relative overflow-hidden shadow-xl mt-8">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-indigo-500/10 rounded-xl flex items-center justify-center">
+                  <BrainCircuit className="text-indigo-400" size={22} />
                 </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-6">
-                  <div className="bg-white/[0.02] border border-white/5 rounded-xl p-4 flex flex-col justify-between">
-                    <div className="flex justify-between items-center mb-3">
-                      <span className="text-sm font-bold text-slate-200">Squad Synergy & Resilience</span>
-                      <span className="text-[10px] font-black uppercase tracking-wider text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
-                        {overviewData?.aiInsights?.synergyScore || (overviewData?.stats?.synergyScore || '100%')}
-                      </span>
-                    </div>
-                    <p className="text-[13px] text-slate-300 leading-relaxed font-medium">
-                      {overviewData?.aiInsights?.aiRecommendation || (overviewData?.aiInsights?.spofSkills?.length > 0 
-                        ? `Single Point of Failure risk detected in ${overviewData.aiInsights.spofSkills.slice(0, 2).join(', ')}. Cross-train team members to eliminate bottleneck risks.` 
-                        : 'Squad capability baseline is well-balanced across active deliverables.')}
-                    </p>
-                  </div>
-
-                  <div className="bg-white/[0.02] border border-white/5 rounded-xl p-4 flex flex-col justify-between">
-                    <div className="flex justify-between items-center mb-3">
-                      <span className="text-sm font-bold text-slate-200">Predictive Velocity Uplift</span>
-                      <span className="text-[10px] font-black uppercase tracking-wider text-sky-400 bg-sky-500/10 px-2 py-0.5 rounded border border-sky-500/20">
-                        +{perfData?.aiPredictive?.velocityIncreasePct || (filteredMembers.length > 0 ? 8 : 0)}% Lift
-                      </span>
-                    </div>
-                    <p className="text-[13px] text-slate-300 leading-relaxed font-medium">
-                      {perfData?.aiPredictive?.velocityReason || (filteredMembers.length > 0 
-                        ? `${filteredMembers.length} active team members evaluated. Completing targeted upskilling modules will accelerate sprint delivery.` 
-                        : 'Add team members to receive AI predictive velocity projections.')}
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Quick Actions Action Grid */}
-              <div className="border-t border-white/5 pt-4">
-                <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-3 px-1">Quick Team Actions</p>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                  <ActionBtn onClick={() => navigate('/team-leader/skill-overview')} icon={<Flag size={14} />} text="Skill Overview" />
-                  <ActionBtn onClick={() => navigate('/team-leader/assign-learning')} icon={<BookOpenCheck size={14} />} text="Assign Training" />
-                  <ActionBtn onClick={() => navigate('/team-leader/gap-analysis')} icon={<GanttChartSquare size={14} />} text="Analyze Gaps" />
-                  <ActionBtn onClick={() => navigate('/team-leader/reports')} icon={<FileBarChart size={14} />} text="Generate Report" />
+                <div>
+                  <h4 className="text-2xl font-bold tracking-tight">AI Team Insights</h4>
+                  <p className="text-xs text-slate-400 font-medium mt-0.5">Automated Squad Synergy & Predictive Workforce Intelligence</p>
                 </div>
               </div>
             </div>
 
-            {/* Performance Trend Chart Line */}
-            <div className="col-span-12 lg:col-span-5 bg-white rounded-[2rem] p-7 border border-slate-100 shadow-sm flex flex-col justify-between min-h-[380px]">
-              <div>
-                <h3 className="text-2xl font-bold text-slate-900 mb-2 tracking-tight">Performance Trend</h3>
-                <p className="text-sm text-slate-400 font-medium mb-6">Longitudinal evaluation timeline of team sprint delivery</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+              <div className="bg-white/[0.03] border border-white/5 rounded-2xl p-6 flex flex-col justify-between">
+                <div className="flex justify-between items-center mb-4">
+                  <span className="text-base font-bold text-slate-200">Squad Synergy & Resilience</span>
+                  <span className="text-xs font-black uppercase tracking-wider text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-lg border border-emerald-500/20">
+                    Synergy: {overviewData?.aiInsights?.synergyScore || (overviewData?.stats?.synergyScore || '100%')}
+                  </span>
+                </div>
+                <p className="text-sm text-slate-300 leading-relaxed font-medium">
+                  {overviewData?.aiInsights?.aiRecommendation || (overviewData?.aiInsights?.spofSkills?.length > 0 
+                    ? `Single Point of Failure risk detected in ${overviewData.aiInsights.spofSkills.slice(0, 2).join(', ')}. Cross-train team members to eliminate bottleneck risks.` 
+                    : 'Squad capability baseline is well-balanced across active deliverables.')}
+                </p>
               </div>
-              
-              <div className="flex-1 flex flex-col justify-end pb-2 relative">
-                {trendPoints.length > 0 ? (
-                  <>
-                    <div className="h-44 relative w-full px-2">
-                      <svg className="w-full h-full" viewBox="0 0 100 50" preserveAspectRatio="none">
-                        <path 
-                          d={pathD} 
-                          stroke="#0ea5e9" 
-                          strokeWidth="2.5" 
-                          fill="none" 
-                          strokeLinecap="round" 
-                          strokeLinejoin="round" 
-                        />
-                        {pts.map((p, idx) => (
-                          <circle key={idx} cx={p.x} cy={p.y} r="3" fill="#0ea5e9" className="transition-all" />
-                        ))}
-                      </svg>
-                    </div>
-                    <div className="flex justify-between text-[11px] font-bold text-slate-400 mt-6 px-2 border-t border-slate-100 pt-3">
-                      {trendPoints.map((tp, idx) => (
-                        <span key={idx}>{tp.month || `M${idx + 1}`}</span>
-                      ))}
-                    </div>
-                  </>
-                ) : (
-                  <div className="h-44 flex items-center justify-center text-slate-400 text-xs font-semibold">
-                    No timeline performance evaluations recorded yet.
-                  </div>
-                )}
+
+              <div className="bg-white/[0.03] border border-white/5 rounded-2xl p-6 flex flex-col justify-between">
+                <div className="flex justify-between items-center mb-4">
+                  <span className="text-base font-bold text-slate-200">Predictive Velocity Uplift</span>
+                  <span className="text-xs font-black uppercase tracking-wider text-sky-400 bg-sky-500/10 px-3 py-1 rounded-lg border border-sky-500/20">
+                    +{perfData?.aiPredictive?.velocityIncreasePct || (filteredMembers.length > 0 ? 8 : 0)}% Lift
+                  </span>
+                </div>
+                <p className="text-sm text-slate-300 leading-relaxed font-medium">
+                  {perfData?.aiPredictive?.velocityReason || (filteredMembers.length > 0 
+                    ? `${filteredMembers.length} active team members evaluated. Completing targeted upskilling modules will accelerate sprint delivery.` 
+                    : 'Add team members to receive AI predictive velocity projections.')}
+                </p>
               </div>
             </div>
 
+            {/* Quick Actions Action Grid */}
+            <div className="border-t border-white/5 pt-5">
+              <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-3 px-1">Quick Team Actions</p>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <ActionBtn onClick={() => navigate('/team-leader/skill-overview')} icon={<Flag size={14} />} text="Skill Overview" />
+                <ActionBtn onClick={() => navigate('/team-leader/assign-learning')} icon={<BookOpenCheck size={14} />} text="Assign Training" />
+                <ActionBtn onClick={() => navigate('/team-leader/gap-analysis')} icon={<GanttChartSquare size={14} />} text="Analyze Gaps" />
+                <ActionBtn onClick={() => navigate('/team-leader/reports')} icon={<FileBarChart size={14} />} text="Generate Report" />
+              </div>
+            </div>
           </div>
 
         </div>
