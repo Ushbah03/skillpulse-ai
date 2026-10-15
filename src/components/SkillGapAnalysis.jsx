@@ -31,6 +31,7 @@ export default function SkillGapAnalysis() {
   // Interactive Modals & Toast State
   const [activeModal, setActiveModal] = useState(null); // 'assign', 'report', 'profiles'
   const [selectedGap, setSelectedGap] = useState(null);
+  const [selectedCourseForAssignment, setSelectedCourseForAssignment] = useState('');
   const [toastMessage, setToastMessage] = useState('');
 
   useEffect(() => {
@@ -63,6 +64,7 @@ export default function SkillGapAnalysis() {
   };
   const categoryOptions = gapData?.categories || ['All'];
   const teamMemberList = gapData?.members || [];
+  const availableCourses = gapData?.availableCourses || [];
 
   // Filter Data Logic
   const filteredGaps = gapsData.filter((item) => {
@@ -80,16 +82,20 @@ export default function SkillGapAnalysis() {
 
   const handleOpenAssignModal = (gap) => {
     setSelectedGap(gap);
+    const matchedId = gap?.courseId || availableCourses[0]?.id || '';
+    setSelectedCourseForAssignment(matchedId);
     setActiveModal('assign');
   };
 
   const handleConfirmAssignment = async () => {
     try {
       setAssigningTrack(true);
+      const courseIdToUse = selectedCourseForAssignment || selectedGap?.courseId || availableCourses[0]?.id;
       if (selectedGap) {
         await teamLeaderAPI.assignTraining({
           userId: selectedGap.userId,
           skillId: selectedGap.skillId,
+          courseId: courseIdToUse,
           trainingTitle: selectedGap.training
         });
         setToastMessage(`Training track assigned to ${selectedGap.name}! Active now on employee portal.`);
@@ -98,7 +104,8 @@ export default function SkillGapAnalysis() {
         if (memberIdsToAssign.length > 0) {
           await teamLeaderAPI.assignTraining({
             userIds: memberIdsToAssign,
-            trainingTitle: 'Enterprise Skill Gap Resolution Track'
+            courseId: courseIdToUse,
+            trainingTitle: availableCourses.find(c => c.id === courseIdToUse)?.title || 'Enterprise Skill Gap Resolution Track'
           });
         }
         setToastMessage(`Training tracks assigned to team members! Active now on employee portals.`);
@@ -407,31 +414,31 @@ export default function SkillGapAnalysis() {
             <AIIntelligenceCard 
               type="CRITICAL WARNING"
               typeColor="bg-rose-50 text-rose-600 border-rose-100"
-              confidence="96%"
-              title={gapsData[0] ? `${gapsData[0].skill} Deficiency` : "Core Capability Warning"}
-              description={gapsData[0] 
+              confidence={gapData?.aiIntelligence?.criticalWarning?.confidence || "94%"}
+              title={gapData?.aiIntelligence?.criticalWarning?.title || (gapsData[0] ? `${gapsData[0].skill} Deficiency` : "Core Capability Warning")}
+              description={gapData?.aiIntelligence?.criticalWarning?.description || (gapsData[0] 
                 ? `Detected a ${gapsData[0].severity.toLowerCase()} deficiency for ${gapsData[0].name} in ${gapsData[0].skill}. Early resolution recommended.`
-                : "Detected core capability constraints across active projects."}
+                : "Detected core capability constraints across active projects.")}
               actionText="View Solution"
               onAction={() => handleOpenAssignModal(gapsData[0] || null)}
             />
             <AIIntelligenceCard 
               type="GROWTH PATH"
               typeColor="bg-blue-50 text-blue-600 border-blue-100"
-              confidence="89%"
-              title="Targeted Skill Upskilling"
-              description={gapsData[1] 
-                ? `Fast-tracking ${gapsData[1].name} into ${gapsData[1].training} will remove team dependencies.`
-                : "Assigning targeted training tracks mitigates team skill bottlenecks efficiently."}
+              confidence={gapData?.aiIntelligence?.growthPath?.confidence || "89%"}
+              title={gapData?.aiIntelligence?.growthPath?.title || "Targeted Skill Upskilling"}
+              description={gapData?.aiIntelligence?.growthPath?.description || (gapsData[1] 
+                ? `Fast-tracking ${gapsData[1].name} into "${gapsData[1].training}" will remove team dependencies.`
+                : "Assigning targeted training tracks mitigates team skill bottlenecks efficiently.")}
               actionText="Assign Path"
               onAction={() => handleOpenAssignModal(gapsData[1] || gapsData[0] || null)}
             />
             <AIIntelligenceCard 
               type="SKILL SUCCESS"
               typeColor="bg-emerald-50 text-emerald-600 border-emerald-100"
-              confidence="92%"
-              title="Resolution Velocity"
-              description={`Current team gap resolution progress stands at ${stats.resolutionProgress}. Optimized for project deployment.`}
+              confidence={gapData?.aiIntelligence?.resolutionVelocity?.confidence || "92%"}
+              title={gapData?.aiIntelligence?.resolutionVelocity?.title || "Resolution Velocity"}
+              description={gapData?.aiIntelligence?.resolutionVelocity?.description || `Current team gap resolution progress stands at ${stats.resolutionProgress}. Optimized for project deployment.`}
               actionText="View Progress"
               onAction={() => setActiveModal('report')}
             />
@@ -501,13 +508,22 @@ export default function SkillGapAnalysis() {
                 )}
 
                 <div>
-                  <label className="text-xs font-black text-slate-400 uppercase tracking-widest block mb-2">Recommended Course Module</label>
-                  <input 
-                    type="text" 
-                    readOnly
-                    value={selectedGap ? selectedGap.training : 'Enterprise Skill Gap Resolution Track'} 
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-bold text-slate-700"
-                  />
+                  <label className="text-xs font-black text-slate-400 uppercase tracking-widest block mb-2">Targeted Course Module from Catalog</label>
+                  <select 
+                    value={selectedCourseForAssignment || selectedGap?.courseId || (availableCourses[0]?.id || '')}
+                    onChange={(e) => setSelectedCourseForAssignment(e.target.value)}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    {availableCourses.length === 0 ? (
+                      <option value="">{selectedGap ? selectedGap.training : 'Enterprise Skill Gap Resolution Track'}</option>
+                    ) : (
+                      availableCourses.map((c) => (
+                        <option key={c.id} value={c.id}>
+                          {c.title} ({c.level || 'Intermediate'})
+                        </option>
+                      ))
+                    )}
+                  </select>
                 </div>
               </div>
 
