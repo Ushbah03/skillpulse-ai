@@ -140,13 +140,13 @@ export default function TeamTrainingRequests() {
       return;
     }
 
-    const headers = ["Request ID", "Member Name", "Role / Provider", "Requested Course", "Cost", "Priority", "Status", "Justification"];
+    const headers = ["Request ID", "Member Name", "Role / Provider", "Requested Course", "Duration", "Priority", "Status", "Justification"];
     const rows = filteredRequests.map(r => [
       `"${r.id}"`,
       `"${r.name}"`,
       `"${r.role}"`,
       `"${r.course}"`,
-      `"${r.cost}"`,
+      `"${r.duration || (r.durationHours ? `${r.durationHours} Hours` : '10 Hours')}"`,
       `"${r.priority}"`,
       `"${r.status}"`,
       `"${(r.justification || '').replace(/"/g, '""')}"`
@@ -355,8 +355,8 @@ export default function TeamTrainingRequests() {
 
             <div className="space-y-3 flex-1 flex flex-col justify-center">
               <InsightMessageBox 
-                title={aiInsights?.budgetTitle || "Budget & License Optimization"}
-                text={aiInsights?.budgetText || "Approving corporate training requests in batch optimizes tenant licensing costs and accelerates team deployment thresholds."}
+                title={aiInsights?.capacityTitle || aiInsights?.budgetTitle || "Team Learning Capacity & Pacing"}
+                text={aiInsights?.capacityText || aiInsights?.budgetText || "Batch approving courses optimizes team study cycles and accelerates target milestone delivery."}
               />
               <InsightMessageBox 
                 title={aiInsights?.impactTitle || "Readiness Gap Impact"}
@@ -428,8 +428,8 @@ export default function TeamTrainingRequests() {
 
                 <div className="grid grid-cols-2 gap-3 text-xs">
                   <div className="bg-slate-50 p-3 rounded-xl border border-slate-100">
-                    <span className="text-slate-400 font-bold block mb-1">Estimated Cost</span>
-                    <span className="font-black text-slate-800 text-sm">{selectedRequest.cost}</span>
+                    <span className="text-slate-400 font-bold block mb-1">Training Duration</span>
+                    <span className="font-black text-slate-800 text-sm">{selectedRequest.duration || (selectedRequest.durationHours ? `${selectedRequest.durationHours} Hours` : '10 Hours')}</span>
                   </div>
                   <div className="bg-slate-50 p-3 rounded-xl border border-slate-100">
                     <span className="text-slate-400 font-bold block mb-1">Provider</span>
