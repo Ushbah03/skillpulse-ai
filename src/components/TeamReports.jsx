@@ -50,6 +50,13 @@ export default function TeamReports() {
   const [hrNote, setHrNote] = useState('');
   const [toastMessage, setToastMessage] = useState('');
 
+  const showToast = (msg) => {
+    setToastMessage(msg);
+    setTimeout(() => {
+      setToastMessage('');
+    }, 3000);
+  };
+
   useEffect(() => {
     let isMounted = true;
     const fetchReportsData = async () => {
