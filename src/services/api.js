@@ -141,7 +141,10 @@ export const employeeAPI = {
 export const teamLeaderAPI = {
   getOverview: () => apiRequest('/team-leader/overview'),
   getGaps: () => apiRequest('/team-leader/gaps'),
-  getReadiness: () => apiRequest('/team-leader/readiness'),
+  getReadiness: (params = {}) => {
+    const q = new URLSearchParams(params).toString();
+    return apiRequest(`/team-leader/readiness${q ? `?${q}` : ''}`);
+  },
   getMembers: () => apiRequest('/team-leader/members'),
   getMemberProfile: (id) => apiRequest(`/team-leader/members/${id}`),
   getAssignLearningData: () => apiRequest('/team-leader/assign-learning-data'),

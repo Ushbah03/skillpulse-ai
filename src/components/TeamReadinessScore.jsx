@@ -24,28 +24,30 @@ export default function TeamReadinessScore() {
   // Modal states
   const [activeModal, setActiveModal] = useState(null); // 'requirements', 'training', 'risk'
   const [selectedMember, setSelectedMember] = useState(null);
+  const [selectedCourseId, setSelectedCourseId] = useState('');
   const [toastMessage, setToastMessage] = useState('');
   const [assigningTrack, setAssigningTrack] = useState(false);
 
+  const loadData = async (proj = selectedProject, lvl = requiredLevel) => {
+    try {
+      const res = await teamLeaderAPI.getReadiness({
+        projectId: proj,
+        requiredLevel: lvl
+      });
+      if (res?.success && res.data) {
+        setLiveReadiness(res.data);
+      }
+    } catch (err) {
+      console.warn('Error loading live readiness data:', err);
+    }
+  };
+
   useEffect(() => {
     let isMounted = true;
-    const loadData = async () => {
-      setLoading(true);
-      try {
-        const res = await teamLeaderAPI.getReadiness();
-        if (isMounted && res?.success && res.data) {
-          setLiveReadiness(res.data);
-          if (res.data.projects && res.data.projects.length > 0) {
-            setSelectedProject(res.data.projects[0].title);
-          }
-        }
-      } catch (err) {
-        console.warn('Error loading live readiness data:', err);
-      } finally {
-        if (isMounted) setLoading(false);
-      }
-    };
-    loadData();
+    setLoading(true);
+    loadData().finally(() => {
+      if (isMounted) setLoading(false);
+    });
     return () => { isMounted = false; };
   }, []);
 
@@ -54,6 +56,7 @@ export default function TeamReadinessScore() {
   const timelineTrendData = liveReadiness?.trendData || [];
   const criticalGapsList = liveReadiness?.criticalGaps || [];
   const projectList = liveReadiness?.projects || [];
+  const availableCourses = liveReadiness?.availableCourses || [];
 
   const overallScoreVal = liveReadiness?.overallScore ?? 0;
   const qualifiedCount = liveReadiness?.qualifiedCount ?? 0;
@@ -67,31 +70,39 @@ export default function TeamReadinessScore() {
     member.role.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const handleRecalculate = () => {
+  const handleRecalculate = async () => {
     setIsRecalculating(true);
-    setTimeout(() => {
-      setIsRecalculating(false);
-      setToastMessage('Readiness indices successfully updated for selected context.');
+    try {
+      await loadData(selectedProject, requiredLevel);
+      setToastMessage(`Readiness recalculated for ${selectedProject} (${requiredLevel}).`);
       setTimeout(() => setToastMessage(''), 3000);
-    }, 1000);
+    } catch (err) {
+      console.warn('Recalculation error:', err);
+    } finally {
+      setIsRecalculating(false);
+    }
   };
 
   const handleOpenTrainingModal = (member) => {
     setSelectedMember(member);
+    const memberGap = criticalGapsList.find(g => g.memberId === member.id);
+    const defaultCourseId = memberGap?.matchedCourse?.id || availableCourses[0]?.id || '';
+    setSelectedCourseId(defaultCourseId);
     setActiveModal('training');
   };
 
   const handleAssignTrackSubmit = async () => {
-    if (!selectedMember) return;
+    if (!selectedMember || !selectedCourseId) return;
     try {
       setAssigningTrack(true);
       await teamLeaderAPI.assignTraining({
         userId: selectedMember.id,
-        courseId: 'readiness-track-course'
+        courseId: selectedCourseId
       });
       setToastMessage(`Targeted training module assigned to ${selectedMember.name}`);
       setTimeout(() => setToastMessage(''), 4000);
       setActiveModal(null);
+      await loadData(selectedProject, requiredLevel);
     } catch (err) {
       console.warn('Error assigning readiness track training:', err);
       setActiveModal(null);
@@ -229,13 +240,10 @@ export default function TeamReadinessScore() {
               onChange={(e) => setSelectedProject(e.target.value)}
               className="bg-slate-50 border border-slate-200 hover:bg-slate-100 px-4 py-2 rounded-xl text-xs font-bold text-slate-700 cursor-pointer transition-colors focus:outline-none"
             >
-              {projectList.length > 0 ? (
-                projectList.map(p => (
-                  <option key={p.id} value={p.title}>Project: {p.title}</option>
-                ))
-              ) : (
-                <option value="General Team Deployment">Project: General Team Deployment</option>
-              )}
+              <option value="General Team Deployment">Project: General Team Deployment</option>
+              {projectList.map(p => (
+                <option key={p.id} value={p.title}>Project: {p.title}</option>
+              ))}
             </select>
 
             {/* Level Select */}
@@ -244,9 +252,10 @@ export default function TeamReadinessScore() {
               onChange={(e) => setRequiredLevel(e.target.value)}
               className="bg-slate-50 border border-slate-200 hover:bg-slate-100 px-4 py-2 rounded-xl text-xs font-bold text-slate-700 cursor-pointer transition-colors focus:outline-none"
             >
-              <option>Required Level: Advanced</option>
-              <option>Required Level: Intermediate</option>
-              <option>Required Level: Expert / Lead</option>
+              <option value="Advanced">Required Level: Advanced (4.0/5)</option>
+              <option value="Intermediate">Required Level: Intermediate (3.0/5)</option>
+              <option value="Expert / Lead">Required Level: Expert / Lead (4.5/5)</option>
+              <option value="Foundational">Required Level: Foundational (2.0/5)</option>
             </select>
           </div>
 
@@ -520,23 +529,46 @@ export default function TeamReadinessScore() {
 
               <div className="space-y-4">
                 <div className="flex items-center gap-3 bg-slate-50 p-3.5 rounded-2xl">
-                  <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-700 font-black text-xs flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-black text-xs flex items-center justify-center shadow-sm">
                     {selectedMember.initials}
                   </div>
                   <div>
                     <p className="font-bold text-slate-900 text-sm">{selectedMember.name}</p>
-                    <p className="text-xs text-slate-500">{selectedMember.role} • Score: <span className="font-bold text-slate-800">{selectedMember.score}</span></p>
+                    <p className="text-xs text-slate-500">{selectedMember.role} • Readiness Score: <span className="font-bold text-slate-800">{selectedMember.score}</span></p>
                   </div>
                 </div>
 
-                <div>
-                  <label className="text-xs font-black text-slate-400 uppercase tracking-widest block mb-2">Recommended Gap Resolution Modules</label>
-                  <div className="space-y-2">
-                    <label className="flex items-center gap-2 text-xs font-bold text-slate-700 p-3 border border-slate-200 rounded-xl bg-slate-50/50 cursor-pointer">
-                      <input type="checkbox" defaultChecked className="rounded text-blue-600" />
-                      <span>{selectedMember.name} Target Readiness Training Track</span>
-                    </label>
+                {criticalGapsList.filter(g => g.memberId === selectedMember.id).length > 0 && (
+                  <div className="bg-rose-50 border border-rose-100 rounded-xl p-3">
+                    <p className="text-xs font-black text-rose-700 uppercase tracking-wider">Identified Capability Blockers:</p>
+                    <ul className="mt-1 space-y-1">
+                      {criticalGapsList.filter(g => g.memberId === selectedMember.id).map((g, idx) => (
+                        <li key={idx} className="text-xs font-semibold text-rose-600 flex items-center gap-1.5">
+                          <span className="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
+                          <span>{g.skillName} ({g.severity})</span>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
+                )}
+
+                <div>
+                  <label className="text-xs font-black text-slate-400 uppercase tracking-widest block mb-2">Assign Target Course from Catalog</label>
+                  <select 
+                    value={selectedCourseId}
+                    onChange={(e) => setSelectedCourseId(e.target.value)}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    {availableCourses.length === 0 ? (
+                      <option value="">No courses available in catalog</option>
+                    ) : (
+                      availableCourses.map((c) => (
+                        <option key={c.id} value={c.id}>
+                          {c.title} ({c.level || 'Intermediate'})
+                        </option>
+                      ))
+                    )}
+                  </select>
                 </div>
               </div>
 
@@ -546,8 +578,8 @@ export default function TeamReadinessScore() {
                 </button>
                 <button 
                   onClick={handleAssignTrackSubmit} 
-                  disabled={assigningTrack}
-                  className="w-1/2 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-md cursor-pointer flex items-center justify-center gap-2"
+                  disabled={assigningTrack || !selectedCourseId}
+                  className="w-1/2 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-md cursor-pointer flex items-center justify-center gap-2 disabled:bg-slate-300"
                 >
                   {assigningTrack ? <Loader2 size={14} className="animate-spin" /> : null}
                   <span>{assigningTrack ? 'Assigning Track...' : 'Assign & Launch Track'}</span>
