@@ -257,6 +257,7 @@ const TeamMemberProfile = () => {
     totalProf += (s.proficiencyLevel || 1.0);
   });
   const avgProfPct = memberSkills.length > 0 ? Math.round((totalProf / (memberSkills.length * 5)) * 100) : 0;
+  const readinessPct = memberMetrics?.readiness || `${avgProfPct}%`;
   const perfRating = useMemo(() => {
     const raw = memberMetrics?.performanceRating;
     if (raw) {
@@ -274,7 +275,7 @@ const TeamMemberProfile = () => {
 
   // 100% Real Cumulative Mastery Growth Curve - strictly leads to verified readiness score
   const dynamicGrowthTrend = useMemo(() => {
-    const currentScore = parseInt(readinessPct) || 84;
+    const currentScore = parseInt(readinessPct) || avgProfPct || 0;
     const sortedAssessments = [...(activeMember?.assessments || [])].sort((a, b) => new Date(a.createdAt || 0) - new Date(b.createdAt || 0));
 
     // If server sent valid trajectory ending with currentScore
