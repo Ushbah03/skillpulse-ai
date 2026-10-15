@@ -33,6 +33,7 @@ export default function TeamTrainingRequests() {
   // Interactive Requests & Live State
   const [requestsData, setRequestsData] = useState([]);
   const [trainingDemand, setTrainingDemand] = useState([]);
+  const [aiInsights, setAiInsights] = useState(null);
   const [summaryStats, setSummaryStats] = useState({
     totalCount: 0,
     pendingCount: 0,
@@ -56,6 +57,7 @@ export default function TeamTrainingRequests() {
         if (isMounted && res?.success && res.data) {
           setRequestsData(res.data.requests || []);
           setTrainingDemand(res.data.trainingDemand || []);
+          setAiInsights(res.data.aiInsights || null);
           setSummaryStats(res.data.stats || { totalCount: 0, pendingCount: 0, approvedCount: 0, completedCount: 0 });
         }
       } catch (err) {
@@ -353,12 +355,12 @@ export default function TeamTrainingRequests() {
 
             <div className="space-y-3 flex-1 flex flex-col justify-center">
               <InsightMessageBox 
-                title="Budget & License Optimization"
-                text="Approving corporate training requests in batch optimizes tenant licensing costs and accelerates team deployment thresholds."
+                title={aiInsights?.budgetTitle || "Budget & License Optimization"}
+                text={aiInsights?.budgetText || "Approving corporate training requests in batch optimizes tenant licensing costs and accelerates team deployment thresholds."}
               />
               <InsightMessageBox 
-                title="Readiness Gap Impact"
-                text="Approving high priority training requests directly closes active critical capability gaps identified in team readiness scores."
+                title={aiInsights?.impactTitle || "Readiness Gap Impact"}
+                text={aiInsights?.impactText || "Approving high priority training requests directly closes active critical capability gaps identified in team readiness scores."}
               />
             </div>
           </div>
@@ -415,7 +417,7 @@ export default function TeamTrainingRequests() {
 
               <div className="space-y-4">
                 <div className="flex items-center gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-100">
-                  <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-700 font-black text-xs flex items-center justify-center shadow-sm shrink-0">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-black text-xs flex items-center justify-center shadow-sm shrink-0">
                     {selectedRequest.initials || 'EM'}
                   </div>
                   <div>
@@ -590,7 +592,7 @@ const RequestItemRow = ({ item, isSelected, onSelect, onApprove, onReject, onVie
       <div className="w-[12%] text-xs font-bold text-slate-400 tracking-tight">{item.id}</div>
       
       <div className="flex items-center gap-3 w-[20%]">
-        <div className="w-9 h-9 rounded-full bg-blue-100 text-blue-700 font-black text-xs flex items-center justify-center border border-blue-200 shrink-0">
+        <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-black text-xs flex items-center justify-center border border-blue-200 shrink-0">
           {item.initials || 'EM'}
         </div>
         <span className="text-xs font-black text-slate-900 leading-none">{item.name}</span>
