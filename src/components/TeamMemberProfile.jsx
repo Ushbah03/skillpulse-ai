@@ -257,8 +257,18 @@ const TeamMemberProfile = () => {
     totalProf += (s.proficiencyLevel || 1.0);
   });
   const avgProfPct = memberSkills.length > 0 ? Math.round((totalProf / (memberSkills.length * 5)) * 100) : 0;
-  const readinessPct = memberMetrics?.readiness || `${avgProfPct}%`;
-  const perfRating = memberMetrics?.performanceRating || (avgProfPct ? `${(avgProfPct / 20).toFixed(1)}/5.0` : "0.0/5.0");
+  const perfRating = useMemo(() => {
+    const raw = memberMetrics?.performanceRating;
+    if (raw) {
+      const num = parseFloat(raw);
+      if (!isNaN(num)) {
+        const normalized = num > 5.0 ? num / 20.0 : num;
+        return `${normalized.toFixed(1)}/5.0`;
+      }
+      return raw;
+    }
+    return avgProfPct ? `${(avgProfPct / 20).toFixed(1)}/5.0` : "0.0/5.0";
+  }, [memberMetrics?.performanceRating, avgProfPct]);
   const overallScore = memberMetrics?.overallScore || `${avgProfPct}%`;
   const completionRate = memberMetrics?.completionRate || "0%";
 
