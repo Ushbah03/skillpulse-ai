@@ -35,19 +35,10 @@ export default function TeamReports() {
   const [liveTeams, setLiveTeams] = useState([]);
   const [reportsData, setReportsData] = useState(null);
 
-  // Interactive Custom Report Group State
-  const [memberGroups, setMemberGroups] = useState([
-    { id: 'core', label: 'All Core Team', selected: true },
-    { id: 'new', label: 'New Hires', selected: false },
-    { id: 'lead', label: 'Leadership', selected: false }
-  ]);
-
   // Modal & Toast States
-  const [activeModal, setActiveModal] = useState(null); // 'addGroup', 'shareHR', 'insight'
+  const [activeModal, setActiveModal] = useState(null); // 'insight'
   const [activeInsight, setActiveInsight] = useState(null);
-  const [newGroupName, setNewGroupName] = useState('');
-  const [hrEmail, setHrEmail] = useState('hr-analytics@company.com');
-  const [hrNote, setHrNote] = useState('');
+  const [exportMenuOpen, setExportMenuOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
 
   const showToast = (msg) => {
@@ -174,25 +165,6 @@ export default function TeamReports() {
     showToast('Browser print engine launched for PDF creation!');
   };
 
-  // Group Selection Handlers
-  const toggleGroupSelection = (id) => {
-    setMemberGroups(prev => prev.map(g => g.id === id ? { ...g, selected: !g.selected } : g));
-  };
-
-  const handleAddGroup = (e) => {
-    e.preventDefault();
-    if (!newGroupName.trim()) return;
-    const newGroup = {
-      id: `group-${Date.now()}`,
-      label: newGroupName.trim(),
-      selected: true
-    };
-    setMemberGroups([...memberGroups, newGroup]);
-    setNewGroupName('');
-    setActiveModal(null);
-    showToast(`Added '${newGroup.label}' segment to target groups.`);
-  };
-
   const handleExport = (format) => {
     if (format === 'CSV') {
       handleExportCSV();
@@ -201,14 +173,8 @@ export default function TeamReports() {
     } else if (format === 'PDF') {
       handleExportPDF();
     } else {
-      handleExportPDF(); // Default fallback to PDF print engine
+      handleExportPDF();
     }
-  };
-
-  const handleShareHR = (e) => {
-    e.preventDefault();
-    setActiveModal(null);
-    showToast(`Workforce report successfully delivered to ${hrEmail}`);
   };
 
   return (
@@ -268,13 +234,41 @@ export default function TeamReports() {
               <ChevronDown size={16} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
             </div>
 
-            <button 
-              onClick={() => handleExport('Master Executive Summary PDF')}
-              className="flex items-center gap-2 bg-blue-600 text-white px-5 py-2.5 rounded-xl text-sm font-black shadow-md shadow-blue-600/20 hover:bg-blue-700 transition-all cursor-pointer"
-            >
-              <Download size={16} />
-              <span>Export Report</span>
-            </button>
+            <div className="relative">
+              <button 
+                onClick={() => setExportMenuOpen(!exportMenuOpen)}
+                className="flex items-center gap-2 bg-blue-600 text-white px-5 py-2.5 rounded-xl text-sm font-black shadow-md shadow-blue-600/20 hover:bg-blue-700 transition-all cursor-pointer"
+              >
+                <Download size={16} />
+                <span>Export Report</span>
+                <ChevronDown size={14} className="opacity-70" />
+              </button>
+              {exportMenuOpen && (
+                <div className="absolute right-0 top-full mt-2 bg-white border border-slate-200/80 rounded-2xl shadow-xl py-2 w-44 z-30">
+                  <button 
+                    onClick={() => { handleExport('PDF'); setExportMenuOpen(false); }}
+                    className="w-full text-left px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 flex items-center gap-2.5 transition-colors cursor-pointer"
+                  >
+                    <FileText size={15} className="text-rose-500" />
+                    <span>Export PDF</span>
+                  </button>
+                  <button 
+                    onClick={() => { handleExport('Excel'); setExportMenuOpen(false); }}
+                    className="w-full text-left px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 flex items-center gap-2.5 transition-colors cursor-pointer"
+                  >
+                    <FileSpreadsheet size={15} className="text-emerald-500" />
+                    <span>Export Excel</span>
+                  </button>
+                  <button 
+                    onClick={() => { handleExport('CSV'); setExportMenuOpen(false); }}
+                    className="w-full text-left px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 flex items-center gap-2.5 transition-colors cursor-pointer"
+                  >
+                    <Share2 size={15} className="text-blue-500" />
+                    <span>Export CSV</span>
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         </header>
 
@@ -542,113 +536,7 @@ export default function TeamReports() {
           </div>
         </div>
 
-        {/* 6. Customized Report Generation & Export Operations */}
-        <div className="grid grid-cols-12 gap-8">
-          
-          {/* Custom Creation Prompt Box */}
-          <div className="col-span-6 bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm space-y-6">
-            <h3 className="text-2xl font-bold text-slate-900 tracking-tight">Generate Custom Report</h3>
-            
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block">Report Type</label>
-                <div className="relative">
-                  <select 
-                    value={reportType} 
-                    onChange={(e) => setReportType(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-700 appearance-none focus:outline-none"
-                  >
-                    <option>Executive Skill Gap Summary</option>
-                    <option>Individual Performance Matrix</option>
-                    <option>Training ROI & Completion Audit</option>
-                  </select>
-                  <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={16} />
-                </div>
-              </div>
 
-              <div className="space-y-2">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block">Date Range</label>
-                <div className="relative">
-                  <select 
-                    value={dateRange} 
-                    onChange={(e) => setDateRange(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-700 appearance-none focus:outline-none"
-                  >
-                    <option>Jan 2024 - Mar 2024</option>
-                    <option>Apr 2024 - Jun 2024</option>
-                    <option>Jul 2024 - Sep 2024</option>
-                  </select>
-                  <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={16} />
-                </div>
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block">Select Members</label>
-              <div className="flex flex-wrap gap-2.5">
-                {memberGroups.map((grp) => (
-                  <button
-                    key={grp.id}
-                    onClick={() => toggleGroupSelection(grp.id)}
-                    className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer border ${
-                      grp.selected 
-                        ? 'bg-blue-600 text-white border-blue-600 shadow-sm' 
-                        : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
-                    }`}
-                  >
-                    {grp.label}
-                  </button>
-                ))}
-                <button 
-                  onClick={() => setActiveModal('addGroup')}
-                  className="text-blue-600 bg-blue-50/50 hover:bg-blue-50 border border-blue-100 px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1 cursor-pointer"
-                >
-                  <Plus size={14} />
-                  <span>Add Group</span>
-                </button>
-              </div>
-            </div>
-
-            <button 
-              onClick={() => showToast(`Generating custom ${reportType} report...`)}
-              className="w-full py-4 bg-[#0F172A] hover:bg-[#1E293B] text-white text-sm font-black rounded-xl transition-all shadow-md mt-2 cursor-pointer"
-            >
-              Generate Intelligent Report
-            </button>
-          </div>
-
-          {/* Export / Share Portal Links Panel */}
-          <div className="col-span-6 bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm flex flex-col justify-between">
-            <h3 className="text-2xl font-bold text-slate-900 tracking-tight">Export and Share Team Report</h3>
-            
-            <div className="grid grid-cols-2 gap-4 flex-1 mt-6">
-              <ExportPortalButton 
-                label="Export PDF" 
-                icon={<FileText size={20} className="text-slate-500" />} 
-                onClick={() => handleExport('PDF')}
-              />
-              <ExportPortalButton 
-                label="Export Excel" 
-                icon={<FileSpreadsheet size={20} className="text-slate-500" />} 
-                onClick={() => handleExport('Excel')}
-              />
-              <ExportPortalButton 
-                label="Export CSV" 
-                icon={<Share2 size={20} className="text-slate-500" />} 
-                onClick={() => handleExport('CSV')}
-              />
-              
-              <button 
-                onClick={() => setActiveModal('shareHR')}
-                className="flex flex-col items-center justify-center p-6 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl transition-all shadow-lg shadow-blue-600/10 space-y-2 cursor-pointer"
-              >
-                <Send size={20} />
-                <span className="text-sm font-black tracking-tight">Share with HR</span>
-              </button>
-            </div>
-          </div>
-
-        </div>
 
         {/* 7. AI Intelligence Insights Footer Block */}
         <div className="bg-[#F3F6FF] rounded-[2.5rem] p-8 border border-blue-100/60 space-y-6">
@@ -752,86 +640,7 @@ export default function TeamReports() {
       {activeModal && (
         <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4">
           
-          {/* 1. Add Group Modal */}
-          {activeModal === 'addGroup' && (
-            <form onSubmit={handleAddGroup} className="bg-white w-full max-w-md rounded-3xl p-6 shadow-2xl space-y-5 border border-slate-100">
-              <div className="flex justify-between items-center border-b border-slate-100 pb-4">
-                <h3 className="text-lg font-bold text-slate-900">Add Member Group</h3>
-                <button type="button" onClick={() => setActiveModal(null)} className="p-1.5 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-100">
-                  <X size={18} />
-                </button>
-              </div>
-              <div className="space-y-2">
-                <label className="text-xs font-bold text-slate-500">Group Name</label>
-                <input 
-                  type="text" 
-                  placeholder="e.g. Backend Engineers, Q3 Cohort" 
-                  value={newGroupName}
-                  onChange={(e) => setNewGroupName(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-                  autoFocus
-                />
-              </div>
-              <div className="flex gap-3 pt-2">
-                <button type="button" onClick={() => setActiveModal(null)} className="w-full py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl">
-                  Cancel
-                </button>
-                <button type="submit" className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-md">
-                  Add Segment
-                </button>
-              </div>
-            </form>
-          )}
-
-          {/* 2. Share with HR Modal */}
-          {activeModal === 'shareHR' && (
-            <form onSubmit={handleShareHR} className="bg-white w-full max-w-lg rounded-3xl p-6 shadow-2xl space-y-5 border border-slate-100">
-              <div className="flex justify-between items-center border-b border-slate-100 pb-4">
-                <div className="flex items-center gap-2 text-blue-600">
-                  <Send size={18} />
-                  <h3 className="text-lg font-bold text-slate-900">Share Report with HR</h3>
-                </div>
-                <button type="button" onClick={() => setActiveModal(null)} className="p-1.5 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-100">
-                  <X size={18} />
-                </button>
-              </div>
-
-              <div className="space-y-4">
-                <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-slate-500">Recipient Email</label>
-                  <input 
-                    type="email" 
-                    value={hrEmail}
-                    onChange={(e) => setHrEmail(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-800 focus:outline-none"
-                    required
-                  />
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-slate-500">Include Note / Executive Commentary</label>
-                  <textarea 
-                    rows={3}
-                    placeholder="Add optional notes for the HR team regarding budget allocations or skill readiness..."
-                    value={hrNote}
-                    onChange={(e) => setHrNote(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-medium text-slate-800 focus:outline-none"
-                  ></textarea>
-                </div>
-              </div>
-
-              <div className="flex gap-3 pt-2">
-                <button type="button" onClick={() => setActiveModal(null)} className="w-full py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl">
-                  Cancel
-                </button>
-                <button type="submit" className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-md">
-                  Send Workforce Report
-                </button>
-              </div>
-            </form>
-          )}
-
-          {/* 3. AI Insight Action Details Modal */}
+          {/* AI Insight Action Details Modal */}
           {activeModal === 'insight' && activeInsight && (
             <div className="bg-white w-full max-w-md rounded-3xl p-6 shadow-2xl space-y-5 border border-slate-100">
               <div className="flex justify-between items-center border-b border-slate-100 pb-4">
@@ -949,15 +758,7 @@ const WorkforceRow = ({ member, onClick }) => (
   </div>
 );
 
-const ExportPortalButton = ({ label, icon, onClick }) => (
-  <button 
-    onClick={onClick}
-    className="flex flex-col items-center justify-center p-6 bg-slate-50/60 border border-slate-100 hover:bg-slate-50 hover:border-slate-200 rounded-2xl transition-all space-y-2 group cursor-pointer"
-  >
-    {icon}
-    <span className="text-sm font-bold text-slate-700 group-hover:text-slate-900">{label}</span>
-  </button>
-);
+
 
 const AIReportInsightCard = ({ badge, badgeColor, confidence, desc, onAction }) => (
   <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm flex flex-col justify-between space-y-4">
