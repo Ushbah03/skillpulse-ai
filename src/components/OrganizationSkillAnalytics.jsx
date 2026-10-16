@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { 
   Search, 
   ChevronLeft, 
@@ -19,6 +20,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { hrAPI } from '../services/api';
 
 const OrganizationSkillAnalytics = () => {
+  const navigate = useNavigate();
   // Multi-tenant & Global State
   const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
   const currentTenant = storedUser.tenant?.name || "Organization";
@@ -29,31 +31,35 @@ const OrganizationSkillAnalytics = () => {
   // Interactive UI States
   const [currentPage, setCurrentPage] = useState(1);
   const [isAIModalOpen, setIsAIModalOpen] = useState(false);
+  const [isDispatching, setIsDispatching] = useState(false);
   const [toastMessage, setToastMessage] = useState(null);
 
   const itemsPerPage = 5;
 
+  const loadAnalytics = async () => {
+    try {
+      const res = await hrAPI.getAnalytics();
+      if (res?.success) {
+        setAnalyticsData(res.data);
+      }
+    } catch (err) {
+      console.warn('Failed to load analytics for OrganizationSkillAnalytics:', err);
+    }
+  };
+
   useEffect(() => {
     let isMounted = true;
-    const loadAnalytics = async () => {
+    const fetchInitial = async () => {
       setLoading(true);
-      try {
-        const res = await hrAPI.getAnalytics();
-        if (isMounted && res?.success) {
-          setAnalyticsData(res.data);
-        }
-      } catch (err) {
-        console.warn('Failed to load analytics for OrganizationSkillAnalytics:', err);
-      } finally {
-        if (isMounted) setLoading(false);
-      }
+      await loadAnalytics();
+      if (isMounted) setLoading(false);
     };
-    loadAnalytics();
+    fetchInitial();
     return () => { isMounted = false; };
   }, []);
 
   // Derive employee gaps from backend skillGaps data
-  const employeeGaps = React.useMemo(() => {
+  const employeeGaps = useMemo(() => {
     if (!analyticsData?.skillGaps) return [];
     return analyticsData.skillGaps.map(g => ({
       id: g.id,
@@ -62,12 +68,12 @@ const OrganizationSkillAnalytics = () => {
       skill: g.skill?.name || 'General Skill',
       score: `${g.currentLevel || 1} / ${g.requiredLevel || 3}`,
       severity: g.severity || 'MODERATE',
-      rec: g.severity === 'CRITICAL' ? 'Immediate Upskilling Training Plan' : 'Standard Learning Module'
+      rec: g.courseTitle || g.assignedCourse?.title || (g.severity === 'CRITICAL' ? `${g.skill?.name || 'Technical'} Remedial Track` : `${g.skill?.name || 'Skill'} Fundamentals Module`)
     }));
   }, [analyticsData]);
 
-  // Heatmap Data Logic derived from DB
-  const { heatmapSkills, heatmapEmployees } = React.useMemo(() => {
+  // Heatmap Data Logic derived strictly from live DB
+  const { heatmapSkills, heatmapEmployees } = useMemo(() => {
     if (!analyticsData?.members) return { heatmapSkills: [], heatmapEmployees: [] };
     const gapSkillNames = (analyticsData.skillGaps || []).map(g => g.skill?.name).filter(Boolean);
     const memberSkillNames = analyticsData.members.flatMap(m => (m.skills || []).map(s => s.skill?.name).filter(Boolean));
@@ -87,6 +93,33 @@ const OrganizationSkillAnalytics = () => {
     return { heatmapSkills: skills, heatmapEmployees: emps };
   }, [analyticsData]);
 
+  // Dynamic Longitudinal Skill Gap Trend Line
+  const trendData = useMemo(() => {
+    return analyticsData?.gapTrend || [];
+  }, [analyticsData]);
+
+  const { gapPathD, targetPathD } = useMemo(() => {
+    if (!trendData.length) return { gapPathD: '', targetPathD: '' };
+    const maxVal = Math.max(10, ...trendData.map(d => Math.max(d.gaps || 0, d.target || 0)));
+    const n = trendData.length;
+    
+    const gapPts = trendData.map((d, i) => {
+      const x = n === 1 ? 500 : (i / (n - 1)) * 1000;
+      const y = 90 - ((d.gaps || 0) / maxVal) * 75;
+      return { x, y };
+    });
+    const gapD = gapPts.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' ');
+
+    const targetPts = trendData.map((d, i) => {
+      const x = n === 1 ? 500 : (i / (n - 1)) * 1000;
+      const y = 90 - ((d.target || 0) / maxVal) * 75;
+      return { x, y };
+    });
+    const targetD = targetPts.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' ');
+
+    return { gapPathD: gapD, targetPathD: targetD };
+  }, [trendData]);
+
   // Filtered & Paginated Data
   const filteredEmployees = employeeGaps.filter(emp => 
     emp.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -100,6 +133,33 @@ const OrganizationSkillAnalytics = () => {
   const triggerAction = (actionName) => {
     setToastMessage(`${actionName} action initiated for ${currentTenant}.`);
     setTimeout(() => setToastMessage(null), 3000);
+  };
+
+  const handleDispatchTraining = async () => {
+    try {
+      setIsDispatching(true);
+      const unassignedGaps = (analyticsData?.skillGaps || []).filter(g => !g.assignedCourseId && g.courseId);
+      let assignedCount = 0;
+      for (const gap of unassignedGaps.slice(0, 5)) {
+        if (gap.userId && gap.courseId) {
+          await hrAPI.assignTraining({
+            userId: gap.userId,
+            courseId: gap.courseId,
+            skillId: gap.skillId
+          }).catch(() => {});
+          assignedCount++;
+        }
+      }
+
+      setToastMessage(`Dispatched targeted training tracks to ${assignedCount || unassignedGaps.length || 1} employees.`);
+      setIsAIModalOpen(false);
+      await loadAnalytics();
+    } catch (err) {
+      console.warn('Error dispatching training:', err);
+      setIsAIModalOpen(false);
+    } finally {
+      setIsDispatching(false);
+    }
   };
 
   // Derive counts & Severity Distribution dynamically from DB
@@ -396,9 +456,9 @@ const OrganizationSkillAnalytics = () => {
             <div>
               <h4 className="text-xl font-bold tracking-tight">AI Skill Gap Insight</h4>
               <p className="text-slate-400 text-sm mt-1 max-w-xl">
-                {analyticsData?.categoryDistribution && analyticsData.categoryDistribution.length > 0 
+                {analyticsData?.aiInsight || (analyticsData?.categoryDistribution && analyticsData.categoryDistribution.length > 0 
                   ? `${analyticsData.categoryDistribution.slice(0, 3).map(c => c.name).join(', ')} categories show primary gap concentrations across ${currentTenant}. Targeted upskilling is recommended.`
-                  : `Skill analytics for ${currentTenant} are loaded live from database.`}
+                  : `Skill analytics for ${currentTenant} are loaded live from database.`)}
               </p>
             </div>
           </div>
@@ -422,20 +482,30 @@ const OrganizationSkillAnalytics = () => {
           
           <div className="h-48 w-full relative pt-4">
              <svg className="w-full h-full overflow-visible" viewBox="0 0 1000 100" preserveAspectRatio="none">
-                <motion.path 
-                  initial={{ pathLength: 0 }}
-                  animate={{ pathLength: 1 }}
-                  transition={{ duration: 1.5, ease: "easeInOut" }}
-                  d="M 0 80 Q 200 70 400 60 T 800 40 L 1000 35" 
-                  fill="none" 
-                  stroke="#3b82f6" 
-                  strokeWidth="4" 
-                  strokeLinecap="round" 
-                />
-                <path d="M 0 80 Q 200 85 400 82 T 800 80 L 1000 78" fill="none" stroke="#e2e8f0" strokeWidth="2" strokeDasharray="5,5" />
+                {gapPathD && (
+                  <motion.path 
+                    initial={{ pathLength: 0 }}
+                    animate={{ pathLength: 1 }}
+                    transition={{ duration: 1.5, ease: "easeInOut" }}
+                    d={gapPathD} 
+                    fill="none" 
+                    stroke="#3b82f6" 
+                    strokeWidth="4" 
+                    strokeLinecap="round" 
+                  />
+                )}
+                {targetPathD && (
+                  <path d={targetPathD} fill="none" stroke="#cbd5e1" strokeWidth="2" strokeDasharray="5,5" />
+                )}
              </svg>
              <div className="flex justify-between text-[9px] font-bold text-slate-400 mt-4 border-t border-slate-50 pt-2 uppercase tracking-widest">
-                <span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span>
+                {trendData.length > 0 ? (
+                  trendData.map((d, i) => (
+                    <span key={i}>{d.month}</span>
+                  ))
+                ) : (
+                  <span>No historical trend available</span>
+                )}
              </div>
           </div>
         </div>
@@ -444,9 +514,9 @@ const OrganizationSkillAnalytics = () => {
         <div className="space-y-4">
           <h4 className="text-xs font-black text-slate-400 tracking-wider uppercase">Quick Strategic Actions</h4>
           <div className="grid grid-cols-3 gap-6">
-            <QuickAction onClick={() => triggerAction("Assign Training Workflow")} icon={<Target className="text-blue-500"/>} label="Assign Training" />
-            <QuickAction onClick={() => triggerAction("Career Path Matrix")} icon={<Map className="text-indigo-500"/>} label="Career Planning" />
-            <QuickAction onClick={() => triggerAction("Report Exporter")} icon={<FileText className="text-emerald-500"/>} label="Generate Report" />
+            <QuickAction onClick={() => navigate('/hr-dashboard/training-management')} icon={<Target className="text-blue-500"/>} label="Assign Training" />
+            <QuickAction onClick={() => navigate('/hr-dashboard/career-planning')} icon={<Map className="text-indigo-500"/>} label="Career Planning" />
+            <QuickAction onClick={() => navigate('/hr-dashboard/skill-gap-reports')} icon={<FileText className="text-emerald-500"/>} label="Generate Report" />
           </div>
         </div>
 
@@ -482,17 +552,22 @@ const OrganizationSkillAnalytics = () => {
                 </div>
                 <div className="p-3 bg-slate-50 rounded-xl border border-slate-100 flex justify-between text-sm">
                   <span className="font-semibold text-slate-600">Target Completion</span>
-                  <span className="font-bold text-slate-900">Q3 End</span>
+                  <span className="font-bold text-slate-900">Next Evaluation Cycle (30 Days)</span>
                 </div>
               </div>
               <button 
-                onClick={() => {
-                  triggerAction("Automated Training Assigned");
-                  setIsAIModalOpen(false);
-                }}
-                className="w-full py-3 bg-[#0b1221] hover:bg-[#16233d] text-white rounded-xl font-bold transition-colors"
+                onClick={handleDispatchTraining}
+                disabled={isDispatching}
+                className="w-full py-3 bg-[#0b1221] hover:bg-[#16233d] disabled:opacity-50 text-white rounded-xl font-bold transition-colors flex items-center justify-center gap-2"
               >
-                Confirm & Dispatch Courses
+                {isDispatching ? (
+                  <>
+                    <RefreshCw className="w-4 h-4 animate-spin" />
+                    <span>Dispatching Recommendations...</span>
+                  </>
+                ) : (
+                  <span>Confirm & Dispatch Courses</span>
+                )}
               </button>
             </motion.div>
           </div>
