@@ -93,32 +93,6 @@ const OrganizationSkillAnalytics = () => {
     return { heatmapSkills: skills, heatmapEmployees: emps };
   }, [analyticsData]);
 
-  // Dynamic Longitudinal Skill Gap Trend Line
-  const trendData = useMemo(() => {
-    return analyticsData?.gapTrend || [];
-  }, [analyticsData]);
-
-  const { gapPathD, targetPathD } = useMemo(() => {
-    if (!trendData.length) return { gapPathD: '', targetPathD: '' };
-    const maxVal = Math.max(10, ...trendData.map(d => Math.max(d.gaps || 0, d.target || 0)));
-    const n = trendData.length;
-    
-    const gapPts = trendData.map((d, i) => {
-      const x = n === 1 ? 500 : (i / (n - 1)) * 1000;
-      const y = 90 - ((d.gaps || 0) / maxVal) * 75;
-      return { x, y };
-    });
-    const gapD = gapPts.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' ');
-
-    const targetPts = trendData.map((d, i) => {
-      const x = n === 1 ? 500 : (i / (n - 1)) * 1000;
-      const y = 90 - ((d.target || 0) / maxVal) * 75;
-      return { x, y };
-    });
-    const targetD = targetPts.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' ');
-
-    return { gapPathD: gapD, targetPathD: targetD };
-  }, [trendData]);
 
   // Filtered & Paginated Data
   const filteredEmployees = employeeGaps.filter(emp => 
@@ -470,45 +444,7 @@ const OrganizationSkillAnalytics = () => {
           </button>
         </div>
 
-        {/* --- SECTION 7: TREND CHART --- */}
-        <div className="bg-white rounded-2xl p-8 border border-slate-100 shadow-sm space-y-6">
-          <div className="flex justify-between items-center">
-            <h3 className="text-xl font-bold text-slate-900">Skill Gap Trend Over Time</h3>
-            <div className="flex gap-6 text-[10px] font-black text-slate-400 uppercase">
-              <div className="flex items-center gap-2"><span className="w-3 h-0.5 bg-blue-500"></span> Gap Count</div>
-              <div className="flex items-center gap-2"><span className="w-3 h-0.5 bg-slate-200"></span> Target</div>
-            </div>
-          </div>
-          
-          <div className="h-48 w-full relative pt-4">
-             <svg className="w-full h-full overflow-visible" viewBox="0 0 1000 100" preserveAspectRatio="none">
-                {gapPathD && (
-                  <motion.path 
-                    initial={{ pathLength: 0 }}
-                    animate={{ pathLength: 1 }}
-                    transition={{ duration: 1.5, ease: "easeInOut" }}
-                    d={gapPathD} 
-                    fill="none" 
-                    stroke="#3b82f6" 
-                    strokeWidth="4" 
-                    strokeLinecap="round" 
-                  />
-                )}
-                {targetPathD && (
-                  <path d={targetPathD} fill="none" stroke="#cbd5e1" strokeWidth="2" strokeDasharray="5,5" />
-                )}
-             </svg>
-             <div className="flex justify-between text-[9px] font-bold text-slate-400 mt-4 border-t border-slate-50 pt-2 uppercase tracking-widest">
-                {trendData.length > 0 ? (
-                  trendData.map((d, i) => (
-                    <span key={i}>{d.month}</span>
-                  ))
-                ) : (
-                  <span>No historical trend available</span>
-                )}
-             </div>
-          </div>
-        </div>
+
 
         {/* --- SECTION 8: QUICK ACTIONS --- */}
         <div className="space-y-4">
