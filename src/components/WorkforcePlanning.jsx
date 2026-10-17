@@ -289,6 +289,8 @@ const WorkforcePlanning = () => {
   const [reallocateForm, setReallocateForm] = useState({ source: "", target: "", count: 1 });
   const [isSyncing, setIsSyncing] = useState(false);
   const [isApproving, setIsApproving] = useState(false);
+  const [modalTab, setModalTab] = useState('internalTalent');
+  const [mobilizingId, setMobilizingId] = useState(null);
   const [toastMessage, setToastMessage] = useState(null);
   const [loading, setLoading] = useState(true);
   const [forecastData, setForecastData] = useState(null);
@@ -579,6 +581,38 @@ const WorkforcePlanning = () => {
     } finally {
       setIsApproving(false);
       setTimeout(() => setToastMessage(null), 4000);
+    }
+  };
+
+  const handleMobilizeInternalCandidate = async (rec) => {
+    setMobilizingId(rec.id);
+    try {
+      const res = await hrAPI.assignTraining({
+        userId: rec.recommendedCandidate.id,
+        courseId: rec.courseId,
+        skillId: rec.skillId
+      });
+      const isSuccess = res?.success === true || res?.data?.success === true || (res && !res.error);
+      if (isSuccess) {
+        setToastMessage(`Internal upskilling track dispatched to ${rec.recommendedCandidate.name}.`);
+        setForecastData(prev => ({
+          ...prev,
+          internalTalentRecommendations: (prev.internalTalentRecommendations || []).map(r => 
+            r.id === rec.id ? { ...r, isAlreadyEnrolled: true } : r
+          )
+        }));
+        // Reload analytics in background to reflect updated enrollments
+        hrAPI.getAnalytics().then(aRes => {
+          if (aRes?.data) setAnalyticsData(aRes.data);
+        }).catch(() => {});
+      } else {
+        setToastMessage(res?.message || "Failed to assign upskilling track.");
+      }
+    } catch (err) {
+      setToastMessage(err?.message || "Failed to dispatch upskilling.");
+    } finally {
+      setMobilizingId(null);
+      setTimeout(() => setToastMessage(null), 3500);
     }
   };
 
@@ -915,70 +949,170 @@ const WorkforcePlanning = () => {
               <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mb-6">
                 <BrainCircuit size={24} />
               </div>
-              <h2 className="text-2xl font-black text-slate-900 mb-2">Workforce Forecast Breakdown</h2>
-              <p className="text-slate-500 text-sm mb-6">
-                Detailed AI-driven growth trajectory breakdown based on historical quarterly churn, project pipelines, and market hiring velocity.
+              <h2 className="text-2xl font-black text-slate-900 mb-1">Workforce Talent & Forecast Intelligence</h2>
+              <p className="text-slate-500 text-xs mb-5">
+                AI-driven workforce capacity, internal talent mobility recommendations, and headcount targets.
               </p>
 
-              {forecastData?.isPlanApproved && (
-                <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-2xl mb-6 flex items-start gap-3">
-                  <CheckCircle2 size={20} className="text-emerald-600 flex-shrink-0 mt-0.5" />
-                  <div>
-                    <h5 className="text-xs font-black text-emerald-900 uppercase tracking-wider">Recruitment Plan Formally Approved</h5>
-                    <p className="text-xs text-emerald-700 mt-0.5">
-                      Target headcount of {forecastData.approvedPlan?.targetHeadcount || projectedNeed} personnel locked for Fiscal Year {forecastData.approvedPlan?.fiscalYear || "2026-2027"}.
-                    </p>
-                    <p className="text-[10px] text-emerald-600 font-bold mt-1.5">
-                      Logged in Audit Trail &bull; Status: Active & Locked
-                    </p>
-                  </div>
-                </div>
-              )}
-
-              <div className="space-y-3 mb-8">
-                <div className="p-3 bg-slate-50 rounded-xl border border-slate-100 flex justify-between text-sm">
-                  <span className="font-semibold text-slate-600">Current Workforce</span>
-                  <span className="font-bold text-slate-900">{totalEmployees} Employees</span>
-                </div>
-                <div className="p-3 bg-slate-50 rounded-xl border border-slate-100 flex justify-between text-sm">
-                  <span className="font-semibold text-slate-600">Active Skill Deficits</span>
-                  <span className="font-bold text-purple-600">{analyticsData?.skillGaps?.length || 0} Open Roles</span>
-                </div>
-                <div className="p-3 bg-slate-50 rounded-xl border border-slate-100 flex justify-between text-sm">
-                  <span className="font-semibold text-slate-600">6-Month Projected Need</span>
-                  <span className="font-bold text-slate-900">{projectedNeed} Personnel</span>
-                </div>
-                <div className="p-3 bg-slate-50 rounded-xl border border-slate-100 flex justify-between text-sm">
-                  <span className="font-semibold text-slate-600">Approval & Audit Status</span>
-                  <span className={`font-bold ${forecastData?.isPlanApproved ? "text-emerald-600 flex items-center gap-1" : "text-amber-600"}`}>
-                    {forecastData?.isPlanApproved ? <><CheckCircle2 size={14} className="text-emerald-600"/> Approved & Locked</> : "Pending Formal Approval"}
+              {/* Tabs */}
+              <div className="flex border-b border-slate-100 mb-6 gap-3">
+                <button
+                  onClick={() => setModalTab('internalTalent')}
+                  className={`pb-3 text-xs font-bold transition-all relative flex items-center gap-2 ${modalTab === 'internalTalent' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-slate-400 hover:text-slate-700'}`}
+                >
+                  <Users size={15} />
+                  Internal Talent Sourcing
+                  <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-blue-50 text-blue-600 border border-blue-100">
+                    {forecastData?.internalTalentRecommendations?.length || 0} Matches
                   </span>
-                </div>
-              </div>
-
-              {forecastData?.isPlanApproved ? (
-                <button 
-                  onClick={() => setIsAIModalOpen(false)}
-                  className="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold transition-colors flex items-center justify-center gap-2"
-                >
-                  <CheckCircle2 size={18} />
-                  Recruitment Plan Approved (Close)
                 </button>
-              ) : (
-                <button 
-                  onClick={handleApproveHiringPlan}
-                  disabled={isApproving}
-                  className="w-full py-3.5 bg-[#0b1221] hover:bg-[#16233d] disabled:opacity-50 text-white rounded-xl font-bold transition-colors flex items-center justify-center gap-2"
+                <button
+                  onClick={() => setModalTab('plan')}
+                  className={`pb-3 text-xs font-bold transition-all relative flex items-center gap-2 ${modalTab === 'plan' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-slate-400 hover:text-slate-700'}`}
                 >
-                  {isApproving ? (
-                    <>
-                      <Loader2 className="w-5 h-5 animate-spin" />
-                      Approving & Locking Target...
-                    </>
-                  ) : (
-                    "Approve Recruitment Plan"
+                  <Target size={15} />
+                  Headcount Targets & Approval
+                  {forecastData?.isPlanApproved && (
+                    <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-100">
+                      Approved
+                    </span>
                   )}
                 </button>
+              </div>
+
+              {modalTab === 'internalTalent' ? (
+                <div>
+                  <div className="p-3 bg-blue-50/60 rounded-xl border border-blue-100 text-xs text-blue-900 leading-relaxed mb-4">
+                    <strong>AI Talent Mobility:</strong> Matched existing employees with high adjacent skill readiness for the open requisitions. Upskilling existing staff fulfills demand faster without external recruiting overhead.
+                  </div>
+
+                  <div className="space-y-3 max-h-[42vh] overflow-y-auto pr-1 mb-6">
+                    {(forecastData?.internalTalentRecommendations || []).length > 0 ? (
+                      forecastData.internalTalentRecommendations.map(rec => (
+                        <div key={rec.id} className="p-3.5 bg-slate-50/80 border border-slate-100 rounded-2xl flex justify-between items-center gap-3 hover:bg-white hover:border-blue-200 transition-all">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-full bg-indigo-600 text-white font-bold flex items-center justify-center flex-shrink-0 text-sm shadow-sm">
+                              {rec.recommendedCandidate.name[0]}
+                            </div>
+                            <div>
+                              <div className="flex items-center gap-2">
+                                <h4 className="text-xs font-black text-slate-900">{rec.recommendedCandidate.name}</h4>
+                                <span className="text-[9px] font-black px-2 py-0.5 rounded bg-emerald-50 text-emerald-600 border border-emerald-200">
+                                  {rec.matchScore} Match
+                                </span>
+                              </div>
+                              <p className="text-[11px] text-slate-500 font-medium">
+                                {rec.department} &bull; {rec.targetRole}
+                              </p>
+                              <p className="text-[11px] font-bold text-blue-600 mt-0.5">
+                                <span className="text-slate-400 font-normal">Fulfills Gap:</span> {rec.skillName}
+                              </p>
+                            </div>
+                          </div>
+
+                          <div className="flex flex-col items-end gap-1 flex-shrink-0">
+                            {rec.isAlreadyEnrolled ? (
+                              <span className="px-3 py-1.5 bg-emerald-50 text-emerald-700 font-bold rounded-xl text-xs border border-emerald-200 flex items-center gap-1.5">
+                                <CheckCircle2 size={13} className="text-emerald-600" />
+                                Track Assigned
+                              </span>
+                            ) : (
+                              <button
+                                onClick={() => handleMobilizeInternalCandidate(rec)}
+                                disabled={mobilizingId === rec.id}
+                                className="px-3.5 py-1.5 bg-[#0b1221] hover:bg-blue-600 text-white rounded-xl text-xs font-bold transition-all shadow-sm flex items-center gap-1.5 disabled:opacity-50"
+                              >
+                                {mobilizingId === rec.id ? (
+                                  <>
+                                    <Loader2 size={12} className="animate-spin" />
+                                    Assigning...
+                                  </>
+                                ) : (
+                                  "Mobilize & Upskill"
+                                )}
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <p className="text-xs text-slate-400 text-center py-6">All competency deficits are currently supported by active training tracks.</p>
+                    )}
+                  </div>
+
+                  <div className="flex justify-between items-center pt-2 border-t border-slate-100">
+                    <span className="text-xs text-slate-400 font-medium">Want to formalize fiscal hiring numbers?</span>
+                    <button
+                      onClick={() => setModalTab('plan')}
+                      className="text-xs font-bold text-blue-600 hover:text-blue-700"
+                    >
+                      View Headcount Plan &rarr;
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div>
+                  {forecastData?.isPlanApproved && (
+                    <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-2xl mb-6 flex items-start gap-3">
+                      <CheckCircle2 size={20} className="text-emerald-600 flex-shrink-0 mt-0.5" />
+                      <div>
+                        <h5 className="text-xs font-black text-emerald-900 uppercase tracking-wider">Recruitment Plan Formally Approved</h5>
+                        <p className="text-xs text-emerald-700 mt-0.5">
+                          Target headcount of {forecastData.approvedPlan?.targetHeadcount || projectedNeed} personnel locked for Fiscal Year {forecastData.approvedPlan?.fiscalYear || "2026-2027"}.
+                        </p>
+                        <p className="text-[10px] text-emerald-600 font-bold mt-1.5">
+                          Logged in Audit Trail &bull; Status: Active & Locked
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="space-y-3 mb-8">
+                    <div className="p-3 bg-slate-50 rounded-xl border border-slate-100 flex justify-between text-sm">
+                      <span className="font-semibold text-slate-600">Current Workforce</span>
+                      <span className="font-bold text-slate-900">{totalEmployees} Employees</span>
+                    </div>
+                    <div className="p-3 bg-slate-50 rounded-xl border border-slate-100 flex justify-between text-sm">
+                      <span className="font-semibold text-slate-600">Active Skill Deficits</span>
+                      <span className="font-bold text-purple-600">{analyticsData?.skillGaps?.length || 0} Open Roles</span>
+                    </div>
+                    <div className="p-3 bg-slate-50 rounded-xl border border-slate-100 flex justify-between text-sm">
+                      <span className="font-semibold text-slate-600">6-Month Projected Need</span>
+                      <span className="font-bold text-slate-900">{projectedNeed} Personnel</span>
+                    </div>
+                    <div className="p-3 bg-slate-50 rounded-xl border border-slate-100 flex justify-between text-sm">
+                      <span className="font-semibold text-slate-600">Approval & Audit Status</span>
+                      <span className={`font-bold ${forecastData?.isPlanApproved ? "text-emerald-600 flex items-center gap-1" : "text-amber-600"}`}>
+                        {forecastData?.isPlanApproved ? <><CheckCircle2 size={14} className="text-emerald-600"/> Approved & Locked</> : "Pending Formal Approval"}
+                      </span>
+                    </div>
+                  </div>
+
+                  {forecastData?.isPlanApproved ? (
+                    <button 
+                      onClick={() => setIsAIModalOpen(false)}
+                      className="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold transition-colors flex items-center justify-center gap-2"
+                    >
+                      <CheckCircle2 size={18} />
+                      Recruitment Plan Approved (Close)
+                    </button>
+                  ) : (
+                    <button 
+                      onClick={handleApproveHiringPlan}
+                      disabled={isApproving}
+                      className="w-full py-3.5 bg-[#0b1221] hover:bg-[#16233d] disabled:opacity-50 text-white rounded-xl font-bold transition-colors flex items-center justify-center gap-2"
+                    >
+                      {isApproving ? (
+                        <>
+                          <Loader2 className="w-5 h-5 animate-spin" />
+                          Approving & Locking Target...
+                        </>
+                      ) : (
+                        "Approve Recruitment Plan"
+                      )}
+                    </button>
+                  )}
+                </div>
               )}
             </motion.div>
           </div>
