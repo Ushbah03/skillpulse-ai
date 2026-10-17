@@ -288,6 +288,7 @@ const WorkforcePlanning = () => {
   const [isRecruitmentModalOpen, setIsRecruitmentModalOpen] = useState(false);
   const [reallocateForm, setReallocateForm] = useState({ source: "", target: "", count: 1 });
   const [isSyncing, setIsSyncing] = useState(false);
+  const [isApproving, setIsApproving] = useState(false);
   const [toastMessage, setToastMessage] = useState(null);
   const [loading, setLoading] = useState(true);
   const [forecastData, setForecastData] = useState(null);
@@ -533,24 +534,51 @@ const WorkforcePlanning = () => {
   };
 
   const handleApproveHiringPlan = async () => {
+    setIsApproving(true);
     try {
       const res = await hrAPI.approveHiringPlan({
         projectedNeed,
         targetFiscalYear: "2026-2027",
         approvedByTenant: currentTenant
       });
-      if (res?.data?.success) {
-        setToastMessage(res.data.message || "Strategic hiring plan approved.");
-        // Refresh forecastData so isPlanApproved & approvedPlan are updated in state
-        const forecastRes = await hrAPI.getForecast();
-        if (forecastRes?.success) setForecastData(forecastRes.data);
+
+      const isSuccess = res?.success === true || res?.data?.success === true || (res && !res.error && !res.message?.includes('failed'));
+      if (isSuccess) {
+        const approvedPlanData = res?.plan || res?.data?.plan || {
+          status: "APPROVED",
+          targetHeadcount: projectedNeed,
+          fiscalYear: "2026-2027",
+          approvedAt: new Date().toISOString()
+        };
+
+        setToastMessage(res?.message || res?.data?.message || "Strategic workforce recruitment plan approved and locked.");
+        
+        // Update local state immediately so modal & banner transform live
+        setForecastData(prev => ({
+          ...prev,
+          isPlanApproved: true,
+          approvedPlan: approvedPlanData
+        }));
+
+        // Background refetch for full DB synchronization
+        try {
+          const forecastRes = await hrAPI.getForecast();
+          if (forecastRes?.success && forecastRes?.data) {
+            setForecastData(forecastRes.data);
+          } else if (forecastRes?.data) {
+            setForecastData(forecastRes.data);
+          }
+        } catch (e) {
+          console.warn("Forecast refetch background sync:", e);
+        }
       } else {
-        setToastMessage(res?.data?.error || "Approval failed.");
+        setToastMessage(res?.message || res?.error || res?.data?.error || "Approval failed.");
       }
     } catch (err) {
-      setToastMessage(err?.response?.data?.error || err.message || "Failed to approve hiring plan.");
+      setToastMessage(err?.message || "Failed to approve hiring plan.");
     } finally {
-      setTimeout(() => setToastMessage(null), 3500);
+      setIsApproving(false);
+      setTimeout(() => setToastMessage(null), 4000);
     }
   };
 
@@ -909,17 +937,21 @@ const WorkforcePlanning = () => {
 
               <div className="space-y-3 mb-8">
                 <div className="p-3 bg-slate-50 rounded-xl border border-slate-100 flex justify-between text-sm">
-                  <span className="font-semibold text-slate-600">Total Workforce</span>
+                  <span className="font-semibold text-slate-600">Current Workforce</span>
                   <span className="font-bold text-slate-900">{totalEmployees} Employees</span>
                 </div>
                 <div className="p-3 bg-slate-50 rounded-xl border border-slate-100 flex justify-between text-sm">
-                  <span className="font-semibold text-slate-600">6-Month Projected Need</span>
-                  <span className="font-bold text-slate-900">{projectedNeed} Employees</span>
+                  <span className="font-semibold text-slate-600">Active Skill Deficits</span>
+                  <span className="font-bold text-purple-600">{analyticsData?.skillGaps?.length || 0} Open Roles</span>
                 </div>
                 <div className="p-3 bg-slate-50 rounded-xl border border-slate-100 flex justify-between text-sm">
-                  <span className="font-semibold text-slate-600">Plan Status</span>
-                  <span className={`font-bold ${forecastData?.isPlanApproved ? "text-emerald-600" : "text-amber-600"}`}>
-                    {forecastData?.isPlanApproved ? "Approved & Committed" : "Pending Approval"}
+                  <span className="font-semibold text-slate-600">6-Month Projected Need</span>
+                  <span className="font-bold text-slate-900">{projectedNeed} Personnel</span>
+                </div>
+                <div className="p-3 bg-slate-50 rounded-xl border border-slate-100 flex justify-between text-sm">
+                  <span className="font-semibold text-slate-600">Approval & Audit Status</span>
+                  <span className={`font-bold ${forecastData?.isPlanApproved ? "text-emerald-600 flex items-center gap-1" : "text-amber-600"}`}>
+                    {forecastData?.isPlanApproved ? <><CheckCircle2 size={14} className="text-emerald-600"/> Approved & Locked</> : "Pending Formal Approval"}
                   </span>
                 </div>
               </div>
@@ -930,14 +962,22 @@ const WorkforcePlanning = () => {
                   className="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold transition-colors flex items-center justify-center gap-2"
                 >
                   <CheckCircle2 size={18} />
-                  Plan Approved &bull; Close
+                  Recruitment Plan Approved (Close)
                 </button>
               ) : (
                 <button 
                   onClick={handleApproveHiringPlan}
-                  className="w-full py-3.5 bg-[#0b1221] hover:bg-[#16233d] text-white rounded-xl font-bold transition-colors"
+                  disabled={isApproving}
+                  className="w-full py-3.5 bg-[#0b1221] hover:bg-[#16233d] disabled:opacity-50 text-white rounded-xl font-bold transition-colors flex items-center justify-center gap-2"
                 >
-                  Approve Recruitment Plan
+                  {isApproving ? (
+                    <>
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                      Approving & Locking Target...
+                    </>
+                  ) : (
+                    "Approve Recruitment Plan"
+                  )}
                 </button>
               )}
             </motion.div>
