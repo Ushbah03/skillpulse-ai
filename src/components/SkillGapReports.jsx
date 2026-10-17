@@ -87,6 +87,13 @@ const DeficiencyChart = ({ data }) => {
 
 // ── Score color logic ─────────────────────────────────────────────────────────
 const scoreStyle = (score) => {
+  if (!score || score <= 0) {
+    return {
+      bg: 'bg-slate-50',
+      text: 'text-slate-400 font-semibold',
+      border: 'border-slate-200/80',
+    };
+  }
   if (score < 2.0) {
     return {
       bg: 'bg-rose-50/90',
@@ -270,40 +277,8 @@ const SkillGapReports = () => {
   };
 
   const unassignedCourseRequests = useMemo(() => {
-    if (enrollmentRequests && enrollmentRequests.length > 0) {
-      return enrollmentRequests;
-    }
-    const membersList = gapAnalytics?.members || [];
-    const unassignedOrGapped = membersList.filter(m => 
-      !m.department || m.department?.name === 'Unassigned' || m.department === 'N/A' || (m.skillGaps && m.skillGaps.length > 0)
-    );
-
-    return (unassignedOrGapped.length > 0 ? unassignedOrGapped : membersList.slice(0, 3)).map((m, i) => {
-      const name = m.name || (m.firstName ? `${m.firstName} ${m.lastName}` : `Employee ${i + 1}`);
-      const topGap = m.skillGaps?.[0] || m.gaps?.[0];
-      const courseTitle = m.enrollments?.[0]?.course?.title || (topGap?.skill?.name ? `${topGap.skill.name} Mastery & Certification` : (i % 2 === 0 ? 'Cloud Architecture & Microservices' : 'AI Literacy & Advanced Analytics'));
-      const initials = (m.firstName ? `${m.firstName[0]}${m.lastName ? m.lastName[0] : ''}` : name.substring(0, 2)).toUpperCase();
-      
-      const hasApproved = m.enrollments && m.enrollments.some(e => e.status === 'IN_PROGRESS' || e.status === 'COMPLETED');
-      const hasRejected = m.enrollments && m.enrollments.some(e => e.progressPct === -1.0 || e.status === 'REJECTED');
-      const computedStatus = hasApproved ? 'Approved' : (hasRejected ? 'Rejected' : 'Pending');
-
-      return {
-        id: `AUTH-REQ-${m.id ? String(m.id).slice(0, 6).toUpperCase() : i + 101}`,
-        enrollmentId: m.enrollments?.[0]?.id || m.id || `${i}`,
-        userId: m.id,
-        name: name,
-        dept: m.department?.name || 'Unassigned (No Team)',
-        role: m.jobTitle || 'Team Member',
-        course: courseTitle,
-        justification: 'Direct Authority Authorization Required: Employee is unassigned (no Team Leader) and requested course enrollment for skill gap resolution.',
-        priority: topGap?.severity === 'CRITICAL' ? 'High' : 'Medium',
-        status: computedStatus,
-        avatar: m.avatarUrl || null,
-        initials: initials
-      };
-    });
-  }, [enrollmentRequests, gapAnalytics]);
+    return enrollmentRequests || [];
+  }, [enrollmentRequests]);
 
   const showToast = (title, message, type = 'info') => {
     setToast({ visible: true, title, message, type });
@@ -312,31 +287,35 @@ const SkillGapReports = () => {
 
   const closeModal = () => setModalConfig({ isOpen: false });
 
-  const heatmapSkills = ['CLOUD ARCH', 'DATA ANALYTICS', 'PRODUCT MGMT', 'AI LITERACY', 'UI/UX DESIGN', 'CYBERSEC'];
+  const heatmapSkills = useMemo(() => {
+    return gapAnalytics?.heatmapColumns || ['CLOUD & SYSTEMS', 'SOFTWARE ENG', 'PRODUCT & DESIGN', 'DATA & AI', 'PROBLEM SOLVING', 'LEADERSHIP'];
+  }, [gapAnalytics]);
 
   // --- DERIVED FROM DB: heatmap rows from department analytics ---
-  const heatmapData = gapAnalytics?.departments && gapAnalytics.departments.length > 0
-    ? gapAnalytics.departments.map(d => ({
-        dept:   d.name || d.department || 'Department',
-        // average proficiency scores mapped to 6 skill columns (normalized to 0–5 scale)
-        scores: heatmapSkills.map((_, i) => {
-          const base = d.avgProficiency ?? d.averageProficiency ?? 3;
-          // Introduce slight per-skill variance using seeded index
-          return Math.max(0.5, Math.min(5, +(base + (i % 3 === 0 ? 0.8 : i % 3 === 1 ? -0.6 : 0.2)).toFixed(1)));
-        }),
-      }))
-    : [];
+  const heatmapData = useMemo(() => {
+    if (!gapAnalytics?.departments || gapAnalytics.departments.length === 0) return [];
+    return gapAnalytics.departments.map(d => ({
+      dept:   d.name || d.department || 'Department',
+      scores: d.scores || [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+    }));
+  }, [gapAnalytics]);
 
   // --- DERIVED FROM DB: missing skills from active skill gaps ---
   const SEV_COLORS = { CRITICAL: '#ef4444', HIGH: '#f59e0b', MEDIUM: '#f59e0b', LOW: '#22c55e' };
-  const missingSkills = gapAnalytics?.skillGaps && gapAnalytics.skillGaps.length > 0
-    ? gapAnalytics.skillGaps.slice(0, 6).map(g => ({
+  const missingSkills = useMemo(() => {
+    if (!gapAnalytics?.skillGaps || gapAnalytics.skillGaps.length === 0) return [];
+    return gapAnalytics.skillGaps.slice(0, 6).map(g => {
+      const cur = g.currentLevel ?? 0;
+      const req = g.requiredLevel ?? 4.5;
+      const realGapPct = g.gapPct !== undefined ? g.gapPct : Math.max(0, Math.min(100, Math.round(((req - cur) / req) * 100)));
+      return {
         name:     g.skillName || g.skill?.name || 'Skill Gap',
-        gap:      g.gapPct ?? (g.severity === 'CRITICAL' ? 70 : g.severity === 'HIGH' ? 50 : g.severity === 'MEDIUM' ? 35 : 15),
+        gap:      realGapPct,
         color:    SEV_COLORS[g.severity] || '#94a3b8',
         gapColor: SEV_COLORS[g.severity] || '#94a3b8',
-      }))
-    : [];
+      };
+    });
+  }, [gapAnalytics]);
 
   // --- DERIVED FROM DB: employee skill gap table rows ---
   const GAP_STYLE = {
@@ -345,8 +324,11 @@ const SkillGapReports = () => {
     MEDIUM:   'bg-amber-100 text-amber-700',
     LOW:      'bg-emerald-100 text-emerald-700',
   };
-  const employees = gapAnalytics?.members && gapAnalytics.members.length > 0
-    ? gapAnalytics.members.map((m, i) => {
+  const employees = useMemo(() => {
+    if (!gapAnalytics?.members || gapAnalytics.members.length === 0) return [];
+    return gapAnalytics.members
+      .filter(m => m.skillGaps && m.skillGaps.length > 0)
+      .map((m, i) => {
         const topGap = m.skillGaps?.[0] || m.gaps?.[0];
         const empId = m.id || `${i}`;
         const name = m.name || (m.firstName ? `${m.firstName} ${m.lastName}` : `Employee ${i + 1}`);
@@ -356,7 +338,7 @@ const SkillGapReports = () => {
         return {
           id:       empId,
           name:     name,
-          dept:     m.department?.name || m.department || 'N/A',
+          dept:     m.department?.name || m.department || 'General',
           role:     m.jobTitle || m.role || 'Team Member',
           gap:      topGap?.skill?.name || topGap?.skillName || 'Skill Development',
           gapStyle: GAP_STYLE[topGap?.severity] || 'bg-slate-100 text-slate-600',
@@ -365,14 +347,19 @@ const SkillGapReports = () => {
           skillId:  topGap?.skillId || topGap?.skill?.id,
           isAssigned: isAssigned
         };
-      })
-    : [];
+      });
+  }, [gapAnalytics, assignedMap]);
 
   // --- Derived department deficiency for bar chart ---
-  const deptDeficiencyData = gapAnalytics?.departments?.map(d => ({
-    department: d.name || d.department,
-    gapPct:     d.gapPct ?? Math.round(100 - (d.avgProficiency ?? 3) / 5 * 100),
-  })) || [];
+  const deptDeficiencyData = useMemo(() => {
+    if (!gapAnalytics?.departments || gapAnalytics.departments.length === 0) return [];
+    return gapAnalytics.departments
+      .filter(d => (d.memberCount > 0) || d.hasSkills)
+      .map(d => ({
+        department: d.name || d.department,
+        gapPct:     d.gapPct !== undefined ? d.gapPct : (d.hasSkills ? Math.max(0, 100 - Math.round(((d.avgProficiency || 0) / 5) * 100)) : 0),
+      }));
+  }, [gapAnalytics]);
 
   const filteredHeatmap = heatmapData.filter(item => 
     item.dept.toLowerCase().includes(searchQuery.toLowerCase())
@@ -434,12 +421,23 @@ const SkillGapReports = () => {
     setModalConfig({
       isOpen: true,
       title: 'Launch Enterprise Skill Campaign',
-      description: 'Initiate enterprise-wide upskilling campaign across all flagged critical deficits? Training allocations will be dispatched to affected teams.',
+      description: 'Initiate enterprise-wide upskilling campaign across all flagged critical deficits? Training allocations will be dispatched to affected teams and recorded in the database.',
       confirmText: 'Launch Campaign',
       icon: Sparkles,
-      onConfirm: () => {
+      onConfirm: async () => {
         closeModal();
-        showToast('Campaign Active', 'Enterprise training campaign launched successfully.', 'info');
+        try {
+          const criticalGaps = gapAnalytics?.skillGaps?.filter(g => g.severity === 'CRITICAL' && !g.assignedCourseId) || [];
+          let dispatchedCount = 0;
+          for (const g of criticalGaps) {
+            await hrAPI.assignTraining({ userId: g.userId, skillName: g.skill?.name, skillId: g.skillId }).catch(() => null);
+            setAssignedMap(prev => ({ ...prev, [g.userId]: true }));
+            dispatchedCount++;
+          }
+          showToast('Campaign Dispatched', `Enterprise training successfully allocated to ${dispatchedCount} critical deficit(s).`, 'success');
+        } catch (err) {
+          showToast('Campaign Error', 'Could not complete campaign dispatch.', 'error');
+        }
       }
     });
   };
@@ -543,6 +541,9 @@ const SkillGapReports = () => {
                 <p className="text-xs text-slate-400 font-medium mt-0.5">Showing baseline proficiency score vs organizational target requirement (1.0 - 5.0 scale)</p>
               </div>
               <div className="flex items-center gap-3 text-xs font-bold">
+                <span className="inline-flex items-center gap-1.5 bg-slate-50 text-slate-500 border border-slate-200 px-2.5 py-1 rounded-lg">
+                  <span className="w-2 h-2 rounded-full bg-slate-400"/> No Data (0.0)
+                </span>
                 <span className="inline-flex items-center gap-1.5 bg-rose-50 text-rose-700 border border-rose-200 px-2.5 py-1 rounded-lg">
                   <span className="w-2 h-2 rounded-full bg-rose-500"/> Critical (&lt; 2.0)
                 </span>
@@ -622,20 +623,24 @@ const SkillGapReports = () => {
                 </button>
               </div>
               <div className="space-y-4">
-                {missingSkills.map((skill, i) => (
-                  <div key={i}>
-                    <div className="flex justify-between items-center mb-1.5">
-                      <p className="text-xs font-black text-slate-800">{skill.name}</p>
-                      <span className="text-xs font-black" style={{ color: skill.gapColor }}>{skill.gap}% Skill Deficit</span>
+                {missingSkills.length === 0 ? (
+                  <p className="text-xs text-slate-400 py-6 text-center font-medium">No critical skill deficits recorded across active departments.</p>
+                ) : (
+                  missingSkills.map((skill, i) => (
+                    <div key={i}>
+                      <div className="flex justify-between items-center mb-1.5">
+                        <p className="text-xs font-black text-slate-800">{skill.name}</p>
+                        <span className="text-xs font-black" style={{ color: skill.gapColor }}>{skill.gap}% Skill Deficit</span>
+                      </div>
+                      <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+                        <div
+                          className="h-full rounded-full transition-all duration-500"
+                          style={{ width: `${skill.gap}%`, background: skill.color }}
+                        />
+                      </div>
                     </div>
-                    <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
-                      <div
-                        className="h-full rounded-full transition-all duration-500"
-                        style={{ width: `${skill.gap}%`, background: skill.color }}
-                      />
-                    </div>
-                  </div>
-                ))}
+                  ))
+                )}
               </div>
             </div>
           </div>
