@@ -19,28 +19,24 @@ const DeficiencyChart = ({ data }) => {
     );
   }
 
+  const n = data.length;
+  const W = 460, H = 115, padT = 32, padB = 55;
+  const barW = Math.min(56, Math.max(38, Math.floor((W - 60) / Math.max(n, 1) - 24)));
+  const gap = Math.min(42, Math.max(20, Math.floor((W - 40 - (n * barW)) / Math.max(n - 1, 1))));
+  const totalW = n * barW + (n - 1) * gap;
+  const startX = Math.max(20, (W - totalW) / 2);
+  const totalH = H + padT + padB;
+
   const bars = data.map((d, i) => {
     let label = d.department || d.dept || 'Dept';
-    if (label.length > 9) label = label.substring(0, 8) + '..';
     const pct = Math.min(100, Math.max(0, Math.round(d.gapPct ?? d.pct ?? 0)));
     
     let barColor = ELEGANT_COLORS[i % ELEGANT_COLORS.length];
-    let badgeColor = 'bg-indigo-50 text-indigo-700 border-indigo-200';
-    if (pct > 50) {
-      barColor = '#f43f5e';
-      badgeColor = 'bg-rose-50 text-rose-700 border-rose-200';
-    } else if (pct >= 30) {
-      barColor = '#f59e0b';
-      badgeColor = 'bg-amber-50 text-amber-700 border-amber-200';
-    }
+    if (pct > 50) barColor = '#f43f5e';
+    else if (pct >= 30) barColor = '#f59e0b';
 
-    return { label, pct, barColor, badgeColor };
+    return { label, pct, barColor };
   });
-
-  const W = 440, H = 115, padT = 32, padB = 55, barW = 34, gap = 20;
-  const totalW = bars.length * (barW + gap) - gap;
-  const startX = Math.max(14, (W - totalW) / 2);
-  const totalH = H + padT + padB;
 
   return (
     <svg viewBox={`0 0 ${W} ${totalH}`} className="w-full" style={{ height: 205 }}>
@@ -51,15 +47,15 @@ const DeficiencyChart = ({ data }) => {
         return (
           <g key={i} className="transition-all hover:opacity-90">
             {/* Track background */}
-            <rect x={x} y={padT} width={barW} height={H} rx="7" fill="#f8fafc" stroke="#e2e8f0" strokeDasharray="3 3" />
+            <rect x={x} y={padT} width={barW} height={H} rx="8" fill="#f8fafc" stroke="#e2e8f0" strokeDasharray="3 3" />
             {/* Filled bar */}
-            <rect x={x} y={y} width={barW} height={barH} rx="7" fill={b.barColor} opacity="0.88" />
+            <rect x={x} y={y} width={barW} height={barH} rx="8" fill={b.barColor} opacity="0.9" />
             {/* Percentage text above bar */}
             <text
               x={x + barW / 2}
               y={y - 8}
               textAnchor="middle"
-              fontSize="11"
+              fontSize="12"
               fill={b.barColor}
               fontFamily="sans-serif"
               fontWeight="800"
@@ -354,10 +350,10 @@ const SkillGapReports = () => {
   const deptDeficiencyData = useMemo(() => {
     if (!gapAnalytics?.departments || gapAnalytics.departments.length === 0) return [];
     return gapAnalytics.departments
-      .filter(d => (d.memberCount > 0) || d.hasSkills)
+      .filter(d => d.hasSkills)
       .map(d => ({
         department: d.name || d.department,
-        gapPct:     d.gapPct !== undefined ? d.gapPct : (d.hasSkills ? Math.max(0, 100 - Math.round(((d.avgProficiency || 0) / 5) * 100)) : 0),
+        gapPct:     d.gapPct !== undefined ? d.gapPct : Math.max(0, 100 - Math.round(((d.avgProficiency || 0) / 5) * 100)),
       }));
   }, [gapAnalytics]);
 
