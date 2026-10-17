@@ -22,13 +22,25 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { hrAPI } from '../services/api';
 
 // ── Compliance Trend Line Chart (SVG) ─────────────────────────────────────────
-const ComplianceTrendChart = () => {
-  const months = ['Jan', 'Mar', 'May', 'Jul', 'Sep', 'Nov'];
-  const values = [78, 80, 82, 87, 91, 94];
-  const W = 460, H = 200, padL = 10, padR = 10, padT = 10, padB = 30;
+const ComplianceTrendChart = ({ trendData = [] }) => {
+  if (!trendData || trendData.length < 2) {
+    return (
+      <div className="h-[200px] flex flex-col items-center justify-center text-slate-400 bg-slate-50/50 rounded-xl border border-dashed border-slate-200 p-6 text-center">
+        <Clock size={28} className="text-slate-300 mb-2" />
+        <p className="text-sm font-bold text-slate-600">No Compliance Trend Data</p>
+        <p className="text-xs text-slate-400 mt-1 max-w-xs">
+          Historical trend progression will appear once compliance milestones across monthly cycles are recorded.
+        </p>
+      </div>
+    );
+  }
+
+  const months = trendData.map(d => d.month);
+  const values = trendData.map(d => d.rate);
+  const W = 460, H = 200, padL = 15, padR = 15, padT = 15, padB = 30;
   const chartW = W - padL - padR;
   const chartH = H - padT - padB;
-  const minV = 70, maxV = 100;
+  const minV = 0, maxV = 100;
 
   const xPos = (i) => padL + (i / (values.length - 1)) * chartW;
   const yPos = (v) => padT + chartH - ((v - minV) / (maxV - minV)) * chartH;
@@ -57,14 +69,24 @@ const ComplianceTrendChart = () => {
         strokeLinejoin="round" 
       />
       {months.map((m, i) => (
-        <text key={m} x={xPos(i)} y={H - 6} textAnchor="middle" fontSize="11" fill="#9ca3af" fontWeight="600" fontFamily="sans-serif">{m}</text>
+        <text key={m + i} x={xPos(i)} y={H - 6} textAnchor="middle" fontSize="11" fill="#9ca3af" fontWeight="600" fontFamily="sans-serif">{m}</text>
       ))}
     </svg>
   );
 };
 
 // ── Status Donut Chart ────────────────────────────────────────────────────────
-const StatusDonut = ({ compliantPct = 94, expiringPct = 4, nonCompliantPct = 2, totalCount = 0 }) => {
+const StatusDonut = ({ compliantPct = 0, expiringPct = 0, nonCompliantPct = 0, totalCount = 0 }) => {
+  if (totalCount === 0) {
+    return (
+      <svg width="170" height="170" viewBox="0 0 170 170">
+        <circle cx="85" cy="85" r="65" fill="none" stroke="#e2e8f0" strokeWidth="16" />
+        <text x="85" y="81" textAnchor="middle" fontSize="20" fontWeight="900" fill="#94a3b8" fontFamily="sans-serif">0</text>
+        <text x="85" y="97" textAnchor="middle" fontSize="10" fontWeight="700" fill="#94a3b8" fontFamily="sans-serif">No Records</text>
+      </svg>
+    );
+  }
+
   const totalPct = (compliantPct + expiringPct + nonCompliantPct) || 1;
   const segments = [
     { pct: (compliantPct / totalPct) * 100, color: '#10b981' }, // Compliant
@@ -122,6 +144,7 @@ const ComplianceManagement = () => {
   const [toastMessage, setToastMessage] = useState(null);
   const [loading, setLoading] = useState(true);
   const [complianceState, setComplianceState] = useState(null);
+  const [dispatchingReminders, setDispatchingReminders] = useState(false);
 
   const itemsPerPage = 3;
 
@@ -146,17 +169,19 @@ const ComplianceManagement = () => {
 
   // --- DERIVED FROM DB: certification timeline from compliance items ---
   const certTimeline = React.useMemo(() => {
-    if (!complianceState?.data) return [];
+    if (!complianceState?.data || complianceState.data.length === 0) return [];
     return complianceState.data.slice(0, 5).map((item) => {
       const isExpired  = item.status === 'EXPIRED' || item.status === 'NON_COMPLIANT';
       const isPending  = item.status === 'PENDING';
       const dotColor   = isExpired ? '#ef4444' : isPending ? '#f59e0b' : '#10b981';
       const statusText = isExpired ? 'Renew Certification' : isPending ? 'Expires soon' : 'Status: Valid';
+      const certName   = item.regulationType || item.certificationName || item.type || 'Mandatory Regulation';
+      const rawDate    = item.dueDate || item.expiryDate;
       return {
-        title:       item.certificationName || item.type || 'Certification',
+        title:       certName,
         person:      item.user ? `${item.user.firstName} ${item.user.lastName}` : (item.userId || 'Employee'),
         dept:        item.user?.department?.name || item.department || 'General',
-        date:        item.expiryDate ? new Date(item.expiryDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'N/A',
+        date:        rawDate ? new Date(rawDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'N/A',
         statusText,
         statusColor:  isExpired ? 'text-red-500' : isPending ? 'text-amber-500' : 'text-emerald-500',
         dotColor,
@@ -169,7 +194,7 @@ const ComplianceManagement = () => {
 
   // --- DERIVED FROM DB: employee compliance rows ---
   const employeeData = React.useMemo(() => {
-    if (!complianceState?.data) return [];
+    if (!complianceState?.data || complianceState.data.length === 0) return [];
     return complianceState.data.map((item, idx) => {
       const isExpired  = item.status === 'EXPIRED' || item.status === 'NON_COMPLIANT';
       const isPending  = item.status === 'PENDING';
@@ -180,19 +205,20 @@ const ComplianceManagement = () => {
         ? 'bg-amber-50 text-amber-600 border border-amber-200'
         : 'bg-emerald-50 text-emerald-600 border border-emerald-200';
       const dotColor       = isExpired ? '#ef4444' : isPending ? '#f59e0b' : '#10b981';
-      // Deterministic score calculation
-      const score = isExpired ? 45 : isPending ? 72 : 98;
-      const initials = item.user?.firstName ? `${item.user.firstName[0]}${item.user.lastName ? item.user.lastName[0] : ''}` : 'EM';
+      const certName       = item.regulationType || item.certificationName || item.type || 'Mandatory Regulation';
+      const rawDate        = item.dueDate || item.expiryDate;
+      const score          = isExpired ? 45 : isPending ? 72 : 98;
+      const initials       = item.user?.firstName ? `${item.user.firstName[0]}${item.user.lastName ? item.user.lastName[0] : ''}` : 'EM';
       
       return {
         id:          item.id || idx + 1,
         name:        item.user ? `${item.user.firstName} ${item.user.lastName}` : (item.userId || `Employee ${idx + 1}`),
         dept:        item.user?.department?.name || item.department || 'General',
-        cert:        item.certificationName || item.type || 'Certification',
+        cert:        certName,
         status:      statusLabel,
         statusStyle,
         dotColor,
-        expiry:      item.expiryDate ? new Date(item.expiryDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : 'N/A',
+        expiry:      rawDate ? new Date(rawDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : 'N/A',
         score,
         scoreColor:  isExpired ? 'text-red-500' : 'text-slate-800',
         initials,
@@ -211,14 +237,46 @@ const ComplianceManagement = () => {
   const expiringCount = complianceState?.data ? complianceState.data.filter(r => r.status === 'PENDING').length : 0;
   const nonCompliantCount = complianceState?.data ? complianceState.data.filter(r => r.status === 'EXPIRED' || r.status === 'NON_COMPLIANT').length : 0;
 
-  const overallComplianceRate = complianceState?.summary?.overallCompliancePct ?? (totalRecords ? Math.round((compliantCount / totalRecords) * 100) : 100);
-  const compliantPct = totalRecords ? Math.round((compliantCount / totalRecords) * 100) : 100;
+  const overallComplianceRate = totalRecords > 0 
+    ? (complianceState?.summary?.overallCompliancePct ?? Math.round((compliantCount / totalRecords) * 100))
+    : 0;
+  const compliantPct = totalRecords ? Math.round((compliantCount / totalRecords) * 100) : 0;
   const expiringPct = totalRecords ? Math.round((expiringCount / totalRecords) * 100) : 0;
   const nonCompliantPct = totalRecords ? Math.round((nonCompliantCount / totalRecords) * 100) : 0;
 
   const triggerAction = (actionName) => {
     setToastMessage(`${actionName} action initiated for ${currentTenant}.`);
     setTimeout(() => setToastMessage(null), 3000);
+  };
+
+  const handleSendReminders = async () => {
+    if (totalRecords === 0) {
+      setToastMessage("No compliance records available to send reminders for.");
+      setTimeout(() => setToastMessage(null), 3500);
+      setIsRiskModalOpen(false);
+      return;
+    }
+    if (expiringCount + nonCompliantCount === 0) {
+      setToastMessage("All employee certifications are fully compliant! No reminders needed.");
+      setTimeout(() => setToastMessage(null), 3500);
+      setIsRiskModalOpen(false);
+      return;
+    }
+    setDispatchingReminders(true);
+    try {
+      const res = await hrAPI.sendComplianceReminders();
+      if (res?.success) {
+        setToastMessage(res.message || "Automated renewal reminders dispatched successfully.");
+      } else {
+        setToastMessage(res?.message || "Failed to dispatch reminders.");
+      }
+    } catch (err) {
+      setToastMessage("Error dispatching reminders. Please try again.");
+    } finally {
+      setDispatchingReminders(false);
+      setIsRiskModalOpen(false);
+      setTimeout(() => setToastMessage(null), 4000);
+    }
   };
 
   const handleExportCSV = () => {
@@ -325,13 +383,6 @@ const ComplianceManagement = () => {
                 className="w-80 pl-11 pr-4 py-2.5 bg-[#f3f4f6]/60 rounded-xl text-sm font-semibold text-slate-700 outline-none border border-transparent focus:border-blue-500/30 focus:bg-white focus:shadow-[0_0_0_4px_rgba(59,130,246,0.1)] transition-all" 
               />
             </div>
-            <button 
-              onClick={() => triggerAction("Notifications View")}
-              className="relative p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200/70 transition-colors"
-            >
-              <Bell size={18} className="text-slate-600" />
-              {expiringCount > 0 && <span className="absolute top-2 right-2 w-2 h-2 bg-amber-500 rounded-full" />}
-            </button>
             <div 
               className="w-10 h-10 rounded-full bg-indigo-600 text-white font-bold flex items-center justify-center border-2 border-white shadow-sm cursor-pointer" 
               onClick={() => triggerAction("Profile View")}
@@ -347,9 +398,9 @@ const ComplianceManagement = () => {
           <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm flex justify-between items-start">
             <div>
               <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Overall Compliance Rate</p>
-              <p className="text-3xl font-black text-slate-900">{overallComplianceRate}%</p>
-              <p className={`text-xs mt-2 font-bold ${overallComplianceRate >= 80 ? 'text-emerald-500' : 'text-rose-500'}`}>
-                {overallComplianceRate >= 80 ? '▲ Stable' : '▼ Action Required'}
+              <p className="text-3xl font-black text-slate-900">{totalRecords > 0 ? `${overallComplianceRate}%` : '0%'}</p>
+              <p className={`text-xs mt-2 font-bold ${totalRecords > 0 ? (overallComplianceRate >= 80 ? 'text-emerald-500' : 'text-rose-500') : 'text-slate-400'}`}>
+                {totalRecords > 0 ? (overallComplianceRate >= 80 ? '▲ Stable' : '▼ Action Required') : 'No records tracked'}
               </p>
             </div>
             <div className="w-9 h-9 rounded-xl bg-emerald-50 flex items-center justify-center flex-shrink-0">
@@ -362,7 +413,7 @@ const ComplianceManagement = () => {
             <div>
               <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Expiring (30 days)</p>
               <p className="text-3xl font-black text-slate-900">{expiringCount}</p>
-              <p className="text-xs mt-2 text-amber-500 font-bold">Attention required</p>
+              <p className="text-xs mt-2 text-amber-500 font-bold">{expiringCount > 0 ? 'Attention required' : 'No upcoming expirations'}</p>
             </div>
             <div className="w-9 h-9 rounded-xl bg-amber-50 flex items-center justify-center flex-shrink-0">
               <Clock size={18} className="text-amber-500" />
@@ -374,7 +425,7 @@ const ComplianceManagement = () => {
             <div>
               <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Non-Compliant</p>
               <p className="text-3xl font-black text-red-500">{nonCompliantCount}</p>
-              <p className="text-xs mt-2 text-slate-400 font-semibold">Requires re-certification</p>
+              <p className="text-xs mt-2 text-slate-400 font-semibold">{nonCompliantCount > 0 ? 'Requires re-certification' : 'No violations recorded'}</p>
             </div>
             <div className="w-9 h-9 rounded-xl bg-red-50 flex items-center justify-center flex-shrink-0">
               <XCircle size={18} className="text-red-500" />
@@ -385,10 +436,9 @@ const ComplianceManagement = () => {
           <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm flex justify-between items-start">
             <div>
               <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Compliance Trend</p>
-              <p className="text-3xl font-black text-slate-900">+{overallComplianceRate}%</p>
-              <p className="text-xs mt-2 text-emerald-500 font-bold flex items-center gap-1">
-                <span className="w-3.5 h-3.5 rounded-full bg-emerald-500 text-white text-[9px] flex items-center justify-center font-black">✓</span>
-                Live DB calculated rate
+              <p className="text-3xl font-black text-slate-900">{totalRecords > 0 ? `${overallComplianceRate}%` : '0%'}</p>
+              <p className="text-xs mt-2 text-slate-400 font-bold flex items-center gap-1">
+                {totalRecords > 0 ? `Live calculation (${totalRecords} records)` : '0 records tracked'}
               </p>
             </div>
             <div className="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0">
@@ -441,7 +491,7 @@ const ComplianceManagement = () => {
               <h3 className="text-xl font-bold text-slate-900">Compliance Trend (12 Months)</h3>
               <span className="text-[10px] font-black px-3 py-1 rounded-lg bg-slate-100 text-slate-500 uppercase tracking-wider">Overall Rate</span>
             </div>
-            <ComplianceTrendChart />
+            <ComplianceTrendChart trendData={complianceState?.trend || []} />
           </div>
         </div>
 
@@ -618,13 +668,17 @@ const ComplianceManagement = () => {
               <div className="flex items-center gap-3 mb-1">
                 <h4 className="text-xl font-bold tracking-tight">AI Compliance Risk Insight</h4>
                 <span className="text-[10px] font-black px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 uppercase tracking-widest">
-                  {overallComplianceRate >= 80 ? "Low Risk" : "Action Required"}
+                  {totalRecords === 0 
+                    ? "No Data" 
+                    : (complianceState?.aiRisk?.riskLevel ? `${complianceState.aiRisk.riskLevel} Risk` : (overallComplianceRate >= 80 ? "Low Risk" : "Action Required"))}
                 </span>
               </div>
               <p className="text-slate-400 text-sm mt-1 max-w-2xl leading-relaxed">
-                {expiringCount > 0 || nonCompliantCount > 0 
-                  ? `AI predicts compliance vulnerability across ${currentTenant} due to ${expiringCount + nonCompliantCount} pending/expired certification records. Early renewal notifications are recommended.`
-                  : `All compliance certification records for ${currentTenant} are fully verified and up to date.`}
+                {totalRecords === 0
+                  ? `No active compliance or certification records found in database for ${currentTenant}. Track regulatory certifications to enable AI compliance risk modeling.`
+                  : (complianceState?.aiRisk?.message || (expiringCount > 0 || nonCompliantCount > 0 
+                    ? `AI predicts compliance vulnerability across ${currentTenant} due to ${expiringCount + nonCompliantCount} pending/expired certification records. Early renewal notifications are recommended.`
+                    : `All compliance certification records for ${currentTenant} are fully verified and up to date.`))}
               </p>
             </div>
           </div>
@@ -709,18 +763,36 @@ const ComplianceManagement = () => {
                 </div>
                 <div className="p-3 bg-slate-50 rounded-xl border border-slate-100 flex justify-between text-sm">
                   <span className="font-semibold text-slate-600">Overall Rate</span>
-                  <span className="font-bold text-emerald-600">{overallComplianceRate}%</span>
+                  <span className="font-bold text-emerald-600">{totalRecords > 0 ? `${overallComplianceRate}%` : '0% (No Records)'}</span>
                 </div>
+                {totalRecords > 0 && complianceState?.aiRisk?.hotspotDepartment && (
+                  <div className="p-3 bg-slate-50 rounded-xl border border-slate-100 flex justify-between text-sm">
+                    <span className="font-semibold text-slate-600">Risk Hotspot Dept</span>
+                    <span className="font-bold text-rose-600">{complianceState.aiRisk.hotspotDepartment}</span>
+                  </div>
+                )}
+                {totalRecords > 0 && complianceState?.aiRisk?.daysToNextBreach !== null && (
+                  <div className="p-3 bg-slate-50 rounded-xl border border-slate-100 flex justify-between text-sm">
+                    <span className="font-semibold text-slate-600">Days to Next Expiry</span>
+                    <span className="font-bold text-amber-600">{complianceState.aiRisk.daysToNextBreach} Days</span>
+                  </div>
+                )}
               </div>
-              <button 
-                onClick={() => {
-                  triggerAction("Auto-Reminders Sent");
-                  setIsRiskModalOpen(false);
-                }}
-                className="w-full py-3 bg-[#0b1221] hover:bg-[#16233d] text-white rounded-xl font-bold transition-colors"
-              >
-                Send Automated Renewal Reminders
-              </button>
+              
+              {totalRecords === 0 ? (
+                <div className="p-4 bg-slate-100 text-slate-500 rounded-xl text-xs font-semibold text-center">
+                  No compliance records available. Add employee certifications to dispatch automated renewal reminders.
+                </div>
+              ) : (
+                <button 
+                  onClick={handleSendReminders}
+                  disabled={dispatchingReminders || (expiringCount + nonCompliantCount === 0)}
+                  className="w-full py-3 bg-[#0b1221] hover:bg-[#16233d] disabled:bg-slate-300 disabled:cursor-not-allowed text-white rounded-xl font-bold transition-colors flex items-center justify-center gap-2"
+                >
+                  {dispatchingReminders ? <Loader2 size={18} className="animate-spin" /> : null}
+                  {dispatchingReminders ? 'Dispatching Reminders...' : (expiringCount + nonCompliantCount === 0 ? 'All Records Compliant' : 'Send Automated Renewal Reminders')}
+                </button>
+              )}
             </motion.div>
           </div>
         )}

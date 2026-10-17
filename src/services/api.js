@@ -182,6 +182,10 @@ export const hrAPI = {
   getForecast: () => apiRequest('/hr/forecast'),
   getSuccession: () => apiRequest('/hr/succession'),
   getCompliance: () => apiRequest('/hr/compliance'),
+  sendComplianceReminders: () =>
+    apiRequest('/hr/compliance/reminders', {
+      method: 'POST'
+    }),
   getTraining: () => apiRequest('/hr/training'),
   createCourse: (data) =>
     apiRequest('/hr/courses', {
