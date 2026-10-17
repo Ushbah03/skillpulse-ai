@@ -505,7 +505,7 @@ const OrganizationSkillAnalytics = () => {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-white rounded-3xl p-8 max-w-lg w-full shadow-2xl relative"
+              className="bg-white rounded-3xl p-8 max-w-xl w-full shadow-2xl relative"
             >
               <button 
                 onClick={() => setIsAIModalOpen(false)}
@@ -520,7 +520,7 @@ const OrganizationSkillAnalytics = () => {
               <p className="text-slate-500 text-sm mb-6">
                 Automatically assign targeted learning paths to employees with identified skill deficiencies in {currentTenant}.
               </p>
-              <div className="space-y-3 mb-8">
+              <div className="space-y-3 mb-6">
                 {unassignedGaps.length === 0 ? (
                   <div className="p-3 bg-emerald-50 rounded-xl border border-emerald-100 flex justify-between text-sm">
                     <span className="font-semibold text-emerald-800">Training Status</span>
@@ -539,6 +539,65 @@ const OrganizationSkillAnalytics = () => {
                   <span className="font-bold text-slate-900">Next Evaluation Cycle (30 Days)</span>
                 </div>
               </div>
+
+              {/* Detailed Breakdown of Assignments */}
+              <div className="space-y-2 mb-6">
+                <div className="flex justify-between items-center text-xs font-bold text-slate-400 uppercase tracking-wider px-1">
+                  <span>Assigned Personnel & Courseware</span>
+                  <span className="text-slate-700 font-extrabold">{assignedGaps.length} Enrolled</span>
+                </div>
+                <div className="max-h-52 overflow-y-auto space-y-2 pr-1 divide-y divide-slate-100 border border-slate-100 rounded-2xl p-2 bg-slate-50/50">
+                  {assignedGaps.map((gap) => (
+                    <div 
+                      key={gap.id} 
+                      className="p-3 bg-white rounded-xl border border-slate-100 flex items-center justify-between text-xs hover:border-blue-100 transition-colors"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-blue-50 text-blue-700 font-bold flex items-center justify-center text-[10px] border border-blue-100">
+                          {`${gap.user?.firstName?.[0] || 'E'}${gap.user?.lastName?.[0] || 'M'}`}
+                        </div>
+                        <div>
+                          <p className="font-bold text-slate-900">{gap.user?.firstName} {gap.user?.lastName}</p>
+                          <p className="text-slate-500 text-[11px]">Skill Gap: <span className="font-semibold text-slate-700">{gap.skill?.name}</span></p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-bold text-blue-600 max-w-[210px] truncate" title={gap.courseTitle || gap.assignedCourse?.title}>
+                          {gap.courseTitle || gap.assignedCourse?.title || 'Targeted Module'}
+                        </p>
+                        <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-600 mt-0.5">
+                          <CheckCircle2 size={11} /> Active Enrolled
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                  {unassignedGaps.map((gap) => (
+                    <div 
+                      key={gap.id} 
+                      className="p-3 bg-amber-50/60 rounded-xl border border-amber-100 flex items-center justify-between text-xs"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-amber-100 text-amber-700 font-bold flex items-center justify-center text-[10px]">
+                          {`${gap.user?.firstName?.[0] || 'E'}${gap.user?.lastName?.[0] || 'M'}`}
+                        </div>
+                        <div>
+                          <p className="font-bold text-slate-900">{gap.user?.firstName} {gap.user?.lastName}</p>
+                          <p className="text-slate-500 text-[11px]">Skill Gap: <span className="font-semibold text-slate-700">{gap.skill?.name}</span></p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-bold text-slate-700 max-w-[210px] truncate">
+                          {gap.courseTitle || 'Recommended Track'}
+                        </p>
+                        <span className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-600 mt-0.5">
+                          • Pending Dispatch
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
               {unassignedGaps.length === 0 ? (
                 <button 
                   disabled
