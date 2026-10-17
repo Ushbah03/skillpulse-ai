@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { 
-  Search, Bell, HelpCircle, Download, Calendar, 
+  Search, Bell, HelpCircle, Download, 
   RefreshCw, BookOpen, Sparkles, X, CheckCircle, Loader2,
   CheckCircle2, XCircle, ShieldAlert, UserCheck, Award
 } from 'lucide-react';
@@ -20,15 +20,15 @@ const DeficiencyChart = ({ data }) => {
   }
 
   const n = data.length;
-  const W = 460, H = 115, padT = 32, padB = 55;
-  const barW = Math.min(56, Math.max(38, Math.floor((W - 60) / Math.max(n, 1) - 24)));
-  const gap = Math.min(42, Math.max(20, Math.floor((W - 40 - (n * barW)) / Math.max(n - 1, 1))));
+  const W = 490, H = 105, padT = 28, padB = 65;
+  const barW = Math.min(32, Math.max(20, Math.floor((W - 80) / n - 16)));
+  const gap = Math.min(32, Math.max(14, Math.floor((W - 60 - (n * barW)) / Math.max(n - 1, 1))));
   const totalW = n * barW + (n - 1) * gap;
-  const startX = Math.max(20, (W - totalW) / 2);
+  const startX = Math.max(16, (W - totalW) / 2);
   const totalH = H + padT + padB;
 
   const bars = data.map((d, i) => {
-    let label = d.department || d.dept || 'Dept';
+    const label = d.department || d.dept || 'Dept';
     const pct = Math.min(100, Math.max(0, Math.round(d.gapPct ?? d.pct ?? 0)));
     
     let barColor = ELEGANT_COLORS[i % ELEGANT_COLORS.length];
@@ -39,38 +39,39 @@ const DeficiencyChart = ({ data }) => {
   });
 
   return (
-    <svg viewBox={`0 0 ${W} ${totalH}`} className="w-full" style={{ height: 205 }}>
+    <svg viewBox={`0 0 ${W} ${totalH}`} className="w-full" style={{ height: 215 }}>
       {bars.map((b, i) => {
-        const barH = Math.max(8, (b.pct / 100) * H);
+        const barH = Math.max(6, (b.pct / 100) * H);
         const x = startX + i * (barW + gap);
         const y = padT + H - barH;
         return (
           <g key={i} className="transition-all hover:opacity-90">
             {/* Track background */}
-            <rect x={x} y={padT} width={barW} height={H} rx="8" fill="#f8fafc" stroke="#e2e8f0" strokeDasharray="3 3" />
+            <rect x={x} y={padT} width={barW} height={H} rx="6" fill="#f8fafc" stroke="#e2e8f0" strokeDasharray="3 3" />
             {/* Filled bar */}
-            <rect x={x} y={y} width={barW} height={barH} rx="8" fill={b.barColor} opacity="0.9" />
+            <rect x={x} y={y} width={barW} height={barH} rx="6" fill={b.barColor} opacity="0.9" />
             {/* Percentage text above bar */}
             <text
               x={x + barW / 2}
-              y={y - 8}
+              y={y - 6}
               textAnchor="middle"
-              fontSize="12"
+              fontSize="10"
               fill={b.barColor}
               fontFamily="sans-serif"
               fontWeight="800"
             >
               {b.pct}%
             </text>
-            {/* Department Label below bar */}
+            {/* Department Label below bar angled cleanly */}
             <text 
-              x={x + barW / 2} 
-              y={padT + H + 22} 
-              textAnchor="middle" 
-              fontSize="11" 
-              fill="#334155" 
+              x={x + barW / 2 + 4} 
+              y={padT + H + 12} 
+              textAnchor="end" 
+              fontSize="9" 
+              fill="#475569" 
               fontFamily="sans-serif" 
               fontWeight="700"
+              transform={`rotate(-32, ${x + barW / 2 + 4}, ${padT + H + 12})`}
             >
               {b.label}
             </text>
@@ -184,8 +185,6 @@ const ActionModal = ({ isOpen, title, description, confirmText, onConfirm, onClo
 const SkillGapReports = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isExporting, setIsExporting] = useState(false);
-  const [selectedQuarter, setSelectedQuarter] = useState('Q3 2026');
-  const [isQuarterOpen, setIsQuarterOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [gapAnalytics, setGapAnalytics] = useState(null);
 
@@ -350,7 +349,7 @@ const SkillGapReports = () => {
   const deptDeficiencyData = useMemo(() => {
     if (!gapAnalytics?.departments || gapAnalytics.departments.length === 0) return [];
     return gapAnalytics.departments
-      .filter(d => d.hasSkills)
+      .filter(d => (d.memberCount > 0) || d.hasSkills)
       .map(d => ({
         department: d.name || d.department,
         gapPct:     d.gapPct !== undefined ? d.gapPct : Math.max(0, 100 - Math.round(((d.avgProficiency || 0) / 5) * 100)),
@@ -493,31 +492,7 @@ const SkillGapReports = () => {
               <span className="text-xs text-slate-400 font-semibold bg-white border border-slate-200 px-3 py-1.5 rounded-lg shadow-sm">
                 Tenant: {displayTenantName}
               </span>
-              <div className="relative">
-                <button 
-                  onClick={() => setIsQuarterOpen(!isQuarterOpen)}
-                  className="inline-flex items-center gap-2 px-4 py-2 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 bg-white hover:bg-slate-50 transition-all shadow-sm active:scale-95"
-                >
-                  <Calendar size={14} className="text-indigo-600" /> {selectedQuarter}
-                </button>
-                {isQuarterOpen && (
-                  <div className="absolute right-0 mt-2 w-36 bg-white border border-slate-200 shadow-xl rounded-xl p-1 z-30 animate-in fade-in slide-in-from-top-2 duration-150">
-                    {['Q1 2026', 'Q2 2026', 'Q3 2026', 'Q4 2026', 'All Time'].map(q => (
-                      <button
-                        key={q}
-                        onClick={() => {
-                          setSelectedQuarter(q);
-                          setIsQuarterOpen(false);
-                          showToast('Quarter Filter Applied', `Showing skill gap analytics for ${q}.`, 'info');
-                        }}
-                        className={`w-full text-left px-3 py-2 text-xs font-bold rounded-lg transition-colors ${selectedQuarter === q ? 'bg-indigo-50 text-indigo-600' : 'text-slate-600 hover:bg-slate-50'}`}
-                      >
-                        {q}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
+
               <button 
                 onClick={handleExport}
                 disabled={isExporting}
