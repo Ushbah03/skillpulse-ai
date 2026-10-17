@@ -204,6 +204,21 @@ export const hrAPI = {
       method: 'POST',
       body: JSON.stringify(typeof data === 'object' ? data : { userId: arguments[0], courseId: arguments[1], skillId: arguments[2] })
     }),
+  reallocateHeadcount: (data) =>
+    apiRequest('/hr/reallocate-headcount', {
+      method: 'POST',
+      body: JSON.stringify(data)
+    }),
+  syncRecruitment: (data) =>
+    apiRequest('/hr/sync-recruitment', {
+      method: 'POST',
+      body: JSON.stringify(data || {})
+    }),
+  approveHiringPlan: (data) =>
+    apiRequest('/hr/approve-hiring-plan', {
+      method: 'POST',
+      body: JSON.stringify(data || {})
+    }),
 };
 
 // ----------------------------------------------------

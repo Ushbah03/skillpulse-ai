@@ -300,33 +300,82 @@ const WorkforcePlanning = () => {
     setTimeout(() => setToastMessage(null), 3000);
   };
 
-  const handleConfirmReallocation = (e) => {
+  const handleConfirmReallocation = async (e) => {
     e.preventDefault();
     if (!reallocateForm.source || !reallocateForm.target) {
       setToastMessage("Please select both source and target departments.");
       setTimeout(() => setToastMessage(null), 3000);
       return;
     }
-    setToastMessage(`Successfully reallocated ${reallocateForm.count} headcount from ${reallocateForm.source} to ${reallocateForm.target}.`);
-    setIsReallocateModalOpen(false);
-    setTimeout(() => setToastMessage(null), 4000);
+    if (reallocateForm.source === reallocateForm.target) {
+      setToastMessage("Source and target departments cannot be the same.");
+      setTimeout(() => setToastMessage(null), 3000);
+      return;
+    }
+    try {
+      const res = await hrAPI.reallocateHeadcount({
+        sourceDepartment: reallocateForm.source,
+        targetDepartment: reallocateForm.target,
+        count: parseInt(reallocateForm.count, 10) || 1,
+        note: reallocateForm.note
+      });
+      if (res?.data?.success) {
+        setToastMessage(res.data.message || `Successfully reallocated headcount from ${reallocateForm.source} to ${reallocateForm.target}.`);
+        setIsReallocateModalOpen(false);
+        loadAllData();
+      } else {
+        setToastMessage(res?.data?.error || "Reallocation failed.");
+      }
+    } catch (err) {
+      setToastMessage(err?.response?.data?.error || err.message || "Failed to reallocate headcount.");
+    } finally {
+      setTimeout(() => setToastMessage(null), 4000);
+    }
   };
 
-  const handleSyncRecruitment = () => {
+  const handleSyncRecruitment = async () => {
     setIsSyncing(true);
-    setTimeout(() => {
+    try {
+      const res = await hrAPI.syncRecruitment();
+      if (res?.data?.success) {
+        setToastMessage(res.data.message || `Recruitment pipeline successfully synchronized with HRIS.`);
+        setIsRecruitmentModalOpen(false);
+      } else {
+        setToastMessage(res?.data?.error || "Sync failed.");
+      }
+    } catch (err) {
+      setToastMessage(err?.response?.data?.error || err.message || "Failed to sync recruitment.");
+    } finally {
       setIsSyncing(false);
-      setIsRecruitmentModalOpen(false);
-      setToastMessage(`Recruitment pipeline successfully synchronized with HRIS for ${currentTenant}.`);
-      setTimeout(() => setToastMessage(null), 3000);
-    }, 1200);
+      setTimeout(() => setToastMessage(null), 3500);
+    }
+  };
+
+  const handleApproveHiringPlan = async () => {
+    try {
+      const res = await hrAPI.approveHiringPlan({
+        projectedNeed,
+        targetFiscalYear: "2026-2027",
+        approvedByTenant: currentTenant
+      });
+      if (res?.data?.success) {
+        setToastMessage(res.data.message || "Strategic hiring plan approved.");
+        setIsAIModalOpen(false);
+      } else {
+        setToastMessage(res?.data?.error || "Approval failed.");
+      }
+    } catch (err) {
+      setToastMessage(err?.response?.data?.error || err.message || "Failed to approve hiring plan.");
+    } finally {
+      setTimeout(() => setToastMessage(null), 3500);
+    }
   };
 
   // Metric derivations
   const totalEmployees = analyticsData?.totalEmployees || 0;
   const criticalGapsCount = analyticsData?.criticalGapsCount || 0;
   const workforceRiskLevel = criticalGapsCount > 3 ? "High" : criticalGapsCount > 0 ? "Medium" : "Low";
-  const projectedNeed = Math.round(totalEmployees * 1.15);
+  const projectedNeed = forecastData?.projectedNeed ?? (totalEmployees + (analyticsData?.skillGaps?.length || 0));
 
   return (
     <div className="flex min-h-screen bg-[#F8F9FE] font-sans">
@@ -600,9 +649,9 @@ const WorkforcePlanning = () => {
                 <span className="text-[10px] font-black px-2.5 py-0.5 rounded-full bg-blue-500/20 text-blue-300 border border-blue-500/30 uppercase tracking-widest">High Confidence</span>
               </div>
               <p className="text-slate-400 text-sm mt-1 max-w-2xl leading-relaxed">
-                {forecastData?.emergingSkillDemands && forecastData.emergingSkillDemands.length > 0 
-                  ? `AI predicts hiring demand for ${forecastData.emergingSkillDemands[0].skill} will grow by ${forecastData.emergingSkillDemands[0].demandDelta} across ${currentTenant}. Early recruitment is recommended.`
-                  : `Workforce trajectory forecast for ${currentTenant} is active with 15% 6-month projected growth.`}
+                {forecastData?.aiInsight || (forecastData?.emergingSkillDemands && forecastData.emergingSkillDemands.length > 0 
+                  ? `AI predicts hiring demand for ${forecastData.emergingSkillDemands[0].skill} will grow across ${currentTenant}. Early recruitment is recommended.`
+                  : `Workforce trajectory forecast for ${currentTenant} is active with real competency deficit modeling.`)}
               </p>
             </div>
           </div>
@@ -661,10 +710,7 @@ const WorkforcePlanning = () => {
                 </div>
               </div>
               <button 
-                onClick={() => {
-                  triggerAction("Hiring Plan Confirmed");
-                  setIsAIModalOpen(false);
-                }}
+                onClick={handleApproveHiringPlan}
                 className="w-full py-3 bg-[#0b1221] hover:bg-[#16233d] text-white rounded-xl font-bold transition-colors"
               >
                 Approve Recruitment Plan
