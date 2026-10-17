@@ -181,6 +181,11 @@ export const hrAPI = {
   getAnalytics: () => apiRequest('/hr/analytics'),
   getForecast: () => apiRequest('/hr/forecast'),
   getSuccession: () => apiRequest('/hr/succession'),
+  allocateSuccessionTraining: (candidateId, courseId) =>
+    apiRequest('/hr/succession/allocate-training', {
+      method: 'POST',
+      body: JSON.stringify({ candidateId, courseId })
+    }),
   getCompliance: () => apiRequest('/hr/compliance'),
   sendComplianceReminders: () =>
     apiRequest('/hr/compliance/reminders', {
