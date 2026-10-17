@@ -325,35 +325,70 @@ const WorkforcePlanning = () => {
 
   const roleData = React.useMemo(() => {
     if (!analyticsData?.members) return [];
-    const titleGroups = {};
+    
+    const resolveRoleName = (member) => {
+      if (member.jobTitle && member.jobTitle.trim() && member.jobTitle.toUpperCase() !== 'EMPLOYEE') {
+        return member.jobTitle;
+      }
+      const deptName = member.department?.name || 'General';
+      if (member.role === 'COMPANY_ADMIN') return 'Executive Administrator';
+      if (member.role === 'HR_MANAGER') return 'HR Specialist / Manager';
+      if (member.role === 'TEAM_LEADER') return `${deptName} Team Lead`;
+      
+      // Standardize Employee title based on Department domain
+      if (deptName === 'Engineering') return 'Software Engineer';
+      if (deptName === 'Development') return 'Full Stack Developer';
+      if (deptName === 'Product Design') return 'Product Designer';
+      if (deptName === 'Marketing') return 'Marketing Specialist';
+      if (deptName === 'Operations') return 'Operations Associate';
+      if (deptName === 'Human Resources') return 'Talent Associate';
+      return `${deptName} Specialist`;
+    };
+
+    const roleGroups = {};
     analyticsData.members.forEach(m => {
-      const title = m.jobTitle || 'Employee';
-      if (!titleGroups[title]) {
-        titleGroups[title] = { role: title, dept: m.department?.name || 'Unassigned', current: 0, required: 0, gap: 0 };
+      const roleName = resolveRoleName(m);
+      const deptName = m.department?.name || 'Unassigned';
+      const key = `${roleName}::${deptName}`;
+      
+      if (!roleGroups[key]) {
+        roleGroups[key] = {
+          role: roleName,
+          dept: deptName,
+          current: 0,
+          gap: 0,
+          userIds: new Set()
+        };
       }
-      titleGroups[title].current += 1;
+      roleGroups[key].current += 1;
+      roleGroups[key].userIds.add(m.id);
     });
 
+    // Map skill gaps by user to the exact role and department
     analyticsData.skillGaps?.forEach(g => {
-      const title = g.user?.jobTitle || 'Employee';
-      if (titleGroups[title]) {
-        titleGroups[title].gap += 1;
+      const user = g.user;
+      if (!user) return;
+      const matchingGroup = Object.values(roleGroups).find(group => 
+        group.userIds.has(g.userId) || group.dept === user.department?.name
+      );
+      if (matchingGroup) {
+        matchingGroup.gap += 1;
       }
     });
 
-    return Object.values(titleGroups).map((g, idx) => ({
+    return Object.values(roleGroups).map((g, idx) => ({
       id: idx + 1,
       role: g.role,
       dept: g.dept,
       current: g.current,
       required: g.current + g.gap,
       gap: g.gap
-    }));
+    })).sort((a, b) => (b.gap - a.gap) || (b.current - a.current));
   }, [analyticsData]);
 
   const hiringDemand = React.useMemo(() => {
     if (!analyticsData?.departments) return [];
-    const colors = ['#3b82f6', '#8b5cf6', '#f59e0b', '#10b981', '#ef4444', '#06b6d4'];
+    const colors = ['#3b82f6', '#8b5cf6', '#f59e0b', '#10b981', '#ef4444', '#06b6d4', '#ec4899'];
     const totalGaps = analyticsData.skillGaps?.length || 1;
     return analyticsData.departments.map((d, idx) => {
       const deptGaps = analyticsData.skillGaps?.filter(g => g.user?.department?.name === d.name).length || 0;
@@ -363,21 +398,23 @@ const WorkforcePlanning = () => {
         color: colors[idx % colors.length],
         pct: Math.min(100, Math.round((deptGaps / totalGaps) * 100))
       };
-    });
+    }).sort((a, b) => b.roles - a.roles);
   }, [analyticsData]);
 
   const allocationLegend = React.useMemo(() => {
     if (!analyticsData?.departments) return [];
-    const totalMembers = analyticsData.departments.reduce((acc, d) => acc + d.memberCount, 0) || 1;
-    const colors = ['#3b82f6', '#8b5cf6', '#f59e0b', '#10b981', '#ef4444', '#06b6d4'];
-    return analyticsData.departments.map((d, idx) => {
+    const activeDepts = analyticsData.departments.filter(d => (d.memberCount || 0) > 0);
+    const totalMembers = activeDepts.reduce((acc, d) => acc + d.memberCount, 0) || 1;
+    const colors = ['#3b82f6', '#8b5cf6', '#f59e0b', '#10b981', '#06b6d4', '#ec4899', '#84cc16'];
+    return activeDepts.map((d, idx) => {
       const pct = Math.round((d.memberCount / totalMembers) * 100);
       return {
-        label: `${d.name} (${pct}%)`,
+        label: `${d.name} (${d.memberCount} emp - ${pct}%)`,
         color: colors[idx % colors.length],
-        pct
+        pct,
+        count: d.memberCount
       };
-    });
+    }).sort((a, b) => b.count - a.count);
   }, [analyticsData]);
 
   const uniqueDepartments = React.useMemo(() => {
