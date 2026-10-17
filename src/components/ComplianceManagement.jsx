@@ -689,41 +689,6 @@ const ComplianceManagement = () => {
             View Risk Details
           </button>
         </div>
-
-        {/* ── BOTTOM ALERT CARDS ── */}
-        <div className="grid grid-cols-2 gap-8">
-          <div 
-            onClick={() => triggerAction("Critical Expirations View")}
-            className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 flex items-center justify-between hover:shadow-md transition-shadow cursor-pointer group"
-          >
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-red-50 flex items-center justify-center group-hover:scale-105 transition-transform">
-                <AlertTriangle className="text-red-500" size={22} />
-              </div>
-              <div>
-                <p className="text-base font-black text-red-500">{nonCompliantCount} Critical Expirations</p>
-                <p className="text-xs text-slate-400 font-semibold mt-0.5">Employees with expired core certifications</p>
-              </div>
-            </div>
-            <ChevronRight size={18} className="text-slate-400 group-hover:translate-x-1 transition-transform" />
-          </div>
-
-          <div 
-            onClick={() => triggerAction("Renewal Alerts View")}
-            className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 flex items-center justify-between hover:shadow-md transition-shadow cursor-pointer group"
-          >
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-amber-50 flex items-center justify-center group-hover:scale-105 transition-transform">
-                <Bell size={22} className="text-amber-500" />
-              </div>
-              <div>
-                <p className="text-base font-black text-amber-500">{expiringCount} Renewal Alerts</p>
-                <p className="text-xs text-slate-400 font-semibold mt-0.5">Certifications expiring within 30 days</p>
-              </div>
-            </div>
-            <ChevronRight size={18} className="text-slate-400 group-hover:translate-x-1 transition-transform" />
-          </div>
-        </div>
         </>
         )}
 
