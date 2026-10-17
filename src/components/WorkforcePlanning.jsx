@@ -854,15 +854,6 @@ const WorkforcePlanning = () => {
           </button>
         </div>
 
-        {/* --- SECTION 7: QUICK STRATEGIC ACTIONS --- */}
-        <div className="space-y-4">
-          <h4 className="text-xs font-black text-slate-400 tracking-wider uppercase">Quick Strategic Actions</h4>
-          <div className="grid grid-cols-3 gap-6">
-            <QuickAction onClick={() => setIsReallocateModalOpen(true)} icon={<Target className="text-blue-500"/>} label="Reallocate Headcount" />
-            <QuickAction onClick={() => setIsRecruitmentModalOpen(true)} icon={<Briefcase className="text-purple-500"/>} label="Sync Recruitment Goals" />
-            <QuickAction onClick={handleExportReport} icon={<FileText className="text-emerald-500"/>} label="Export Planning Report" />
-          </div>
-        </div>
       </>
     )}
   </main>
