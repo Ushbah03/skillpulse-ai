@@ -21,8 +21,10 @@ import HRSidebar from './HRSidebar';
 import { motion, AnimatePresence } from 'framer-motion';
 import { hrAPI } from '../services/api';
 
-// ── Inline Recharts-style SVG line chart ──────────────────────────────────────
+// ── Value-Based Interactive Workforce Line Chart ──────────────────────────────
 const WorkforceLineChart = ({ data }) => {
+  const [hoveredIdx, setHoveredIdx] = useState(null);
+
   if (!data || !Array.isArray(data) || data.length === 0) return null;
   const months = data.map(d => d.month || '');
   const current = data.map(d => Number(d.currentSupply ?? d.current ?? 0));
@@ -31,10 +33,12 @@ const WorkforceLineChart = ({ data }) => {
   const allValues = [...current, ...projected].filter(v => typeof v === 'number' && !isNaN(v));
   if (allValues.length === 0) return null;
 
-  const minVal = Math.max(0, Math.min(...allValues) - 2);
-  const maxVal = Math.max(minVal + 1, Math.max(...allValues) + 2);
-  const range = Math.max(1, maxVal - minVal);
-  const W = 960, H = 220, padL = 12, padR = 20, padT = 20, padB = 0;
+  // Clear Y-scale starting at 0
+  const maxObserved = Math.max(...allValues, 10);
+  const yMax = Math.ceil((maxObserved + 2) / 4) * 4;
+  const yTicks = [0, Math.round(yMax * 0.25), Math.round(yMax * 0.5), Math.round(yMax * 0.75), yMax];
+
+  const W = 960, H = 250, padL = 48, padR = 30, padT = 30, padB = 35;
   const chartW = W - padL - padR;
   const chartH = H - padT - padB;
 
@@ -43,60 +47,200 @@ const WorkforceLineChart = ({ data }) => {
   const yPos = (v) => {
     const val = Number(v);
     if (isNaN(val)) return padT + chartH;
-    return padT + chartH - ((val - minVal) / range) * chartH;
+    return padT + chartH - ((val / yMax) * chartH);
   };
 
   const toPath = (pts) =>
     pts.map((v, i) => `${i === 0 ? 'M' : 'L'} ${xPos(i).toFixed(1)} ${yPos(v).toFixed(1)}`).join(' ');
 
   const toArea = (pts) => {
-    const base = yPos(minVal);
+    const base = yPos(0);
     const endX = xPos(pts.length - 1).toFixed(1);
     const startX = xPos(0).toFixed(1);
     const baseY = base.toFixed(1);
     return `${toPath(pts)} L ${endX} ${baseY} L ${startX} ${baseY} Z`;
   };
 
+  const currentMonthIdx = 5; // Month at index 5 is the current month
+  const activeHover = hoveredIdx !== null ? hoveredIdx : currentMonthIdx;
+
   return (
-    <svg viewBox={`0 0 ${W} ${H}`} className="w-full" style={{ height: 220 }} preserveAspectRatio="none">
-      <defs>
-        <linearGradient id="gradCurrent" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.18" />
-          <stop offset="100%" stopColor="#3b82f6" stopOpacity="0.01" />
-        </linearGradient>
-        <linearGradient id="gradProjected" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#8b5cf6" stopOpacity="0.14" />
-          <stop offset="100%" stopColor="#8b5cf6" stopOpacity="0.01" />
-        </linearGradient>
-      </defs>
-      <path d={toArea(current)} fill="url(#gradCurrent)" />
-      <path d={toArea(projected)} fill="url(#gradProjected)" />
-      <motion.path 
-        initial={{ pathLength: 0 }}
-        animate={{ pathLength: 1 }}
-        transition={{ duration: 1.2, ease: "easeInOut" }}
-        d={toPath(current)} 
-        fill="none" 
-        stroke="#3b82f6" 
-        strokeWidth="2.5" 
-        strokeLinecap="round" 
-        strokeLinejoin="round"
-      />
-      <motion.path 
-        initial={{ pathLength: 0 }}
-        animate={{ pathLength: 1 }}
-        transition={{ duration: 1.2, ease: "easeInOut" }}
-        d={toPath(projected)} 
-        fill="none" 
-        stroke="#8b5cf6" 
-        strokeWidth="2.5" 
-        strokeLinecap="round" 
-        strokeLinejoin="round"
-      />
-      {months.map((m, i) => (
-        <text key={m} x={xPos(i)} y={H - 4} textAnchor="middle" fontSize="11" fill="#94a3b8" fontWeight="600" fontFamily="sans-serif">{m}</text>
-      ))}
-    </svg>
+    <div className="relative w-full select-none">
+      {/* Dynamic Hover Tooltip / Live Milestone Indicator */}
+      {activeHover !== null && (
+        <div 
+          className="absolute z-20 pointer-events-none transition-all duration-150 transform -translate-x-1/2 -top-4 bg-slate-900/95 text-white px-3.5 py-2 rounded-xl shadow-xl border border-slate-700 text-xs backdrop-blur-md"
+          style={{ left: `${(xPos(activeHover) / W) * 100}%` }}
+        >
+          <div className="font-bold flex items-center justify-between gap-3 text-slate-200 border-b border-slate-800 pb-1 mb-1.5">
+            <span>{months[activeHover]} {activeHover === currentMonthIdx ? '(Current)' : activeHover > currentMonthIdx ? '(Forecast)' : '(Actual)'}</span>
+            <span className="text-[10px] text-slate-400 font-semibold">{data[activeHover]?.isForecast ? 'AI Model' : 'Historical'}</span>
+          </div>
+          <div className="flex items-center gap-4 text-[11px]">
+            <div className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-blue-400 inline-block" />
+              <span className="text-slate-300">Supply:</span>
+              <span className="font-black text-white">{current[activeHover]}</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-purple-400 inline-block" />
+              <span className="text-slate-300">Demand:</span>
+              <span className="font-black text-white">{projected[activeHover]}</span>
+            </div>
+            <div className="flex items-center gap-1 text-amber-300 font-bold">
+              <span>Gap:</span>
+              <span>+{Math.max(0, projected[activeHover] - current[activeHover])}</span>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <svg viewBox={`0 0 ${W} ${H}`} className="w-full" style={{ height: 250 }} preserveAspectRatio="none">
+        <defs>
+          <linearGradient id="gradCurrent" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.18" />
+            <stop offset="100%" stopColor="#3b82f6" stopOpacity="0.01" />
+          </linearGradient>
+          <linearGradient id="gradProjected" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#8b5cf6" stopOpacity="0.14" />
+            <stop offset="100%" stopColor="#8b5cf6" stopOpacity="0.01" />
+          </linearGradient>
+        </defs>
+
+        {/* Y-Axis Grid Lines & Numerical Labels */}
+        {yTicks.map(tick => (
+          <g key={tick}>
+            <line 
+              x1={padL} 
+              x2={W - padR} 
+              y1={yPos(tick)} 
+              y2={yPos(tick)} 
+              stroke="#f1f5f9" 
+              strokeDasharray={tick === 0 ? "none" : "4 4"} 
+              strokeWidth="1.2" 
+            />
+            <text 
+              x={padL - 10} 
+              y={yPos(tick) + 3} 
+              textAnchor="end" 
+              fontSize="10" 
+              fill="#94a3b8" 
+              fontWeight="700" 
+              fontFamily="sans-serif"
+            >
+              {tick}
+            </text>
+          </g>
+        ))}
+
+        {/* 'NOW' Current Month Vertical Marker */}
+        <line 
+          x1={xPos(currentMonthIdx)} 
+          x2={xPos(currentMonthIdx)} 
+          y1={padT} 
+          y2={padT + chartH} 
+          stroke="#64748b" 
+          strokeDasharray="3 3" 
+          strokeWidth="1.5" 
+          strokeOpacity="0.4" 
+        />
+        <text 
+          x={xPos(currentMonthIdx)} 
+          y={padT - 10} 
+          textAnchor="middle" 
+          fontSize="9" 
+          fill="#64748b" 
+          fontWeight="800" 
+          letterSpacing="0.05em"
+        >
+          TODAY
+        </text>
+
+        {/* Areas under curve */}
+        <path d={toArea(current)} fill="url(#gradCurrent)" />
+        <path d={toArea(projected)} fill="url(#gradProjected)" />
+
+        {/* Historical + Forecast Lines */}
+        <motion.path 
+          initial={{ pathLength: 0 }}
+          animate={{ pathLength: 1 }}
+          transition={{ duration: 1.2, ease: "easeInOut" }}
+          d={toPath(current)} 
+          fill="none" 
+          stroke="#3b82f6" 
+          strokeWidth="2.5" 
+          strokeLinecap="round" 
+          strokeLinejoin="round"
+        />
+        <motion.path 
+          initial={{ pathLength: 0 }}
+          animate={{ pathLength: 1 }}
+          transition={{ duration: 1.2, ease: "easeInOut" }}
+          d={toPath(projected)} 
+          fill="none" 
+          stroke="#8b5cf6" 
+          strokeWidth="2.5" 
+          strokeLinecap="round" 
+          strokeLinejoin="round"
+        />
+
+        {/* Interactive Point Markers (Circles) & Hover Triggers */}
+        {months.map((m, i) => {
+          const isHovered = hoveredIdx === i || (hoveredIdx === null && i === currentMonthIdx);
+          const colW = chartW / n;
+          return (
+            <g key={m}>
+              {/* Invisible wide hover bar for easy cursor interaction */}
+              <rect
+                x={xPos(i) - colW / 2}
+                y={padT}
+                width={colW}
+                height={chartH}
+                fill="transparent"
+                className="cursor-pointer"
+                onMouseEnter={() => setHoveredIdx(i)}
+                onMouseLeave={() => setHoveredIdx(null)}
+              />
+
+              {/* Current Supply Marker */}
+              <circle 
+                cx={xPos(i)} 
+                cy={yPos(current[i])} 
+                r={isHovered ? 6 : 4} 
+                fill="#3b82f6" 
+                stroke="#ffffff" 
+                strokeWidth={isHovered ? 2.5 : 1.5}
+                className="transition-all duration-150"
+              />
+
+              {/* Projected Demand Marker */}
+              <circle 
+                cx={xPos(i)} 
+                cy={yPos(projected[i])} 
+                r={isHovered ? 6 : 4} 
+                fill="#8b5cf6" 
+                stroke="#ffffff" 
+                strokeWidth={isHovered ? 2.5 : 1.5}
+                className="transition-all duration-150"
+              />
+
+              {/* Month X-Axis Label */}
+              <text 
+                x={xPos(i)} 
+                y={H - 10} 
+                textAnchor="middle" 
+                fontSize="11" 
+                fill={isHovered ? "#1e293b" : "#94a3b8"} 
+                fontWeight={isHovered ? "800" : "600"} 
+                fontFamily="sans-serif"
+              >
+                {m}
+              </text>
+            </g>
+          );
+        })}
+      </svg>
+    </div>
   );
 };
 
@@ -447,10 +591,20 @@ const WorkforcePlanning = () => {
         {/* --- SECTION 3: FORECAST LINE CHART --- */}
         <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-8 space-y-6">
           <div className="flex justify-between items-center">
-            <h3 className="text-xl font-bold text-slate-900">Workforce Forecast Trend (12 Months)</h3>
-            <div className="flex items-center gap-6 text-[10px] font-black text-slate-400 uppercase tracking-widest">
-              <span className="flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-blue-500 inline-block"/> Current Workforce</span>
-              <span className="flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-purple-500 inline-block"/> Projected Need</span>
+            <div>
+              <h3 className="text-xl font-bold text-slate-900">Workforce Forecast Trend (12 Months)</h3>
+              <p className="text-xs text-slate-400 font-medium mt-0.5">Holt's linear trend trajectory derived from live DB headcount & active skill deficit backlog</p>
+            </div>
+            <div className="flex items-center gap-5 text-[11px] font-bold text-slate-600">
+              <span className="flex items-center gap-2">
+                <span className="w-3 h-3 rounded-full bg-blue-500 inline-block"/> Current Workforce ({totalEmployees})
+              </span>
+              <span className="flex items-center gap-2">
+                <span className="w-3 h-3 rounded-full bg-purple-500 inline-block"/> Projected Need ({projectedNeed})
+              </span>
+              <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-100">
+                Live Data Connected
+              </span>
             </div>
           </div>
           <WorkforceLineChart data={forecastData?.growthTrends} />
