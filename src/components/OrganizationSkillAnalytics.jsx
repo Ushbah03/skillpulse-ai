@@ -68,8 +68,19 @@ const OrganizationSkillAnalytics = () => {
       skill: g.skill?.name || 'General Skill',
       score: `${g.currentLevel || 1} / ${g.requiredLevel || 3}`,
       severity: g.severity || 'MODERATE',
+      isAssigned: Boolean(g.assignedCourseId),
+      assignedCourseTitle: g.courseTitle || g.assignedCourse?.title || null,
       rec: g.courseTitle || g.assignedCourse?.title || (g.severity === 'CRITICAL' ? `${g.skill?.name || 'Technical'} Remedial Track` : `${g.skill?.name || 'Skill'} Fundamentals Module`)
     }));
+  }, [analyticsData]);
+
+  // Track assigned vs unassigned gaps
+  const unassignedGaps = useMemo(() => {
+    return (analyticsData?.skillGaps || []).filter(g => !g.assignedCourseId && g.courseId);
+  }, [analyticsData]);
+
+  const assignedGaps = useMemo(() => {
+    return (analyticsData?.skillGaps || []).filter(g => Boolean(g.assignedCourseId));
   }, [analyticsData]);
 
   // Heatmap Data Logic derived strictly from live DB
@@ -112,9 +123,14 @@ const OrganizationSkillAnalytics = () => {
   const handleDispatchTraining = async () => {
     try {
       setIsDispatching(true);
-      const unassignedGaps = (analyticsData?.skillGaps || []).filter(g => !g.assignedCourseId && g.courseId);
+      if (unassignedGaps.length === 0) {
+        setToastMessage(`All identified skill gaps already have active training tracks assigned.`);
+        setIsAIModalOpen(false);
+        return;
+      }
+
       let assignedCount = 0;
-      for (const gap of unassignedGaps.slice(0, 5)) {
+      for (const gap of unassignedGaps) {
         if (gap.userId && gap.courseId) {
           await hrAPI.assignTraining({
             userId: gap.userId,
@@ -125,7 +141,7 @@ const OrganizationSkillAnalytics = () => {
         }
       }
 
-      setToastMessage(`Dispatched targeted training tracks to ${assignedCount || unassignedGaps.length || 1} employees.`);
+      setToastMessage(`Dispatched targeted training tracks to ${assignedCount} employee${assignedCount > 1 ? 's' : ''}.`);
       setIsAIModalOpen(false);
       await loadAnalytics();
     } catch (err) {
@@ -373,7 +389,20 @@ const OrganizationSkillAnalytics = () => {
                         'bg-emerald-50 text-emerald-600 border-emerald-100'
                       }`}>{emp.severity}</span>
                     </td>
-                    <td className="py-5 px-8 text-slate-400 font-medium italic">{emp.rec}</td>
+                    <td className="py-5 px-8">
+                      <div className="flex flex-col">
+                        <span className="text-slate-800 font-semibold">{emp.rec}</span>
+                        {emp.isAssigned ? (
+                          <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-600 mt-0.5">
+                            <CheckCircle2 size={12} /> Training Enrolled & In Progress
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-600 mt-0.5">
+                            • Pending Intervention
+                          </span>
+                        )}
+                      </div>
+                    </td>
                   </tr>
                 ))
               ) : (
@@ -436,12 +465,22 @@ const OrganizationSkillAnalytics = () => {
               </p>
             </div>
           </div>
-          <button 
-            onClick={() => setIsAIModalOpen(true)}
-            className="px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-black text-sm rounded-xl transition-all shadow-lg shadow-blue-600/20 active:scale-95 relative z-10"
-          >
-            Assign Training
-          </button>
+          {unassignedGaps.length === 0 && assignedGaps.length > 0 ? (
+            <button 
+              onClick={() => setIsAIModalOpen(true)}
+              className="px-6 py-3.5 bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 border border-emerald-500/30 font-black text-sm rounded-xl transition-all flex items-center gap-2 active:scale-95 relative z-10"
+            >
+              <CheckCircle2 size={16} />
+              Training Active ({assignedGaps.length})
+            </button>
+          ) : (
+            <button 
+              onClick={() => setIsAIModalOpen(true)}
+              className="px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-black text-sm rounded-xl transition-all shadow-lg shadow-blue-600/20 active:scale-95 relative z-10"
+            >
+              Assign Training
+            </button>
+          )}
         </div>
 
 
@@ -482,29 +521,48 @@ const OrganizationSkillAnalytics = () => {
                 Automatically assign targeted learning paths to employees with identified skill deficiencies in {currentTenant}.
               </p>
               <div className="space-y-3 mb-8">
-                <div className="p-3 bg-slate-50 rounded-xl border border-slate-100 flex justify-between text-sm">
-                  <span className="font-semibold text-slate-600">Impacted Employees</span>
-                  <span className="font-bold text-slate-900">{criticalGaps || totalEmployeesWithGaps} Employees</span>
-                </div>
+                {unassignedGaps.length === 0 ? (
+                  <div className="p-3 bg-emerald-50 rounded-xl border border-emerald-100 flex justify-between text-sm">
+                    <span className="font-semibold text-emerald-800">Training Status</span>
+                    <span className="font-bold text-emerald-700 flex items-center gap-1.5">
+                      <CheckCircle2 size={16} /> {assignedGaps.length} Active Tracks Enrolled
+                    </span>
+                  </div>
+                ) : (
+                  <div className="p-3 bg-slate-50 rounded-xl border border-slate-100 flex justify-between text-sm">
+                    <span className="font-semibold text-slate-600">Pending Interventions</span>
+                    <span className="font-bold text-slate-900">{unassignedGaps.length} Employees</span>
+                  </div>
+                )}
                 <div className="p-3 bg-slate-50 rounded-xl border border-slate-100 flex justify-between text-sm">
                   <span className="font-semibold text-slate-600">Target Completion</span>
                   <span className="font-bold text-slate-900">Next Evaluation Cycle (30 Days)</span>
                 </div>
               </div>
-              <button 
-                onClick={handleDispatchTraining}
-                disabled={isDispatching}
-                className="w-full py-3 bg-[#0b1221] hover:bg-[#16233d] disabled:opacity-50 text-white rounded-xl font-bold transition-colors flex items-center justify-center gap-2"
-              >
-                {isDispatching ? (
-                  <>
-                    <RefreshCw className="w-4 h-4 animate-spin" />
-                    <span>Dispatching Recommendations...</span>
-                  </>
-                ) : (
-                  <span>Confirm & Dispatch Courses</span>
-                )}
-              </button>
+              {unassignedGaps.length === 0 ? (
+                <button 
+                  disabled
+                  className="w-full py-3 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-xl font-bold flex items-center justify-center gap-2 cursor-default"
+                >
+                  <CheckCircle2 size={18} className="text-emerald-600" />
+                  <span>All Training Tracks Dispatched</span>
+                </button>
+              ) : (
+                <button 
+                  onClick={handleDispatchTraining}
+                  disabled={isDispatching}
+                  className="w-full py-3 bg-[#0b1221] hover:bg-[#16233d] disabled:opacity-50 text-white rounded-xl font-bold transition-colors flex items-center justify-center gap-2"
+                >
+                  {isDispatching ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <span>Dispatching Recommendations...</span>
+                    </>
+                  ) : (
+                    <span>Confirm & Dispatch Courses ({unassignedGaps.length})</span>
+                  )}
+                </button>
+              )}
             </motion.div>
           </div>
         )}
