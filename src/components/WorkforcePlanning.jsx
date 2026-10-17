@@ -541,7 +541,9 @@ const WorkforcePlanning = () => {
       });
       if (res?.data?.success) {
         setToastMessage(res.data.message || "Strategic hiring plan approved.");
-        setIsAIModalOpen(false);
+        // Refresh forecastData so isPlanApproved & approvedPlan are updated in state
+        const forecastRes = await hrAPI.getForecast();
+        if (forecastRes?.success) setForecastData(forecastRes.data);
       } else {
         setToastMessage(res?.data?.error || "Approval failed.");
       }
@@ -837,7 +839,15 @@ const WorkforcePlanning = () => {
             <div>
               <div className="flex items-center gap-3 mb-1">
                 <h4 className="text-xl font-bold tracking-tight">AI Workforce Forecast Insight</h4>
-                <span className="text-[10px] font-black px-2.5 py-0.5 rounded-full bg-blue-500/20 text-blue-300 border border-blue-500/30 uppercase tracking-widest">High Confidence</span>
+                {forecastData?.isPlanApproved ? (
+                  <span className="text-[10px] font-black px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 uppercase tracking-widest flex items-center gap-1">
+                    <CheckCircle2 size={12} /> Plan Approved (FY 2026-27)
+                  </span>
+                ) : (
+                  <span className="text-[10px] font-black px-2.5 py-0.5 rounded-full bg-blue-500/20 text-blue-300 border border-blue-500/30 uppercase tracking-widest">
+                    High Confidence
+                  </span>
+                )}
               </div>
               <p className="text-slate-400 text-sm mt-1 max-w-2xl leading-relaxed">
                 {forecastData?.aiInsight || (forecastData?.emergingSkillDemands && forecastData.emergingSkillDemands.length > 0 
@@ -850,7 +860,7 @@ const WorkforcePlanning = () => {
             onClick={() => setIsAIModalOpen(true)}
             className="px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-black text-sm rounded-xl transition-all shadow-lg shadow-blue-600/20 active:scale-95 relative z-10 flex-shrink-0"
           >
-            View Forecast Details
+            {forecastData?.isPlanApproved ? "View Approved Plan" : "View Forecast Details"}
           </button>
         </div>
 
@@ -881,6 +891,22 @@ const WorkforcePlanning = () => {
               <p className="text-slate-500 text-sm mb-6">
                 Detailed AI-driven growth trajectory breakdown based on historical quarterly churn, project pipelines, and market hiring velocity.
               </p>
+
+              {forecastData?.isPlanApproved && (
+                <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-2xl mb-6 flex items-start gap-3">
+                  <CheckCircle2 size={20} className="text-emerald-600 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <h5 className="text-xs font-black text-emerald-900 uppercase tracking-wider">Recruitment Plan Formally Approved</h5>
+                    <p className="text-xs text-emerald-700 mt-0.5">
+                      Target headcount of {forecastData.approvedPlan?.targetHeadcount || projectedNeed} personnel locked for Fiscal Year {forecastData.approvedPlan?.fiscalYear || "2026-2027"}.
+                    </p>
+                    <p className="text-[10px] text-emerald-600 font-bold mt-1.5">
+                      Logged in Audit Trail &bull; Status: Active & Locked
+                    </p>
+                  </div>
+                </div>
+              )}
+
               <div className="space-y-3 mb-8">
                 <div className="p-3 bg-slate-50 rounded-xl border border-slate-100 flex justify-between text-sm">
                   <span className="font-semibold text-slate-600">Total Workforce</span>
@@ -890,13 +916,30 @@ const WorkforcePlanning = () => {
                   <span className="font-semibold text-slate-600">6-Month Projected Need</span>
                   <span className="font-bold text-slate-900">{projectedNeed} Employees</span>
                 </div>
+                <div className="p-3 bg-slate-50 rounded-xl border border-slate-100 flex justify-between text-sm">
+                  <span className="font-semibold text-slate-600">Plan Status</span>
+                  <span className={`font-bold ${forecastData?.isPlanApproved ? "text-emerald-600" : "text-amber-600"}`}>
+                    {forecastData?.isPlanApproved ? "Approved & Committed" : "Pending Approval"}
+                  </span>
+                </div>
               </div>
-              <button 
-                onClick={handleApproveHiringPlan}
-                className="w-full py-3 bg-[#0b1221] hover:bg-[#16233d] text-white rounded-xl font-bold transition-colors"
-              >
-                Approve Recruitment Plan
-              </button>
+
+              {forecastData?.isPlanApproved ? (
+                <button 
+                  onClick={() => setIsAIModalOpen(false)}
+                  className="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold transition-colors flex items-center justify-center gap-2"
+                >
+                  <CheckCircle2 size={18} />
+                  Plan Approved &bull; Close
+                </button>
+              ) : (
+                <button 
+                  onClick={handleApproveHiringPlan}
+                  className="w-full py-3.5 bg-[#0b1221] hover:bg-[#16233d] text-white rounded-xl font-bold transition-colors"
+                >
+                  Approve Recruitment Plan
+                </button>
+              )}
             </motion.div>
           </div>
         )}
