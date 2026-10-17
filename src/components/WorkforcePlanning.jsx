@@ -23,28 +23,38 @@ import { hrAPI } from '../services/api';
 
 // ── Inline Recharts-style SVG line chart ──────────────────────────────────────
 const WorkforceLineChart = ({ data }) => {
-  if (!data || !data.length) return null;
-  const months = data.map(d => d.month);
-  const current = data.map(d => d.currentSupply);
-  const projected = data.map(d => d.futureDemand);
+  if (!data || !Array.isArray(data) || data.length === 0) return null;
+  const months = data.map(d => d.month || '');
+  const current = data.map(d => Number(d.currentSupply ?? d.current ?? 0));
+  const projected = data.map(d => Number(d.futureDemand ?? d.predicted ?? d.projected ?? 0));
 
-  const allValues = [...current, ...projected];
+  const allValues = [...current, ...projected].filter(v => typeof v === 'number' && !isNaN(v));
+  if (allValues.length === 0) return null;
+
   const minVal = Math.max(0, Math.min(...allValues) - 2);
-  const maxVal = Math.max(...allValues) + 2;
+  const maxVal = Math.max(minVal + 1, Math.max(...allValues) + 2);
   const range = Math.max(1, maxVal - minVal);
   const W = 960, H = 220, padL = 12, padR = 20, padT = 20, padB = 0;
   const chartW = W - padL - padR;
   const chartH = H - padT - padB;
 
-  const xPos = (i) => padL + (i / (months.length - 1)) * chartW;
-  const yPos = (v) => padT + chartH - ((v - minVal) / range) * chartH;
+  const n = Math.max(1, months.length - 1);
+  const xPos = (i) => padL + (i / n) * chartW;
+  const yPos = (v) => {
+    const val = Number(v);
+    if (isNaN(val)) return padT + chartH;
+    return padT + chartH - ((val - minVal) / range) * chartH;
+  };
 
   const toPath = (pts) =>
     pts.map((v, i) => `${i === 0 ? 'M' : 'L'} ${xPos(i).toFixed(1)} ${yPos(v).toFixed(1)}`).join(' ');
 
   const toArea = (pts) => {
     const base = yPos(minVal);
-    return `${toPath(pts)} L ${xPos(pts.length - 1).toFixed(1)} ${base} L ${xPos(0).toFixed(1)} ${base} Z`;
+    const endX = xPos(pts.length - 1).toFixed(1);
+    const startX = xPos(0).toFixed(1);
+    const baseY = base.toFixed(1);
+    return `${toPath(pts)} L ${endX} ${baseY} L ${startX} ${baseY} Z`;
   };
 
   return (
