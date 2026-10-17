@@ -412,30 +412,7 @@ const SkillGapReports = () => {
     });
   };
 
-  const handleLaunchCampaign = () => {
-    setModalConfig({
-      isOpen: true,
-      title: 'Launch Enterprise Skill Campaign',
-      description: 'Initiate enterprise-wide upskilling campaign across all flagged critical deficits? Training allocations will be dispatched to affected teams and recorded in the database.',
-      confirmText: 'Launch Campaign',
-      icon: Sparkles,
-      onConfirm: async () => {
-        closeModal();
-        try {
-          const criticalGaps = gapAnalytics?.skillGaps?.filter(g => g.severity === 'CRITICAL' && !g.assignedCourseId) || [];
-          let dispatchedCount = 0;
-          for (const g of criticalGaps) {
-            await hrAPI.assignTraining({ userId: g.userId, skillName: g.skill?.name, skillId: g.skillId }).catch(() => null);
-            setAssignedMap(prev => ({ ...prev, [g.userId]: true }));
-            dispatchedCount++;
-          }
-          showToast('Campaign Dispatched', `Enterprise training successfully allocated to ${dispatchedCount} critical deficit(s).`, 'success');
-        } catch (err) {
-          showToast('Campaign Error', 'Could not complete campaign dispatch.', 'error');
-        }
-      }
-    });
-  };
+
 
   return (
     <div style={{ fontFamily: "'Inter', 'Segoe UI', system-ui, sans-serif" }} className="flex min-h-screen bg-[#f8fafc]">
@@ -586,12 +563,6 @@ const SkillGapReports = () => {
             <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6">
               <div className="flex justify-between items-center mb-5">
                 <h3 className="text-base font-black text-slate-900">High-Priority Missing Skills</h3>
-                <button 
-                  onClick={handleLaunchCampaign}
-                  className="text-xs font-bold text-indigo-600 hover:text-indigo-700 inline-flex items-center gap-1"
-                >
-                  <Sparkles size={13} /> Launch Campaign
-                </button>
               </div>
               <div className="space-y-4">
                 {missingSkills.length === 0 ? (
