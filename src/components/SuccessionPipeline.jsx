@@ -235,7 +235,7 @@ const SuccessionPipeline = () => {
       targetScore: 85,
       trajectory: [
         { num: null, label: activeCandidateObj.jobTitle || 'Current Role', sub: 'Current Position', active: true, done: true, current: false },
-        { num: 2, label: 'Leadership Rotation', sub: 'In Progress (65%)', active: true, done: false, current: true },
+        { num: 2, label: 'Leadership Rotation', sub: 'In Progress', active: true, done: false, current: true },
         { num: 3, label: 'Executive Mentorship', sub: 'Pipeline Track', active: false, done: false, current: false },
         { num: null, label: activeCandidateObj.targetRole || 'Target Position', sub: activeCandidateObj.status || 'Ready Soon', active: false, done: false, current: false },
       ]
