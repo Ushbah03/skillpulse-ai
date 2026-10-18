@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   Search, Bell, Plus, Users, Clock, CheckCircle, 
   ArrowRight, Calendar, Sparkles, X, BookOpen, Award, Check, Loader2,
@@ -217,6 +217,143 @@ const ProgramDetailsModal = ({ isOpen, program, onClose, onEnroll }) => {
   );
 };
 
+// ── ALL ENROLLMENTS MODAL ──────────────────────────────────────────────────
+const EnrollmentsListModal = ({ isOpen, enrollments = [], onClose }) => {
+  const [enrollSearch, setEnrollSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState('ALL');
+
+  if (!isOpen) return null;
+
+  const filtered = enrollments.filter(e => {
+    const employeeName = e.user ? `${e.user.firstName} ${e.user.lastName}`.toLowerCase() : '';
+    const courseTitle = (e.course?.title || e.courseTitle || '').toLowerCase();
+    const matchesSearch = employeeName.includes(enrollSearch.toLowerCase()) || courseTitle.includes(enrollSearch.toLowerCase());
+    const matchesStatus = statusFilter === 'ALL' || e.status === statusFilter;
+    return matchesSearch && matchesStatus;
+  });
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200">
+      <div className="bg-white rounded-2xl border border-slate-200 shadow-2xl max-w-2xl w-full p-6 space-y-4 max-h-[85vh] flex flex-col">
+        <div className="flex items-start justify-between border-b border-slate-100 pb-4">
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 bg-indigo-50 text-indigo-600 rounded-xl">
+              <Users size={22} />
+            </div>
+            <div>
+              <h3 className="text-lg font-black text-slate-900">Enterprise Learning Enrollments</h3>
+              <p className="text-xs text-slate-400 font-semibold">
+                {enrollments.length} total enrollments recorded in PostgreSQL database
+              </p>
+            </div>
+          </div>
+          <button onClick={onClose} className="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100">
+            <X size={18} />
+          </button>
+        </div>
+
+        {/* Search & Filter Bar */}
+        <div className="flex flex-col sm:flex-row gap-2.5 items-stretch sm:items-center justify-between">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-2.5 text-slate-400" size={15} />
+            <input
+              type="text"
+              value={enrollSearch}
+              onChange={(e) => setEnrollSearch(e.target.value)}
+              placeholder="Search by employee or course..."
+              className="pl-9 pr-3 py-1.5 rounded-xl bg-slate-50 text-xs text-slate-700 outline-none w-full border border-slate-200 focus:border-indigo-400 focus:bg-white transition-all"
+            />
+          </div>
+
+          <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl">
+            {['ALL', 'IN_PROGRESS', 'NOT_STARTED', 'COMPLETED'].map((status) => (
+              <button
+                key={status}
+                onClick={() => setStatusFilter(status)}
+                className={`px-2.5 py-1 text-[11px] font-bold rounded-lg transition-all ${
+                  statusFilter === status
+                    ? 'bg-white text-slate-900 shadow-2xs'
+                    : 'text-slate-500 hover:text-slate-800'
+                }`}
+              >
+                {status === 'ALL' ? 'All' : status === 'IN_PROGRESS' ? 'In Progress' : status === 'NOT_STARTED' ? 'Not Started' : 'Completed'}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* List of Enrollments */}
+        <div className="flex-1 overflow-y-auto space-y-2.5 pr-1 max-h-[480px]">
+          {filtered.length === 0 ? (
+            <div className="py-12 text-center text-slate-400 text-xs font-semibold">
+              No learning enrollments match the filter criteria.
+            </div>
+          ) : (
+            filtered.map((e) => {
+              const userName = e.user ? `${e.user.firstName} ${e.user.lastName}` : 'Employee';
+              const courseTitle = e.course?.title || e.courseTitle || 'Training Course';
+              const dept = e.user?.department?.name || 'Enterprise';
+              const progress = Math.max(0, Number(e.progressPct) || 0);
+              const enrollDate = e.enrolledAt ? new Date(e.enrolledAt).toLocaleDateString() : 'Active';
+
+              const statusBadge = 
+                e.status === 'COMPLETED' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
+                e.status === 'IN_PROGRESS' ? 'bg-indigo-50 text-indigo-700 border-indigo-200' :
+                'bg-amber-50 text-amber-700 border-amber-200';
+
+              return (
+                <div key={e.id} className="p-3 bg-slate-50/70 border border-slate-200/80 rounded-xl hover:bg-slate-50 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="w-9 h-9 rounded-full bg-indigo-100 text-indigo-700 font-extrabold flex items-center justify-center text-xs border border-indigo-200 shrink-0">
+                      {userName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-xs font-black text-slate-900 truncate">{userName}</p>
+                      <p className="text-[11px] font-bold text-slate-600 truncate mt-0.5">{courseTitle}</p>
+                      <p className="text-[10px] text-slate-400 font-semibold">{dept} • Enrolled: {enrollDate}</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-3 shrink-0 self-end sm:self-center">
+                    <div className="w-24 text-right">
+                      <div className="flex justify-between text-[10px] font-bold text-slate-500 mb-1">
+                        <span>Progress</span>
+                        <span>{progress}%</span>
+                      </div>
+                      <div className="h-1.5 bg-slate-200 rounded-full overflow-hidden w-24">
+                        <div
+                          className="h-full bg-indigo-600 rounded-full transition-all"
+                          style={{ width: `${progress}%` }}
+                        />
+                      </div>
+                    </div>
+
+                    <span className={`text-[10px] font-bold px-2.5 py-1 rounded-lg border ${statusBadge}`}>
+                      {e.status === 'IN_PROGRESS' ? 'In Progress' : e.status === 'NOT_STARTED' ? 'Not Started' : 'Completed'}
+                    </span>
+                  </div>
+                </div>
+              );
+            })
+          )}
+        </div>
+
+        <div className="flex justify-between items-center border-t border-slate-100 pt-3">
+          <span className="text-xs font-semibold text-slate-400">
+            Showing {filtered.length} of {enrollments.length} enrollments
+          </span>
+          <button
+            onClick={onClose}
+            className="px-4 py-1.5 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition-all"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // ── MAIN DASHBOARD COMPONENT ──────────────────────────────────────────────────
 const TrainingProgramManagement = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -225,8 +362,10 @@ const TrainingProgramManagement = () => {
   const [toast, setToast] = useState({ visible: false, title: '', message: '' });
   const [modalConfig, setModalConfig] = useState({ isOpen: false, title: '', description: '', confirmText: '', onConfirm: null, icon: null });
   const [detailsModal, setDetailsModal] = useState({ isOpen: false, program: null });
+  const [enrollmentsModalOpen, setEnrollmentsModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [trainingData, setTrainingData] = useState(null);
+  const programsRef = useRef(null);
 
   useEffect(() => {
     let isMounted = true;
@@ -427,7 +566,9 @@ const TrainingProgramManagement = () => {
   const handleSeeAllPrograms = () => {
     setSearchQuery('');
     setCurrentPage(1);
-    showToast('Catalog View', `Displaying all ${programs.length} active training programs.`);
+    if (programsRef.current) {
+      programsRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
   };
 
   const handleViewDetails = (prog) => {
@@ -508,7 +649,7 @@ const TrainingProgramManagement = () => {
         </div>
 
         {/* PROGRAMS SECTION */}
-        <div className="px-8 space-y-4">
+        <div ref={programsRef} className="px-8 space-y-4">
           <div className="flex justify-between items-center">
             <div>
               <h2 className="text-xl font-black text-slate-900">
@@ -829,10 +970,11 @@ const TrainingProgramManagement = () => {
             </div>
 
             <button 
-              onClick={handleSeeAllPrograms}
-              className="w-full text-center text-xs font-bold text-slate-700 py-2 border border-slate-200 hover:bg-slate-50 transition-all rounded-xl mt-4 active:scale-95 shadow-2xs"
+              onClick={() => setEnrollmentsModalOpen(true)}
+              className="w-full text-center text-xs font-bold text-indigo-600 hover:text-indigo-700 py-2.5 border border-indigo-100 bg-indigo-50/50 hover:bg-indigo-50 transition-all rounded-xl mt-4 active:scale-95 shadow-2xs flex items-center justify-center gap-1.5"
             >
-              View All Courses
+              <Users size={14} />
+              View All Enrollments ({trainingData?.enrollments?.length || 0})
             </button>
           </div>
         </div>
@@ -846,6 +988,11 @@ const TrainingProgramManagement = () => {
         program={detailsModal.program} 
         onClose={() => setDetailsModal({ isOpen: false, program: null })} 
         onEnroll={handleEnroll} 
+      />
+      <EnrollmentsListModal 
+        isOpen={enrollmentsModalOpen} 
+        enrollments={trainingData?.enrollments || []} 
+        onClose={() => setEnrollmentsModalOpen(false)} 
       />
       <ToastNotification toast={toast} onClose={() => setToast((prev) => ({ ...prev, visible: false }))} />
       <ActionModal {...modalConfig} onClose={closeModal} />
