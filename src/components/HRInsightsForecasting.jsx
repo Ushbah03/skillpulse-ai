@@ -389,11 +389,12 @@ const HRInsightsForecasting = () => {
                   <BarChart3 size={16} className="text-indigo-600" />
                   Future Skill Gap Forecast
                 </h3>
-                <p className="text-xs text-slate-400 font-medium">Current capability vs. predicted benchmark target (Click any bar to inspect)</p>
+                <p className="text-xs text-slate-400 font-medium">Verified capability baseline vs. projected training maturity & benchmark target</p>
               </div>
-              <div className="flex items-center gap-3 text-xs font-bold text-slate-600">
-                <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-indigo-300" /> Current Capability</span>
-                <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-indigo-600" /> Predicted Target</span>
+              <div className="flex flex-wrap items-center gap-3 text-xs font-bold text-slate-600">
+                <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-indigo-500" /> Verified Capability</span>
+                <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-indigo-200 border border-indigo-400 border-dashed" /> Projected Capability</span>
+                <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-indigo-700" /> Target Benchmark</span>
               </div>
             </div>
 
@@ -401,7 +402,7 @@ const HRInsightsForecasting = () => {
               {gapForecastData.length > 0 ? (
                 gapForecastData.map((data, idx) => {
                   const currentVal = Math.max(0, Math.min(100, Math.round(data.current ?? 0)));
-                  const predictedVal = Math.max(0, Math.min(100, Math.round(data.predicted ?? 95)));
+                  const predictedVal = Math.max(0, Math.min(100, Math.round(data.predicted ?? 90)));
                   const isSelected = selectedBarData?.month === data.month;
 
                   return (
@@ -413,7 +414,7 @@ const HRInsightsForecasting = () => {
                           ? 'bg-indigo-50/90 ring-2 ring-indigo-500 shadow-sm' 
                           : 'hover:bg-slate-50'
                       }`}
-                      title={`Click to inspect ${data.month}: Current ${currentVal}%, Target ${predictedVal}%`}
+                      title={`Click to inspect ${data.month}: ${data.isForecast ? 'Projected' : 'Verified'} ${currentVal}%, Target ${predictedVal}%`}
                     >
                       {/* Floating Tooltip Pill on Hover / Selected */}
                       <div className={`transition-all duration-200 text-center mb-1 ${
@@ -422,9 +423,16 @@ const HRInsightsForecasting = () => {
                         <div className="bg-[#0b1221] text-white text-[9px] font-bold py-0.5 px-1.5 rounded shadow-lg whitespace-nowrap">
                           {predictedVal > 0 || currentVal > 0 ? (
                             <>
-                              <span className="text-indigo-300 font-black">{currentVal}%</span>
+                              <span className="text-indigo-300 font-black">
+                                {data.isForecast ? 'Proj: ' : 'Actual: '}{currentVal}%
+                              </span>
                               <span className="text-slate-400 mx-0.5">/</span>
-                              <span className="text-white font-black">{predictedVal}%</span>
+                              <span className="text-white font-black">Tgt: {predictedVal}%</span>
+                              {data.isForecast && (
+                                <span className="ml-1 text-[8px] px-1 py-0.2 bg-indigo-500/30 text-indigo-200 rounded font-bold">
+                                  Forecast
+                                </span>
+                              )}
                             </>
                           ) : (
                             <span className="text-slate-400 font-semibold">Pre-onboarding</span>
@@ -439,7 +447,13 @@ const HRInsightsForecasting = () => {
                           style={{ height: `${currentVal}%` }}
                           transition={{ duration: 0.5, delay: idx * 0.03 }}
                           className={`w-2.5 sm:w-3.5 rounded-t transition-colors ${
-                            isSelected ? 'bg-indigo-400 shadow-sm' : 'bg-indigo-300 group-hover:bg-indigo-400'
+                            data.isForecast
+                              ? isSelected 
+                                ? 'bg-indigo-300 border border-indigo-500 border-dashed shadow-sm' 
+                                : 'bg-indigo-200 border border-indigo-400 border-dashed group-hover:bg-indigo-300'
+                              : isSelected 
+                              ? 'bg-indigo-600 shadow-sm' 
+                              : 'bg-indigo-500 group-hover:bg-indigo-600'
                           }`} 
                         />
                         <motion.div 
@@ -448,7 +462,7 @@ const HRInsightsForecasting = () => {
                           style={{ height: `${predictedVal}%` }}
                           transition={{ duration: 0.5, delay: idx * 0.03 + 0.05 }}
                           className={`w-2.5 sm:w-3.5 rounded-t transition-colors ${
-                            isSelected ? 'bg-indigo-700 shadow-sm' : 'bg-indigo-600 group-hover:bg-indigo-700'
+                            isSelected ? 'bg-indigo-800 shadow-sm' : 'bg-indigo-700 group-hover:bg-indigo-800'
                           }`} 
                         />
                       </div>
@@ -497,11 +511,17 @@ const HRInsightsForecasting = () => {
 
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs">
                   <div className="p-2.5 bg-white rounded-lg border border-slate-200/80 shadow-xs">
-                    <span className="text-[10px] font-bold text-slate-400 block uppercase">Current Capability</span>
+                    <span className="text-[10px] font-bold text-slate-400 block uppercase">
+                      {selectedBarData.isForecast ? 'Projected Capability' : 'Verified Capability'}
+                    </span>
                     <span className="text-base font-black text-indigo-700 mt-0.5 block">
                       {Math.max(0, Math.min(100, Math.round(selectedBarData.current ?? 0)))}%
                     </span>
-                    <span className="text-[10px] text-slate-500 font-semibold">Verified maturity level</span>
+                    <span className="text-[10px] text-slate-500 font-semibold">
+                      {selectedBarData.isForecast 
+                        ? 'Projected LMS course progression' 
+                        : 'Verified maturity from DB assessments'}
+                    </span>
                   </div>
 
                   <div className="p-2.5 bg-white rounded-lg border border-slate-200/80 shadow-xs">
