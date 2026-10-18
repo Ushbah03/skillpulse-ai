@@ -77,8 +77,8 @@ const HRInsightsForecasting = () => {
         id: 'm1',
         title: 'Readiness Forecast',
         val: `${readinessPct}%`,
-        trend: liveForecast.readinessTrend || '+12.0%',
-        badge: 'Target 95%',
+        trend: liveForecast.readinessTrend || '+6.0% to Target',
+        badge: `Target ${liveForecast.targetBenchmark || 90}%`,
         badgeColor: 'bg-emerald-50 text-emerald-700 border-emerald-200',
         note: 'Verified Workforce Maturity',
         noteVal: `${liveForecast.avgReadiness ? (liveForecast.avgReadiness * 5).toFixed(1) : '0.0'} / 5.0`,
@@ -420,9 +420,15 @@ const HRInsightsForecasting = () => {
                         isSelected ? 'opacity-100 scale-100' : 'opacity-0 group-hover:opacity-100 scale-90 group-hover:scale-100'
                       }`}>
                         <div className="bg-[#0b1221] text-white text-[9px] font-bold py-0.5 px-1.5 rounded shadow-lg whitespace-nowrap">
-                          <span className="text-indigo-300 font-black">{currentVal}%</span>
-                          <span className="text-slate-400 mx-0.5">/</span>
-                          <span className="text-white font-black">{predictedVal}%</span>
+                          {predictedVal > 0 || currentVal > 0 ? (
+                            <>
+                              <span className="text-indigo-300 font-black">{currentVal}%</span>
+                              <span className="text-slate-400 mx-0.5">/</span>
+                              <span className="text-white font-black">{predictedVal}%</span>
+                            </>
+                          ) : (
+                            <span className="text-slate-400 font-semibold">Pre-onboarding</span>
+                          )}
                         </div>
                       </div>
 
@@ -501,7 +507,7 @@ const HRInsightsForecasting = () => {
                   <div className="p-2.5 bg-white rounded-lg border border-slate-200/80 shadow-xs">
                     <span className="text-[10px] font-bold text-slate-400 block uppercase">Predicted Target</span>
                     <span className="text-base font-black text-slate-900 mt-0.5 block">
-                      {Math.max(0, Math.min(100, Math.round(selectedBarData.predicted ?? 95)))}%
+                      {Math.max(0, Math.min(100, Math.round(selectedBarData.predicted ?? (liveForecast?.targetBenchmark || 90))))}%
                     </span>
                     <span className="text-[10px] text-slate-500 font-semibold">Benchmark requirement</span>
                   </div>
@@ -510,8 +516,16 @@ const HRInsightsForecasting = () => {
                     <span className="text-[10px] font-bold text-slate-400 block uppercase">Skill Gap Delta</span>
                     {(() => {
                       const cur = Math.max(0, Math.min(100, Math.round(selectedBarData.current ?? 0)));
-                      const tgt = Math.max(0, Math.min(100, Math.round(selectedBarData.predicted ?? 95)));
+                      const tgt = Math.max(0, Math.min(100, Math.round(selectedBarData.predicted ?? (liveForecast?.targetBenchmark || 90))));
                       const delta = tgt - cur;
+                      if (tgt === 0 && cur === 0) {
+                        return (
+                          <>
+                            <span className="text-base font-black text-slate-400 mt-0.5 block">N/A</span>
+                            <span className="text-[10px] text-slate-400 font-semibold">Pre-onboarding month</span>
+                          </>
+                        );
+                      }
                       return (
                         <>
                           <span className={`text-base font-black mt-0.5 block ${delta > 0 ? 'text-amber-600' : 'text-emerald-600'}`}>
@@ -528,10 +542,12 @@ const HRInsightsForecasting = () => {
                   <div className="p-2.5 bg-white rounded-lg border border-slate-200/80 shadow-xs">
                     <span className="text-[10px] font-bold text-slate-400 block uppercase">Workforce Capacity</span>
                     <span className="text-base font-black text-slate-900 mt-0.5 block">
-                      {selectedBarData.currentSupply || liveForecast?.totalEmployees || 9} Staff
+                      {selectedBarData.currentSupply ?? (liveForecast?.totalEmployees || 9)} Staff
                     </span>
                     <span className="text-[10px] text-slate-500 font-semibold">
-                      Projected need: {selectedBarData.futureDemand || (liveForecast?.totalEmployees || 9) + (liveForecast?.activeGaps || 0)}
+                      {selectedBarData.futureDemand 
+                        ? `Projected need: ${selectedBarData.futureDemand}` 
+                        : 'No active staff in DB'}
                     </span>
                   </div>
                 </div>
