@@ -10,16 +10,16 @@ import { hrAPI } from '../services/api';
 
 
 // ── Competency Radar Chart (SVG) ──────────────────────────────────────────────
-const RadarChart = ({ candidateScores, benchmarkScores }) => {
+const RadarChart = ({ 
+  candidateScores = [0.85, 0.80, 0.85, 0.85, 0.80, 0.85], 
+  benchmarkScores = [0.85, 0.80, 0.85, 0.85, 0.80, 0.85],
+  labels = ['Technical', 'Domain', 'Soft Skills', 'Leadership', 'Execution', 'Readiness']
+}) => {
   const cx = 120, cy = 120, r = 85;
-  const labels = ['Strategic', 'Financial', 'Operational', 'Leadership', 'Tech', 'Innovation'];
   const n = labels.length;
 
-  const defaultCandidate = [0.88, 0.82, 0.78, 0.85, 0.72, 0.76];
-  const defaultBenchmark = [0.82, 0.78, 0.74, 0.80, 0.68, 0.72];
-
-  const cScores = candidateScores || defaultCandidate;
-  const bScores = benchmarkScores || defaultBenchmark;
+  const cScores = candidateScores;
+  const bScores = benchmarkScores;
 
   const angleOf = (i) => (Math.PI * 2 * i) / n - Math.PI / 2;
 
@@ -33,7 +33,7 @@ const RadarChart = ({ candidateScores, benchmarkScores }) => {
 
   const labelAt = (i) => {
     const angle = angleOf(i);
-    const offset = 1.22;
+    const offset = 1.25;
     return {
       x: cx + offset * r * Math.cos(angle),
       y: cy + offset * r * Math.sin(angle),
@@ -96,8 +96,8 @@ const RadarChart = ({ candidateScores, benchmarkScores }) => {
             y={pos.y}
             textAnchor="middle"
             dominantBaseline="middle"
-            fontSize="9"
-            fill="#64748b"
+            fontSize="8.5"
+            fill="#475569"
             fontFamily="sans-serif"
             fontWeight="700"
           >
@@ -128,6 +128,7 @@ const SuccessionPipeline = () => {
   const [successionPoolData, setSuccessionPoolData] = useState([]);
   const [apiSkillGaps, setApiSkillGaps] = useState([]);
   const [incumbentData, setIncumbentData] = useState(null);
+  const [apiAnalytics, setApiAnalytics] = useState(null);
   const [readinessFilter, setReadinessFilter] = useState('ALL');
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
@@ -143,6 +144,7 @@ const SuccessionPipeline = () => {
           setSuccessionPoolData(res.data || []);
           if (res.skillGaps) setApiSkillGaps(res.skillGaps);
           if (res.incumbent) setIncumbentData(res.incumbent);
+          if (res.analytics) setApiAnalytics(res.analytics);
         }
       } catch (err) {
         console.warn('Failed to load succession pools:', err);
@@ -158,9 +160,10 @@ const SuccessionPipeline = () => {
     'READY_NOW':      { label: 'Ready Now',        color: '#10b981' },
     'WITHIN_1_YEAR':  { label: 'Ready in 1 Yr',    color: '#f59e0b' },
     'WITHIN_2_YEARS': { label: 'Ready in 2 Yrs',   color: '#3b82f6' },
+    'LONG_TERM':      { label: 'Developing',       color: '#64748b' },
     'READY_1_2_YR':   { label: 'Ready in 1-2 yrs', color: '#f59e0b' },
     'READY_2_5_YR':   { label: 'Ready in 2-5 yrs', color: '#3b82f6' },
-    'NOT_READY':      { label: 'Not Ready',         color: '#ef4444' },
+    'NOT_READY':      { label: 'Not Ready',        color: '#ef4444' },
   };
 
   const allCandidates = useMemo(() => {
@@ -168,24 +171,31 @@ const SuccessionPipeline = () => {
     return successionPoolData.map((pool, idx) => {
       const c = pool.candidate || pool;
       const name = c.firstName ? `${c.firstName} ${c.lastName}` : (c.name || `Candidate ${idx + 1}`);
-      const readinessKey = pool.readiness || c.readiness;
+      const readinessKey = pool.readiness || c.readiness || 'WITHIN_1_YEAR';
       const readinessObj = READINESS_LABELS[readinessKey] || { label: 'Evaluating', color: '#94a3b8' };
-      const pct = pool.readinessScore ?? c.readinessPct ?? (readinessKey === 'READY_NOW' ? 90 : readinessKey === 'WITHIN_1_YEAR' ? 78 : 65);
+      const rawScore = pool.leadershipScore ?? pool.readinessScore ?? c.readinessPct ?? (readinessKey === 'READY_NOW' ? 90 : 75);
+      const pct = Math.round(rawScore);
 
       const initials = (c.firstName ? `${c.firstName[0]}${c.lastName ? c.lastName[0] : ''}` : name.substring(0, 2)).toUpperCase();
 
       return {
-        id:         pool.id || c.id || `${idx}`,
-        name:       name,
+        id:           pool.id || c.id || `${idx}`,
+        candidateId:  c.id,
+        name:         name,
         readinessKey: readinessKey,
-        status:     readinessObj.label,
-        statusColor:readinessObj.color,
-        pct:        pct,
-        barColor:   readinessObj.color,
-        avatar:     c.avatarUrl || null,
-        initials:   initials,
-        targetRole: pool.targetRole || pool.positionTitle || 'Executive',
-        jobTitle:   c.jobTitle || 'Team Member',
+        status:       readinessObj.label,
+        statusColor:  readinessObj.color,
+        pct:          pct,
+        barColor:     readinessObj.color,
+        avatar:       c.avatarUrl || null,
+        initials:     initials,
+        targetRole:   pool.targetRole || pool.positionTitle || 'Executive Leadership',
+        department:   pool.department || c.department?.name || 'Operations',
+        jobTitle:     c.jobTitle || 'Team Member',
+        skills:       c.skills || [],
+        skillGaps:    c.skillGaps || [],
+        flightRisk:   pool.flightRisk || 'LOW',
+        notes:        pool.notes || ''
       };
     });
   }, [successionPoolData]);
@@ -203,72 +213,135 @@ const SuccessionPipeline = () => {
   const activeProfile = useMemo(() => {
     if (!activeCandidateObj) {
       return {
-        candidateScores: [0.85, 0.80, 0.75, 0.82, 0.70, 0.75],
-        benchmarkScores: [0.80, 0.75, 0.72, 0.78, 0.68, 0.70],
-        overallScore: 85,
-        targetScore: 82,
-        trajectory: [
-          { num: null, label: 'Current Role', sub: 'Active', active: true, done: true, current: false },
-          { num: 2, label: 'Leadership Rotation', sub: 'In Progress (50%)', active: true, done: false, current: true },
-          { num: 3, label: 'Executive Track', sub: 'Pipeline Track', active: false, done: false, current: false },
-          { num: null, label: 'Target Position', sub: 'Ready in 1-2 yrs', active: false, done: false, current: false },
-        ]
+        candidateScores: [0.80, 0.75, 0.80, 0.80, 0.75, 0.80],
+        benchmarkScores: [0.85, 0.80, 0.85, 0.85, 0.80, 0.85],
+        overallScore: 80,
+        targetScore: 85,
+        trajectory: []
       };
     }
 
-    const pct = activeCandidateObj.pct || 80;
-    const baseScore = pct / 100;
+    const candSkills = activeCandidateObj.skills || [];
+    const candGaps = activeCandidateObj.skillGaps || [];
+
+    // Technical skills calculation from real DB
+    const techSkills = candSkills.filter(s => /tech|softw|code|prog|dev|eng|front|back|sql|api|react/i.test(s.skill?.category?.name || s.skill?.name || ''));
+    const techScore = techSkills.length > 0
+      ? (techSkills.reduce((acc, s) => acc + (s.proficiencyLevel || 0), 0) / (techSkills.length * 5.0))
+      : (activeCandidateObj.pct / 100);
+
+    // Domain knowledge calculation from real DB
+    const domainSkills = candSkills.filter(s => /domain|busin|indus|comm|market|prod|oper/i.test(s.skill?.category?.name || s.skill?.name || ''));
+    const domainScore = domainSkills.length > 0
+      ? (domainSkills.reduce((acc, s) => acc + (s.proficiencyLevel || 0), 0) / (domainSkills.length * 5.0))
+      : (activeCandidateObj.pct / 100);
+
+    // Soft Skills calculation from real DB
+    const softSkills = candSkills.filter(s => /soft|comm|crit|prob|solv|lead|adap/i.test(s.skill?.category?.name || s.skill?.name || ''));
+    const softScore = softSkills.length > 0
+      ? (softSkills.reduce((acc, s) => acc + (s.proficiencyLevel || 0), 0) / (softSkills.length * 5.0))
+      : (activeCandidateObj.pct / 100);
+
+    // Leadership score from real DB leadershipScore
+    const leadershipScore = (activeCandidateObj.pct || 80) / 100;
+
+    // Execution score penalized by verified critical gaps
+    const criticalGapCount = candGaps.filter(g => g.severity === 'CRITICAL').length;
+    const executionScore = Math.max(0.4, 1.0 - (criticalGapCount * 0.1) - (candGaps.length * 0.05));
+
+    // Overall readiness score from real DB
+    const readinessScore = (activeCandidateObj.pct || 80) / 100;
+
     const candidateScores = [
-      parseFloat(Math.min(0.98, Math.max(0.6, baseScore + 0.05)).toFixed(2)),
-      parseFloat(Math.min(0.98, Math.max(0.6, baseScore - 0.04)).toFixed(2)),
-      parseFloat(Math.min(0.98, Math.max(0.6, baseScore + 0.02)).toFixed(2)),
-      parseFloat(Math.min(0.98, Math.max(0.6, baseScore + 0.08)).toFixed(2)),
-      parseFloat(Math.min(0.98, Math.max(0.6, baseScore - 0.06)).toFixed(2)),
-      parseFloat(Math.min(0.98, Math.max(0.6, baseScore + 0.01)).toFixed(2)),
+      parseFloat(Math.min(0.98, Math.max(0.4, techScore)).toFixed(2)),
+      parseFloat(Math.min(0.98, Math.max(0.4, domainScore)).toFixed(2)),
+      parseFloat(Math.min(0.98, Math.max(0.4, softScore)).toFixed(2)),
+      parseFloat(Math.min(0.98, Math.max(0.4, leadershipScore)).toFixed(2)),
+      parseFloat(Math.min(0.98, Math.max(0.4, executionScore)).toFixed(2)),
+      parseFloat(Math.min(0.98, Math.max(0.4, readinessScore)).toFixed(2)),
     ];
-    const benchmarkScores = [0.82, 0.78, 0.74, 0.80, 0.68, 0.72];
+    const benchmarkScores = [0.85, 0.80, 0.85, 0.85, 0.80, 0.85];
+
+    const isReadyNow = activeCandidateObj.readinessKey === 'READY_NOW';
+
+    const trajectory = [
+      {
+        num: null,
+        label: `${activeCandidateObj.name} — Current Role`,
+        sub: `${activeCandidateObj.jobTitle || 'Team Member'} (${activeCandidateObj.department})`,
+        done: true,
+        current: false
+      },
+      {
+        num: 2,
+        label: 'Verified Competency Profiling',
+        sub: `${candSkills.length} Skills Profiled • ${activeCandidateObj.pct}% Score`,
+        done: candSkills.length > 0 || isReadyNow,
+        current: !isReadyNow && candSkills.length === 0
+      },
+      {
+        num: 3,
+        label: 'Executive Pipeline Track',
+        sub: candGaps.length > 0 ? `${candGaps.length} Open Capability Gap(s)` : 'Benchmark Competencies Verified',
+        done: isReadyNow,
+        current: !isReadyNow
+      },
+      {
+        num: null,
+        label: activeCandidateObj.targetRole || 'Executive Leadership Goal',
+        sub: activeCandidateObj.status || 'Ready for Assessment',
+        done: false,
+        current: isReadyNow
+      }
+    ];
 
     return {
       candidateScores,
       benchmarkScores,
-      overallScore: Math.round(pct),
+      overallScore: activeCandidateObj.pct,
       targetScore: 85,
-      trajectory: [
-        { num: null, label: activeCandidateObj.jobTitle || 'Current Role', sub: 'Current Position', active: true, done: true, current: false },
-        { num: 2, label: 'Leadership Rotation', sub: 'In Progress', active: true, done: false, current: true },
-        { num: 3, label: 'Executive Mentorship', sub: 'Pipeline Track', active: false, done: false, current: false },
-        { num: null, label: activeCandidateObj.targetRole || 'Target Position', sub: activeCandidateObj.status || 'Ready Soon', active: false, done: false, current: false },
-      ]
+      trajectory
     };
   }, [activeCandidateObj]);
 
-  const cooPool = useMemo(() => {
-    if (allCandidates.length === 0) return [];
-    const cooMatches = allCandidates.filter(c => /coo|operations|chief operating/i.test(c.targetRole));
-    return cooMatches.length > 0 ? cooMatches : allCandidates.slice(0, Math.ceil(allCandidates.length / 2));
+  // Dynamic bench tracks from database roles
+  const techPool = useMemo(() => {
+    return allCandidates.filter(c => 
+      /tech|cto|eng|develop|softw|architect/i.test(c.targetRole) || 
+      /develop|eng/i.test(c.department)
+    );
   }, [allCandidates]);
 
-  const ctoPool = useMemo(() => {
-    if (allCandidates.length === 0) return [];
-    const ctoMatches = allCandidates.filter(c => /cto|technology|chief tech|engineering/i.test(c.targetRole));
-    return ctoMatches.length > 0 ? ctoMatches : allCandidates.slice(Math.ceil(allCandidates.length / 2));
+  const opsPool = useMemo(() => {
+    return allCandidates.filter(c => 
+      !/tech|cto|eng|develop|softw|architect/i.test(c.targetRole) && 
+      !/develop|eng/i.test(c.department)
+    );
   }, [allCandidates]);
 
+  // Skill gaps from real database records
   const skillGaps = useMemo(() => {
-    if (apiSkillGaps && apiSkillGaps.length > 0) {
-      return apiSkillGaps.map(g => ({
-        name:      g.skill?.name || g.skillName || 'Leadership Competency',
-        level:     g.severity === 'CRITICAL' ? 'Critical Gap' : g.severity === 'HIGH' ? 'Moderate Gap' : 'On Track',
-        levelColor:g.severity === 'CRITICAL' ? '#ef4444' : g.severity === 'HIGH' ? '#f59e0b' : '#3b82f6',
-        barColor:  g.severity === 'CRITICAL' ? '#ef4444' : g.severity === 'HIGH' ? '#f59e0b' : '#3b82f6',
-        barPct:    g.severity === 'CRITICAL' ? 30 : g.severity === 'HIGH' ? 58 : 80,
-        sub:       'Identified in DB analytics',
-      }));
-    }
-    return [
-      { name: 'Strategic Leadership', level: 'Moderate Gap', levelColor: '#f59e0b', barColor: '#f59e0b', barPct: 62, sub: 'Needs executive coaching' },
-      { name: 'Cloud & System Design', level: 'On Track', levelColor: '#3b82f6', barColor: '#3b82f6', barPct: 84, sub: 'Meets benchmark' },
-    ];
+    if (!apiSkillGaps || apiSkillGaps.length === 0) return [];
+    return apiSkillGaps.map(g => {
+      const cur = g.currentLevel || 1.0;
+      const req = g.requiredLevel || 5.0;
+      const pct = Math.min(100, Math.round((cur / req) * 100));
+      const isCritical = g.severity === 'CRITICAL';
+      const isHigh = g.severity === 'HIGH';
+
+      return {
+        id: g.id,
+        name: g.skill?.name || 'Skill Deficit',
+        category: g.skill?.category?.name || 'Technical',
+        candidateName: g.user ? `${g.user.firstName} ${g.user.lastName}` : 'Candidate',
+        department: g.user?.department?.name || 'Department',
+        level: isCritical ? 'Critical Deficit' : isHigh ? 'Moderate Deficit' : 'Developing',
+        levelColor: isCritical ? '#ef4444' : isHigh ? '#f59e0b' : '#6366f1',
+        barColor: isCritical ? '#ef4444' : isHigh ? '#f59e0b' : '#6366f1',
+        barPct: pct,
+        sub: `Level ${cur} → ${req} • ${g.user ? `${g.user.firstName} ${g.user.lastName}` : 'Candidate'}`
+      };
+    });
   }, [apiSkillGaps]);
 
   const matchesReadinessFilter = (c, filter) => {
@@ -281,37 +354,47 @@ const SuccessionPipeline = () => {
     return true;
   };
 
-  const filteredCooPool = useMemo(() => 
-    cooPool.filter(c => 
+  const filteredTechPool = useMemo(() => 
+    techPool.filter(c => 
       (c.name || '').toLowerCase().includes((searchQuery || '').toLowerCase()) &&
       matchesReadinessFilter(c, readinessFilter)
-    ), [searchQuery, readinessFilter, cooPool]
+    ), [searchQuery, readinessFilter, techPool]
   );
 
-  const filteredCtoPool = useMemo(() => 
-    ctoPool.filter(c => 
+  const filteredOpsPool = useMemo(() => 
+    opsPool.filter(c => 
       (c.name || '').toLowerCase().includes((searchQuery || '').toLowerCase()) &&
       matchesReadinessFilter(c, readinessFilter)
-    ), [searchQuery, readinessFilter, ctoPool]
+    ), [searchQuery, readinessFilter, opsPool]
   );
 
+  // Exact database-backed metrics
   const avgReadinessPct = useMemo(() => {
-    if (!allCandidates || allCandidates.length === 0) return 78;
+    if (apiAnalytics?.avgReadinessPct != null) return apiAnalytics.avgReadinessPct;
+    if (!allCandidates || allCandidates.length === 0) return 0;
     return Math.round(allCandidates.reduce((acc, c) => acc + (c.pct || 0), 0) / allCandidates.length);
-  }, [allCandidates]);
+  }, [apiAnalytics, allCandidates]);
 
   const criticalGapsCount = useMemo(() => {
+    if (apiAnalytics?.criticalGapsCount != null) return apiAnalytics.criticalGapsCount;
     if (!skillGaps || skillGaps.length === 0) return 0;
-    return skillGaps.filter(g => g.level === 'Critical Gap').length;
-  }, [skillGaps]);
+    return skillGaps.filter(g => g.level === 'Critical Deficit').length;
+  }, [apiAnalytics, skillGaps]);
 
   const readyNowCount = useMemo(() => {
+    if (apiAnalytics?.readyNowCount != null) return apiAnalytics.readyNowCount;
     if (!allCandidates || allCandidates.length === 0) return 0;
-    return allCandidates.filter(c => c.status === 'Ready Now').length;
-  }, [allCandidates]);
+    return allCandidates.filter(c => c.readinessKey === 'READY_NOW').length;
+  }, [apiAnalytics, allCandidates]);
 
   const hipoCount = allCandidates.length;
-  const avgTimeToReady = 14;
+
+  const avgTimeToReady = useMemo(() => {
+    if (apiAnalytics?.avgTimeToReadyMonths != null) return apiAnalytics.avgTimeToReadyMonths;
+    if (!allCandidates || allCandidates.length === 0) return 0;
+    const monthsMap = { READY_NOW: 0, WITHIN_1_YEAR: 9, WITHIN_2_YEARS: 18, LONG_TERM: 36 };
+    return Math.round(allCandidates.reduce((acc, c) => acc + (monthsMap[c.readinessKey] ?? 12), 0) / allCandidates.length);
+  }, [apiAnalytics, allCandidates]);
 
   const handleExport = () => {
     setIsExporting(true);
@@ -372,7 +455,7 @@ const SuccessionPipeline = () => {
         {loading ? (
           <div className="flex flex-col items-center justify-center py-32 gap-4">
             <Loader2 size={36} className="animate-spin text-indigo-500" />
-            <p className="text-slate-400 text-sm font-semibold">Loading succession pipeline from database...</p>
+            <p className="text-slate-400 text-sm font-semibold">Loading succession pipeline...</p>
           </div>
         ) : (
         <div className="px-8 py-6 space-y-6">
@@ -439,8 +522,8 @@ const SuccessionPipeline = () => {
               </div>
               <p className="text-3xl font-black text-slate-900 mt-2">{avgReadinessPct}%</p>
               <div className="flex items-center gap-2 mt-2">
-                <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-600">+4.2%</span>
-                <span className="text-xs text-slate-400 font-medium">vs last quarter</span>
+                <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">{readyNowCount} of {hipoCount} Ready Now</span>
+                <span className="text-xs text-slate-400 font-medium">pipeline benchmark</span>
               </div>
               <div className="mt-3 h-1.5 bg-slate-100 rounded-full overflow-hidden">
                 <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${avgReadinessPct}%` }} />
@@ -456,8 +539,8 @@ const SuccessionPipeline = () => {
               </div>
               <p className="text-3xl font-black text-slate-900 mt-2">{criticalGapsCount}</p>
               <div className="flex items-center gap-2 mt-2">
-                <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">Active Gaps</span>
-                <span className="text-xs text-slate-400 font-medium">in executive track</span>
+                <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-rose-50 text-rose-700 border border-rose-200">{criticalGapsCount} Critical Deficits</span>
+                <span className="text-xs text-slate-400 font-medium">in active candidates</span>
               </div>
               <div className="mt-3 h-1.5 bg-slate-100 rounded-full overflow-hidden">
                 <div className="h-full bg-rose-500 rounded-full" style={{ width: `${Math.min(100, criticalGapsCount * 25)}%` }} />
@@ -473,7 +556,8 @@ const SuccessionPipeline = () => {
               </div>
               <p className="text-3xl font-black text-slate-900 mt-2">{hipoCount}</p>
               <div className="flex items-center gap-2 mt-2">
-                <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-600">{readyNowCount} Ready Now</span>
+                <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200">{allCandidates.filter(c => c.readinessKey === 'WITHIN_1_YEAR').length} Within 1 Yr</span>
+                <span className="text-xs text-slate-400 font-medium">high-potential bench</span>
               </div>
               <div className="mt-3 flex -space-x-2">
                 {allCandidates.slice(0, 4).map((cand, i) => (
@@ -498,8 +582,8 @@ const SuccessionPipeline = () => {
               </div>
               <p className="text-3xl font-black text-slate-900 mt-2">{avgTimeToReady} mo</p>
               <div className="flex items-center gap-2 mt-2">
-                <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-purple-50 text-purple-600">Weighted avg</span>
-                <span className="text-xs text-slate-400 font-medium">months to readiness</span>
+                <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-purple-50 text-purple-700 border border-purple-200">Weighted average</span>
+                <span className="text-xs text-slate-400 font-medium">readiness horizon</span>
               </div>
               <div className="mt-3 h-1.5 bg-slate-100 rounded-full overflow-hidden">
                 <div className="h-full bg-purple-500 rounded-full" style={{ width: `${Math.max(10, 100 - avgTimeToReady * 2)}%` }} />
@@ -533,8 +617,8 @@ const SuccessionPipeline = () => {
                       <span className="text-[10px] font-black text-indigo-600 uppercase tracking-widest bg-indigo-50 px-2 py-0.5 rounded">
                         Key Executive Seat
                       </span>
-                      <span className="text-xs font-bold px-2 py-0.5 rounded bg-emerald-50 text-emerald-600 border border-emerald-100">
-                        LOW ATTRITION RISK
+                      <span className="text-xs font-bold px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">
+                        ACTIVE BENCHMARK
                       </span>
                     </div>
                     <h4 className="text-lg font-black text-slate-900 mb-2">{incumbentData?.title || 'Chief Executive Officer (CEO)'}</h4>
@@ -543,12 +627,12 @@ const SuccessionPipeline = () => {
                         <img src={incumbentData.avatar} className="w-10 h-10 rounded-full object-cover border-2 border-slate-200" alt={incumbentData.name} />
                       ) : (
                         <div className="w-10 h-10 rounded-full bg-indigo-600 text-white font-black flex items-center justify-center text-sm border-2 border-slate-200">
-                          {(incumbentData?.name || user?.firstName || 'A').substring(0, 2).toUpperCase()}
+                          {(incumbentData?.name || 'Apex Admin').substring(0, 2).toUpperCase()}
                         </div>
                       )}
                       <div>
-                        <p className="text-sm font-extrabold text-slate-800">{incumbentData?.name || (user?.firstName ? `${user.firstName} ${user.lastName}` : 'Executive Leader')}</p>
-                        <p className="text-xs text-slate-400 font-medium">{incumbentData?.tenure || '3 Years in Position'} • Active Incumbent</p>
+                        <p className="text-sm font-extrabold text-slate-800">{incumbentData?.name || 'Apex Admin'}</p>
+                        <p className="text-xs text-slate-400 font-medium">{incumbentData?.tenure || '1 Year in Position'} • Active Incumbent</p>
                       </div>
                     </div>
                   </div>
@@ -557,22 +641,22 @@ const SuccessionPipeline = () => {
 
               {/* Successor Pools Grid */}
               <div className="grid grid-cols-2 gap-4">
-                {/* COO Pool */}
+                {/* Tech & Engineering Bench Pool */}
                 <div className="border border-slate-200 rounded-xl p-4 bg-white hover:border-slate-300 transition-all">
                   <div className="flex justify-between items-center mb-3">
-                    <p className="text-xs font-black text-slate-900 uppercase tracking-wider">COO Bench Pool</p>
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-amber-50 text-amber-600 border border-amber-100">
-                      MODERATE RISK
+                    <p className="text-xs font-black text-slate-900 uppercase tracking-wider">Technology & Engineering Bench</p>
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">
+                      HEALTHY BENCH
                     </span>
                   </div>
                   <div className="space-y-3">
-                    {filteredCooPool.length === 0 ? (
-                      <p className="text-xs text-slate-400 py-2">No matching candidates</p>
-                    ) : filteredCooPool.map((p) => (
+                    {filteredTechPool.length === 0 ? (
+                      <p className="text-xs text-slate-400 py-2">No matching candidates in filter</p>
+                    ) : filteredTechPool.map((p) => (
                       <div 
                         key={p.id} 
                         onClick={() => setSelectedCandidate(p.name)}
-                        className={`flex items-center gap-2.5 p-2 rounded-xl cursor-pointer transition-all ${selectedCandidate === p.name ? 'bg-indigo-50/70 border border-indigo-200 shadow-sm' : 'hover:bg-slate-50'}`}
+                        className={`flex items-center gap-2.5 p-2.5 rounded-xl cursor-pointer transition-all ${selectedCandidate === p.name ? 'bg-indigo-50/70 border border-indigo-200 shadow-sm' : 'hover:bg-slate-50'}`}
                       >
                         <div className="relative flex-shrink-0">
                           {p.avatar ? (
@@ -586,33 +670,39 @@ const SuccessionPipeline = () => {
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className="text-xs font-black text-slate-800 truncate">{p.name}</p>
-                          <p className="text-[10px] font-bold" style={{ color: p.statusColor }}>{p.status}</p>
+                          <p className="text-[10px] font-semibold text-slate-500 truncate">{p.targetRole}</p>
+                          <div className="flex items-center gap-1.5 mt-0.5">
+                            <span className="text-[9px] font-bold px-1 rounded" style={{ color: p.statusColor, background: `${p.statusColor}15` }}>{p.status}</span>
+                            {p.skills?.length > 0 && (
+                              <span className="text-[9px] font-semibold text-slate-400 bg-slate-100 px-1 rounded">{p.skills.length} Skills</span>
+                            )}
+                          </div>
                         </div>
                         <div className="flex items-center gap-2 flex-shrink-0">
                           <ProgressBar pct={p.pct} color={p.barColor} />
-                          <span className="text-xs font-black text-slate-700 w-7 text-right">{p.pct}%</span>
+                          <span className="text-xs font-black text-slate-700 w-8 text-right">{p.pct}%</span>
                         </div>
                       </div>
                     ))}
                   </div>
                 </div>
 
-                {/* CTO Pool */}
+                {/* Product, Commercial & Operations Bench */}
                 <div className="border border-slate-200 rounded-xl p-4 bg-white hover:border-slate-300 transition-all">
                   <div className="flex justify-between items-center mb-3">
-                    <p className="text-xs font-black text-slate-900 uppercase tracking-wider">CTO Bench Pool</p>
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-50 text-emerald-600 border border-emerald-100">
-                      HEALTHY BENCH
+                    <p className="text-xs font-black text-slate-900 uppercase tracking-wider">Product & Operations Bench</p>
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-indigo-50 text-indigo-700 border border-indigo-200">
+                      ACTIVE PIPELINE
                     </span>
                   </div>
                   <div className="space-y-3">
-                    {filteredCtoPool.length === 0 ? (
-                      <p className="text-xs text-slate-400 py-2">No matching candidates</p>
-                    ) : filteredCtoPool.map((p) => (
+                    {filteredOpsPool.length === 0 ? (
+                      <p className="text-xs text-slate-400 py-2">No matching candidates in filter</p>
+                    ) : filteredOpsPool.map((p) => (
                       <div 
                         key={p.id}
                         onClick={() => setSelectedCandidate(p.name)}
-                        className={`flex items-center gap-2.5 p-2 rounded-xl cursor-pointer transition-all ${selectedCandidate === p.name ? 'bg-indigo-50/70 border border-indigo-200 shadow-sm' : 'hover:bg-slate-50'}`}
+                        className={`flex items-center gap-2.5 p-2.5 rounded-xl cursor-pointer transition-all ${selectedCandidate === p.name ? 'bg-indigo-50/70 border border-indigo-200 shadow-sm' : 'hover:bg-slate-50'}`}
                       >
                         <div className="relative flex-shrink-0">
                           {p.avatar ? (
@@ -626,11 +716,17 @@ const SuccessionPipeline = () => {
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className="text-xs font-black text-slate-800 truncate">{p.name}</p>
-                          <p className="text-[10px] font-bold" style={{ color: p.statusColor }}>{p.status}</p>
+                          <p className="text-[10px] font-semibold text-slate-500 truncate">{p.targetRole}</p>
+                          <div className="flex items-center gap-1.5 mt-0.5">
+                            <span className="text-[9px] font-bold px-1 rounded" style={{ color: p.statusColor, background: `${p.statusColor}15` }}>{p.status}</span>
+                            {p.skills?.length > 0 && (
+                              <span className="text-[9px] font-semibold text-slate-400 bg-slate-100 px-1 rounded">{p.skills.length} Skills</span>
+                            )}
+                          </div>
                         </div>
                         <div className="flex items-center gap-2 flex-shrink-0">
                           <ProgressBar pct={p.pct} color={p.barColor} />
-                          <span className="text-xs font-black text-slate-700 w-7 text-right">{p.pct}%</span>
+                          <span className="text-xs font-black text-slate-700 w-8 text-right">{p.pct}%</span>
                         </div>
                       </div>
                     ))}
@@ -656,15 +752,15 @@ const SuccessionPipeline = () => {
                 <div className="mt-2 space-y-1 text-xs">
                   <div className="flex justify-between items-center">
                     <span className="flex items-center gap-1.5 font-semibold text-slate-600">
-                      <span className="w-2.5 h-2.5 rounded-full bg-indigo-600 inline-block"/> Candidate Rating
+                      <span className="w-2.5 h-2.5 rounded-full bg-indigo-600 inline-block"/> Candidate Readiness
                     </span>
-                    <span className="font-black text-slate-900">{activeProfile.overallScore}/100</span>
+                    <span className="font-black text-slate-900">{activeProfile.overallScore}%</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="flex items-center gap-1.5 font-semibold text-slate-500">
                       <span className="w-2.5 h-2.5 rounded-full border-2 border-slate-400 inline-block"/> Target Benchmark
                     </span>
-                    <span className="font-black text-slate-800">{activeProfile.targetScore}/100</span>
+                    <span className="font-black text-slate-800">{activeProfile.targetScore}%</span>
                   </div>
                 </div>
               </div>
@@ -673,25 +769,27 @@ const SuccessionPipeline = () => {
               <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5">
                 <div className="flex justify-between items-center mb-3">
                   <h3 className="text-sm font-black text-slate-900">Top Pipeline Skill Deficits</h3>
-                  <button className="text-xs font-bold text-indigo-600 hover:text-indigo-700">Detailed Audit</button>
+                  <span className="text-[10px] font-bold text-slate-400">{skillGaps.length} Verified Gaps</span>
                 </div>
                 <div className="space-y-3">
-                  {skillGaps.map((gap, i) => (
-                    <div key={i}>
+                  {skillGaps.length === 0 ? (
+                    <p className="text-xs text-slate-400 py-3 text-center">No open capability gaps detected for candidates.</p>
+                  ) : skillGaps.map((gap, i) => (
+                    <div key={gap.id || i}>
                       <div className="flex justify-between items-center mb-1">
-                        <p className="text-xs font-bold text-slate-800">{gap.name}</p>
+                        <p className="text-xs font-bold text-slate-800 truncate max-w-[170px]" title={gap.name}>{gap.name}</p>
                         <span className="text-[10px] font-black" style={{ color: gap.levelColor }}>{gap.level}</span>
                       </div>
                       <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden mb-1">
                         <div className="h-full rounded-full" style={{ width: `${gap.barPct}%`, background: gap.barColor }} />
                       </div>
-                      <p className="text-[10px] text-slate-400 font-medium">{gap.sub}</p>
+                      <p className="text-[10px] text-slate-400 font-medium truncate">{gap.sub}</p>
                     </div>
                   ))}
                 </div>
                 <button 
-                  onClick={() => setToastMessage('Enterprise training campaign allocated for pipeline deficits.')}
-                  className="mt-4 w-full py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition-all"
+                  onClick={() => setToastMessage('Enterprise training pathways initiated for active pipeline gaps.')}
+                  className="mt-4 w-full py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition-all cursor-pointer"
                 >
                   Allocate Campaign Training
                 </button>
