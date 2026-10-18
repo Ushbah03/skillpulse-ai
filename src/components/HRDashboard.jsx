@@ -285,24 +285,26 @@ const HRDashboard = () => {
             {/* 6. Pure Mathematical Trend Graphs */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <DynamicTrendGraph 
-                title="Performance Trend (6-Month Historical)" 
+                title="Assessment Milestone Progression" 
                 color="#6366f1" 
                 gradId="blueGrad"
-                data={analyticsData?.monthlyPerformanceTrend || []}
-                xKey="month"
+                data={analyticsData?.assessmentMilestoneTrend || []}
+                xKey="milestone"
                 yKey="value"
                 unit="%"
-                sublabel="Monthly verified capability average"
+                sublabel="Chronological capability evaluation progression"
+                benchmark={90}
               />
               <DynamicTrendGraph 
-                title="Readiness Trend (Quarterly Progression)" 
+                title="Competency Pillar Readiness Index" 
                 color="#10b981" 
                 gradId="greenGrad"
-                data={analyticsData?.quarterlyTrend || []}
-                xKey="quarter"
+                data={analyticsData?.pillarReadinessTrend || []}
+                xKey="pillar"
                 yKey="value"
                 unit="%"
-                sublabel="Quarterly capability index"
+                sublabel="Live verified capability across functional pillars"
+                benchmark={90}
               />
             </div>
 
@@ -603,18 +605,20 @@ const StackedBar = ({ label, segments = [0, 0, 0], hasSkills = false, totalSkill
   );
 };
 
-const DynamicTrendGraph = ({ title, color, gradId, data = [], xKey = "month", yKey = "value", unit = "%", sublabel = "" }) => {
+const DynamicTrendGraph = ({ title, color, gradId, data = [], xKey = "milestone", yKey = "value", unit = "%", sublabel = "", benchmark = 90 }) => {
+  const [hoveredIdx, setHoveredIdx] = useState(null);
+
   const points = data && data.length > 0 ? data : [
-    { [xKey]: "Q1", [yKey]: 0 },
-    { [xKey]: "Q2", [yKey]: 0 },
-    { [xKey]: "Q3", [yKey]: 0 },
-    { [xKey]: "Q4", [yKey]: 0 }
+    { [xKey]: "M1", [yKey]: 0 },
+    { [xKey]: "M2", [yKey]: 0 },
+    { [xKey]: "M3", [yKey]: 0 },
+    { [xKey]: "M4", [yKey]: 0 }
   ];
 
   const labels = points.map(p => p[xKey] || "");
   const values = points.map(p => typeof p[yKey] === 'number' ? p[yKey] : 0);
 
-  const W = 400, H = 100, padL = 25, padR = 25, padT = 15, padB = 25;
+  const W = 460, H = 140, padL = 36, padR = 24, padT = 20, padB = 30;
   const chartW = W - padL - padR;
   const chartH = H - padT - padB;
   const minV = 0, maxV = 100;
@@ -622,16 +626,31 @@ const DynamicTrendGraph = ({ title, color, gradId, data = [], xKey = "month", yK
   const getX = (i) => padL + (values.length > 1 ? (i / (values.length - 1)) * chartW : chartW / 2);
   const getY = (v) => padT + chartH - ((Math.min(maxV, Math.max(minV, v)) - minV) / (maxV - minV)) * chartH;
 
-  const pathD = values.length > 0 
-    ? values.map((v, i) => `${i === 0 ? 'M' : 'L'} ${getX(i).toFixed(1)} ${getY(v).toFixed(1)}`).join(' ')
-    : `M ${padL} ${padT + chartH} L ${padL + chartW} ${padT + chartH}`;
+  // Generate smooth cubic bezier curve
+  let pathD = "";
+  if (values.length > 0) {
+    pathD = `M ${getX(0).toFixed(1)} ${getY(values[0]).toFixed(1)}`;
+    for (let i = 0; i < values.length - 1; i++) {
+      const x0 = getX(i);
+      const y0 = getY(values[i]);
+      const x1 = getX(i + 1);
+      const y1 = getY(values[i + 1]);
+      const cpx = (x0 + x1) / 2;
+      pathD += ` C ${cpx.toFixed(1)} ${y0.toFixed(1)}, ${cpx.toFixed(1)} ${y1.toFixed(1)}, ${x1.toFixed(1)} ${y1.toFixed(1)}`;
+    }
+  } else {
+    pathD = `M ${padL} ${padT + chartH} L ${padL + chartW} ${padT + chartH}`;
+  }
 
   const areaD = `${pathD} L ${getX(values.length - 1).toFixed(1)} ${(padT + chartH).toFixed(1)} L ${getX(0).toFixed(1)} ${(padT + chartH).toFixed(1)} Z`;
   const latestValue = values[values.length - 1] ?? 0;
+  const benchmarkY = getY(benchmark);
+
+  const gridLevels = [100, 75, 50, 25];
 
   return (
-    <div className="bg-white p-4 rounded-xl border border-slate-200/80 shadow-sm space-y-3 hover:shadow-md transition-shadow">
-      <div className="flex justify-between items-center">
+    <div className="bg-white p-4 rounded-xl border border-slate-200/80 shadow-sm space-y-2 hover:shadow-md transition-shadow relative">
+      <div className="flex justify-between items-start">
         <div>
           <h4 className="text-xs font-black text-slate-900 flex items-center gap-2">
             <TrendingUp size={14} className="text-indigo-600" />
@@ -639,19 +658,85 @@ const DynamicTrendGraph = ({ title, color, gradId, data = [], xKey = "month", yK
           </h4>
           {sublabel && <p className="text-[10px] text-slate-400 font-medium mt-0.5">{sublabel}</p>}
         </div>
-        <span className="text-[11px] font-bold text-slate-500">
-          Current: <span className="font-black text-slate-900">{latestValue}{unit}</span>
-        </span>
+        <div className="text-right">
+          <span className="text-[11px] font-bold text-slate-500">
+            Latest: <span className="font-black text-slate-900">{latestValue}{unit}</span>
+          </span>
+          <span className="text-[9px] font-bold text-emerald-600 block">Target: {benchmark}%</span>
+        </div>
       </div>
-      <div className="h-32 w-full relative pt-2">
-        <svg className="w-full h-full overflow-visible" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none">
+
+      <div className="h-36 w-full relative pt-1">
+        <svg 
+          className="w-full h-full overflow-visible" 
+          viewBox={`0 0 ${W} ${H}`} 
+          preserveAspectRatio="none"
+          onMouseLeave={() => setHoveredIdx(null)}
+        >
           <defs>
             <linearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor={color} stopOpacity="0.22" />
+              <stop offset="0%" stopColor={color} stopOpacity="0.25" />
               <stop offset="100%" stopColor={color} stopOpacity="0.01" />
             </linearGradient>
           </defs>
+
+          {/* Reference Gridlines & Y-Axis Labels */}
+          {gridLevels.map(lvl => {
+            const yPos = getY(lvl);
+            return (
+              <g key={lvl} opacity="0.45">
+                <line 
+                  x1={padL} 
+                  y1={yPos} 
+                  x2={padL + chartW} 
+                  y2={yPos} 
+                  stroke="#cbd5e1" 
+                  strokeDasharray="3 3" 
+                  strokeWidth="1" 
+                />
+                <text 
+                  x={padL - 6} 
+                  y={yPos + 3} 
+                  textAnchor="end" 
+                  fontSize="8" 
+                  fontWeight="bold" 
+                  fill="#94a3b8"
+                >
+                  {lvl}%
+                </text>
+              </g>
+            );
+          })}
+
+          {/* Target Benchmark Dashed Guideline */}
+          {benchmark && (
+            <g opacity="0.8">
+              <line 
+                x1={padL} 
+                y1={benchmarkY} 
+                x2={padL + chartW} 
+                y2={benchmarkY} 
+                stroke="#10b981" 
+                strokeDasharray="4 4" 
+                strokeWidth="1.2" 
+              />
+              <text 
+                x={padL + chartW - 2} 
+                y={benchmarkY - 3} 
+                textAnchor="end" 
+                fontSize="8" 
+                fontWeight="black" 
+                fill="#10b981"
+              >
+                TARGET {benchmark}%
+              </text>
+            </g>
+          )}
+
+          {/* Area Gradient Fill */}
           <path d={areaD} fill={`url(#${gradId})`} />
+
+          {/* Smooth Spline Path */}
           <motion.path 
             initial={{ pathLength: 0 }}
             animate={{ pathLength: 1 }}
@@ -663,24 +748,77 @@ const DynamicTrendGraph = ({ title, color, gradId, data = [], xKey = "month", yK
             strokeLinecap="round"
             strokeLinejoin="round"
           />
-          {values.map((v, i) => (
-            <circle 
-              key={i} 
-              cx={getX(i)} 
-              cy={getY(v)} 
-              r="3.5" 
-              fill="#ffffff" 
+
+          {/* Interactive Hover Guide Line */}
+          {hoveredIdx !== null && (
+            <line 
+              x1={getX(hoveredIdx)} 
+              y1={padT} 
+              x2={getX(hoveredIdx)} 
+              y2={padT + chartH} 
               stroke={color} 
-              strokeWidth="2"
-              className="hover:r-5 transition-all cursor-pointer"
-            >
-              <title>{`${labels[i]}: ${v}${unit}`}</title>
-            </circle>
-          ))}
+              strokeWidth="1.5" 
+              strokeDasharray="2 2" 
+              opacity="0.7"
+            />
+          )}
+
+          {/* Interactive Data Point Dots */}
+          {values.map((v, i) => {
+            const isHovered = hoveredIdx === i;
+            return (
+              <g 
+                key={i} 
+                className="cursor-pointer"
+                onMouseEnter={() => setHoveredIdx(i)}
+              >
+                <circle 
+                  cx={getX(i)} 
+                  cy={getY(v)} 
+                  r={isHovered ? 6 : 4} 
+                  fill="#ffffff" 
+                  stroke={color} 
+                  strokeWidth={isHovered ? 3 : 2}
+                  className="transition-all duration-150"
+                />
+              </g>
+            );
+          })}
         </svg>
-        <div className="flex justify-between text-[10px] font-bold text-slate-400 mt-1 border-t border-slate-100 pt-1">
+
+        {/* Floating Tooltip Card */}
+        {hoveredIdx !== null && (
+          <div 
+            className="absolute z-20 pointer-events-none bg-[#0b1221] text-white px-3 py-2 rounded-lg shadow-xl border border-slate-800 text-[10px] transform -translate-x-1/2 -translate-y-full transition-all duration-150"
+            style={{ 
+              left: `${(getX(hoveredIdx) / W) * 100}%`, 
+              top: `${Math.max(10, (getY(values[hoveredIdx]) / H) * 100 - 10)}%` 
+            }}
+          >
+            <p className="font-black text-slate-200">
+              {points[hoveredIdx]?.title || points[hoveredIdx]?.fullName || labels[hoveredIdx]}
+            </p>
+            <p className="font-bold text-emerald-400 mt-0.5">
+              Score: <span className="font-black text-white">{values[hoveredIdx]}%</span> ({((values[hoveredIdx] / 100) * 5.0).toFixed(1)} / 5.0)
+            </p>
+            {points[hoveredIdx]?.skillsCount > 0 && (
+              <p className="text-[9px] text-slate-400 mt-0.5">
+                {points[hoveredIdx].skillsCount} Verified Skills in DB
+              </p>
+            )}
+          </div>
+        )}
+
+        {/* X-Axis Category Labels */}
+        <div className="flex justify-between text-[10px] font-bold text-slate-500 mt-1 border-t border-slate-100 pt-1.5 px-3">
           {labels.map((l, i) => (
-            <span key={i} className="truncate max-w-[50px] text-center" title={`${l}: ${values[i]}${unit}`}>
+            <span 
+              key={i} 
+              className={`truncate max-w-[65px] text-center cursor-pointer transition-colors ${hoveredIdx === i ? 'text-indigo-600 font-black' : ''}`}
+              title={`${l}: ${values[i]}${unit}`}
+              onMouseEnter={() => setHoveredIdx(i)}
+              onMouseLeave={() => setHoveredIdx(null)}
+            >
               {l}
             </span>
           ))}
