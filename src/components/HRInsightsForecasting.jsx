@@ -33,10 +33,10 @@ const HRInsightsForecasting = () => {
 
   // State Management
   const [selectedDept, setSelectedDept] = useState('All Departments');
-  const [selectedTimeframe, setSelectedTimeframe] = useState('Next 12 Months');
   const [searchQuery, setSearchQuery] = useState('');
   const [toastMessage, setToastMessage] = useState(null);
   const [activeModalAction, setActiveModalAction] = useState(null);
+  const [selectedBarData, setSelectedBarData] = useState(null);
   const [submittingAction, setSubmittingAction] = useState(false);
   const [loading, setLoading] = useState(true);
   const [liveForecast, setLiveForecast] = useState(null);
@@ -118,14 +118,11 @@ const HRInsightsForecasting = () => {
     ];
   }, [liveForecast]);
 
-  // DB Gap Forecast Trends
+  // DB Gap Forecast Trends (Full 12-month trajectory from PostgreSQL database)
   const gapForecastData = useMemo(() => {
     if (!liveForecast?.growthTrends || liveForecast.growthTrends.length === 0) return [];
-    const trends = liveForecast.growthTrends;
-    if (selectedTimeframe === 'Next 3 Months') return trends.slice(3, 9);
-    if (selectedTimeframe === 'Next 6 Months') return trends.slice(0, 12);
-    return trends;
-  }, [liveForecast, selectedTimeframe]);
+    return liveForecast.growthTrends;
+  }, [liveForecast]);
 
   // DB Department Attrition Risks
   const departmentAttrition = useMemo(() => {
@@ -332,20 +329,7 @@ const HRInsightsForecasting = () => {
               <ChevronDown size={13} className="text-slate-400 pointer-events-none absolute right-1.5" />
             </div>
 
-            {/* Timeframe Filter */}
-            <div className="relative flex items-center bg-white border border-slate-200 rounded-lg px-2.5 py-1.5 shadow-sm text-xs font-bold text-slate-700">
-              <TrendingUp size={14} className="text-slate-400 mr-1.5" />
-              <select 
-                value={selectedTimeframe} 
-                onChange={(e) => setSelectedTimeframe(e.target.value)}
-                className="bg-transparent outline-none cursor-pointer pr-4 appearance-none text-xs font-bold text-slate-700"
-              >
-                <option value="Next 3 Months">Next 3 Months</option>
-                <option value="Next 6 Months">Next 6 Months</option>
-                <option value="Next 12 Months">Next 12 Months</option>
-              </select>
-              <ChevronDown size={13} className="text-slate-400 pointer-events-none absolute right-1.5" />
-            </div>
+
 
             <button 
               onClick={handleExportReport}
@@ -399,46 +383,74 @@ const HRInsightsForecasting = () => {
           
           {/* FUTURE SKILL GAP FORECAST CHART (7 COLS) */}
           <div className="lg:col-span-7 bg-white border border-slate-200/80 rounded-xl p-5 shadow-sm space-y-4 flex flex-col justify-between">
-            <div className="flex justify-between items-center">
+            <div className="flex flex-wrap justify-between items-center gap-2">
               <div>
                 <h3 className="text-base font-bold text-slate-900 tracking-tight flex items-center gap-2">
                   <BarChart3 size={16} className="text-indigo-600" />
                   Future Skill Gap Forecast
                 </h3>
-                <p className="text-xs text-slate-400 font-medium">Current capability vs. predicted requirement over {selectedTimeframe.toLowerCase()}</p>
+                <p className="text-xs text-slate-400 font-medium">Current capability vs. predicted benchmark target (Click any bar to inspect)</p>
               </div>
-              <div className="flex items-center gap-4 text-xs font-bold text-slate-600">
+              <div className="flex items-center gap-3 text-xs font-bold text-slate-600">
                 <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-indigo-300" /> Current Capability</span>
                 <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-indigo-600" /> Predicted Target</span>
               </div>
             </div>
 
-            <div className="h-52 flex items-end justify-between border-b border-slate-100 pb-2 px-3 gap-1.5">
+            <div className="h-56 flex items-end justify-between border-b border-slate-100 pb-2 px-1 gap-1 overflow-visible">
               {gapForecastData.length > 0 ? (
                 gapForecastData.map((data, idx) => {
                   const currentVal = Math.max(0, Math.min(100, Math.round(data.current ?? 0)));
                   const predictedVal = Math.max(0, Math.min(100, Math.round(data.predicted ?? 95)));
+                  const isSelected = selectedBarData?.month === data.month;
+
                   return (
-                    <div key={idx} className="flex flex-col items-center flex-1 group">
-                      <div className="w-full flex items-end justify-center gap-1 h-40">
+                    <div 
+                      key={idx} 
+                      onClick={() => setSelectedBarData(data)}
+                      className={`flex flex-col items-center flex-1 group cursor-pointer py-1.5 px-0.5 rounded-lg transition-all ${
+                        isSelected 
+                          ? 'bg-indigo-50/90 ring-2 ring-indigo-500 shadow-sm' 
+                          : 'hover:bg-slate-50'
+                      }`}
+                      title={`Click to inspect ${data.month}: Current ${currentVal}%, Target ${predictedVal}%`}
+                    >
+                      {/* Floating Tooltip Pill on Hover / Selected */}
+                      <div className={`transition-all duration-200 text-center mb-1 ${
+                        isSelected ? 'opacity-100 scale-100' : 'opacity-0 group-hover:opacity-100 scale-90 group-hover:scale-100'
+                      }`}>
+                        <div className="bg-[#0b1221] text-white text-[9px] font-bold py-0.5 px-1.5 rounded shadow-lg whitespace-nowrap">
+                          <span className="text-indigo-300 font-black">{currentVal}%</span>
+                          <span className="text-slate-400 mx-0.5">/</span>
+                          <span className="text-white font-black">{predictedVal}%</span>
+                        </div>
+                      </div>
+
+                      <div className="w-full flex items-end justify-center gap-1 h-36">
                         <motion.div 
                           initial={{ height: 0 }}
                           animate={{ height: `${currentVal}%` }}
                           style={{ height: `${currentVal}%` }}
-                          transition={{ duration: 0.6, delay: idx * 0.04 }}
-                          className="w-2.5 sm:w-3.5 bg-indigo-300 rounded-t shadow-sm group-hover:bg-indigo-400 transition-colors" 
-                          title={`Current: ${currentVal}%`}
+                          transition={{ duration: 0.5, delay: idx * 0.03 }}
+                          className={`w-2.5 sm:w-3.5 rounded-t transition-colors ${
+                            isSelected ? 'bg-indigo-400 shadow-sm' : 'bg-indigo-300 group-hover:bg-indigo-400'
+                          }`} 
                         />
                         <motion.div 
                           initial={{ height: 0 }}
                           animate={{ height: `${predictedVal}%` }}
                           style={{ height: `${predictedVal}%` }}
-                          transition={{ duration: 0.6, delay: idx * 0.04 + 0.06 }}
-                          className="w-2.5 sm:w-3.5 bg-indigo-600 rounded-t shadow-sm group-hover:bg-indigo-700 transition-colors" 
-                          title={`Target: ${predictedVal}%`}
+                          transition={{ duration: 0.5, delay: idx * 0.03 + 0.05 }}
+                          className={`w-2.5 sm:w-3.5 rounded-t transition-colors ${
+                            isSelected ? 'bg-indigo-700 shadow-sm' : 'bg-indigo-600 group-hover:bg-indigo-700'
+                          }`} 
                         />
                       </div>
-                      <span className="text-[10px] font-bold text-slate-500 mt-2">{data.month}</span>
+                      <span className={`text-[10px] mt-2 transition-colors ${
+                        isSelected ? 'font-black text-indigo-700' : 'font-bold text-slate-500 group-hover:text-slate-900'
+                      }`}>
+                        {data.month}
+                      </span>
                     </div>
                   );
                 })
@@ -448,6 +460,98 @@ const HRInsightsForecasting = () => {
                 </div>
               )}
             </div>
+
+            {/* INTERACTIVE MONTH DETAIL INSPECTOR (ON CLICK) */}
+            {selectedBarData ? (
+              <motion.div 
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="p-3.5 rounded-xl bg-slate-50/90 border border-indigo-100 shadow-sm space-y-2.5"
+              >
+                <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200/60 pb-2">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-black uppercase tracking-wider text-indigo-700 bg-indigo-100 px-2 py-0.5 rounded-md">
+                      {selectedBarData.month} Detail Inspection
+                    </span>
+                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
+                      selectedBarData.isForecast 
+                        ? 'bg-indigo-50 text-indigo-700 border-indigo-200' 
+                        : 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                    }`}>
+                      {selectedBarData.isForecast ? '6-Month AI Projection' : 'Verified Database Record'}
+                    </span>
+                  </div>
+                  <button 
+                    onClick={() => setSelectedBarData(null)}
+                    className="text-[11px] font-bold text-slate-400 hover:text-slate-700 flex items-center gap-1 cursor-pointer"
+                  >
+                    <X size={13} /> Close Details
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs">
+                  <div className="p-2.5 bg-white rounded-lg border border-slate-200/80 shadow-xs">
+                    <span className="text-[10px] font-bold text-slate-400 block uppercase">Current Capability</span>
+                    <span className="text-base font-black text-indigo-700 mt-0.5 block">
+                      {Math.max(0, Math.min(100, Math.round(selectedBarData.current ?? 0)))}%
+                    </span>
+                    <span className="text-[10px] text-slate-500 font-semibold">Verified maturity level</span>
+                  </div>
+
+                  <div className="p-2.5 bg-white rounded-lg border border-slate-200/80 shadow-xs">
+                    <span className="text-[10px] font-bold text-slate-400 block uppercase">Predicted Target</span>
+                    <span className="text-base font-black text-slate-900 mt-0.5 block">
+                      {Math.max(0, Math.min(100, Math.round(selectedBarData.predicted ?? 95)))}%
+                    </span>
+                    <span className="text-[10px] text-slate-500 font-semibold">Benchmark requirement</span>
+                  </div>
+
+                  <div className="p-2.5 bg-white rounded-lg border border-slate-200/80 shadow-xs">
+                    <span className="text-[10px] font-bold text-slate-400 block uppercase">Skill Gap Delta</span>
+                    {(() => {
+                      const cur = Math.max(0, Math.min(100, Math.round(selectedBarData.current ?? 0)));
+                      const tgt = Math.max(0, Math.min(100, Math.round(selectedBarData.predicted ?? 95)));
+                      const delta = tgt - cur;
+                      return (
+                        <>
+                          <span className={`text-base font-black mt-0.5 block ${delta > 0 ? 'text-amber-600' : 'text-emerald-600'}`}>
+                            {delta > 0 ? `-${delta}% Deficit` : 'Target Achieved'}
+                          </span>
+                          <span className="text-[10px] text-slate-500 font-semibold">
+                            {delta > 0 ? 'Requires upskilling' : 'Optimal capacity'}
+                          </span>
+                        </>
+                      );
+                    })()}
+                  </div>
+
+                  <div className="p-2.5 bg-white rounded-lg border border-slate-200/80 shadow-xs">
+                    <span className="text-[10px] font-bold text-slate-400 block uppercase">Workforce Capacity</span>
+                    <span className="text-base font-black text-slate-900 mt-0.5 block">
+                      {selectedBarData.currentSupply || liveForecast?.totalEmployees || 9} Staff
+                    </span>
+                    <span className="text-[10px] text-slate-500 font-semibold">
+                      Projected need: {selectedBarData.futureDemand || (liveForecast?.totalEmployees || 9) + (liveForecast?.activeGaps || 0)}
+                    </span>
+                  </div>
+                </div>
+              </motion.div>
+            ) : (
+              <div className="flex items-center justify-between px-3 py-2 bg-slate-50/70 border border-slate-100 rounded-lg text-[11px] text-slate-500 font-medium">
+                <span className="flex items-center gap-1.5">
+                  <Sparkles size={13} className="text-indigo-600 shrink-0" />
+                  Click on any month's bar above to inspect detailed capability vs target numbers.
+                </span>
+                {gapForecastData.length > 0 && (
+                  <button 
+                    onClick={() => setSelectedBarData(gapForecastData[gapForecastData.length - 1])}
+                    className="text-[11px] font-bold text-indigo-600 hover:text-indigo-800 underline cursor-pointer shrink-0 ml-2"
+                  >
+                    Inspect {gapForecastData[gapForecastData.length - 1].month}
+                  </button>
+                )}
+              </div>
+            )}
           </div>
 
           {/* HIGH ATTRITION RISK PANEL (5 COLS) */}
