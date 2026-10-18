@@ -22,14 +22,6 @@ import { adminAPI } from '../services/api';
 
 const proficiencyLevels = ['Beginner', 'Intermediate', 'Advanced', 'Expert'];
 const weightageTiers = ['Low', 'Medium', 'High', 'Critical'];
-const defaultDomainCategories = [
-  'Frontend Development',
-  'Backend & Cloud',
-  'Data & AI',
-  'DevOps & Infrastructure',
-  'Security & Governance',
-  'Product & Design'
-];
 
 const PROFICIENCY_LABEL = (score) => {
   if (score >= 90) return 'Expert';
@@ -47,7 +39,7 @@ const WEIGHTAGE_LABEL = (gapCount) => {
 
 const CompanySkillTaxonomy = () => {
   const [skills, setSkills] = useState([]);
-  const [categories, setCategories] = useState(defaultDomainCategories);
+  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
@@ -66,22 +58,21 @@ const CompanySkillTaxonomy = () => {
   // Form State
   const [formData, setFormData] = useState({
     name: '',
-    category: defaultDomainCategories[0],
+    category: '',
     level: 'Intermediate',
     weightage: 'Medium',
     benchmarkScore: 75,
-    mappedRoles: 1
+    mappedRoles: 0
   });
 
   const fetchTaxonomy = async () => {
     setLoading(true);
     try {
       const res = await adminAPI.getTaxonomy();
-      if (res?.success) {
+      if (res?.success && Array.isArray(res.data)) {
         const cats = res.data;
-        const catNames = cats.map(c => c.name).filter(Boolean);
-        const combinedCats = Array.from(new Set([...catNames, ...defaultDomainCategories]));
-        setCategories(combinedCats);
+        const catNames = cats.map(c => c.name).filter(Boolean).sort();
+        setCategories(catNames);
 
         const mapped = [];
         const seenSkillIds = new Set();
@@ -97,7 +88,6 @@ const CompanySkillTaxonomy = () => {
                 id: skill.id,
                 name: skill.name,
                 category: cat.name,
-                // Use stored DB values first; computed values only if actual usage data exists
                 level: skill.proficiencyLevel || (userSkillCount > 0 ? PROFICIENCY_LABEL(computedScore) : 'Beginner'),
                 weightage: skill.priorityTier || (gapCount > 0 ? WEIGHTAGE_LABEL(gapCount) : 'Low'),
                 benchmarkScore,
@@ -107,6 +97,9 @@ const CompanySkillTaxonomy = () => {
           });
         });
         setSkills(mapped);
+        if (catNames.length > 0 && !formData.category) {
+          setFormData(prev => ({ ...prev, category: catNames[0] }));
+        }
       }
     } catch (err) {
       console.warn('Failed to load skill taxonomy:', err);
@@ -144,7 +137,7 @@ const CompanySkillTaxonomy = () => {
         fetchTaxonomy();
       }
     } catch (err) {
-      console.warn('Failed to delete skill node from database:', err);
+      console.warn('Failed to delete skill node:', err);
     } finally {
       setDeleting(false);
     }
@@ -178,7 +171,7 @@ const CompanySkillTaxonomy = () => {
         fetchTaxonomy();
       }
     } catch (err) {
-      console.warn('Failed to create skill node in database:', err);
+      console.warn('Failed to create skill node:', err);
     } finally {
       setSaving(false);
     }
@@ -204,22 +197,21 @@ const CompanySkillTaxonomy = () => {
         fetchTaxonomy();
       }
     } catch (err) {
-      console.warn('Failed to update skill node in database:', err);
+      console.warn('Failed to update skill node:', err);
     } finally {
       setSaving(false);
     }
-
   };
 
   const resetForm = () => {
     setShowCustomCategory(false);
     setFormData({
       name: '',
-      category: 'Frontend Engineering',
+      category: categories[0] || '',
       level: 'Intermediate',
       weightage: 'Medium',
       benchmarkScore: 75,
-      mappedRoles: 1
+      mappedRoles: 0
     });
   };
 
@@ -283,6 +275,49 @@ const CompanySkillTaxonomy = () => {
           </div>
         </div>
 
+        {/* Live Framework Metrics */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+          <div className="p-4 rounded-2xl bg-[#0F172A] border border-slate-800/80 shadow-lg">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Total Skills</span>
+              <BookOpen className="w-4 h-4 text-indigo-400" />
+            </div>
+            <p className="text-2xl font-extrabold text-white mt-2">{skills.length}</p>
+            <p className="text-[11px] text-slate-500 mt-1">Configured competencies</p>
+          </div>
+
+          <div className="p-4 rounded-2xl bg-[#0F172A] border border-slate-800/80 shadow-lg">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Domain Categories</span>
+              <Layers className="w-4 h-4 text-blue-400" />
+            </div>
+            <p className="text-2xl font-extrabold text-blue-400 mt-2">{categories.length}</p>
+            <p className="text-[11px] text-slate-500 mt-1">Taxonomy domains</p>
+          </div>
+
+          <div className="p-4 rounded-2xl bg-[#0F172A] border border-slate-800/80 shadow-lg">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Strategic Priority</span>
+              <Award className="w-4 h-4 text-amber-400" />
+            </div>
+            <p className="text-2xl font-extrabold text-amber-400 mt-2">
+              {skills.filter(s => ['High', 'Critical'].includes(s.weightage)).length}
+            </p>
+            <p className="text-[11px] text-slate-500 mt-1">High & critical tier</p>
+          </div>
+
+          <div className="p-4 rounded-2xl bg-[#0F172A] border border-slate-800/80 shadow-lg">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Workforce Mapped</span>
+              <Sliders className="w-4 h-4 text-emerald-400" />
+            </div>
+            <p className="text-2xl font-extrabold text-emerald-400 mt-2">
+              {skills.filter(s => s.mappedRoles > 0).length}
+            </p>
+            <p className="text-[11px] text-slate-500 mt-1">Skills held by employees</p>
+          </div>
+        </div>
+
         {/* Search & Filter Controls */}
         <div className="p-4 rounded-2xl bg-[#0F172A] border border-slate-800/80 shadow-xl mb-6 flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="relative w-full md:w-96">
@@ -315,7 +350,7 @@ const CompanySkillTaxonomy = () => {
         {loading ? (
           <div className="flex flex-col items-center justify-center py-32 space-y-4">
             <Loader2 className="w-10 h-10 animate-spin text-indigo-500" />
-            <p className="text-sm font-semibold text-slate-400">Loading skill taxonomy from database...</p>
+            <p className="text-sm font-semibold text-slate-400">Loading skill taxonomy...</p>
           </div>
         ) : (
         /* Taxonomy Data Table */
@@ -456,7 +491,7 @@ const CompanySkillTaxonomy = () => {
                         onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                         placeholder="Type custom category..."
                         className="w-full px-3.5 py-2 pr-8 bg-[#1E293B] border border-slate-700 rounded-xl text-sm text-slate-200 focus:outline-none focus:border-indigo-500" autoFocus />
-                      <button type="button" onClick={() => { setShowCustomCategory(false); setFormData({ ...formData, category: categories[0] || defaultDomainCategories[0] }); }}
+                      <button type="button" onClick={() => { setShowCustomCategory(false); setFormData({ ...formData, category: categories[0] || 'Technical' }); }}
                         className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200"><X className="w-4 h-4" /></button>
                     </div>
                   ) : (
@@ -594,7 +629,7 @@ const CompanySkillTaxonomy = () => {
                         onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                         placeholder="Type custom category..."
                         className="w-full px-3.5 py-2 pr-8 bg-[#1E293B] border border-slate-700 rounded-xl text-sm text-slate-200 focus:outline-none focus:border-indigo-500" autoFocus />
-                      <button type="button" onClick={() => { setShowCustomCategory(false); setFormData({ ...formData, category: currentSkill?.category || categories[0] || defaultDomainCategories[0] }); }}
+                      <button type="button" onClick={() => { setShowCustomCategory(false); setFormData({ ...formData, category: currentSkill?.category || categories[0] || 'Technical' }); }}
                         className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200"><X className="w-4 h-4" /></button>
                     </div>
                   ) : (
@@ -719,7 +754,7 @@ const CompanySkillTaxonomy = () => {
 
               <h2 className="text-xl font-bold text-white mb-2">Delete Skill Node?</h2>
               <p className="text-sm text-slate-300 mb-6 leading-relaxed">
-                Are you sure you want to permanently remove <span className="font-bold text-rose-400">"{skillToDelete?.name}"</span> from your organization taxonomy? This will remove associated benchmarks from PostgreSQL.
+                Are you sure you want to permanently remove <span className="font-bold text-rose-400">"{skillToDelete?.name}"</span> from your organization taxonomy? This will remove associated competency benchmarks.
               </p>
 
               <div className="flex items-center justify-center gap-3">
