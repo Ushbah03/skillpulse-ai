@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { 
-  Search, Bell, TrendingUp, Award, AlertCircle, Sparkles, 
+  Search, TrendingUp, Award, AlertCircle, Sparkles, 
   Filter, Download, ChevronLeft, ChevronRight, Briefcase, 
   UserCheck, Settings, FileText, Check, ArrowUpDown, Loader2
 } from 'lucide-react';
@@ -73,7 +73,6 @@ const EmployeePerformance = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedDept, setSelectedDept] = useState('All');
-  const [timeframe, setTimeframe] = useState('Q3 2026');
   const [sortField, setSortField] = useState('name');
   const [sortOrder, setSortOrder] = useState('asc');
   const [selectedRows, setSelectedRows] = useState([]);
@@ -431,18 +430,6 @@ const EmployeePerformance = () => {
             <p className="text-xs text-slate-400 font-medium mt-0.5">Monitor workforce performance, identify risks, and improve productivity</p>
           </div>
           <div className="flex items-center gap-4">
-            {/* Timeframe Selector */}
-            <select 
-              value={timeframe} 
-              onChange={(e) => setTimeframe(e.target.value)}
-              className="text-xs font-bold bg-slate-50 border border-slate-200 text-slate-600 px-3 py-2 rounded-xl outline-none"
-            >
-              <option value="All Time">All Active Records</option>
-              <option value="Q3 2026">Q3 2026</option>
-              <option value="Q2 2026">Q2 2026</option>
-              <option value="Q1 2026">Q1 2026</option>
-            </select>
-
             <div className="relative">
               <Search className="absolute left-3 top-2.5 text-slate-400" size={16} />
               <input
@@ -450,17 +437,9 @@ const EmployeePerformance = () => {
                 value={searchQuery}
                 onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
                 placeholder="Search employees, skills..."
-                className="pl-9 pr-4 py-2 rounded-xl bg-slate-50 text-sm text-slate-600 outline-none w-60 border border-slate-100 focus:border-slate-200 focus:bg-white transition-all"
+                className="pl-9 pr-4 py-2 rounded-xl bg-slate-50 text-sm text-slate-600 outline-none w-64 border border-slate-100 focus:border-slate-200 focus:bg-white transition-all"
               />
             </div>
-            <button 
-              onClick={() => setActiveNotification(`${atRiskCount} employee(s) currently flagged with high capability risk.`)} 
-              className="relative p-2 rounded-xl hover:bg-slate-50 text-slate-500 transition-colors"
-              title="Risk Alerts"
-            >
-              <Bell size={19} />
-              {atRiskCount > 0 && <span className="absolute top-2 right-2 w-2 h-2 bg-rose-500 rounded-full" />}
-            </button>
           </div>
         </header>
 
@@ -519,7 +498,7 @@ const EmployeePerformance = () => {
             <div className="flex justify-between items-center">
               <div>
                 <h3 className="text-base font-black text-slate-900">Performance Distribution</h3>
-                <p className="text-xs text-slate-400 font-medium mt-0.5">Employee count by performance score range ({timeframe})</p>
+                <p className="text-xs text-slate-400 font-medium mt-0.5">Employee count by performance score range across organization</p>
               </div>
             </div>
             <PerformanceDistribution data={histogramData} />
