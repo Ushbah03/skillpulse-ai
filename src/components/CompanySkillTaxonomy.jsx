@@ -244,82 +244,143 @@ const CompanySkillTaxonomy = () => {
       <main className="flex-1 text-slate-100 p-8 pl-80 font-sans">
         
         {/* Page Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4 border-b border-slate-800/80 pb-6">
+        <motion.div 
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4 border-b border-slate-800/80 pb-6"
+        >
           <div>
-            <h1 className="text-3xl font-extrabold tracking-tight text-white flex items-center gap-3">
-              Company Skill Taxonomy
-            </h1>
-            <p className="text-slate-400 text-sm mt-1">
+            <div className="flex items-center gap-3">
+              <div className="p-2.5 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400">
+                <Layers className="w-6 h-6" />
+              </div>
+              <h1 className="text-3xl font-extrabold tracking-tight text-white">
+                Company Skill Taxonomy
+              </h1>
+            </div>
+            <p className="text-slate-400 text-sm mt-1.5 ml-12">
               Configure target competency matrices, proficiency benchmarks, and organizational skill weightages.
             </p>
           </div>
 
           <div className="flex items-center gap-3 shrink-0">
-            <button
+            <motion.button
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
               onClick={() => setIsExportModalOpen(true)}
-              className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-[#1E293B] hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-semibold transition-all"
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#1E293B] hover:bg-slate-700/80 text-slate-200 border border-slate-700 text-xs font-semibold shadow-md transition-all"
             >
               <Download className="w-4 h-4 text-slate-400" />
               Export Framework
-            </button>
+            </motion.button>
 
             <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+              whileHover={{ scale: 1.04, boxShadow: "0 10px 25px -5px rgba(99, 102, 241, 0.4)" }}
+              whileTap={{ scale: 0.96 }}
               onClick={() => { resetForm(); setIsAddModalOpen(true); }}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold shadow-lg shadow-indigo-600/20 transition-all duration-200"
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 via-indigo-500 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white text-sm font-semibold shadow-lg shadow-indigo-600/30 transition-all duration-200"
             >
               <Plus className="w-4 h-4" />
               Add Custom Skill
             </motion.button>
           </div>
-        </div>
+        </motion.div>
 
         {/* Live Framework Metrics */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-          <div className="p-4 rounded-2xl bg-[#0F172A] border border-slate-800/80 shadow-lg">
+          <motion.div 
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35, delay: 0.05 }}
+            whileHover={{ y: -4, borderColor: "rgba(99, 102, 241, 0.4)" }}
+            className="p-5 rounded-2xl bg-gradient-to-b from-[#131D31] to-[#0F172A] border border-slate-800/80 shadow-xl relative overflow-hidden transition-all duration-300 group"
+          >
+            <div className="absolute top-0 right-0 w-24 h-24 bg-indigo-500/5 rounded-full blur-2xl group-hover:bg-indigo-500/10 transition-colors" />
             <div className="flex items-center justify-between">
               <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Total Skills</span>
-              <BookOpen className="w-4 h-4 text-indigo-400" />
+              <div className="p-2 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 group-hover:scale-110 transition-transform">
+                <BookOpen className="w-4 h-4" />
+              </div>
             </div>
-            <p className="text-2xl font-extrabold text-white mt-2">{skills.length}</p>
-            <p className="text-[11px] text-slate-500 mt-1">Configured competencies</p>
-          </div>
+            <p className="text-3xl font-extrabold text-white mt-3 tracking-tight">{skills.length}</p>
+            <p className="text-[11px] text-slate-400 mt-1 flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-indigo-400"></span> Configured competencies
+            </p>
+          </motion.div>
 
-          <div className="p-4 rounded-2xl bg-[#0F172A] border border-slate-800/80 shadow-lg">
+          <motion.div 
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35, delay: 0.1 }}
+            whileHover={{ y: -4, borderColor: "rgba(56, 189, 248, 0.4)" }}
+            className="p-5 rounded-2xl bg-gradient-to-b from-[#131D31] to-[#0F172A] border border-slate-800/80 shadow-xl relative overflow-hidden transition-all duration-300 group"
+          >
+            <div className="absolute top-0 right-0 w-24 h-24 bg-sky-500/5 rounded-full blur-2xl group-hover:bg-sky-500/10 transition-colors" />
             <div className="flex items-center justify-between">
               <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Domain Categories</span>
-              <Layers className="w-4 h-4 text-blue-400" />
+              <div className="p-2 rounded-xl bg-sky-500/10 border border-sky-500/20 text-sky-400 group-hover:scale-110 transition-transform">
+                <Layers className="w-4 h-4" />
+              </div>
             </div>
-            <p className="text-2xl font-extrabold text-blue-400 mt-2">{categories.length}</p>
-            <p className="text-[11px] text-slate-500 mt-1">Taxonomy domains</p>
-          </div>
+            <p className="text-3xl font-extrabold text-sky-400 mt-3 tracking-tight">{categories.length}</p>
+            <p className="text-[11px] text-slate-400 mt-1 flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-sky-400"></span> Taxonomy domains
+            </p>
+          </motion.div>
 
-          <div className="p-4 rounded-2xl bg-[#0F172A] border border-slate-800/80 shadow-lg">
+          <motion.div 
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35, delay: 0.15 }}
+            whileHover={{ y: -4, borderColor: "rgba(245, 158, 11, 0.4)" }}
+            className="p-5 rounded-2xl bg-gradient-to-b from-[#131D31] to-[#0F172A] border border-slate-800/80 shadow-xl relative overflow-hidden transition-all duration-300 group"
+          >
+            <div className="absolute top-0 right-0 w-24 h-24 bg-amber-500/5 rounded-full blur-2xl group-hover:bg-amber-500/10 transition-colors" />
             <div className="flex items-center justify-between">
               <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Strategic Priority</span>
-              <Award className="w-4 h-4 text-amber-400" />
+              <div className="p-2 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 group-hover:scale-110 transition-transform">
+                <Award className="w-4 h-4" />
+              </div>
             </div>
-            <p className="text-2xl font-extrabold text-amber-400 mt-2">
+            <p className="text-3xl font-extrabold text-amber-400 mt-3 tracking-tight">
               {skills.filter(s => ['High', 'Critical'].includes(s.weightage)).length}
             </p>
-            <p className="text-[11px] text-slate-500 mt-1">High & critical tier</p>
-          </div>
+            <p className="text-[11px] text-slate-400 mt-1 flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span> High & critical tier
+            </p>
+          </motion.div>
 
-          <div className="p-4 rounded-2xl bg-[#0F172A] border border-slate-800/80 shadow-lg">
+          <motion.div 
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35, delay: 0.2 }}
+            whileHover={{ y: -4, borderColor: "rgba(16, 185, 129, 0.4)" }}
+            className="p-5 rounded-2xl bg-gradient-to-b from-[#131D31] to-[#0F172A] border border-slate-800/80 shadow-xl relative overflow-hidden transition-all duration-300 group"
+          >
+            <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/5 rounded-full blur-2xl group-hover:bg-emerald-500/10 transition-colors" />
             <div className="flex items-center justify-between">
               <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Workforce Mapped</span>
-              <Sliders className="w-4 h-4 text-emerald-400" />
+              <div className="p-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 group-hover:scale-110 transition-transform">
+                <Sliders className="w-4 h-4" />
+              </div>
             </div>
-            <p className="text-2xl font-extrabold text-emerald-400 mt-2">
+            <p className="text-3xl font-extrabold text-emerald-400 mt-3 tracking-tight">
               {skills.filter(s => s.mappedRoles > 0).length}
             </p>
-            <p className="text-[11px] text-slate-500 mt-1">Skills held by employees</p>
-          </div>
+            <p className="text-[11px] text-slate-400 mt-1 flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> Skills held by employees
+            </p>
+          </motion.div>
         </div>
 
         {/* Search & Filter Controls */}
-        <div className="p-4 rounded-2xl bg-[#0F172A] border border-slate-800/80 shadow-xl mb-6 flex flex-col md:flex-row items-center justify-between gap-4">
+        <motion.div 
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.25 }}
+          className="p-4 rounded-2xl bg-[#0F172A] border border-slate-800/80 shadow-xl mb-6 flex flex-col md:flex-row items-center justify-between gap-4"
+        >
           <div className="relative w-full md:w-96">
             <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
             <input
@@ -331,21 +392,27 @@ const CompanySkillTaxonomy = () => {
             />
           </div>
 
-          <div className="flex items-center gap-2 bg-[#1E293B] border border-slate-700/60 px-3 py-1.5 rounded-xl text-xs text-slate-300 w-full md:w-auto">
-            <Filter className="w-3.5 h-3.5 text-slate-400" />
-            <span>Category:</span>
-            <select 
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              className="bg-transparent text-white font-semibold focus:outline-none cursor-pointer"
-            >
-              <option value="All" className="bg-[#0F172A]">All Domains</option>
-              {categories.map(cat => (
-                <option key={cat} value={cat} className="bg-[#0F172A]">{cat}</option>
-              ))}
-            </select>
+          <div className="flex items-center gap-3 w-full md:w-auto justify-between md:justify-end">
+            <span className="text-xs font-semibold text-slate-400 bg-slate-800/60 px-3 py-1.5 rounded-xl border border-slate-700/50">
+              Showing <span className="text-white font-bold">{filteredSkills.length}</span> of {skills.length}
+            </span>
+
+            <div className="flex items-center gap-2 bg-[#1E293B] border border-slate-700/60 px-3 py-1.5 rounded-xl text-xs text-slate-300">
+              <Filter className="w-3.5 h-3.5 text-slate-400" />
+              <span>Category:</span>
+              <select 
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+                className="bg-transparent text-white font-semibold focus:outline-none cursor-pointer"
+              >
+                <option value="All" className="bg-[#0F172A]">All Domains</option>
+                {categories.map(cat => (
+                  <option key={cat} value={cat} className="bg-[#0F172A]">{cat}</option>
+                ))}
+              </select>
+            </div>
           </div>
-        </div>
+        </motion.div>
 
         {loading ? (
           <div className="flex flex-col items-center justify-center py-32 space-y-4">
@@ -354,10 +421,15 @@ const CompanySkillTaxonomy = () => {
           </div>
         ) : (
         /* Taxonomy Data Table */
-        <div className="rounded-2xl bg-[#0F172A] border border-slate-800/80 shadow-xl overflow-hidden">
+        <motion.div 
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.3 }}
+          className="rounded-2xl bg-[#0F172A] border border-slate-800/80 shadow-2xl overflow-hidden"
+        >
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm text-slate-300">
-              <thead className="bg-[#1E293B]/60 text-xs font-bold uppercase tracking-wider text-slate-400 border-b border-slate-800">
+              <thead className="bg-[#1E293B]/70 text-xs font-bold uppercase tracking-wider text-slate-400 border-b border-slate-800">
                 <tr>
                   <th className="px-6 py-4">Skill Title</th>
                   <th className="px-6 py-4">Domain Category</th>
@@ -370,77 +442,105 @@ const CompanySkillTaxonomy = () => {
               </thead>
               <tbody className="divide-y divide-slate-800/60">
                 {filteredSkills.length > 0 ? (
-                  filteredSkills.map((skill) => (
-                    <tr key={skill.id} className="hover:bg-slate-800/30 transition-colors">
+                  filteredSkills.map((skill, idx) => (
+                    <motion.tr 
+                      key={skill.id} 
+                      initial={{ opacity: 0, y: 6 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.2, delay: Math.min(0.25, idx * 0.015) }}
+                      className="hover:bg-slate-800/40 hover:border-slate-700/60 transition-colors group"
+                    >
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
-                          <div className="p-2 rounded-xl bg-indigo-500/10 text-indigo-400 shrink-0">
+                          <div className="p-2 rounded-xl bg-indigo-500/10 text-indigo-400 group-hover:bg-indigo-500/20 group-hover:scale-105 transition-all shrink-0">
                             <BookOpen className="w-4 h-4" />
                           </div>
-                          <span className="font-semibold text-white">{skill.name}</span>
+                          <span className="font-semibold text-white group-hover:text-indigo-200 transition-colors">{skill.name}</span>
                         </div>
                       </td>
 
                       <td className="px-6 py-4 text-xs font-medium text-slate-300">
-                        {skill.category}
+                        <span className="px-2.5 py-1 rounded-lg bg-slate-800/80 border border-slate-700/60 text-slate-300">
+                          {skill.category}
+                        </span>
                       </td>
 
                       <td className="px-6 py-4">
-                        <span className="px-2.5 py-1 text-xs font-medium rounded-lg bg-slate-800 border border-slate-700 text-slate-200">
+                        <span className="px-2.5 py-1 text-xs font-medium rounded-lg bg-slate-800/80 border border-slate-700 text-slate-200">
                           {skill.level}
                         </span>
                       </td>
 
                       <td className="px-6 py-4">
-                        <span className={`px-2.5 py-1 text-xs font-medium rounded-lg border ${
-                          skill.weightage === 'Critical' ? 'bg-rose-500/10 text-rose-400 border-rose-500/20' :
-                          skill.weightage === 'High' ? 'bg-amber-500/10 text-amber-400 border-amber-500/20' :
-                          'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
+                        <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-lg border ${
+                          skill.weightage === 'Critical' ? 'bg-rose-500/10 text-rose-400 border-rose-500/25' :
+                          skill.weightage === 'High' ? 'bg-amber-500/10 text-amber-400 border-amber-500/25' :
+                          'bg-emerald-500/10 text-emerald-400 border-emerald-500/25'
                         }`}>
+                          {skill.weightage === 'Critical' && (
+                            <span className="relative flex h-2 w-2 shrink-0">
+                              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                              <span className="relative inline-flex rounded-full h-2 w-2 bg-rose-500"></span>
+                            </span>
+                          )}
+                          {skill.weightage === 'High' && (
+                            <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse shrink-0"></span>
+                          )}
+                          {skill.weightage !== 'Critical' && skill.weightage !== 'High' && (
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0"></span>
+                          )}
                           {skill.weightage}
                         </span>
                       </td>
 
                       <td className="px-6 py-4">
-                        <div className="flex items-center gap-2">
-                          <div className="w-16 bg-slate-800 h-2 rounded-full overflow-hidden">
-                            <div 
-                              className="bg-indigo-500 h-full rounded-full" 
-                              style={{ width: `${skill.benchmarkScore}%` }} 
+                        <div className="flex items-center gap-3">
+                          <div className="w-20 bg-slate-800/80 h-2.5 rounded-full overflow-hidden border border-slate-700/50 p-0.5">
+                            <motion.div 
+                              initial={{ width: 0 }}
+                              animate={{ width: `${skill.benchmarkScore}%` }}
+                              transition={{ duration: 0.8, ease: "easeOut" }}
+                              className="bg-gradient-to-r from-indigo-500 to-cyan-400 h-full rounded-full" 
                             />
                           </div>
-                          <span className="text-xs font-semibold text-white">{skill.benchmarkScore}%</span>
+                          <span className="text-xs font-bold text-white font-mono">{skill.benchmarkScore}%</span>
                         </div>
                       </td>
 
-                      <td className="px-6 py-4 text-xs font-mono text-slate-400">
-                        {skill.mappedRoles} active roles
+                      <td className="px-6 py-4 text-xs font-mono text-slate-300">
+                        <span className="px-2 py-0.5 rounded-md bg-slate-800/60 border border-slate-700/50">
+                          {skill.mappedRoles} active {skill.mappedRoles === 1 ? 'employee' : 'employees'}
+                        </span>
                       </td>
 
                       <td className="px-6 py-4 text-right">
                         <div className="flex items-center justify-end gap-2">
-                          <button
+                          <motion.button
+                            whileHover={{ scale: 1.15 }}
+                            whileTap={{ scale: 0.9 }}
                             onClick={() => handleEditClick(skill)}
                             className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors"
                             title="Edit Skill"
                           >
                             <Edit3 className="w-4 h-4" />
-                          </button>
+                          </motion.button>
                           
-                          <button
+                          <motion.button
+                            whileHover={{ scale: 1.15 }}
+                            whileTap={{ scale: 0.9 }}
                             onClick={() => handleDeleteClick(skill)}
                             className="p-2 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 transition-colors"
                             title="Remove Skill"
                           >
                             <Trash2 className="w-4 h-4" />
-                          </button>
+                          </motion.button>
                         </div>
                       </td>
-                    </tr>
+                    </motion.tr>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="7" className="text-center py-10 text-slate-500">
+                    <td colSpan="7" className="text-center py-12 text-slate-500">
                       No taxonomy skills match the specified criteria.
                     </td>
                   </tr>
@@ -448,7 +548,7 @@ const CompanySkillTaxonomy = () => {
               </tbody>
             </table>
           </div>
-        </div>
+        </motion.div>
         )}
 
       </main>

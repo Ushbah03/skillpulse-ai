@@ -174,71 +174,131 @@ const UserRoleGovernance = () => {
     <div className="flex min-h-screen bg-[#0B1120]">
       <CompanyAdminSidebar />
       <main className="flex-1 text-slate-100 p-8 pl-80 font-sans">
-        <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4 border-b border-slate-800/80 pb-6">
+        <motion.div 
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4 border-b border-slate-800/80 pb-6"
+        >
           <div>
-            <h1 className="text-3xl font-extrabold tracking-tight text-white">User & Role Governance</h1>
-            <p className="text-slate-400 text-sm mt-1">Provision employee accounts, assign organizational roles, and manage tenant access permissions.</p>
+            <div className="flex items-center gap-3">
+              <div className="p-2.5 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400">
+                <Users className="w-6 h-6" />
+              </div>
+              <h1 className="text-3xl font-extrabold tracking-tight text-white">User & Role Governance</h1>
+            </div>
+            <p className="text-slate-400 text-sm mt-1.5 ml-12">Provision employee accounts, assign organizational roles, and manage tenant access permissions.</p>
           </div>
-          <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
+          <motion.button 
+            whileHover={{ scale: 1.04, boxShadow: "0 10px 25px -5px rgba(99, 102, 241, 0.4)" }}
+            whileTap={{ scale: 0.96 }}
             onClick={() => { 
               setIsAddModalOpen(true); 
               setError(''); 
               setShowCustomDept(false); 
               setFormData({ name: '', email: '', role: 'EMPLOYEE', dept: dynamicDepts[0] || '', status: 'ACTIVE' }); 
             }}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold shadow-lg shadow-indigo-600/20 transition-all shrink-0"
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 via-indigo-500 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white text-sm font-semibold shadow-lg shadow-indigo-600/30 transition-all shrink-0"
           >
             <UserPlus className="w-4 h-4" /> Provision New User
           </motion.button>
-        </div>
+        </motion.div>
 
         {/* Live Governance Metrics */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-          <div className="p-4 rounded-2xl bg-[#0F172A] border border-slate-800/80 shadow-lg">
+          <motion.div 
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35, delay: 0.05 }}
+            whileHover={{ y: -4, borderColor: "rgba(99, 102, 241, 0.4)" }}
+            className="p-5 rounded-2xl bg-gradient-to-b from-[#131D31] to-[#0F172A] border border-slate-800/80 shadow-xl relative overflow-hidden transition-all duration-300 group"
+          >
+            <div className="absolute top-0 right-0 w-24 h-24 bg-indigo-500/5 rounded-full blur-2xl group-hover:bg-indigo-500/10 transition-colors" />
             <div className="flex items-center justify-between">
               <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Total Users</span>
-              <Users className="w-4 h-4 text-indigo-400" />
+              <div className="p-2 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 group-hover:scale-110 transition-transform">
+                <Users className="w-4 h-4" />
+              </div>
             </div>
-            <p className="text-2xl font-extrabold text-white mt-2">{users.length}</p>
-            <p className="text-[11px] text-slate-500 mt-1">Active workspace roster</p>
-          </div>
+            <p className="text-3xl font-extrabold text-white mt-3 tracking-tight">{users.length}</p>
+            <p className="text-[11px] text-slate-400 mt-1 flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-indigo-400"></span> Active workspace roster
+            </p>
+          </motion.div>
 
-          <div className="p-4 rounded-2xl bg-[#0F172A] border border-slate-800/80 shadow-lg">
+          <motion.div 
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35, delay: 0.1 }}
+            whileHover={{ y: -4, borderColor: "rgba(16, 185, 129, 0.4)" }}
+            className="p-5 rounded-2xl bg-gradient-to-b from-[#131D31] to-[#0F172A] border border-slate-800/80 shadow-xl relative overflow-hidden transition-all duration-300 group"
+          >
+            <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/5 rounded-full blur-2xl group-hover:bg-emerald-500/10 transition-colors" />
             <div className="flex items-center justify-between">
               <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Active Accounts</span>
-              <ShieldCheck className="w-4 h-4 text-emerald-400" />
+              <div className="p-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 group-hover:scale-110 transition-transform">
+                <ShieldCheck className="w-4 h-4" />
+              </div>
             </div>
-            <p className="text-2xl font-extrabold text-emerald-400 mt-2">
+            <p className="text-3xl font-extrabold text-emerald-400 mt-3 tracking-tight">
               {users.filter(u => u.status === 'ACTIVE').length}
             </p>
-            <p className="text-[11px] text-slate-500 mt-1">
+            <p className="text-[11px] text-slate-400 mt-1 flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
               {users.length > 0 ? Math.round((users.filter(u => u.status === 'ACTIVE').length / users.length) * 100) : 0}% active rate
             </p>
-          </div>
+          </motion.div>
 
-          <div className="p-4 rounded-2xl bg-[#0F172A] border border-slate-800/80 shadow-lg">
+          <motion.div 
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35, delay: 0.15 }}
+            whileHover={{ y: -4, borderColor: "rgba(56, 189, 248, 0.4)" }}
+            className="p-5 rounded-2xl bg-gradient-to-b from-[#131D31] to-[#0F172A] border border-slate-800/80 shadow-xl relative overflow-hidden transition-all duration-300 group"
+          >
+            <div className="absolute top-0 right-0 w-24 h-24 bg-sky-500/5 rounded-full blur-2xl group-hover:bg-sky-500/10 transition-colors" />
             <div className="flex items-center justify-between">
               <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Departments</span>
-              <Building2 className="w-4 h-4 text-blue-400" />
+              <div className="p-2 rounded-xl bg-sky-500/10 border border-sky-500/20 text-sky-400 group-hover:scale-110 transition-transform">
+                <Building2 className="w-4 h-4" />
+              </div>
             </div>
-            <p className="text-2xl font-extrabold text-blue-400 mt-2">{dynamicDepts.length}</p>
-            <p className="text-[11px] text-slate-500 mt-1">Active business units</p>
-          </div>
+            <p className="text-3xl font-extrabold text-sky-400 mt-3 tracking-tight">{dynamicDepts.length}</p>
+            <p className="text-[11px] text-slate-400 mt-1 flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-sky-400"></span> Active business units
+            </p>
+          </motion.div>
 
-          <div className="p-4 rounded-2xl bg-[#0F172A] border border-slate-800/80 shadow-lg">
+          <motion.div 
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35, delay: 0.2 }}
+            whileHover={{ y: -4, borderColor: "rgba(168, 85, 247, 0.4)" }}
+            className="p-5 rounded-2xl bg-gradient-to-b from-[#131D31] to-[#0F172A] border border-slate-800/80 shadow-xl relative overflow-hidden transition-all duration-300 group"
+          >
+            <div className="absolute top-0 right-0 w-24 h-24 bg-purple-500/5 rounded-full blur-2xl group-hover:bg-purple-500/10 transition-colors" />
             <div className="flex items-center justify-between">
               <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Leadership</span>
-              <ShieldCheck className="w-4 h-4 text-purple-400" />
+              <div className="p-2 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-400 group-hover:scale-110 transition-transform">
+                <ShieldCheck className="w-4 h-4" />
+              </div>
             </div>
-            <p className="text-2xl font-extrabold text-purple-400 mt-2">
+            <p className="text-3xl font-extrabold text-purple-400 mt-3 tracking-tight">
               {users.filter(u => ['Company Admin', 'HR Manager', 'Team Leader'].includes(u.role)).length}
             </p>
-            <p className="text-[11px] text-slate-500 mt-1">Governing accounts</p>
-          </div>
+            <p className="text-[11px] text-slate-400 mt-1 flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-purple-400"></span> Governing accounts
+            </p>
+          </motion.div>
         </div>
 
         {/* Filter & Search Bar */}
-        <div className="p-4 rounded-2xl bg-[#0F172A] border border-slate-800/80 shadow-xl mb-6 flex flex-col md:flex-row items-center justify-between gap-4">
+        <motion.div 
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.25 }}
+          className="p-4 rounded-2xl bg-[#0F172A] border border-slate-800/80 shadow-xl mb-6 flex flex-col md:flex-row items-center justify-between gap-4"
+        >
           <div className="relative w-full md:w-96">
             <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
             <input type="text" placeholder="Search by name or email..."
@@ -246,7 +306,10 @@ const UserRoleGovernance = () => {
               className="w-full pl-10 pr-4 py-2 bg-[#1E293B] text-slate-200 border border-slate-700/60 rounded-xl text-sm focus:outline-none focus:border-indigo-500 placeholder:text-slate-500"
             />
           </div>
-          <div className="flex items-center gap-3 w-full md:w-auto">
+          <div className="flex items-center gap-3 w-full md:w-auto justify-between md:justify-end">
+            <span className="text-xs font-semibold text-slate-400 bg-slate-800/60 px-3 py-1.5 rounded-xl border border-slate-700/50">
+              Showing <span className="text-white font-bold">{filteredUsers.length}</span> of {users.length}
+            </span>
             <div className="flex items-center gap-2 bg-[#1E293B] border border-slate-700/60 px-3 py-1.5 rounded-xl text-xs text-slate-300">
               <Filter className="w-3.5 h-3.5 text-slate-400" /><span>Role:</span>
               <select value={selectedRoleFilter} onChange={(e) => setSelectedRoleFilter(e.target.value)}
@@ -264,7 +327,7 @@ const UserRoleGovernance = () => {
               </select>
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {loading ? (
           <div className="flex flex-col items-center justify-center py-32 space-y-4">
@@ -272,10 +335,15 @@ const UserRoleGovernance = () => {
             <p className="text-sm font-semibold text-slate-400">Loading tenant user accounts...</p>
           </div>
         ) : (
-        <div className="rounded-2xl bg-[#0F172A] border border-slate-800/80 shadow-xl overflow-hidden">
+        <motion.div 
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.3 }}
+          className="rounded-2xl bg-[#0F172A] border border-slate-800/80 shadow-2xl overflow-hidden"
+        >
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm text-slate-300">
-              <thead className="bg-[#1E293B]/60 text-xs font-bold uppercase tracking-wider text-slate-400 border-b border-slate-800">
+              <thead className="bg-[#1E293B]/70 text-xs font-bold uppercase tracking-wider text-slate-400 border-b border-slate-800">
                 <tr>
                   <th className="px-6 py-4">User</th>
                   <th className="px-6 py-4">Assigned Role</th>
@@ -286,21 +354,27 @@ const UserRoleGovernance = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800/60">
-                {filteredUsers.length > 0 ? filteredUsers.map((user) => (
-                  <tr key={user.id} className="hover:bg-slate-800/30 transition-colors">
+                {filteredUsers.length > 0 ? filteredUsers.map((user, idx) => (
+                  <motion.tr 
+                    key={user.id} 
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.2, delay: Math.min(0.25, idx * 0.015) }}
+                    className="hover:bg-slate-800/40 hover:border-slate-700/60 transition-colors group"
+                  >
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 font-bold flex items-center justify-center text-sm shrink-0">
+                        <div className="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-500/20 to-purple-500/20 border border-indigo-500/30 text-indigo-300 font-bold flex items-center justify-center text-sm shrink-0 group-hover:scale-105 transition-transform shadow-sm">
                           {user.name.charAt(0)}
                         </div>
                         <div>
-                          <p className="font-semibold text-white leading-tight">{user.name}</p>
+                          <p className="font-semibold text-white leading-tight group-hover:text-indigo-200 transition-colors">{user.name}</p>
                           <p className="text-xs text-slate-400 mt-0.5">{user.email}</p>
                         </div>
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      <span className={`px-2.5 py-1 text-xs font-medium rounded-lg border ${ROLE_COLORS[user.role] || 'bg-slate-800 text-slate-300 border-slate-700'}`}>
+                      <span className={`px-2.5 py-1 text-xs font-semibold rounded-lg border ${ROLE_COLORS[user.role] || 'bg-slate-800 text-slate-300 border-slate-700'}`}>
                         {user.role}
                       </span>
                     </td>
@@ -310,39 +384,45 @@ const UserRoleGovernance = () => {
                           <Plus className="w-3 h-3" /> Assign Dept
                         </button>
                       ) : (
-                        <span className="text-xs font-medium text-slate-300">{user.dept}</span>
+                        <span className="px-2.5 py-1 rounded-lg bg-slate-800/80 border border-slate-700/60 text-xs font-medium text-slate-300">{user.dept}</span>
                       )}
                     </td>
                     <td className="px-6 py-4">
                       <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 text-xs font-semibold rounded-full border ${
-                        user.status === 'ACTIVE' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-rose-500/10 text-rose-400 border-rose-500/20'
+                        user.status === 'ACTIVE' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/25' : 'bg-rose-500/10 text-rose-400 border-rose-500/25'
                       }`}>
-                        <span className={`w-1.5 h-1.5 rounded-full ${user.status === 'ACTIVE' ? 'bg-emerald-400' : 'bg-rose-400'}`} />
+                        <span className={`w-1.5 h-1.5 rounded-full ${user.status === 'ACTIVE' ? 'bg-emerald-400 animate-pulse' : 'bg-rose-400'}`} />
                         {user.status === 'ACTIVE' ? 'Active' : 'Inactive'}
                       </span>
                     </td>
                     <td className="px-6 py-4 text-xs text-slate-400 font-mono">{user.joined}</td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end gap-2">
-                        <button onClick={() => handleEditClick(user)}
+                        <motion.button 
+                          whileHover={{ scale: 1.15 }}
+                          whileTap={{ scale: 0.9 }}
+                          onClick={() => handleEditClick(user)}
                           className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors" title="Edit User">
                           <Edit3 className="w-4 h-4" />
-                        </button>
-                        <button onClick={() => toggleUserStatus(user)}
+                        </motion.button>
+                        <motion.button 
+                          whileHover={{ scale: 1.15 }}
+                          whileTap={{ scale: 0.9 }}
+                          onClick={() => toggleUserStatus(user)}
                           className={`p-2 rounded-lg transition-colors ${user.status === 'ACTIVE' ? 'bg-rose-500/10 hover:bg-rose-500/20 text-rose-400' : 'bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400'}`}
                           title={user.status === 'ACTIVE' ? 'Deactivate Account' : 'Activate Account'}>
                           {user.status === 'ACTIVE' ? <UserX className="w-4 h-4" /> : <UserCheck className="w-4 h-4" />}
-                        </button>
+                        </motion.button>
                       </div>
                     </td>
-                  </tr>
+                  </motion.tr>
                 )) : (
-                  <tr><td colSpan="6" className="text-center py-10 text-slate-500">No users match the search criteria.</td></tr>
+                  <tr><td colSpan="6" className="text-center py-12 text-slate-500">No users match the search criteria.</td></tr>
                 )}
               </tbody>
             </table>
           </div>
-        </div>
+        </motion.div>
         )}
       </main>
 
