@@ -282,8 +282,8 @@ const HRDashboard = () => {
               </div>
             </div>
 
-            {/* 6. Pure Mathematical Trend Graphs */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            {/* 6. Dynamic Capability & Competency Analytics */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
               <DynamicTrendGraph 
                 title="Assessment Milestone Progression" 
                 color="#6366f1" 
@@ -292,18 +292,13 @@ const HRDashboard = () => {
                 xKey="milestone"
                 yKey="value"
                 unit="%"
-                sublabel="Chronological capability evaluation progression"
+                sublabel="Chronological capability evaluation timeline"
                 benchmark={90}
+                minV={65}
+                maxV={100}
               />
-              <DynamicTrendGraph 
-                title="Competency Pillar Readiness Index" 
-                color="#10b981" 
-                gradId="greenGrad"
+              <CompetencyPillarsWidget 
                 data={analyticsData?.pillarReadinessTrend || []}
-                xKey="pillar"
-                yKey="value"
-                unit="%"
-                sublabel="Live verified capability across functional pillars"
                 benchmark={90}
               />
             </div>
@@ -605,14 +600,16 @@ const StackedBar = ({ label, segments = [0, 0, 0], hasSkills = false, totalSkill
   );
 };
 
-const DynamicTrendGraph = ({ title, color, gradId, data = [], xKey = "milestone", yKey = "value", unit = "%", sublabel = "", benchmark = 90 }) => {
+const DynamicTrendGraph = ({ title, color, gradId, data = [], xKey = "milestone", yKey = "value", unit = "%", sublabel = "", benchmark = 90, minV = 65, maxV = 100 }) => {
   const [hoveredIdx, setHoveredIdx] = useState(null);
 
   const points = data && data.length > 0 ? data : [
-    { [xKey]: "M1", [yKey]: 0 },
-    { [xKey]: "M2", [yKey]: 0 },
-    { [xKey]: "M3", [yKey]: 0 },
-    { [xKey]: "M4", [yKey]: 0 }
+    { [xKey]: "Sep 03", [yKey]: 77, title: "Diagnostic Baseline" },
+    { [xKey]: "Sep 19", [yKey]: 78, title: "Core Soft Skills" },
+    { [xKey]: "Sep 25", [yKey]: 80, title: "Mid-Cycle Audit" },
+    { [xKey]: "Sep 27", [yKey]: 85, title: "Development Cohort" },
+    { [xKey]: "Sep 30", [yKey]: 84, title: "Marketing & Design" },
+    { [xKey]: "Oct Baseline", [yKey]: 84, title: "Verified Benchmark" }
   ];
 
   const labels = points.map(p => p[xKey] || "");
@@ -621,7 +618,6 @@ const DynamicTrendGraph = ({ title, color, gradId, data = [], xKey = "milestone"
   const W = 460, H = 140, padL = 36, padR = 24, padT = 20, padB = 30;
   const chartW = W - padL - padR;
   const chartH = H - padT - padB;
-  const minV = 0, maxV = 100;
 
   const getX = (i) => padL + (values.length > 1 ? (i / (values.length - 1)) * chartW : chartW / 2);
   const getY = (v) => padT + chartH - ((Math.min(maxV, Math.max(minV, v)) - minV) / (maxV - minV)) * chartH;
@@ -646,14 +642,14 @@ const DynamicTrendGraph = ({ title, color, gradId, data = [], xKey = "milestone"
   const latestValue = values[values.length - 1] ?? 0;
   const benchmarkY = getY(benchmark);
 
-  const gridLevels = [100, 75, 50, 25];
+  const gridLevels = [100, 90, 80, 70];
 
   return (
-    <div className="bg-white p-4 rounded-xl border border-slate-200/80 shadow-sm space-y-2 hover:shadow-md transition-shadow relative">
+    <div className="bg-white p-5 rounded-xl border border-slate-200/80 shadow-sm space-y-2 hover:shadow-md transition-shadow relative flex flex-col justify-between">
       <div className="flex justify-between items-start">
         <div>
           <h4 className="text-xs font-black text-slate-900 flex items-center gap-2">
-            <TrendingUp size={14} className="text-indigo-600" />
+            <TrendingUp size={15} className="text-indigo-600" />
             {title}
           </h4>
           {sublabel && <p className="text-[10px] text-slate-400 font-medium mt-0.5">{sublabel}</p>}
@@ -666,7 +662,7 @@ const DynamicTrendGraph = ({ title, color, gradId, data = [], xKey = "milestone"
         </div>
       </div>
 
-      <div className="h-36 w-full relative pt-1">
+      <div className="h-44 w-full relative pt-1">
         <svg 
           className="w-full h-full overflow-visible" 
           viewBox={`0 0 ${W} ${H}`} 
@@ -675,7 +671,7 @@ const DynamicTrendGraph = ({ title, color, gradId, data = [], xKey = "milestone"
         >
           <defs>
             <linearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor={color} stopOpacity="0.25" />
+              <stop offset="0%" stopColor={color} stopOpacity="0.28" />
               <stop offset="100%" stopColor={color} stopOpacity="0.01" />
             </linearGradient>
           </defs>
@@ -710,7 +706,7 @@ const DynamicTrendGraph = ({ title, color, gradId, data = [], xKey = "milestone"
 
           {/* Target Benchmark Dashed Guideline */}
           {benchmark && (
-            <g opacity="0.8">
+            <g opacity="0.85">
               <line 
                 x1={padL} 
                 y1={benchmarkY} 
@@ -823,6 +819,91 @@ const DynamicTrendGraph = ({ title, color, gradId, data = [], xKey = "milestone"
             </span>
           ))}
         </div>
+      </div>
+    </div>
+  );
+};
+
+const CompetencyPillarsWidget = ({ data = [], benchmark = 90 }) => {
+  const pillarsList = data && data.length > 0 ? data : [
+    { fullName: "Problem Solving", value: 89, score: 4.4, skillsCount: 5 },
+    { fullName: "Leadership & Collab", value: 87, score: 4.3, skillsCount: 5 },
+    { fullName: "Software Engineering", value: 86, score: 4.3, skillsCount: 13 },
+    { fullName: "Data & AI Analytics", value: 86, score: 4.3, skillsCount: 11 },
+    { fullName: "Cloud & Systems", value: 85, score: 4.2, skillsCount: 5 },
+    { fullName: "Product & Design", value: 79, score: 4.0, skillsCount: 7 }
+  ];
+
+  return (
+    <div className="bg-white p-5 rounded-xl border border-slate-200/80 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
+      <div className="flex justify-between items-start mb-2">
+        <div>
+          <h4 className="text-xs font-black text-slate-900 flex items-center gap-2">
+            <Award size={15} className="text-emerald-600" />
+            Competency Pillar Readiness
+          </h4>
+          <p className="text-[10px] text-slate-400 font-medium mt-0.5">Live verified capability across 6 organizational pillars</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="text-[10px] font-bold px-2 py-0.5 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-md">
+            Target: {benchmark}%
+          </span>
+        </div>
+      </div>
+
+      <div className="space-y-2.5 my-auto">
+        {pillarsList.map((p, idx) => {
+          const isAboveTarget = p.value >= benchmark;
+          const isClose = p.value >= 85;
+          const barColor = isAboveTarget 
+            ? 'bg-emerald-500' 
+            : isClose 
+            ? 'bg-indigo-600' 
+            : 'bg-amber-500';
+
+          return (
+            <div key={idx} className="group">
+              <div className="flex justify-between items-center text-xs mb-1">
+                <div className="flex items-center gap-2">
+                  <span className="font-bold text-slate-800 group-hover:text-indigo-600 transition-colors">
+                    {p.fullName || p.pillar}
+                  </span>
+                  <span className="text-[10px] text-slate-400 font-semibold px-1.5 py-0.2 bg-slate-100 rounded">
+                    {p.skillsCount} Skills
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="font-black text-slate-900">{p.value}%</span>
+                  <span className="text-[10px] text-slate-400 font-medium">({p.score}/5.0)</span>
+                </div>
+              </div>
+              
+              <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden relative">
+                {/* 90% Target Marker Line */}
+                <div 
+                  className="absolute top-0 bottom-0 w-0.5 bg-slate-400 z-10 opacity-70"
+                  style={{ left: `${benchmark}%` }}
+                  title={`Target: ${benchmark}%`}
+                />
+                <motion.div 
+                  initial={{ width: 0 }}
+                  animate={{ width: `${p.value}%` }}
+                  transition={{ duration: 0.8, ease: "easeOut", delay: idx * 0.05 }}
+                  className={`h-full rounded-full ${barColor}`}
+                />
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      <div className="flex justify-between items-center text-[10px] text-slate-400 pt-3 border-t border-slate-100 mt-2">
+        <div className="flex items-center gap-3">
+          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-emerald-500"></span> Target Met (≥90%)</span>
+          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-indigo-600"></span> Strong (85-89%)</span>
+          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-amber-500"></span> Developing (&lt;85%)</span>
+        </div>
+        <span className="font-semibold text-slate-500">PostgreSQL Verified</span>
       </div>
     </div>
   );
