@@ -88,7 +88,7 @@ const HRDashboard = () => {
         ? `Optimization Required for ${targetDeptName}` 
         : `Targeted Upskilling Recommendation`,
       desc: criticalCount > 0
-        ? `Detected ${criticalCount} active critical skill gap(s) in PostgreSQL DB. Initiating targeted upskilling pathways is recommended to raise average proficiency.`
+        ? `Detected ${criticalCount} active critical skill gap(s). Initiating targeted upskilling pathways is recommended to raise average proficiency.`
         : `Workforce readiness is healthy across all departments. Recommend launching advanced certifications for high performers.`
     };
   }, [analyticsData]);
@@ -126,7 +126,7 @@ const HRDashboard = () => {
                 {displayTenantName}
               </span>
             </h1>
-            <p className="text-slate-500 text-xs font-semibold mt-0.5">Workforce intelligence overview & live PostgreSQL metrics</p>
+            <p className="text-slate-500 text-xs font-semibold mt-0.5">Workforce intelligence overview & real-time analytics</p>
           </div>
           
           <div className="flex items-center gap-3">
@@ -146,7 +146,7 @@ const HRDashboard = () => {
         {loading ? (
           <div className="flex flex-col items-center justify-center py-32 space-y-3">
             <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
-            <p className="text-xs font-bold text-slate-500">Fetching live HR analytics from PostgreSQL DB...</p>
+            <p className="text-xs font-bold text-slate-500">Fetching live HR analytics...</p>
           </div>
         ) : (
           <>
@@ -158,7 +158,7 @@ const HRDashboard = () => {
                 icon={<Users2 size={18} />} 
                 iconColor="text-blue-600" 
                 iconBg="bg-blue-50"
-                subtext={<><ArrowUpRight size={13} /> <span>{analyticsData?.totalEmployees || 0} Live DB Users</span></>}
+                subtext={<><ArrowUpRight size={13} /> <span>{analyticsData?.totalEmployees || 0} Active Employees</span></>}
                 subtextColor="text-emerald-700 bg-emerald-50 border-emerald-200"
               />
               <MetricCard 
@@ -217,7 +217,7 @@ const HRDashboard = () => {
                     <div>
                       <h4 className="text-xs font-black text-slate-900">Critical Skill Gap Detected</h4>
                       <p className="text-[11px] font-semibold text-slate-600 mt-0.5">
-                        {analyticsData?.criticalGapsCount} critical skill gap record(s) active in PostgreSQL database.
+                        {analyticsData?.criticalGapsCount} critical skill gap record(s) currently active.
                       </p>
                     </div>
                   </div>
@@ -247,7 +247,7 @@ const HRDashboard = () => {
                     <BarChart2 size={16} className="text-indigo-600" />
                     Workforce Skill Distribution
                   </h3>
-                  <p className="text-slate-400 text-xs font-medium">Exact skill tier breakdown by department calculated from verified UserSkills in PostgreSQL</p>
+                  <p className="text-slate-400 text-xs font-medium">Exact skill tier breakdown by department calculated from verified employee skills</p>
                 </div>
                 <button 
                   onClick={() => navigate('/hr-dashboard/department-comparison')}
@@ -373,7 +373,7 @@ const HRDashboard = () => {
 
               <div className="space-y-2 mb-5 max-h-52 overflow-y-auto pr-1">
                 <span className="text-[11px] font-black uppercase tracking-wider text-slate-400 block">
-                  Active Capability Gaps ({analyticsData?.skillGaps?.length || 0} Records in DB)
+                  Active Capability Gaps ({analyticsData?.skillGaps?.length || 0} Records)
                 </span>
                 {analyticsData?.skillGaps?.map((gap, idx) => (
                   <div key={gap.id || idx} className="p-2.5 bg-slate-50 rounded-lg border border-slate-100 flex items-center justify-between text-xs">
@@ -513,7 +513,7 @@ const HRDashboard = () => {
                   </div>
                   <h3 className="text-sm font-bold text-slate-900">Pending Skill Assessment</h3>
                   <p className="text-xs text-slate-500 max-w-sm mx-auto leading-relaxed">
-                    Members in this department have been registered in the database, but skill assessments have not been submitted yet.
+                    Members in this department have been registered, but skill assessments have not been submitted yet.
                   </p>
                 </div>
               )}
@@ -793,7 +793,7 @@ const CompetencyReadinessWidget = ({ pillars = [], categories = [], benchmark = 
           <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-indigo-600"></span> Strong (85-89%)</span>
           <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-amber-500"></span> Developing (&lt;85%)</span>
         </div>
-        <span className="font-semibold text-slate-500">PostgreSQL Verified</span>
+        <span className="font-semibold text-slate-500">Verified Analytics</span>
       </div>
     </div>
   );
