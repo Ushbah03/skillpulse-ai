@@ -204,12 +204,14 @@ const DepartmentComparison = () => {
     const activeMonths = rawMonths.slice(-sliceCount);
 
     const activeDepts = deptMetrics.filter(d => d.hasSkills || d.monthlyTrend?.some(m => m.score > 0));
-    const deptsToPlot = activeDepts.length > 0 ? activeDepts.slice(0, 3) : deptMetrics.slice(0, 3);
+    const deptsToPlot = activeDepts.length > 0 
+      ? [...activeDepts].sort((a, b) => b.avgProf - a.avgProf).slice(0, 3) 
+      : deptMetrics.slice(0, 3);
 
     const lines = deptsToPlot.map(dept => {
       const trendMap = {};
       (dept.monthlyTrend || []).forEach(m => { trendMap[m.month] = m.score; });
-      const points = activeMonths.map(m => trendMap[m] ?? (dept.hasSkills ? dept.avgProf : 0.0));
+      const points = activeMonths.map(m => (trendMap[m] !== undefined ? trendMap[m] : 0.0));
       return {
         name: dept.name,
         color: dept.style.stroke,
@@ -227,6 +229,20 @@ const DepartmentComparison = () => {
     }
     return ['CLOUD & SYSTEMS', 'SOFTWARE ENG', 'PRODUCT & DESIGN', 'DATA & AI', 'PROBLEM SOLVING'];
   }, [liveAnalytics]);
+
+  const heatmapDepartments = useMemo(() => {
+    if (!deptMetrics || deptMetrics.length === 0) return [];
+    return [...deptMetrics].sort((a, b) => b.avgProf - a.avgProf).slice(0, 5);
+  }, [deptMetrics]);
+
+  const trainingCompletionDepartments = useMemo(() => {
+    if (!deptMetrics || deptMetrics.length === 0) return [];
+    return [...deptMetrics].sort((a, b) => {
+      if (b.totalEnrollments !== a.totalEnrollments) return b.totalEnrollments - a.totalEnrollments;
+      if (b.trainingCompletion !== a.trainingCompletion) return b.trainingCompletion - a.trainingCompletion;
+      return b.memberCount - a.memberCount;
+    }).slice(0, 5);
+  }, [deptMetrics]);
 
   const rankingRows = useMemo(() => {
     if (!deptMetrics || deptMetrics.length === 0) return [];
@@ -604,7 +620,7 @@ const DepartmentComparison = () => {
                       ))}
                     </div>
 
-                    {deptMetrics.slice(0, 5).map((dept, deptIdx) => (
+                    {heatmapDepartments.map((dept, deptIdx) => (
                       <div key={deptIdx} className="grid grid-cols-6 gap-2 items-center text-xs">
                         <span className="font-bold text-slate-700 truncate" title={dept.name}>{dept.name}</span>
                         {heatmapDomains.map((_, valIdx) => {
@@ -639,7 +655,7 @@ const DepartmentComparison = () => {
                   <span className="text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md">Live Enrollments</span>
                 </div>
                 <div className="space-y-3.5">
-                  {deptMetrics.slice(0, 5).map((cr, i) => (
+                  {trainingCompletionDepartments.map((cr, i) => (
                     <div key={i} className="space-y-1">
                       <div className="flex justify-between text-xs font-bold">
                         <div className="flex items-center gap-2">
