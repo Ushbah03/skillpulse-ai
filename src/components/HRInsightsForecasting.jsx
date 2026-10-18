@@ -145,7 +145,7 @@ const HRInsightsForecasting = () => {
           id: item.id || `rec-${idx}`,
           status: pInfo.status,
           statusColor: pInfo.statusColor,
-          match: item.matchScore || '85% Match',
+          match: item.matchScore ? `${item.matchScore} Match` : 'Competency Match',
           title: `Upskill in ${item.skillName}`,
           skillName: item.skillName,
           dept: item.department,
