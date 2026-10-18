@@ -60,8 +60,10 @@ const IntegrationsHub = () => {
   const filteredIntegrations = integrations.filter(item => {
     if (activeFilter === 'All') return true;
     if (activeFilter === 'Connected') return item.status === 'Connected';
-    if (activeFilter === 'HRIS') return item.type === 'hris';
-    if (activeFilter === 'LMS') return item.type === 'lms';
+    if (activeFilter === 'HRIS') return item.type === 'hris' || item.category?.toLowerCase().includes('hris');
+    if (activeFilter === 'LMS') return item.type === 'lms' || item.category?.toLowerCase().includes('lms');
+    if (activeFilter === 'SSO') return item.type === 'auth' || item.category?.toLowerCase().includes('sso') || item.category?.toLowerCase().includes('identity');
+    if (activeFilter === 'Payment') return item.type === 'payment' || item.category?.toLowerCase().includes('payment');
     return true;
   });
 
@@ -120,7 +122,7 @@ const IntegrationsHub = () => {
         setNotificationModal({
           isOpen: true,
           title: 'HRIS Directory Synced',
-          message: `Successfully ingested employee directory data into PostgreSQL database.`,
+          message: `Successfully ingested employee directory data into workspace directory.`,
           type: 'success',
           stats: {
             item1: `${res.data?.createdUsers || 0} Employees Ingested`,
@@ -144,7 +146,7 @@ const IntegrationsHub = () => {
         setNotificationModal({
           isOpen: true,
           title: 'YouTube LMS Catalog Synced!',
-          message: `Ingested ${res.data?.createdCourses || 0} educational YouTube video courses into PostgreSQL catalog.`,
+          message: `Ingested ${res.data?.createdCourses || 0} educational YouTube video courses into training course catalog.`,
           type: 'success',
           stats: {
             item1: `${res.data?.createdCourses || 0} Video Courses Synchronized`,
@@ -202,7 +204,7 @@ const IntegrationsHub = () => {
         fetchIntegrations();
       }
     } catch (err) {
-      console.warn('Failed to create integration hub in database:', err);
+      console.warn('Failed to create integration hub:', err);
     } finally {
       setSaving(false);
     }
@@ -215,89 +217,204 @@ const IntegrationsHub = () => {
       <main className="flex-1 text-slate-100 p-8 pl-80 font-sans">
         
         {/* Page Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4 border-b border-slate-800/80 pb-6">
+        <motion.div 
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4 border-b border-slate-800/80 pb-6"
+        >
           <div>
-            <h1 className="text-3xl font-extrabold tracking-tight text-white flex items-center gap-3">
-              Integrations & Enterprise Hubs
-            </h1>
-            <p className="text-slate-400 text-sm mt-1">
+            <div className="flex items-center gap-3">
+              <div className="p-2.5 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400">
+                <Zap className="w-6 h-6" />
+              </div>
+              <h1 className="text-3xl font-extrabold tracking-tight text-white">
+                Integrations & Enterprise Hubs
+              </h1>
+            </div>
+            <p className="text-slate-400 text-sm mt-1.5 ml-12">
               Connect external HRIS directories, LMS catalogs, and SSO identity providers to your tenant.
             </p>
           </div>
 
           <div className="flex items-center gap-3 shrink-0">
             <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+              whileHover={{ scale: 1.04, boxShadow: "0 10px 25px -5px rgba(99, 102, 241, 0.4)" }}
+              whileTap={{ scale: 0.96 }}
               onClick={() => setIsAddModalOpen(true)}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold shadow-lg shadow-indigo-600/20 transition-all duration-200"
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 via-indigo-500 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white text-sm font-semibold shadow-lg shadow-indigo-600/30 transition-all duration-200"
             >
               <Plus className="w-4 h-4" />
               Add Enterprise Hub
             </motion.button>
 
             <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
               onClick={handleTriggerGlobalSync}
               disabled={isSyncing}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#1E293B] hover:bg-slate-700 disabled:bg-slate-800 text-slate-200 border border-slate-700 text-sm font-semibold transition-all duration-200"
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#1E293B] hover:bg-slate-700/80 disabled:bg-slate-800 text-slate-200 border border-slate-700 text-sm font-semibold shadow-md transition-all duration-200"
             >
               <RefreshCw className={`w-4 h-4 text-slate-400 ${isSyncing ? 'animate-spin' : ''}`} />
               {isSyncing ? 'Synchronizing...' : 'Trigger Sync'}
             </motion.button>
           </div>
+        </motion.div>
+
+        {/* Live Framework KPI Metrics */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+          <motion.div 
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35, delay: 0.05 }}
+            whileHover={{ y: -4, borderColor: "rgba(99, 102, 241, 0.4)" }}
+            className="p-5 rounded-2xl bg-gradient-to-b from-[#131D31] to-[#0F172A] border border-slate-800/80 shadow-xl relative overflow-hidden transition-all duration-300 group"
+          >
+            <div className="absolute top-0 right-0 w-24 h-24 bg-indigo-500/5 rounded-full blur-2xl group-hover:bg-indigo-500/10 transition-colors" />
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Total Connectors</span>
+              <div className="p-2 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 group-hover:scale-110 transition-transform">
+                <Zap className="w-4 h-4" />
+              </div>
+            </div>
+            <p className="text-3xl font-extrabold text-white mt-3 tracking-tight">{integrations.length}</p>
+            <p className="text-[11px] text-slate-400 mt-1 flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-indigo-400"></span> Configured integration hubs
+            </p>
+          </motion.div>
+
+          <motion.div 
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35, delay: 0.1 }}
+            whileHover={{ y: -4, borderColor: "rgba(16, 185, 129, 0.4)" }}
+            className="p-5 rounded-2xl bg-gradient-to-b from-[#131D31] to-[#0F172A] border border-slate-800/80 shadow-xl relative overflow-hidden transition-all duration-300 group"
+          >
+            <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/5 rounded-full blur-2xl group-hover:bg-emerald-500/10 transition-colors" />
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Active Connected</span>
+              <div className="p-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 group-hover:scale-110 transition-transform">
+                <ShieldCheck className="w-4 h-4" />
+              </div>
+            </div>
+            <p className="text-3xl font-extrabold text-emerald-400 mt-3 tracking-tight">
+              {integrations.filter(h => h.status === 'Connected').length}
+            </p>
+            <p className="text-[11px] text-slate-400 mt-1 flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+              {integrations.length > 0 ? Math.round((integrations.filter(h => h.status === 'Connected').length / integrations.length) * 100) : 0}% active health
+            </p>
+          </motion.div>
+
+          <motion.div 
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35, delay: 0.15 }}
+            whileHover={{ y: -4, borderColor: "rgba(168, 85, 247, 0.4)" }}
+            className="p-5 rounded-2xl bg-gradient-to-b from-[#131D31] to-[#0F172A] border border-slate-800/80 shadow-xl relative overflow-hidden transition-all duration-300 group"
+          >
+            <div className="absolute top-0 right-0 w-24 h-24 bg-purple-500/5 rounded-full blur-2xl group-hover:bg-purple-500/10 transition-colors" />
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">LMS & Learning</span>
+              <div className="p-2 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-400 group-hover:scale-110 transition-transform">
+                <Layers className="w-4 h-4" />
+              </div>
+            </div>
+            <p className="text-3xl font-extrabold text-purple-400 mt-3 tracking-tight">
+              {integrations.filter(h => h.type === 'lms').length}
+            </p>
+            <p className="text-[11px] text-slate-400 mt-1 flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-purple-400"></span> Video course catalogs
+            </p>
+          </motion.div>
+
+          <motion.div 
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35, delay: 0.2 }}
+            whileHover={{ y: -4, borderColor: "rgba(56, 189, 248, 0.4)" }}
+            className="p-5 rounded-2xl bg-gradient-to-b from-[#131D31] to-[#0F172A] border border-slate-800/80 shadow-xl relative overflow-hidden transition-all duration-300 group"
+          >
+            <div className="absolute top-0 right-0 w-24 h-24 bg-sky-500/5 rounded-full blur-2xl group-hover:bg-sky-500/10 transition-colors" />
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">SSO & Identity</span>
+              <div className="p-2 rounded-xl bg-sky-500/10 border border-sky-500/20 text-sky-400 group-hover:scale-110 transition-transform">
+                <Key className="w-4 h-4" />
+              </div>
+            </div>
+            <p className="text-3xl font-extrabold text-sky-400 mt-3 tracking-tight">
+              {integrations.filter(h => h.type === 'auth' || h.type === 'payment').length}
+            </p>
+            <p className="text-[11px] text-slate-400 mt-1 flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-sky-400"></span> Auth & billing services
+            </p>
+          </motion.div>
         </div>
 
         {/* Filter Bar */}
-        <div className="flex items-center gap-2 mb-6 border-b border-slate-800 pb-4 overflow-x-auto">
-          {['All', 'Connected', 'HRIS', 'LMS'].map((filter) => (
-            <button
-              key={filter}
-              onClick={() => setActiveFilter(filter)}
-              className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all ${
-                activeFilter === filter 
-                  ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20' 
-                  : 'bg-[#0F172A] text-slate-400 hover:text-white border border-slate-800'
-              }`}
-            >
-              {filter === 'All' ? 'All Enterprise Connectors' : filter}
-            </button>
-          ))}
-        </div>
+        <motion.div 
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.25 }}
+          className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6 border-b border-slate-800 pb-4"
+        >
+          <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
+            {['All', 'Connected', 'LMS', 'HRIS', 'SSO', 'Payment'].map((filter) => (
+              <button
+                key={filter}
+                onClick={() => setActiveFilter(filter)}
+                className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all shrink-0 ${
+                  activeFilter === filter 
+                    ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/30' 
+                    : 'bg-[#0F172A] text-slate-400 hover:text-white border border-slate-800 hover:border-slate-700'
+                }`}
+              >
+                {filter === 'All' ? 'All Enterprise Connectors' : filter}
+              </button>
+            ))}
+          </div>
+
+          <span className="text-xs font-semibold text-slate-400 bg-slate-800/60 px-3 py-1.5 rounded-xl border border-slate-700/50 shrink-0 self-start sm:self-auto">
+            Showing <span className="text-white font-bold">{filteredIntegrations.length}</span> of {integrations.length} hubs
+          </span>
+        </motion.div>
 
         {/* Integration Hub Cards Grid */}
         {loading ? (
           <div className="flex flex-col items-center justify-center py-32 space-y-4">
             <Loader2 className="w-10 h-10 animate-spin text-indigo-500" />
-            <p className="text-sm font-semibold text-slate-400">Loading enterprise connectors from database...</p>
+            <p className="text-sm font-semibold text-slate-400">Loading enterprise connectors...</p>
           </div>
         ) : filteredIntegrations.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredIntegrations.map((hub) => (
+            {filteredIntegrations.map((hub, idx) => (
               <motion.div 
                 key={hub.id}
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="p-6 rounded-2xl bg-[#0F172A] border border-slate-800/80 shadow-xl flex flex-col justify-between group hover:border-slate-700/80 transition-all"
+                transition={{ duration: 0.25, delay: Math.min(0.25, idx * 0.03) }}
+                whileHover={{ y: -4, borderColor: "rgba(99, 102, 241, 0.4)" }}
+                className="p-6 rounded-2xl bg-gradient-to-b from-[#131D31] to-[#0F172A] border border-slate-800/80 shadow-xl flex flex-col justify-between group transition-all duration-300 relative overflow-hidden"
               >
+                <div className="absolute top-0 right-0 w-28 h-28 bg-indigo-500/5 rounded-full blur-2xl group-hover:bg-indigo-500/10 transition-colors" />
                 <div>
                   {/* Header Row */}
                   <div className="flex items-start justify-between mb-4">
-                    <div className={`p-3 rounded-2xl border ${hub.iconColor}`}>
+                    <div className={`p-3 rounded-2xl border ${hub.iconColor || 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20'} group-hover:scale-105 transition-transform`}>
                       {hub.type === 'hris' && <Database className="w-6 h-6" />}
                       {hub.type === 'lms' && <Layers className="w-6 h-6" />}
                       {hub.type === 'auth' && <Key className="w-6 h-6" />}
+                      {hub.type === 'payment' && <ShieldCheck className="w-6 h-6" />}
                       {hub.type === 'api' && <Zap className="w-6 h-6" />}
                     </div>
 
                     <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border ${
-                      hub.status === 'Connected' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' :
-                      hub.status === 'Action Required' ? 'bg-amber-500/10 text-amber-400 border-amber-500/20' :
+                      hub.status === 'Connected' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/25' :
+                      hub.status === 'Action Required' ? 'bg-amber-500/10 text-amber-400 border-amber-500/25' :
                       'bg-slate-800 text-slate-400 border-slate-700'
                     }`}>
                       <span className={`w-1.5 h-1.5 rounded-full ${
-                        hub.status === 'Connected' ? 'bg-emerald-400' :
+                        hub.status === 'Connected' ? 'bg-emerald-400 animate-pulse' :
                         hub.status === 'Action Required' ? 'bg-amber-400 animate-pulse' :
                         'bg-slate-500'
                       }`} />
@@ -306,7 +423,7 @@ const IntegrationsHub = () => {
                   </div>
 
                   {/* Hub Information */}
-                  <h3 className="text-lg font-bold text-white mb-1">{hub.name}</h3>
+                  <h3 className="text-lg font-bold text-white mb-1 group-hover:text-indigo-200 transition-colors">{hub.name}</h3>
                   <p className="text-xs text-indigo-400 font-semibold mb-3">{hub.category}</p>
                   <p className="text-xs text-slate-400 leading-relaxed mb-6">{hub.description}</p>
                 </div>
@@ -318,13 +435,15 @@ const IntegrationsHub = () => {
                     <span>{hub.lastSync}</span>
                   </div>
 
-                  <button
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
                     onClick={() => handleOpenConfig(hub)}
-                    className="flex items-center gap-1.5 text-xs text-indigo-400 hover:text-indigo-300 font-semibold transition-colors"
+                    className="flex items-center gap-1.5 text-xs text-indigo-400 hover:text-indigo-300 font-semibold transition-colors bg-indigo-500/10 hover:bg-indigo-500/20 px-3 py-1.5 rounded-xl border border-indigo-500/20"
                   >
                     <Settings2 className="w-3.5 h-3.5" />
                     Configure Hub
-                  </button>
+                  </motion.button>
                 </div>
               </motion.div>
             ))}
@@ -384,7 +503,7 @@ const IntegrationsHub = () => {
                   <input
                     type="text"
                     readOnly
-                    value={`https://api.skillpulse.io/v1/connectors/${selectedHub.id}`}
+                    value={selectedHub.endpointUrl || `${typeof window !== 'undefined' ? window.location.origin : ''}/api/admin/integrations/${selectedHub.id}`}
                     className="w-full px-3.5 py-2 bg-[#1E293B] border border-slate-700 rounded-xl text-xs text-slate-300 font-mono focus:outline-none"
                   />
                 </div>
@@ -394,7 +513,7 @@ const IntegrationsHub = () => {
                   <input
                     type="password"
                     readOnly
-                    value="sk_live_99481a8b9204c81a293f001"
+                    value={selectedHub.apiKey ? (selectedHub.apiKey.length > 8 ? `${selectedHub.apiKey.slice(0, 4)}••••••••••••••••${selectedHub.apiKey.slice(-4)}` : '••••••••••••••••') : `vault_sec_${selectedHub.id ? selectedHub.id.slice(0, 8) : 'tenant'}`}
                     className="w-full px-3.5 py-2 bg-[#1E293B] border border-slate-700 rounded-xl text-xs text-slate-300 font-mono focus:outline-none"
                   />
                 </div>
