@@ -35,6 +35,7 @@ const HRDashboard = () => {
   // Interactive UI States
   const [isAlertVisible, setIsAlertVisible] = useState(true);
   const [isAIModalOpen, setIsAIModalOpen] = useState(false);
+  const [selectedDepartment, setSelectedDepartment] = useState(null);
   const [toastMessage, setToastMessage] = useState(null);
 
   useEffect(() => {
@@ -255,7 +256,7 @@ const HRDashboard = () => {
                 </button>
               </div>
               
-              <div className="h-44 flex items-end justify-start gap-8 px-6 pb-2 pt-4 border-b border-slate-100 overflow-x-auto">
+              <div className="min-h-48 flex items-end justify-between gap-3 px-2 pb-2 pt-4 border-b border-slate-100 overflow-x-auto w-full">
                 {filteredDepartments.map(d => {
                   return (
                     <StackedBar 
@@ -268,6 +269,7 @@ const HRDashboard = () => {
                       proficientCount={d.proficientCount || 0}
                       noviceCount={d.noviceCount || 0}
                       segments={[d.expertPct || 0, d.proficientPct || 0, d.novicePct || 0]} 
+                      onClick={() => setSelectedDepartment(d)}
                     />
                   );
                 })}
@@ -419,6 +421,129 @@ const HRDashboard = () => {
         )}
       </AnimatePresence>
 
+      {/* Department Drill-Down Modal */}
+      <AnimatePresence>
+        {selectedDepartment && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="bg-white rounded-2xl p-6 max-w-lg w-full shadow-2xl relative border border-slate-100 max-h-[85vh] flex flex-col"
+            >
+              <button 
+                onClick={() => setSelectedDepartment(null)}
+                className="absolute top-5 right-5 text-slate-400 hover:text-slate-800 p-1 rounded-lg hover:bg-slate-100 transition-colors"
+              >
+                <X size={18} />
+              </button>
+
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center font-black">
+                  <BarChart2 size={20} />
+                </div>
+                <div>
+                  <h2 className="text-xl font-black text-slate-900">{selectedDepartment.name}</h2>
+                  <p className="text-slate-500 text-xs font-medium">
+                    {selectedDepartment.memberCount} Team Member{selectedDepartment.memberCount !== 1 ? 's' : ''} • {selectedDepartment.totalSkills || 0} Verified Skills
+                  </p>
+                </div>
+              </div>
+
+              {selectedDepartment.hasSkills ? (
+                <>
+                  {/* Skill Tiers Grid */}
+                  <div className="grid grid-cols-3 gap-2.5 mb-4">
+                    <div className="p-3 bg-emerald-50/70 border border-emerald-100 rounded-xl text-center">
+                      <span className="text-[10px] font-bold text-emerald-700 block uppercase">Expert Tier</span>
+                      <span className="text-lg font-black text-emerald-800">{selectedDepartment.expertCount}</span>
+                      <span className="text-[10px] text-emerald-600 font-semibold block">{selectedDepartment.expertPct}% of dept</span>
+                    </div>
+                    <div className="p-3 bg-indigo-50/70 border border-indigo-100 rounded-xl text-center">
+                      <span className="text-[10px] font-bold text-indigo-700 block uppercase">Proficient</span>
+                      <span className="text-lg font-black text-indigo-800">{selectedDepartment.proficientCount}</span>
+                      <span className="text-[10px] text-indigo-600 font-semibold block">{selectedDepartment.proficientPct}% of dept</span>
+                    </div>
+                    <div className="p-3 bg-slate-100 border border-slate-200 rounded-xl text-center">
+                      <span className="text-[10px] font-bold text-slate-600 block uppercase">Novice</span>
+                      <span className="text-lg font-black text-slate-800">{selectedDepartment.noviceCount}</span>
+                      <span className="text-[10px] text-slate-500 font-semibold block">{selectedDepartment.novicePct}% of dept</span>
+                    </div>
+                  </div>
+
+                  {/* Members & Skills List */}
+                  <div className="flex-1 overflow-y-auto space-y-3 pr-1 mb-4">
+                    <span className="text-[11px] font-black uppercase tracking-wider text-slate-400 block">
+                      Team Members & Verified Skills
+                    </span>
+                    {(selectedDepartment.members || []).map((m) => (
+                      <div key={m.id} className="p-3 bg-slate-50 rounded-xl border border-slate-100 space-y-2">
+                        <div className="flex justify-between items-center">
+                          <div>
+                            <h4 className="text-xs font-bold text-slate-900">{m.name}</h4>
+                            <p className="text-[10px] text-slate-500 font-semibold">{m.jobTitle}</p>
+                          </div>
+                          <span className="text-[10px] px-2 py-0.5 bg-white border border-slate-200 rounded-md font-bold text-slate-700">
+                            {m.skillsCount} Skills • {m.gapsCount} Gaps
+                          </span>
+                        </div>
+                        {m.skills && m.skills.length > 0 && (
+                          <div className="flex flex-wrap gap-1.5 pt-1">
+                            {m.skills.map((s, sIdx) => {
+                              const badgeStyle = s.tier === 'Expert' 
+                                ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                                : s.tier === 'Proficient'
+                                ? 'bg-indigo-50 text-indigo-700 border-indigo-200'
+                                : 'bg-slate-100 text-slate-600 border-slate-200';
+                              return (
+                                <span key={s.id || sIdx} className={`text-[10px] font-bold px-2 py-0.5 rounded border ${badgeStyle}`}>
+                                  {s.name}: {s.proficiency}/5.0
+                                </span>
+                              );
+                            })}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </>
+              ) : (
+                <div className="py-8 text-center space-y-3">
+                  <div className="w-12 h-12 bg-amber-50 text-amber-600 rounded-full flex items-center justify-center mx-auto">
+                    <AlertTriangle size={24} />
+                  </div>
+                  <h3 className="text-sm font-bold text-slate-900">Pending Skill Assessment</h3>
+                  <p className="text-xs text-slate-500 max-w-sm mx-auto leading-relaxed">
+                    Members in this department have been registered in the database, but skill assessments have not been submitted yet.
+                  </p>
+                </div>
+              )}
+
+              <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-100">
+                <button 
+                  onClick={() => {
+                    setSelectedDepartment(null);
+                    navigate('/hr-dashboard/department-comparison');
+                  }}
+                  className="py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-xs transition-colors shadow-md cursor-pointer text-center"
+                >
+                  Compare All Departments
+                </button>
+                <button 
+                  onClick={() => {
+                    setSelectedDepartment(null);
+                    navigate('/hr-dashboard/skill-gap-reports');
+                  }}
+                  className="py-2.5 bg-[#0b1221] hover:bg-[#16233d] text-white rounded-xl font-bold text-xs transition-colors shadow-md cursor-pointer text-center"
+                >
+                  View Gap Reports
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
     </div>
   );
 };
@@ -441,28 +566,39 @@ const MetricCard = ({ title, value, icon, iconColor = "", iconBg = "", subtext, 
   </div>
 );
 
-const StackedBar = ({ label, segments = [0, 0, 0], hasSkills = false, totalSkills = 0, avgProficiency = 0, expertCount = 0, proficientCount = 0, noviceCount = 0 }) => {
+const StackedBar = ({ label, segments = [0, 0, 0], hasSkills = false, totalSkills = 0, avgProficiency = 0, expertCount = 0, proficientCount = 0, noviceCount = 0, onClick }) => {
   const tooltipText = hasSkills 
     ? `${label}: ${expertCount} Expert, ${proficientCount} Proficient, ${noviceCount} Novice (${totalSkills} verified skills, Avg: ${avgProficiency}/5.0)`
     : `${label}: 0 Skills recorded (Pending Assessment)`;
 
   return (
-    <div className="w-12 space-y-1 text-center group relative cursor-pointer" title={tooltipText}>
+    <div 
+      onClick={onClick}
+      className="flex-1 min-w-[70px] max-w-[120px] space-y-1.5 text-center group relative cursor-pointer p-2 rounded-xl hover:bg-slate-50 transition-all border border-transparent hover:border-slate-200"
+      title={tooltipText}
+    >
       <div className="w-full flex flex-col justify-end h-32 gap-0.5 group-hover:-translate-y-1 transition-transform">
         {hasSkills ? (
           <>
-            <div className="bg-emerald-500 rounded-t-sm transition-all" style={{ height: `${segments[0]}%` }}></div>
-            <div className="bg-indigo-600 transition-all" style={{ height: `${segments[1]}%` }}></div>
-            <div className="bg-slate-300 rounded-b-sm transition-all" style={{ height: `${segments[2]}%` }}></div>
+            <div className="bg-emerald-500 rounded-t-md transition-all shadow-sm" style={{ height: `${segments[0]}%` }}></div>
+            <div className="bg-indigo-600 transition-all shadow-sm" style={{ height: `${segments[1]}%` }}></div>
+            <div className="bg-slate-300 rounded-b-md transition-all" style={{ height: `${segments[2]}%` }}></div>
           </>
         ) : (
-          <div className="h-full w-full border border-dashed border-slate-200 rounded flex items-center justify-center bg-slate-50/50">
-            <span className="text-[9px] font-bold text-slate-400 rotate-90 whitespace-nowrap">0 Skills</span>
+          <div className="h-full w-full border-2 border-dashed border-slate-200 rounded-lg flex flex-col items-center justify-center bg-slate-50/70 p-1">
+            <span className="text-[10px] font-bold text-slate-400">0 Skills</span>
           </div>
         )}
       </div>
-      <span className="text-[11px] font-bold text-slate-600 block pt-1.5 truncate" title={label}>{label}</span>
-      <span className="text-[9px] font-medium text-slate-400 block -mt-0.5">{hasSkills ? `${avgProficiency}` : 'Pending'}</span>
+      <div className="pt-1">
+        <span className="text-xs font-bold text-slate-800 block truncate group-hover:text-indigo-600 transition-colors" title={label}>{label}</span>
+        <span className="text-[10px] font-semibold text-slate-400 block mt-0.5">
+          {hasSkills ? `${avgProficiency} / 5.0` : 'Pending'}
+        </span>
+      </div>
+      <span className="opacity-0 group-hover:opacity-100 transition-opacity text-[9px] font-bold text-indigo-600 block">
+        Click details
+      </span>
     </div>
   );
 };
