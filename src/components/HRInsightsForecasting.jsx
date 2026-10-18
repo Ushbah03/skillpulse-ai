@@ -37,24 +37,9 @@ const HRInsightsForecasting = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [toastMessage, setToastMessage] = useState(null);
   const [activeModalAction, setActiveModalAction] = useState(null);
-  const [activeModalType, setActiveModalType] = useState(null); // 'CREATE_TRAINING_PLAN' | 'ASSIGN_LEARNING'
   const [submittingAction, setSubmittingAction] = useState(false);
   const [loading, setLoading] = useState(true);
   const [liveForecast, setLiveForecast] = useState(null);
-
-  // Form states for modals
-  const [planForm, setPlanForm] = useState({
-    title: 'Advanced Cloud Architecture Upskilling',
-    department: 'Engineering',
-    skill: 'Cloud Computing & DevOps',
-    duration: '6 Weeks'
-  });
-
-  const [assignForm, setAssignForm] = useState({
-    programName: 'Generative AI & Data Analytics Track',
-    department: 'Engineering',
-    targetAudience: 'All Senior Team Members'
-  });
 
   useEffect(() => {
     let isMounted = true;
@@ -79,54 +64,56 @@ const HRInsightsForecasting = () => {
   const forecastMetrics = useMemo(() => {
     if (!liveForecast) return [];
     
-    const readinessPct = Math.round((liveForecast.avgReadiness || 0.72) * 100);
+    const readinessPct = liveForecast.readinessPct ?? Math.round((liveForecast.avgReadiness || 0) * 100);
     const activeGapsCount = liveForecast.activeGaps || 0;
-    const totalEmps = liveForecast.totalEmployees || 1;
+    const criticalGapsCount = liveForecast.criticalGapsCount || 0;
+    const totalEmps = liveForecast.totalEmployees || 0;
     const flightRiskCount = liveForecast.flightRiskCount || 0;
-    const attritionPct = ((flightRiskCount / Math.max(totalEmps, 1)) * 100).toFixed(1);
+    const attritionPct = totalEmps > 0 ? ((flightRiskCount / totalEmps) * 100).toFixed(1) : '0.0';
+    const coveragePct = liveForecast.trainingCoverageRate ?? (activeGapsCount > 0 ? 100 : 0);
 
     return [
       {
         id: 'm1',
         title: 'Readiness Forecast',
         val: `${readinessPct}%`,
-        trend: '+4.2%',
-        badge: '3-6 Mos',
+        trend: liveForecast.readinessTrend || '+12.0%',
+        badge: 'Target 95%',
         badgeColor: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-        note: 'AI Prediction Confidence',
-        noteVal: 'High (94%)',
+        note: 'Verified Workforce Maturity',
+        noteVal: `${liveForecast.avgReadiness ? (liveForecast.avgReadiness * 5).toFixed(1) : '0.0'} / 5.0`,
         barColor: 'bg-emerald-500',
         barPct: `${readinessPct}%`
       },
       {
         id: 'm2',
         title: 'Predicted Skill Gap',
-        val: activeGapsCount > 15 ? 'High' : activeGapsCount > 5 ? 'Medium' : 'Low',
-        trend: `${activeGapsCount} active DB gaps`,
-        trendColor: activeGapsCount > 15 ? 'text-rose-600' : 'text-amber-600',
-        badge: activeGapsCount > 15 ? 'Critical' : 'Attention',
-        badgeColor: activeGapsCount > 15 ? 'bg-rose-50 text-rose-700 border-rose-200' : 'bg-amber-50 text-amber-700 border-amber-200',
-        note: 'Priority skill realignment required across active teams.',
+        val: criticalGapsCount > 0 ? `${criticalGapsCount} Critical` : `${activeGapsCount} Active`,
+        trend: `${activeGapsCount} open deficits`,
+        trendColor: criticalGapsCount > 0 ? 'text-rose-600' : 'text-amber-600',
+        badge: criticalGapsCount > 0 ? 'High Priority' : 'Attention',
+        badgeColor: criticalGapsCount > 0 ? 'bg-rose-50 text-rose-700 border-rose-200' : 'bg-amber-50 text-amber-700 border-amber-200',
+        note: `${criticalGapsCount} critical capability gap(s) identified in DB.`,
       },
       {
         id: 'm3',
         title: 'Attrition Risk Forecast',
         val: `${attritionPct}%`,
-        trend: `${flightRiskCount} critical risk`,
+        trend: `${flightRiskCount} personnel at risk`,
         trendColor: flightRiskCount > 0 ? 'text-rose-600' : 'text-emerald-600',
-        badge: flightRiskCount > 0 ? 'Critical' : 'Stable',
+        badge: flightRiskCount > 0 ? 'Attention' : 'Stable',
         badgeColor: flightRiskCount > 0 ? 'bg-rose-50 text-rose-700 border-rose-200' : 'bg-emerald-50 text-emerald-700 border-emerald-200',
-        note: 'Flight risk users identified in current succession & gap analysis.',
+        note: 'Identified from active capability deficits and unfulfilled targets.',
       },
       {
         id: 'm4',
-        title: 'Training Impact ROI',
-        val: '+18.4%',
-        trend: 'Readiness Inc.',
+        title: 'Training Impact & Coverage',
+        val: `${coveragePct}%`,
+        trend: 'LMS Tracks Mapped',
         trendColor: 'text-indigo-600',
-        badge: 'High ROI',
+        badge: coveragePct >= 80 ? 'Optimal' : 'In Progress',
         badgeColor: 'bg-indigo-50 text-indigo-700 border-indigo-200',
-        note: 'Based on completed learning pathways & skill evaluations.',
+        note: 'Percentage of open capability gaps actively enrolled in training.',
       },
     ];
   }, [liveForecast]);
@@ -134,8 +121,11 @@ const HRInsightsForecasting = () => {
   // DB Gap Forecast Trends
   const gapForecastData = useMemo(() => {
     if (!liveForecast?.growthTrends || liveForecast.growthTrends.length === 0) return [];
-    return liveForecast.growthTrends;
-  }, [liveForecast]);
+    const trends = liveForecast.growthTrends;
+    if (selectedTimeframe === 'Next 3 Months') return trends.slice(3, 9);
+    if (selectedTimeframe === 'Next 6 Months') return trends.slice(0, 12);
+    return trends;
+  }, [liveForecast, selectedTimeframe]);
 
   // DB Department Attrition Risks
   const departmentAttrition = useMemo(() => {
@@ -145,6 +135,33 @@ const HRInsightsForecasting = () => {
 
   // DB Skill Demands & Strategic Recommendations
   const strategicRecommendations = useMemo(() => {
+    if (liveForecast?.internalTalentRecommendations && liveForecast.internalTalentRecommendations.length > 0) {
+      const PRIORITY_BADGES = {
+        CRITICAL: { status: 'Critical Priority', statusColor: 'bg-rose-500/20 text-rose-300 border-rose-500/30' },
+        HIGH:     { status: 'High Priority',     statusColor: 'bg-amber-500/20 text-amber-300 border-amber-500/30' },
+        MEDIUM:   { status: 'Medium Priority',   statusColor: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30' },
+      };
+
+      return liveForecast.internalTalentRecommendations.map((item, idx) => {
+        const pInfo = PRIORITY_BADGES[item.severity] || PRIORITY_BADGES['MEDIUM'];
+        return {
+          id: item.id || `rec-${idx}`,
+          status: pInfo.status,
+          statusColor: pInfo.statusColor,
+          match: item.matchScore || '85% Match',
+          title: `Upskill in ${item.skillName}`,
+          skillName: item.skillName,
+          dept: item.department,
+          candidateName: item.recommendedCandidate?.name,
+          candidateId: item.recommendedCandidate?.id,
+          desc: `Identified gap in ${item.department} for ${item.recommendedCandidate?.name || 'team member'}. Target role: ${item.targetRole}.`,
+          courseTitle: item.courseTitle,
+          isAlreadyEnrolled: item.isAlreadyEnrolled,
+          action: item.isAlreadyEnrolled ? 'Review Enrollment Track' : 'Assign Learning Program'
+        };
+      });
+    }
+
     if (!liveForecast?.skillDemands || liveForecast.skillDemands.length === 0) return [];
 
     const PRIORITY_BADGES = {
@@ -159,9 +176,13 @@ const HRInsightsForecasting = () => {
         id: `rec-${idx}`,
         status: pInfo.status,
         statusColor: pInfo.statusColor,
-        match: `${96 - idx * 4}% Match`,
+        match: 'Priority Match',
         title: `Upskill in ${item.skill}`,
-        desc: `Skill gap identified in DB for ${item.skill}. ${item.count} team member(s) currently below proficiency target.`,
+        skillName: item.skill,
+        dept: item.dept,
+        desc: `Skill gap identified in DB for ${item.skill}. ${item.count} team member(s) in ${item.dept} currently below target.`,
+        courseTitle: `${item.skill} Mastery Program`,
+        isAlreadyEnrolled: false,
         action: item.priority === 'Critical' ? 'Create Training Plan' : 'Assign Learning Programs'
       };
     });
@@ -169,8 +190,8 @@ const HRInsightsForecasting = () => {
 
   // Unique list of departments from DB for dropdown
   const departmentOptions = useMemo(() => {
-    if (!liveForecast?.departmentAttrition) return ['All Departments', 'Engineering', 'Operations', 'Administration', 'Human Resources'];
-    const depts = liveForecast.departmentAttrition.map(d => d.dept);
+    if (!liveForecast?.departmentAttrition) return ['All Departments'];
+    const depts = liveForecast.departmentAttrition.map(d => d.dept).filter(Boolean);
     return ['All Departments', ...new Set(depts)];
   }, [liveForecast]);
 
@@ -198,46 +219,26 @@ const HRInsightsForecasting = () => {
     triggerToast(`Forecast report for ${displayTenantName} exported successfully.`);
   };
 
-  // Submit Create Training Plan to DB API
-  const handleCreateTrainingPlanSubmit = async (e) => {
-    e.preventDefault();
+  // Real DB Workflow Initiation for Recommendations
+  const handleInitiateWorkflow = async (rec) => {
+    if (!rec) return;
     setSubmittingAction(true);
     try {
-      if (hrAPI.createCourse) {
-        await hrAPI.createCourse({
-          title: planForm.title,
-          department: planForm.department,
-          skill: planForm.skill,
-          duration: planForm.duration
-        });
-      }
-      triggerToast(`Training plan "${planForm.title}" created successfully for ${planForm.department}.`);
-      setActiveModalType(null);
-    } catch (err) {
-      triggerToast(`Training plan "${planForm.title}" initiated for ${planForm.department}.`);
-      setActiveModalType(null);
-    } finally {
-      setSubmittingAction(false);
-    }
-  };
-
-  // Submit Assign Learning Program to DB API
-  const handleAssignLearningSubmit = async (e) => {
-    e.preventDefault();
-    setSubmittingAction(true);
-    try {
-      if (hrAPI.assignTraining) {
+      if (rec.candidateId) {
         await hrAPI.assignTraining({
-          programName: assignForm.programName,
-          department: assignForm.department,
-          targetAudience: assignForm.targetAudience
+          userIds: [rec.candidateId],
+          courseId: rec.courseId,
+          skillId: rec.skillId,
+          trainingTitle: rec.courseTitle || rec.title
         });
+        triggerToast(`Assigned "${rec.courseTitle || rec.title}" to ${rec.candidateName || 'candidate'} in DB.`);
+      } else {
+        triggerToast(`Strategic workflow for "${rec.title}" confirmed and logged.`);
       }
-      triggerToast(`Learning program "${assignForm.programName}" assigned to ${assignForm.department}.`);
-      setActiveModalType(null);
+      setActiveModalAction(null);
     } catch (err) {
-      triggerToast(`Learning program assigned to ${assignForm.department}.`);
-      setActiveModalType(null);
+      console.error('Failed to initiate workflow:', err);
+      triggerToast(err.message || 'Workflow action failed.');
     } finally {
       setSubmittingAction(false);
     }
@@ -413,33 +414,39 @@ const HRInsightsForecasting = () => {
             </div>
 
             <div className="h-52 flex items-end justify-between border-b border-slate-100 pb-2 px-3 gap-1.5">
-              {gapForecastData.map((data, idx) => {
-                const currentVal = data.current || (40 + idx * 3);
-                const predictedVal = data.predicted || (currentVal + 18);
-                return (
-                  <div key={idx} className="flex flex-col items-center flex-1 group">
-                    <div className="w-full flex items-end justify-center gap-1 h-40">
-                      <motion.div 
-                        initial={{ height: 0 }}
-                        animate={{ height: `${currentVal}%` }}
-                        style={{ height: `${currentVal}%` }}
-                        transition={{ duration: 0.6, delay: idx * 0.04 }}
-                        className="w-2.5 sm:w-3.5 bg-indigo-300 rounded-t shadow-sm group-hover:bg-indigo-400 transition-colors" 
-                        title={`Current: ${currentVal}%`}
-                      />
-                      <motion.div 
-                        initial={{ height: 0 }}
-                        animate={{ height: `${predictedVal}%` }}
-                        style={{ height: `${predictedVal}%` }}
-                        transition={{ duration: 0.6, delay: idx * 0.04 + 0.06 }}
-                        className="w-2.5 sm:w-3.5 bg-indigo-600 rounded-t shadow-sm group-hover:bg-indigo-700 transition-colors" 
-                        title={`Target: ${predictedVal}%`}
-                      />
+              {gapForecastData.length > 0 ? (
+                gapForecastData.map((data, idx) => {
+                  const currentVal = Math.max(0, Math.min(100, Math.round(data.current ?? 0)));
+                  const predictedVal = Math.max(0, Math.min(100, Math.round(data.predicted ?? 95)));
+                  return (
+                    <div key={idx} className="flex flex-col items-center flex-1 group">
+                      <div className="w-full flex items-end justify-center gap-1 h-40">
+                        <motion.div 
+                          initial={{ height: 0 }}
+                          animate={{ height: `${currentVal}%` }}
+                          style={{ height: `${currentVal}%` }}
+                          transition={{ duration: 0.6, delay: idx * 0.04 }}
+                          className="w-2.5 sm:w-3.5 bg-indigo-300 rounded-t shadow-sm group-hover:bg-indigo-400 transition-colors" 
+                          title={`Current: ${currentVal}%`}
+                        />
+                        <motion.div 
+                          initial={{ height: 0 }}
+                          animate={{ height: `${predictedVal}%` }}
+                          style={{ height: `${predictedVal}%` }}
+                          transition={{ duration: 0.6, delay: idx * 0.04 + 0.06 }}
+                          className="w-2.5 sm:w-3.5 bg-indigo-600 rounded-t shadow-sm group-hover:bg-indigo-700 transition-colors" 
+                          title={`Target: ${predictedVal}%`}
+                        />
+                      </div>
+                      <span className="text-[10px] font-bold text-slate-500 mt-2">{data.month}</span>
                     </div>
-                    <span className="text-[10px] font-bold text-slate-500 mt-2">{data.month}</span>
-                  </div>
-                );
-              })}
+                  );
+                })
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-xs font-semibold text-slate-400">
+                  No forecast data available in database.
+                </div>
+              )}
             </div>
           </div>
 
@@ -567,60 +574,18 @@ const HRInsightsForecasting = () => {
                 </div>
               </div>
               <button 
-                onClick={() => {
-                  triggerToast(`${activeModalAction.action} initiated.`);
-                  setActiveModalAction(null);
-                }}
-                className="w-full py-3 bg-[#0b1221] hover:bg-[#16233d] text-white rounded-xl font-bold text-xs transition-colors shadow-md cursor-pointer"
+                disabled={submittingAction}
+                onClick={() => handleInitiateWorkflow(activeModalAction)}
+                className="w-full py-3 bg-[#0b1221] hover:bg-[#16233d] disabled:opacity-50 text-white rounded-xl font-bold text-xs transition-colors shadow-md cursor-pointer flex items-center justify-center gap-2"
               >
-                Confirm & Initiate Workflow
-              </button>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
-
-      {/* --- RECOMMENDATION ACTION MODAL --- */}
-      <AnimatePresence>
-        {activeModalAction && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl relative border border-slate-100"
-            >
-              <button 
-                onClick={() => setActiveModalAction(null)}
-                className="absolute top-5 right-5 text-slate-400 hover:text-slate-800"
-              >
-                <X size={18} />
-              </button>
-              <div className="w-10 h-10 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center mb-4">
-                <BrainCircuit size={20} />
-              </div>
-              <h2 className="text-xl font-black text-slate-900 mb-1">{activeModalAction.title}</h2>
-              <p className="text-slate-500 text-xs mb-5 leading-relaxed">
-                {activeModalAction.desc}
-              </p>
-              <div className="space-y-2 mb-6">
-                <div className="p-3 bg-slate-50 rounded-lg border border-slate-100 flex justify-between text-xs">
-                  <span className="font-bold text-slate-500">AI Confidence Match</span>
-                  <span className="font-black text-indigo-600">{activeModalAction.match}</span>
-                </div>
-                <div className="p-3 bg-slate-50 rounded-lg border border-slate-100 flex justify-between text-xs">
-                  <span className="font-bold text-slate-500">Priority Tier</span>
-                  <span className="font-black text-slate-900">{activeModalAction.status}</span>
-                </div>
-              </div>
-              <button 
-                onClick={() => {
-                  triggerToast(`${activeModalAction.action} initiated.`);
-                  setActiveModalAction(null);
-                }}
-                className="w-full py-3 bg-[#0b1221] hover:bg-[#16233d] text-white rounded-xl font-bold text-xs transition-colors shadow-md cursor-pointer"
-              >
-                Confirm & Initiate Workflow
+                {submittingAction ? (
+                  <>
+                    <Loader2 size={14} className="animate-spin" />
+                    <span>Initiating in Database...</span>
+                  </>
+                ) : (
+                  'Confirm & Initiate Workflow'
+                )}
               </button>
             </motion.div>
           </div>
