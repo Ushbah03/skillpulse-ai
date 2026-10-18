@@ -69,17 +69,25 @@ const HRDashboard = () => {
     );
   }, [analyticsData, searchQuery]);
 
-  // Derived AI insight message from active DB gaps
+  // Derived AI insight message from active DB records
   const aiInsightDetails = useMemo(() => {
+    if (analyticsData?.deptInsight?.summary) {
+      return {
+        title: analyticsData.deptInsight.title || "Cross-Departmental Skill Synergy & Readiness",
+        desc: analyticsData.deptInsight.summary,
+        aiPrescription: analyticsData.aiInsight || ""
+      };
+    }
     const criticalCount = analyticsData?.criticalGapsCount || 0;
-    const topDept = analyticsData?.departments?.[0]?.name || "Engineering";
+    const deptWithGaps = analyticsData?.departments?.find(d => (d.totalSkills > 0 && d.gapPct > 0)) || analyticsData?.departments?.[0];
+    const targetDeptName = deptWithGaps?.name || "Target Department";
     return {
       title: criticalCount > 0 
-        ? `Optimization Required for ${topDept}` 
+        ? `Optimization Required for ${targetDeptName}` 
         : `Targeted Upskilling Recommendation`,
       desc: criticalCount > 0
-        ? `Detected ${criticalCount} active critical skill gap(s) in PostgreSQL DB. Initiating targeted upskilling pathways for ${topDept} is recommended to raise average proficiency.`
-        : `Workforce readiness is healthy across all departments. Recommend launching advanced certifications for high performers in ${topDept}.`
+        ? `Detected ${criticalCount} active critical skill gap(s) in PostgreSQL DB. Initiating targeted upskilling pathways is recommended to raise average proficiency.`
+        : `Workforce readiness is healthy across all departments. Recommend launching advanced certifications for high performers.`
     };
   }, [analyticsData]);
 
@@ -148,25 +156,25 @@ const HRDashboard = () => {
                 icon={<Users2 size={18} />} 
                 iconColor="text-blue-600" 
                 iconBg="bg-blue-50"
-                subtext={<><ArrowUpRight size={13} /> <span>Live DB Users</span></>}
+                subtext={<><ArrowUpRight size={13} /> <span>{analyticsData?.totalEmployees || 0} Live DB Users</span></>}
                 subtextColor="text-emerald-700 bg-emerald-50 border-emerald-200"
               />
               <MetricCard 
                 title="Avg Skill Score" 
-                value={`${((analyticsData?.averageReadiness || 74) / 20).toFixed(1)} / 5.0`} 
+                value={`${analyticsData?.avgProficiency != null ? analyticsData.avgProficiency : ((analyticsData?.averageReadiness || 0) / 20).toFixed(1)} / 5.0`} 
                 icon={<Award size={18} />}
                 iconColor="text-emerald-600"
                 iconBg="bg-emerald-50"
-                subtext={`${analyticsData?.averageReadiness || 74}% Target Match`}
+                subtext={`${analyticsData?.averageReadiness || 0}% Target Match (${analyticsData?.totalUserSkillsCount || 0} Skills)`}
                 subtextStyle="text-slate-500"
               />
               <MetricCard 
                 title="Readiness Score" 
-                value={`${analyticsData?.averageReadiness || 74}%`} 
+                value={`${analyticsData?.averageReadiness || 0}%`} 
                 icon={<Activity size={18} />} 
                 iconColor="text-amber-600"
                 iconBg="bg-amber-50"
-                subtext={analyticsData?.criticalGapsCount > 0 ? `${analyticsData.criticalGapsCount} Critical DB Gaps` : "No Critical Gaps"}
+                subtext={analyticsData?.criticalGapsCount > 0 ? `${analyticsData.criticalGapsCount} Critical Skill Gaps` : "No Critical Gaps"}
                 subtextStyle={analyticsData?.criticalGapsCount > 0 ? "text-amber-700 font-bold" : "text-emerald-600 font-bold"}
               />
               <div className="bg-white p-4 rounded-xl border border-slate-200/80 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
@@ -175,16 +183,18 @@ const HRDashboard = () => {
                   <div className="w-8 h-8 bg-indigo-50 text-indigo-600 rounded-lg flex items-center justify-center"><GraduationCap size={16} /></div>
                 </div>
                 <div className="mt-2 w-full space-y-1.5">
-                  <h3 className="text-2xl font-black text-slate-900 tracking-tight">{analyticsData?.complianceRate || "88%"}</h3>
+                  <h3 className="text-2xl font-black text-slate-900 tracking-tight">{analyticsData?.complianceRate || "0%"}</h3>
                   <div className="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
                     <motion.div 
                       initial={{ width: 0 }}
-                      animate={{ width: analyticsData?.complianceRate || "88%" }}
+                      animate={{ width: analyticsData?.complianceRate || "0%" }}
                       transition={{ duration: 0.8, ease: "easeOut" }}
                       className="h-full bg-indigo-600 rounded-full" 
                     />
                   </div>
-                  <p className="text-[11px] font-bold text-slate-400">Verified DB Active Status</p>
+                  <p className="text-[11px] font-bold text-slate-500">
+                    {analyticsData?.compliantRecordsCount ?? 0} of {analyticsData?.complianceRecordsCount ?? 0} Records Compliant
+                  </p>
                 </div>
               </div>
             </div>
@@ -235,7 +245,7 @@ const HRDashboard = () => {
                     <BarChart2 size={16} className="text-indigo-600" />
                     Workforce Skill Distribution
                   </h3>
-                  <p className="text-slate-400 text-xs font-medium">Skill proficiency levels by department computed from UserSkills table</p>
+                  <p className="text-slate-400 text-xs font-medium">Exact skill tier breakdown by department calculated from verified UserSkills in PostgreSQL</p>
                 </div>
                 <button 
                   onClick={() => navigate('/hr-dashboard/department-comparison')}
@@ -247,12 +257,18 @@ const HRDashboard = () => {
               
               <div className="h-44 flex items-end justify-start gap-8 px-6 pb-2 pt-4 border-b border-slate-100 overflow-x-auto">
                 {filteredDepartments.map(d => {
-                  const prof = d.avgProficiency || 3.4;
-                  const expert = Math.min(100, Math.max(15, Math.round((prof / 5) * 55)));
-                  const proficient = Math.min(100 - expert, Math.max(20, Math.round((prof / 5) * 35)));
-                  const novice = Math.max(0, 100 - expert - proficient);
                   return (
-                    <StackedBar key={d.id} label={d.name.split(' & ')[0]} segments={[expert, proficient, novice]} />
+                    <StackedBar 
+                      key={d.id} 
+                      label={d.name.split(' & ')[0]} 
+                      hasSkills={d.hasSkills}
+                      totalSkills={d.totalSkills || 0}
+                      avgProficiency={d.avgProficiency || 0}
+                      expertCount={d.expertCount || 0}
+                      proficientCount={d.proficientCount || 0}
+                      noviceCount={d.noviceCount || 0}
+                      segments={[d.expertPct || 0, d.proficientPct || 0, d.novicePct || 0]} 
+                    />
                   );
                 })}
               </div>
@@ -260,25 +276,31 @@ const HRDashboard = () => {
               <div className="flex justify-center gap-6 text-xs font-bold text-slate-500 pt-1">
                 <div className="flex items-center gap-2"><span className="w-3 h-3 bg-emerald-500 rounded-full"></span> Expert (4.2 - 5.0)</div>
                 <div className="flex items-center gap-2"><span className="w-3 h-3 bg-indigo-600 rounded-full"></span> Proficient (3.0 - 4.1)</div>
-                <div className="flex items-center gap-2"><span className="w-3 h-3 bg-slate-200 rounded-full"></span> Novice (&lt; 3.0)</div>
+                <div className="flex items-center gap-2"><span className="w-3 h-3 bg-slate-300 rounded-full"></span> Novice (&lt; 3.0)</div>
               </div>
             </div>
 
-            {/* 6. Trend Graphs */}
+            {/* 6. Pure Mathematical Trend Graphs */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              <TrendGraph 
-                title="Performance Trend (6-Month)" 
+              <DynamicTrendGraph 
+                title="Performance Trend (6-Month Historical)" 
                 color="#6366f1" 
                 gradId="blueGrad"
-                labels={['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun']}
-                pathD="M 0 80 Q 80 65 160 50 T 320 30 T 400 20"
+                data={analyticsData?.monthlyPerformanceTrend || []}
+                xKey="month"
+                yKey="value"
+                unit="%"
+                sublabel="Monthly verified capability average"
               />
-              <TrendGraph 
-                title="Readiness Trend (Quarterly)" 
+              <DynamicTrendGraph 
+                title="Readiness Trend (Quarterly Progression)" 
                 color="#10b981" 
                 gradId="greenGrad"
-                labels={['Q1', 'Q2', 'Q3', 'Q4']}
-                pathD="M 0 75 Q 130 60 260 40 T 400 25"
+                data={analyticsData?.quarterlyTrend || []}
+                xKey="quarter"
+                yKey="value"
+                unit="%"
+                sublabel="Quarterly capability index"
               />
             </div>
 
@@ -325,7 +347,7 @@ const HRDashboard = () => {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl relative border border-slate-100"
+              className="bg-white rounded-2xl p-6 max-w-lg w-full shadow-2xl relative border border-slate-100"
             >
               <button 
                 onClick={() => setIsAIModalOpen(false)}
@@ -337,28 +359,61 @@ const HRDashboard = () => {
                 <Sparkles size={20} />
               </div>
               <h2 className="text-xl font-black text-slate-900 mb-1">{aiInsightDetails.title}</h2>
-              <p className="text-slate-500 text-xs mb-5 leading-relaxed">
+              <p className="text-slate-500 text-xs mb-3.5 leading-relaxed">
                 {aiInsightDetails.desc}
               </p>
-              <div className="space-y-2 mb-6">
-                <div className="p-3 bg-slate-50 rounded-lg border border-slate-100 flex justify-between text-xs">
-                  <span className="font-bold text-slate-500">Analysis Target</span>
-                  <span className="font-bold text-slate-900">{analyticsData?.departments?.[0]?.name || "Engineering"}</span>
+
+              {aiInsightDetails.aiPrescription && (
+                <div className="p-3 mb-4 bg-indigo-50/70 border border-indigo-100 rounded-xl text-xs text-indigo-900 leading-relaxed font-medium">
+                  <span className="font-bold text-indigo-700 block mb-0.5">AI Prescriptive Analysis:</span>
+                  {aiInsightDetails.aiPrescription}
                 </div>
-                <div className="p-3 bg-slate-50 rounded-lg border border-slate-100 flex justify-between text-xs">
-                  <span className="font-bold text-slate-500">Active Skill Gaps</span>
-                  <span className="font-bold text-indigo-600">{analyticsData?.criticalGapsCount || 0} Critical</span>
-                </div>
+              )}
+
+              <div className="space-y-2 mb-5 max-h-52 overflow-y-auto pr-1">
+                <span className="text-[11px] font-black uppercase tracking-wider text-slate-400 block">
+                  Active Capability Gaps ({analyticsData?.skillGaps?.length || 0} Records in DB)
+                </span>
+                {analyticsData?.skillGaps?.map((gap, idx) => (
+                  <div key={gap.id || idx} className="p-2.5 bg-slate-50 rounded-lg border border-slate-100 flex items-center justify-between text-xs">
+                    <div>
+                      <p className="font-bold text-slate-900">{gap.skill?.name || 'Skill'}</p>
+                      <p className="text-[10px] text-slate-500 font-medium">
+                        {gap.user ? `${gap.user.firstName} ${gap.user.lastName}` : 'Team Member'} • {gap.user?.department?.name || 'Department'}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <span className="inline-block px-1.5 py-0.5 rounded text-[9px] font-black uppercase bg-rose-50 text-rose-600 border border-rose-200">
+                        {gap.severity || 'CRITICAL'}
+                      </span>
+                      <p className="text-[10px] font-bold text-slate-700 mt-0.5">
+                        Level {gap.currentLevel} → {gap.requiredLevel}
+                      </p>
+                    </div>
+                  </div>
+                ))}
               </div>
-              <button 
-                onClick={() => {
-                  triggerToast("AI Training Optimization Plan Initiated.");
-                  setIsAIModalOpen(false);
-                }}
-                className="w-full py-3 bg-[#0b1221] hover:bg-[#16233d] text-white rounded-xl font-bold text-xs transition-colors shadow-md cursor-pointer"
-              >
-                Approve & Execute Workflow
-              </button>
+
+              <div className="grid grid-cols-2 gap-2">
+                <button 
+                  onClick={() => {
+                    setIsAIModalOpen(false);
+                    navigate('/hr-dashboard/hr-insights');
+                  }}
+                  className="py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-xs transition-colors shadow-md cursor-pointer text-center"
+                >
+                  Strategic Forecasting
+                </button>
+                <button 
+                  onClick={() => {
+                    setIsAIModalOpen(false);
+                    navigate('/hr-dashboard/skill-gap-reports');
+                  }}
+                  className="py-2.5 bg-[#0b1221] hover:bg-[#16233d] text-white rounded-xl font-bold text-xs transition-colors shadow-md cursor-pointer text-center"
+                >
+                  Skill Gap Reports
+                </button>
+              </div>
             </motion.div>
           </div>
         )}
@@ -386,48 +441,118 @@ const MetricCard = ({ title, value, icon, iconColor = "", iconBg = "", subtext, 
   </div>
 );
 
-const StackedBar = ({ label, segments }) => (
-  <div className="w-10 space-y-1 text-center group">
-    <div className="w-full flex flex-col justify-end h-32 gap-0.5 group-hover:-translate-y-1 transition-transform">
-      <div className="bg-emerald-500 rounded-t-sm transition-all" style={{ height: `${segments[0]}%` }}></div>
-      <div className="bg-indigo-600 transition-all" style={{ height: `${segments[1]}%` }}></div>
-      <div className="bg-slate-200 rounded-b-sm transition-all" style={{ height: `${segments[2]}%` }}></div>
-    </div>
-    <span className="text-[11px] font-bold text-slate-600 block pt-1.5 truncate" title={label}>{label}</span>
-  </div>
-);
+const StackedBar = ({ label, segments = [0, 0, 0], hasSkills = false, totalSkills = 0, avgProficiency = 0, expertCount = 0, proficientCount = 0, noviceCount = 0 }) => {
+  const tooltipText = hasSkills 
+    ? `${label}: ${expertCount} Expert, ${proficientCount} Proficient, ${noviceCount} Novice (${totalSkills} verified skills, Avg: ${avgProficiency}/5.0)`
+    : `${label}: 0 Skills recorded (Pending Assessment)`;
 
-const TrendGraph = ({ title, color, gradId, labels, pathD }) => (
-  <div className="bg-white p-4 rounded-xl border border-slate-200/80 shadow-sm space-y-3 hover:shadow-md transition-shadow">
-    <h4 className="text-xs font-black text-slate-900 flex items-center gap-2">
-      <TrendingUp size={14} className="text-indigo-600" />
-      {title}
-    </h4>
-    <div className="h-32 w-full relative pt-2">
-      <svg className="w-full h-full overflow-visible" viewBox="0 0 400 120" preserveAspectRatio="none">
-        <motion.path 
-          initial={{ pathLength: 0 }}
-          animate={{ pathLength: 1 }}
-          transition={{ duration: 1.2, ease: "easeInOut" }}
-          d={pathD} 
-          fill="none" 
-          stroke={color} 
-          strokeWidth="2.5" 
-        />
-        <path d={`${pathD} L 400 120 L 0 120 Z`} fill={`url(#${gradId})`} opacity="0.08" />
-        <defs>
-          <linearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor={color} />
-            <stop offset="100%" stopColor={color} stopOpacity="0" />
-          </linearGradient>
-        </defs>
-      </svg>
-      <div className="flex justify-between text-[10px] font-bold text-slate-400 mt-1 border-t border-slate-100 pt-1">
-        {labels.map(l => <span key={l}>{l}</span>)}
+  return (
+    <div className="w-12 space-y-1 text-center group relative cursor-pointer" title={tooltipText}>
+      <div className="w-full flex flex-col justify-end h-32 gap-0.5 group-hover:-translate-y-1 transition-transform">
+        {hasSkills ? (
+          <>
+            <div className="bg-emerald-500 rounded-t-sm transition-all" style={{ height: `${segments[0]}%` }}></div>
+            <div className="bg-indigo-600 transition-all" style={{ height: `${segments[1]}%` }}></div>
+            <div className="bg-slate-300 rounded-b-sm transition-all" style={{ height: `${segments[2]}%` }}></div>
+          </>
+        ) : (
+          <div className="h-full w-full border border-dashed border-slate-200 rounded flex items-center justify-center bg-slate-50/50">
+            <span className="text-[9px] font-bold text-slate-400 rotate-90 whitespace-nowrap">0 Skills</span>
+          </div>
+        )}
+      </div>
+      <span className="text-[11px] font-bold text-slate-600 block pt-1.5 truncate" title={label}>{label}</span>
+      <span className="text-[9px] font-medium text-slate-400 block -mt-0.5">{hasSkills ? `${avgProficiency}` : 'Pending'}</span>
+    </div>
+  );
+};
+
+const DynamicTrendGraph = ({ title, color, gradId, data = [], xKey = "month", yKey = "value", unit = "%", sublabel = "" }) => {
+  const points = data && data.length > 0 ? data : [
+    { [xKey]: "Q1", [yKey]: 0 },
+    { [xKey]: "Q2", [yKey]: 0 },
+    { [xKey]: "Q3", [yKey]: 0 },
+    { [xKey]: "Q4", [yKey]: 0 }
+  ];
+
+  const labels = points.map(p => p[xKey] || "");
+  const values = points.map(p => typeof p[yKey] === 'number' ? p[yKey] : 0);
+
+  const W = 400, H = 100, padL = 25, padR = 25, padT = 15, padB = 25;
+  const chartW = W - padL - padR;
+  const chartH = H - padT - padB;
+  const minV = 0, maxV = 100;
+
+  const getX = (i) => padL + (values.length > 1 ? (i / (values.length - 1)) * chartW : chartW / 2);
+  const getY = (v) => padT + chartH - ((Math.min(maxV, Math.max(minV, v)) - minV) / (maxV - minV)) * chartH;
+
+  const pathD = values.length > 0 
+    ? values.map((v, i) => `${i === 0 ? 'M' : 'L'} ${getX(i).toFixed(1)} ${getY(v).toFixed(1)}`).join(' ')
+    : `M ${padL} ${padT + chartH} L ${padL + chartW} ${padT + chartH}`;
+
+  const areaD = `${pathD} L ${getX(values.length - 1).toFixed(1)} ${(padT + chartH).toFixed(1)} L ${getX(0).toFixed(1)} ${(padT + chartH).toFixed(1)} Z`;
+  const latestValue = values[values.length - 1] ?? 0;
+
+  return (
+    <div className="bg-white p-4 rounded-xl border border-slate-200/80 shadow-sm space-y-3 hover:shadow-md transition-shadow">
+      <div className="flex justify-between items-center">
+        <div>
+          <h4 className="text-xs font-black text-slate-900 flex items-center gap-2">
+            <TrendingUp size={14} className="text-indigo-600" />
+            {title}
+          </h4>
+          {sublabel && <p className="text-[10px] text-slate-400 font-medium mt-0.5">{sublabel}</p>}
+        </div>
+        <span className="text-[11px] font-bold text-slate-500">
+          Current: <span className="font-black text-slate-900">{latestValue}{unit}</span>
+        </span>
+      </div>
+      <div className="h-32 w-full relative pt-2">
+        <svg className="w-full h-full overflow-visible" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none">
+          <defs>
+            <linearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor={color} stopOpacity="0.22" />
+              <stop offset="100%" stopColor={color} stopOpacity="0.01" />
+            </linearGradient>
+          </defs>
+          <path d={areaD} fill={`url(#${gradId})`} />
+          <motion.path 
+            initial={{ pathLength: 0 }}
+            animate={{ pathLength: 1 }}
+            transition={{ duration: 1.0, ease: "easeInOut" }}
+            d={pathD} 
+            fill="none" 
+            stroke={color} 
+            strokeWidth="2.5" 
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          {values.map((v, i) => (
+            <circle 
+              key={i} 
+              cx={getX(i)} 
+              cy={getY(v)} 
+              r="3.5" 
+              fill="#ffffff" 
+              stroke={color} 
+              strokeWidth="2"
+              className="hover:r-5 transition-all cursor-pointer"
+            >
+              <title>{`${labels[i]}: ${v}${unit}`}</title>
+            </circle>
+          ))}
+        </svg>
+        <div className="flex justify-between text-[10px] font-bold text-slate-400 mt-1 border-t border-slate-100 pt-1">
+          {labels.map((l, i) => (
+            <span key={i} className="truncate max-w-[50px] text-center" title={`${l}: ${values[i]}${unit}`}>
+              {l}
+            </span>
+          ))}
+        </div>
       </div>
     </div>
-  </div>
-);
+  );
+};
 
 const QuickActionButton = ({ label, colorBg, onClick }) => (
   <button 
