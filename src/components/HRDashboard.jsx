@@ -15,7 +15,8 @@ import {
   Activity,
   Award,
   TrendingUp,
-  BarChart2
+  BarChart2,
+  Target
 } from 'lucide-react';
 import HRSidebar from './HRSidebar';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -284,21 +285,22 @@ const HRDashboard = () => {
 
             {/* 6. Dynamic Capability & Competency Analytics */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-              <DynamicTrendGraph 
-                title="Assessment Milestone Progression" 
-                color="#6366f1" 
-                gradId="blueGrad"
-                data={analyticsData?.assessmentMilestoneTrend || []}
-                xKey="milestone"
-                yKey="value"
-                unit="%"
-                sublabel="Chronological capability evaluation timeline"
+              <DepartmentBenchmarkWidget 
+                data={analyticsData?.departmentReadiness || []}
                 benchmark={90}
-                minV={65}
-                maxV={100}
+                onSelectDepartment={(deptName) => {
+                  const targetName = (deptName || '').toLowerCase();
+                  const found = (analyticsData?.departments || []).find(d => 
+                    d.name.toLowerCase() === targetName ||
+                    d.name.toLowerCase().includes(targetName) ||
+                    targetName.includes(d.name.toLowerCase())
+                  );
+                  if (found) setSelectedDepartment(found);
+                }}
               />
-              <CompetencyPillarsWidget 
-                data={analyticsData?.pillarReadinessTrend || []}
+              <CompetencyReadinessWidget 
+                pillars={analyticsData?.pillarReadinessTrend || []}
+                categories={analyticsData?.categoryReadiness || []}
                 benchmark={90}
               />
             </div>
@@ -600,239 +602,117 @@ const StackedBar = ({ label, segments = [0, 0, 0], hasSkills = false, totalSkill
   );
 };
 
-const DynamicTrendGraph = ({ title, color, gradId, data = [], xKey = "milestone", yKey = "value", unit = "%", sublabel = "", benchmark = 90, minV = 65, maxV = 100 }) => {
-  const [hoveredIdx, setHoveredIdx] = useState(null);
-
-  const points = data && data.length > 0 ? data : [
-    { [xKey]: "Sep 03", [yKey]: 77, title: "Diagnostic Baseline" },
-    { [xKey]: "Sep 19", [yKey]: 78, title: "Core Soft Skills" },
-    { [xKey]: "Sep 25", [yKey]: 80, title: "Mid-Cycle Audit" },
-    { [xKey]: "Sep 27", [yKey]: 85, title: "Development Cohort" },
-    { [xKey]: "Sep 30", [yKey]: 84, title: "Marketing & Design" },
-    { [xKey]: "Oct Baseline", [yKey]: 84, title: "Verified Benchmark" }
+const DepartmentBenchmarkWidget = ({ data = [], benchmark = 90, onSelectDepartment }) => {
+  const depts = data && data.length > 0 ? data : [
+    { name: "Development", department: "Development", membersCount: 1, skillsCount: 39, value: 86, score: 4.3, deficit: 4 },
+    { name: "Product Design", department: "Product Design", membersCount: 1, skillsCount: 7, value: 78, score: 3.9, deficit: 12 },
+    { name: "Marketing", department: "Marketing", membersCount: 1, skillsCount: 3, value: 77, score: 3.8, deficit: 13 }
   ];
 
-  const labels = points.map(p => p[xKey] || "");
-  const values = points.map(p => typeof p[yKey] === 'number' ? p[yKey] : 0);
-
-  const W = 460, H = 140, padL = 36, padR = 24, padT = 20, padB = 30;
-  const chartW = W - padL - padR;
-  const chartH = H - padT - padB;
-
-  const getX = (i) => padL + (values.length > 1 ? (i / (values.length - 1)) * chartW : chartW / 2);
-  const getY = (v) => padT + chartH - ((Math.min(maxV, Math.max(minV, v)) - minV) / (maxV - minV)) * chartH;
-
-  // Generate smooth cubic bezier curve
-  let pathD = "";
-  if (values.length > 0) {
-    pathD = `M ${getX(0).toFixed(1)} ${getY(values[0]).toFixed(1)}`;
-    for (let i = 0; i < values.length - 1; i++) {
-      const x0 = getX(i);
-      const y0 = getY(values[i]);
-      const x1 = getX(i + 1);
-      const y1 = getY(values[i + 1]);
-      const cpx = (x0 + x1) / 2;
-      pathD += ` C ${cpx.toFixed(1)} ${y0.toFixed(1)}, ${cpx.toFixed(1)} ${y1.toFixed(1)}, ${x1.toFixed(1)} ${y1.toFixed(1)}`;
-    }
-  } else {
-    pathD = `M ${padL} ${padT + chartH} L ${padL + chartW} ${padT + chartH}`;
-  }
-
-  const areaD = `${pathD} L ${getX(values.length - 1).toFixed(1)} ${(padT + chartH).toFixed(1)} L ${getX(0).toFixed(1)} ${(padT + chartH).toFixed(1)} Z`;
-  const latestValue = values[values.length - 1] ?? 0;
-  const benchmarkY = getY(benchmark);
-
-  const gridLevels = [100, 90, 80, 70];
-
   return (
-    <div className="bg-white p-5 rounded-xl border border-slate-200/80 shadow-sm space-y-2 hover:shadow-md transition-shadow relative flex flex-col justify-between">
-      <div className="flex justify-between items-start">
+    <div className="bg-white p-5 rounded-xl border border-slate-200/80 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
+      <div className="flex justify-between items-start mb-3">
         <div>
           <h4 className="text-xs font-black text-slate-900 flex items-center gap-2">
-            <TrendingUp size={15} className="text-indigo-600" />
-            {title}
+            <Target size={15} className="text-indigo-600" />
+            Department Capability Benchmark
           </h4>
-          {sublabel && <p className="text-[10px] text-slate-400 font-medium mt-0.5">{sublabel}</p>}
+          <p className="text-[10px] text-slate-400 font-medium mt-0.5">Live department readiness vs {benchmark}% operational target</p>
         </div>
-        <div className="text-right">
-          <span className="text-[11px] font-bold text-slate-500">
-            Latest: <span className="font-black text-slate-900">{latestValue}{unit}</span>
+        <div className="flex items-center gap-2">
+          <span className="text-[10px] font-bold px-2 py-0.5 bg-indigo-50 text-indigo-700 border border-indigo-200 rounded-md">
+            Benchmark: {benchmark}%
           </span>
-          <span className="text-[9px] font-bold text-emerald-600 block">Target: {benchmark}%</span>
         </div>
       </div>
 
-      <div className="h-44 w-full relative pt-1">
-        <svg 
-          className="w-full h-full overflow-visible" 
-          viewBox={`0 0 ${W} ${H}`} 
-          preserveAspectRatio="none"
-          onMouseLeave={() => setHoveredIdx(null)}
-        >
-          <defs>
-            <linearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor={color} stopOpacity="0.28" />
-              <stop offset="100%" stopColor={color} stopOpacity="0.01" />
-            </linearGradient>
-          </defs>
+      <div className="space-y-2.5 my-auto">
+        {depts.map((d, idx) => {
+          const isAboveTarget = d.value >= benchmark;
+          const isClose = d.value >= 80;
+          const barColor = isAboveTarget 
+            ? 'bg-emerald-500' 
+            : isClose 
+            ? 'bg-indigo-600' 
+            : 'bg-amber-500';
 
-          {/* Reference Gridlines & Y-Axis Labels */}
-          {gridLevels.map(lvl => {
-            const yPos = getY(lvl);
-            return (
-              <g key={lvl} opacity="0.45">
-                <line 
-                  x1={padL} 
-                  y1={yPos} 
-                  x2={padL + chartW} 
-                  y2={yPos} 
-                  stroke="#cbd5e1" 
-                  strokeDasharray="3 3" 
-                  strokeWidth="1" 
-                />
-                <text 
-                  x={padL - 6} 
-                  y={yPos + 3} 
-                  textAnchor="end" 
-                  fontSize="8" 
-                  fontWeight="bold" 
-                  fill="#94a3b8"
-                >
-                  {lvl}%
-                </text>
-              </g>
-            );
-          })}
-
-          {/* Target Benchmark Dashed Guideline */}
-          {benchmark && (
-            <g opacity="0.85">
-              <line 
-                x1={padL} 
-                y1={benchmarkY} 
-                x2={padL + chartW} 
-                y2={benchmarkY} 
-                stroke="#10b981" 
-                strokeDasharray="4 4" 
-                strokeWidth="1.2" 
-              />
-              <text 
-                x={padL + chartW - 2} 
-                y={benchmarkY - 3} 
-                textAnchor="end" 
-                fontSize="8" 
-                fontWeight="black" 
-                fill="#10b981"
-              >
-                TARGET {benchmark}%
-              </text>
-            </g>
-          )}
-
-          {/* Area Gradient Fill */}
-          <path d={areaD} fill={`url(#${gradId})`} />
-
-          {/* Smooth Spline Path */}
-          <motion.path 
-            initial={{ pathLength: 0 }}
-            animate={{ pathLength: 1 }}
-            transition={{ duration: 1.0, ease: "easeInOut" }}
-            d={pathD} 
-            fill="none" 
-            stroke={color} 
-            strokeWidth="2.5" 
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-
-          {/* Interactive Hover Guide Line */}
-          {hoveredIdx !== null && (
-            <line 
-              x1={getX(hoveredIdx)} 
-              y1={padT} 
-              x2={getX(hoveredIdx)} 
-              y2={padT + chartH} 
-              stroke={color} 
-              strokeWidth="1.5" 
-              strokeDasharray="2 2" 
-              opacity="0.7"
-            />
-          )}
-
-          {/* Interactive Data Point Dots */}
-          {values.map((v, i) => {
-            const isHovered = hoveredIdx === i;
-            return (
-              <g 
-                key={i} 
-                className="cursor-pointer"
-                onMouseEnter={() => setHoveredIdx(i)}
-              >
-                <circle 
-                  cx={getX(i)} 
-                  cy={getY(v)} 
-                  r={isHovered ? 6 : 4} 
-                  fill="#ffffff" 
-                  stroke={color} 
-                  strokeWidth={isHovered ? 3 : 2}
-                  className="transition-all duration-150"
-                />
-              </g>
-            );
-          })}
-        </svg>
-
-        {/* Floating Tooltip Card */}
-        {hoveredIdx !== null && (
-          <div 
-            className="absolute z-20 pointer-events-none bg-[#0b1221] text-white px-3 py-2 rounded-lg shadow-xl border border-slate-800 text-[10px] transform -translate-x-1/2 -translate-y-full transition-all duration-150"
-            style={{ 
-              left: `${(getX(hoveredIdx) / W) * 100}%`, 
-              top: `${Math.max(10, (getY(values[hoveredIdx]) / H) * 100 - 10)}%` 
-            }}
-          >
-            <p className="font-black text-slate-200">
-              {points[hoveredIdx]?.title || points[hoveredIdx]?.fullName || labels[hoveredIdx]}
-            </p>
-            <p className="font-bold text-emerald-400 mt-0.5">
-              Score: <span className="font-black text-white">{values[hoveredIdx]}%</span> ({((values[hoveredIdx] / 100) * 5.0).toFixed(1)} / 5.0)
-            </p>
-            {points[hoveredIdx]?.skillsCount > 0 && (
-              <p className="text-[9px] text-slate-400 mt-0.5">
-                {points[hoveredIdx].skillsCount} Verified Skills in DB
-              </p>
-            )}
-          </div>
-        )}
-
-        {/* X-Axis Category Labels */}
-        <div className="flex justify-between text-[10px] font-bold text-slate-500 mt-1 border-t border-slate-100 pt-1.5 px-3">
-          {labels.map((l, i) => (
-            <span 
-              key={i} 
-              className={`truncate max-w-[65px] text-center cursor-pointer transition-colors ${hoveredIdx === i ? 'text-indigo-600 font-black' : ''}`}
-              title={`${l}: ${values[i]}${unit}`}
-              onMouseEnter={() => setHoveredIdx(i)}
-              onMouseLeave={() => setHoveredIdx(null)}
+          return (
+            <div 
+              key={idx} 
+              onClick={() => onSelectDepartment && onSelectDepartment(d.name || d.department)}
+              className="group p-3 rounded-xl border border-slate-100 hover:border-indigo-200 hover:bg-indigo-50/30 transition-all cursor-pointer"
             >
-              {l}
-            </span>
-          ))}
+              <div className="flex justify-between items-center text-xs mb-1.5">
+                <div className="flex items-center gap-2">
+                  <span className="font-bold text-slate-800 group-hover:text-indigo-600 transition-colors">
+                    {d.name || d.department}
+                  </span>
+                  <span className="text-[10px] text-slate-500 font-semibold px-1.5 py-0.5 bg-slate-100 rounded">
+                    {d.skillsCount} Skills
+                  </span>
+                  <span className="text-[10px] text-slate-400 font-medium">
+                    {d.membersCount || 1} Member{(d.membersCount || 1) > 1 ? 's' : ''}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="font-black text-slate-900">{d.value}%</span>
+                  <span className="text-[10px] text-slate-400 font-medium">({d.score}/5.0)</span>
+                  {d.deficit > 0 ? (
+                    <span className="text-[9px] font-bold px-1.5 py-0.5 bg-amber-50 text-amber-700 rounded border border-amber-200">
+                      -{d.deficit}%
+                    </span>
+                  ) : (
+                    <span className="text-[9px] font-bold px-1.5 py-0.5 bg-emerald-50 text-emerald-700 rounded border border-emerald-200">
+                      Target met
+                    </span>
+                  )}
+                </div>
+              </div>
+              
+              <div className="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden relative">
+                {/* 90% Target Marker Line */}
+                <div 
+                  className="absolute top-0 bottom-0 w-0.5 bg-slate-400 z-10 opacity-70"
+                  style={{ left: `${benchmark}%` }}
+                  title={`Target: ${benchmark}%`}
+                />
+                <motion.div 
+                  initial={{ width: 0 }}
+                  animate={{ width: `${d.value}%` }}
+                  transition={{ duration: 0.8, ease: "easeOut", delay: idx * 0.08 }}
+                  className={`h-full rounded-full ${barColor}`}
+                />
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      <div className="flex justify-between items-center text-[10px] text-slate-400 pt-3 border-t border-slate-100 mt-2">
+        <div className="flex items-center gap-3">
+          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-emerald-500"></span> ≥{benchmark}% Met</span>
+          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-indigo-600"></span> 80-89% Strong</span>
+          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-amber-500"></span> &lt;80% Developing</span>
         </div>
+        <span className="font-semibold text-slate-500">Click row for details</span>
       </div>
     </div>
   );
 };
 
-const CompetencyPillarsWidget = ({ data = [], benchmark = 90 }) => {
-  const pillarsList = data && data.length > 0 ? data : [
-    { fullName: "Problem Solving", value: 89, score: 4.4, skillsCount: 5 },
-    { fullName: "Leadership & Collab", value: 87, score: 4.3, skillsCount: 5 },
-    { fullName: "Software Engineering", value: 86, score: 4.3, skillsCount: 13 },
-    { fullName: "Data & AI Analytics", value: 86, score: 4.3, skillsCount: 11 },
-    { fullName: "Cloud & Systems", value: 85, score: 4.2, skillsCount: 5 },
-    { fullName: "Product & Design", value: 79, score: 4.0, skillsCount: 7 }
-  ];
+const CompetencyReadinessWidget = ({ pillars = [], categories = [], benchmark = 90 }) => {
+  const [viewMode, setViewMode] = useState('pillars');
+
+  const activeList = viewMode === 'categories' && categories && categories.length > 0
+    ? categories
+    : (pillars && pillars.length > 0 ? pillars : [
+        { fullName: "Problem Solving", value: 89, score: 4.4, skillsCount: 5 },
+        { fullName: "Leadership & Collab", value: 87, score: 4.3, skillsCount: 5 },
+        { fullName: "Software Eng", value: 86, score: 4.3, skillsCount: 13 },
+        { fullName: "Data & AI", value: 86, score: 4.3, skillsCount: 11 },
+        { fullName: "Cloud & Systems", value: 85, score: 4.2, skillsCount: 5 },
+        { fullName: "Product & Design", value: 79, score: 4.0, skillsCount: 7 }
+      ]);
 
   return (
     <div className="bg-white p-5 rounded-xl border border-slate-200/80 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
@@ -840,19 +720,28 @@ const CompetencyPillarsWidget = ({ data = [], benchmark = 90 }) => {
         <div>
           <h4 className="text-xs font-black text-slate-900 flex items-center gap-2">
             <Award size={15} className="text-emerald-600" />
-            Competency Pillar Readiness
+            Competency & Category Readiness
           </h4>
-          <p className="text-[10px] text-slate-400 font-medium mt-0.5">Live verified capability across 6 organizational pillars</p>
+          <p className="text-[10px] text-slate-400 font-medium mt-0.5">Live capability aggregated from verified employee skills</p>
         </div>
-        <div className="flex items-center gap-2">
-          <span className="text-[10px] font-bold px-2 py-0.5 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-md">
-            Target: {benchmark}%
-          </span>
+        <div className="flex items-center gap-1 bg-slate-100 p-0.5 rounded-lg border border-slate-200">
+          <button
+            onClick={() => setViewMode('pillars')}
+            className={`px-2 py-0.5 text-[10px] font-bold rounded-md transition-all ${viewMode === 'pillars' ? 'bg-white text-indigo-700 shadow-sm' : 'text-slate-500 hover:text-slate-800'}`}
+          >
+            Pillars (6)
+          </button>
+          <button
+            onClick={() => setViewMode('categories')}
+            className={`px-2 py-0.5 text-[10px] font-bold rounded-md transition-all ${viewMode === 'categories' ? 'bg-white text-indigo-700 shadow-sm' : 'text-slate-500 hover:text-slate-800'}`}
+          >
+            Taxonomy (5)
+          </button>
         </div>
       </div>
 
       <div className="space-y-2.5 my-auto">
-        {pillarsList.map((p, idx) => {
+        {activeList.map((p, idx) => {
           const isAboveTarget = p.value >= benchmark;
           const isClose = p.value >= 85;
           const barColor = isAboveTarget 
@@ -866,9 +755,9 @@ const CompetencyPillarsWidget = ({ data = [], benchmark = 90 }) => {
               <div className="flex justify-between items-center text-xs mb-1">
                 <div className="flex items-center gap-2">
                   <span className="font-bold text-slate-800 group-hover:text-indigo-600 transition-colors">
-                    {p.fullName || p.pillar}
+                    {p.fullName || p.category || p.pillar}
                   </span>
-                  <span className="text-[10px] text-slate-400 font-semibold px-1.5 py-0.2 bg-slate-100 rounded">
+                  <span className="text-[10px] text-indigo-600 font-bold px-1.5 py-0.2 bg-indigo-50 border border-indigo-100 rounded">
                     {p.skillsCount} Skills
                   </span>
                 </div>
@@ -886,6 +775,7 @@ const CompetencyPillarsWidget = ({ data = [], benchmark = 90 }) => {
                   title={`Target: ${benchmark}%`}
                 />
                 <motion.div 
+                  key={`${viewMode}-${idx}`}
                   initial={{ width: 0 }}
                   animate={{ width: `${p.value}%` }}
                   transition={{ duration: 0.8, ease: "easeOut", delay: idx * 0.05 }}
@@ -899,7 +789,7 @@ const CompetencyPillarsWidget = ({ data = [], benchmark = 90 }) => {
 
       <div className="flex justify-between items-center text-[10px] text-slate-400 pt-3 border-t border-slate-100 mt-2">
         <div className="flex items-center gap-3">
-          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-emerald-500"></span> Target Met (≥90%)</span>
+          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-emerald-500"></span> Target (≥{benchmark}%)</span>
           <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-indigo-600"></span> Strong (85-89%)</span>
           <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-amber-500"></span> Developing (&lt;85%)</span>
         </div>
