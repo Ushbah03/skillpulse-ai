@@ -145,15 +145,23 @@ const HRInsightsForecasting = () => {
           id: item.id || `rec-${idx}`,
           status: pInfo.status,
           statusColor: pInfo.statusColor,
-          match: item.matchScore ? `${item.matchScore} Match` : 'Competency Match',
+          match: item.matchScore || '100% Alignment',
           title: `Upskill in ${item.skillName}`,
           skillName: item.skillName,
           dept: item.department,
           candidateName: item.recommendedCandidate?.name,
           candidateId: item.recommendedCandidate?.id,
-          desc: `Identified gap in ${item.department} for ${item.recommendedCandidate?.name || 'team member'}. Target role: ${item.targetRole}.`,
+          currentLevel: item.currentLevel,
+          requiredLevel: item.requiredLevel,
+          deficit: item.deficit,
           courseTitle: item.courseTitle,
+          durationHours: item.durationHours,
+          durationLabel: item.durationLabel,
+          enrollmentStatus: item.enrollmentStatus,
+          progressPct: item.progressPct,
+          peerMentor: item.peerMentor,
           isAlreadyEnrolled: item.isAlreadyEnrolled,
+          desc: `Deficit: Level ${item.currentLevel} / ${item.requiredLevel} (-${item.deficit} pts) for ${item.recommendedCandidate?.name || 'Team Member'} in ${item.department}. Course: ${item.courseTitle}.`,
           action: item.isAlreadyEnrolled ? 'Review Enrollment Track' : 'Assign Learning Program'
         };
       });
@@ -656,10 +664,17 @@ const HRInsightsForecasting = () => {
                       <span className={`text-[9px] px-1.5 py-0.5 rounded border font-black uppercase tracking-wider ${rec.statusColor}`}>
                         {rec.status}
                       </span>
-                      <span className="text-[11px] text-slate-400 font-bold">{rec.match}</span>
+                      <span className="text-[11px] text-indigo-300 font-bold">{rec.match}</span>
                     </div>
                     <h4 className="text-xs font-bold text-slate-100 mb-1 group-hover:text-indigo-300 transition-colors">{rec.title}</h4>
-                    <p className="text-[11px] text-slate-400 font-medium leading-relaxed mb-3">{rec.desc}</p>
+                    <p className="text-[11px] text-slate-400 font-medium leading-relaxed mb-2.5">{rec.desc}</p>
+                    
+                    {rec.peerMentor && (
+                      <div className="mb-3 px-2 py-1 bg-indigo-500/10 border border-indigo-500/20 rounded-md text-[10px] text-indigo-300 font-semibold flex items-center justify-between">
+                        <span>Peer Mentor Synergy:</span>
+                        <span className="font-bold text-indigo-200">{rec.peerMentor}</span>
+                      </div>
+                    )}
                   </div>
                   <button 
                     onClick={() => setActiveModalAction(rec)}
@@ -700,18 +715,36 @@ const HRInsightsForecasting = () => {
                 <BrainCircuit size={20} />
               </div>
               <h2 className="text-xl font-black text-slate-900 mb-1">{activeModalAction.title}</h2>
-              <p className="text-slate-500 text-xs mb-5 leading-relaxed">
+              <p className="text-slate-500 text-xs mb-4 leading-relaxed">
                 {activeModalAction.desc}
               </p>
               <div className="space-y-2 mb-6">
-                <div className="p-3 bg-slate-50 rounded-lg border border-slate-100 flex justify-between text-xs">
-                  <span className="font-bold text-slate-500">AI Confidence Match</span>
+                <div className="p-2.5 bg-slate-50 rounded-lg border border-slate-100 flex justify-between text-xs">
+                  <span className="font-bold text-slate-500">Curriculum Alignment Match</span>
                   <span className="font-black text-indigo-600">{activeModalAction.match}</span>
                 </div>
-                <div className="p-3 bg-slate-50 rounded-lg border border-slate-100 flex justify-between text-xs">
-                  <span className="font-bold text-slate-500">Priority Tier</span>
-                  <span className="font-black text-slate-900">{activeModalAction.status}</span>
+                <div className="p-2.5 bg-slate-50 rounded-lg border border-slate-100 flex justify-between text-xs">
+                  <span className="font-bold text-slate-500">Deficit Depth</span>
+                  <span className="font-black text-rose-600">
+                    Level {activeModalAction.currentLevel} → {activeModalAction.requiredLevel} (-{activeModalAction.deficit} pts)
+                  </span>
                 </div>
+                <div className="p-2.5 bg-slate-50 rounded-lg border border-slate-100 flex justify-between text-xs">
+                  <span className="font-bold text-slate-500">Course Duration</span>
+                  <span className="font-black text-slate-900">{activeModalAction.durationLabel || '12 Hours'}</span>
+                </div>
+                <div className="p-2.5 bg-slate-50 rounded-lg border border-slate-100 flex justify-between text-xs">
+                  <span className="font-bold text-slate-500">LMS Status</span>
+                  <span className={`font-black ${activeModalAction.isAlreadyEnrolled ? 'text-indigo-600' : 'text-slate-600'}`}>
+                    {activeModalAction.isAlreadyEnrolled ? `Enrolled (${activeModalAction.enrollmentStatus || 'Active'})` : 'Unenrolled (Ready to Assign)'}
+                  </span>
+                </div>
+                {activeModalAction.peerMentor && (
+                  <div className="p-2.5 bg-indigo-50/70 rounded-lg border border-indigo-100 flex justify-between text-xs">
+                    <span className="font-bold text-indigo-800">Peer Mentor Synergy</span>
+                    <span className="font-black text-indigo-700">{activeModalAction.peerMentor}</span>
+                  </div>
+                )}
               </div>
               <button 
                 disabled={submittingAction}
