@@ -3,10 +3,85 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
   Sparkles, ChevronLeft, ChevronRight, Filter, Calendar, 
-  Loader2, TrendingUp, TrendingDown, Users, Download
+  Loader2, TrendingUp, TrendingDown, Users, Download,
+  Code2, Palette, Megaphone, Cpu, BarChart3, Briefcase, Building2
 } from 'lucide-react';
 import HRSidebar from './HRSidebar';
 import { hrAPI } from '../services/api';
+
+const getDepartmentTheme = (name = '') => {
+  const n = (name || '').toLowerCase();
+  if (n.includes('dev') || n.includes('software')) {
+    return {
+      icon: Code2,
+      gradient: 'from-indigo-600 via-indigo-500 to-blue-600',
+      iconBg: 'bg-gradient-to-br from-indigo-500 to-indigo-700 text-white shadow-sm shadow-indigo-300/50',
+      barColor: 'from-indigo-500 to-blue-500',
+      accentGlow: 'from-indigo-500/10 to-blue-500/5'
+    };
+  }
+  if (n.includes('design') || n.includes('product')) {
+    return {
+      icon: Palette,
+      gradient: 'from-purple-600 via-fuchsia-500 to-pink-500',
+      iconBg: 'bg-gradient-to-br from-purple-500 to-pink-600 text-white shadow-sm shadow-purple-300/50',
+      barColor: 'from-purple-500 to-pink-500',
+      accentGlow: 'from-purple-500/10 to-pink-500/5'
+    };
+  }
+  if (n.includes('market') || n.includes('growth')) {
+    return {
+      icon: Megaphone,
+      gradient: 'from-amber-500 via-orange-500 to-rose-500',
+      iconBg: 'bg-gradient-to-br from-amber-500 to-orange-600 text-white shadow-sm shadow-amber-300/50',
+      barColor: 'from-amber-500 to-orange-500',
+      accentGlow: 'from-amber-500/10 to-orange-500/5'
+    };
+  }
+  if (n.includes('eng') || n.includes('tech') || n.includes('cloud')) {
+    return {
+      icon: Cpu,
+      gradient: 'from-blue-600 via-cyan-500 to-teal-500',
+      iconBg: 'bg-gradient-to-br from-blue-500 to-cyan-600 text-white shadow-sm shadow-blue-300/50',
+      barColor: 'from-blue-500 to-cyan-500',
+      accentGlow: 'from-blue-500/10 to-cyan-500/5'
+    };
+  }
+  if (n.includes('human') || n.includes('hr') || n.includes('people')) {
+    return {
+      icon: Users,
+      gradient: 'from-rose-500 via-pink-500 to-fuchsia-500',
+      iconBg: 'bg-gradient-to-br from-rose-500 to-pink-600 text-white shadow-sm shadow-rose-300/50',
+      barColor: 'from-rose-500 to-pink-500',
+      accentGlow: 'from-rose-500/10 to-pink-500/5'
+    };
+  }
+  if (n.includes('sales')) {
+    return {
+      icon: BarChart3,
+      gradient: 'from-emerald-500 via-teal-500 to-cyan-600',
+      iconBg: 'bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-sm shadow-emerald-300/50',
+      barColor: 'from-emerald-500 to-teal-500',
+      accentGlow: 'from-emerald-500/10 to-teal-500/5'
+    };
+  }
+  if (n.includes('op') || n.includes('admin')) {
+    return {
+      icon: Briefcase,
+      gradient: 'from-slate-700 via-slate-600 to-slate-800',
+      iconBg: 'bg-gradient-to-br from-slate-600 to-slate-800 text-white shadow-sm shadow-slate-300/50',
+      barColor: 'from-slate-600 to-slate-800',
+      accentGlow: 'from-slate-500/10 to-slate-800/5'
+    };
+  }
+  return {
+    icon: Building2,
+    gradient: 'from-indigo-500 via-slate-600 to-slate-700',
+    iconBg: 'bg-gradient-to-br from-slate-500 to-slate-700 text-white shadow-sm shadow-slate-300/50',
+    barColor: 'from-indigo-500 to-slate-600',
+    accentGlow: 'from-indigo-500/10 to-slate-500/5'
+  };
+};
 
 const DepartmentComparison = () => {
   const navigate = useNavigate();
@@ -337,38 +412,85 @@ const DepartmentComparison = () => {
                   animate={{ x: trackTranslateX }}
                   transition={{ type: "spring", stiffness: 280, damping: 28 }}
                 >
-                  {deptMetrics.map((dm) => (
-                    <motion.div 
-                      key={dm.id} 
-                      style={{ width: cardWidthCalc }}
-                      whileHover={{ y: -3, transition: { duration: 0.15 } }}
-                      className="shrink-0 bg-white border border-slate-200/90 rounded-2xl p-4 shadow-2xs hover:border-indigo-400 hover:shadow-xs transition-all flex flex-col justify-between"
-                    >
-                      <div className="flex items-center justify-between">
-                        <span className="text-[11px] font-black text-slate-600 uppercase tracking-wider truncate max-w-[130px]" title={dm.name}>
-                          {dm.name}
-                        </span>
-                        <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md ${dm.hasSkills ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-500'}`}>
-                          {dm.hasSkills ? '↑ active' : '— unassessed'}
-                        </span>
-                      </div>
-                      
-                      <div className="my-2.5">
-                        <div className="flex items-baseline gap-1.5">
-                          <span className="text-2xl font-black text-slate-900 tracking-tight">{dm.score}</span>
-                          <span className="text-[10px] font-bold text-slate-400">score</span>
-                        </div>
-                        <span className="text-[10px] font-semibold text-slate-400 block mt-0.5">
-                          {dm.memberCount} {dm.memberCount === 1 ? 'member' : 'members'}
-                        </span>
-                      </div>
+                  {deptMetrics.map((dm) => {
+                    const theme = getDepartmentTheme(dm.name);
+                    const IconComp = theme.icon;
 
-                      <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px]">
-                        <span className="text-slate-500 font-semibold">Skill: <strong className="text-slate-800">{dm.skill}</strong></span>
-                        <span className="text-slate-500 font-semibold">Ready: <strong className="text-slate-800">{dm.read}</strong></span>
-                      </div>
-                    </motion.div>
-                  ))}
+                    return (
+                      <motion.div 
+                        key={dm.id} 
+                        style={{ width: cardWidthCalc }}
+                        whileHover={{ y: -4, scale: 1.01 }}
+                        transition={{ duration: 0.2 }}
+                        className="relative overflow-hidden shrink-0 bg-white border border-slate-200/90 hover:border-indigo-300 rounded-2xl p-4 shadow-2xs hover:shadow-lg transition-all duration-300 flex flex-col justify-between group cursor-default"
+                      >
+                        {/* Top Accent Gradient Bar */}
+                        <div className={`absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r ${theme.gradient}`} />
+                        
+                        {/* Corner Ambient Glow */}
+                        <div className={`absolute -top-10 -right-10 w-24 h-24 bg-gradient-to-br ${theme.accentGlow} rounded-full blur-xl group-hover:scale-150 transition-all duration-500 pointer-events-none`} />
+
+                        {/* Card Header: Icon + Name + Active Status Badge */}
+                        <div className="flex items-center justify-between gap-2 relative z-10">
+                          <div className="flex items-center gap-2.5 min-w-0">
+                            <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${theme.iconBg}`}>
+                              <IconComp size={18} />
+                            </div>
+                            <div className="min-w-0">
+                              <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider truncate" title={dm.name}>
+                                {dm.name}
+                              </h4>
+                              <p className="text-[10px] font-semibold text-slate-400 truncate">
+                                {dm.memberCount} {dm.memberCount === 1 ? 'specialist' : 'specialists'}
+                              </p>
+                            </div>
+                          </div>
+
+                          {dm.hasSkills ? (
+                            <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200/80 shrink-0">
+                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                              Active
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-500 border border-slate-200 shrink-0">
+                              <span className="w-1.5 h-1.5 rounded-full bg-slate-400" />
+                              Pending
+                            </span>
+                          )}
+                        </div>
+
+                        {/* Performance Score + Visual Animated Progress Bar */}
+                        <div className="my-3.5 relative z-10">
+                          <div className="flex items-baseline justify-between mb-1.5">
+                            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Performance Index</span>
+                            <span className="text-base font-black text-slate-900 tracking-tight">{dm.score}</span>
+                          </div>
+                          <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
+                            <motion.div 
+                              initial={{ width: 0 }}
+                              animate={{ width: `${dm.perfScore}%` }}
+                              transition={{ duration: 0.8, ease: "easeOut" }}
+                              className={`h-full rounded-full bg-gradient-to-r ${theme.barColor}`} 
+                            />
+                          </div>
+                        </div>
+
+                        {/* Bottom Metric Pills: Skill Rating & Workforce Readiness */}
+                        <div className="grid grid-cols-2 gap-2 pt-2.5 border-t border-slate-100 relative z-10">
+                          <div className="bg-slate-50/90 group-hover:bg-slate-100/70 transition-colors border border-slate-100 rounded-xl px-2.5 py-1.5 flex flex-col">
+                            <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Skill Rating</span>
+                            <span className="text-xs font-black text-slate-800 mt-0.5">{dm.skill}</span>
+                          </div>
+                          <div className="bg-slate-50/90 group-hover:bg-slate-100/70 transition-colors border border-slate-100 rounded-xl px-2.5 py-1.5 flex flex-col">
+                            <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Readiness</span>
+                            <span className={`text-xs font-black mt-0.5 ${dm.hasSkills ? 'text-indigo-600' : 'text-slate-400'}`}>
+                              {dm.read}
+                            </span>
+                          </div>
+                        </div>
+                      </motion.div>
+                    );
+                  })}
                 </motion.div>
               </div>
             </div>
