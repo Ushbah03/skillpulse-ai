@@ -28,13 +28,6 @@ const ROLE_COLORS = {
   'Employee': 'bg-slate-800 text-slate-300 border-slate-700'
 };
 
-const DEFAULT_DEPTS = [
-  'Engineering', 'Human Resources', 'Product Design', 'Sales & Marketing',
-  'Executive', 'Finance', 'IT & Operations', 'Customer Support', 'Legal',
-  'Data Science', 'Quality Assurance', 'DevOps', 'Research & Development',
-  'Business Development', 'Marketing', 'Content', 'Administration'
-];
-
 const UserRoleGovernance = () => {
   const storedUser = localStorage.getItem('user');
   let userPlan = 'STARTER';
@@ -57,30 +50,53 @@ const UserRoleGovernance = () => {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
 
-  const [dynamicDepts, setDynamicDepts] = useState(DEFAULT_DEPTS);
-  const [formData, setFormData] = useState({ name: '', email: '', role: 'EMPLOYEE', dept: 'Unassigned', status: 'ACTIVE' });
+  const [dynamicDepts, setDynamicDepts] = useState([]);
+  const [formData, setFormData] = useState({ name: '', email: '', role: 'EMPLOYEE', dept: '', status: 'ACTIVE' });
   const [showCustomDept, setShowCustomDept] = useState(false);
 
   const fetchUsers = async () => {
     setLoading(true);
     try {
-      const res = await adminAPI.getUsers();
-      if (res?.success) {
-        const mapped = res.data.map(u => ({
-          id: u.id, name: `${u.firstName} ${u.lastName}`,
-          email: u.email, roleEnum: u.role,
+      const [usersRes, deptsRes] = await Promise.all([
+        adminAPI.getUsers(),
+        adminAPI.getDepartments()
+      ]);
+
+      let deptsFromDB = [];
+      if (deptsRes?.success && Array.isArray(deptsRes.data)) {
+        deptsFromDB = deptsRes.data.map(d => d.name).filter(Boolean);
+      }
+
+      if (usersRes?.success && Array.isArray(usersRes.data)) {
+        const mapped = usersRes.data.map(u => ({
+          id: u.id,
+          name: `${u.firstName || ''} ${u.lastName || ''}`.trim() || u.email,
+          email: u.email,
+          roleEnum: u.role,
           role: ROLE_DISPLAY[u.role] || u.role,
           dept: u.department?.name || 'Unassigned',
           status: u.status || 'ACTIVE',
           joined: new Date(u.createdAt).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' })
         }));
         setUsers(mapped);
-        const existingDepts = [...new Set(mapped.map(u => u.dept))];
-        setDynamicDepts([...new Set([...DEFAULT_DEPTS, ...existingDepts])]);
+
+        const userDepts = mapped.map(u => u.dept).filter(d => d && d !== 'Unassigned');
+        const mergedDepts = Array.from(new Set([...deptsFromDB, ...userDepts])).sort();
+        setDynamicDepts(mergedDepts);
+        if (mergedDepts.length > 0 && !formData.dept) {
+          setFormData(prev => ({ ...prev, dept: mergedDepts[0] }));
+        }
+      } else if (deptsFromDB.length > 0) {
+        setDynamicDepts(deptsFromDB.sort());
+        if (!formData.dept) {
+          setFormData(prev => ({ ...prev, dept: deptsFromDB[0] }));
+        }
       }
     } catch (err) {
       console.warn('Failed to load tenant users:', err);
-    } finally { setLoading(false); }
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => { fetchUsers(); }, []);
@@ -164,11 +180,61 @@ const UserRoleGovernance = () => {
             <p className="text-slate-400 text-sm mt-1">Provision employee accounts, assign organizational roles, and manage tenant access permissions.</p>
           </div>
           <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
-            onClick={() => { setIsAddModalOpen(true); setError(''); setShowCustomDept(false); }}
+            onClick={() => { 
+              setIsAddModalOpen(true); 
+              setError(''); 
+              setShowCustomDept(false); 
+              setFormData({ name: '', email: '', role: 'EMPLOYEE', dept: dynamicDepts[0] || '', status: 'ACTIVE' }); 
+            }}
             className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold shadow-lg shadow-indigo-600/20 transition-all shrink-0"
           >
             <UserPlus className="w-4 h-4" /> Provision New User
           </motion.button>
+        </div>
+
+        {/* Live Governance Metrics */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+          <div className="p-4 rounded-2xl bg-[#0F172A] border border-slate-800/80 shadow-lg">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Total Users</span>
+              <Users className="w-4 h-4 text-indigo-400" />
+            </div>
+            <p className="text-2xl font-extrabold text-white mt-2">{users.length}</p>
+            <p className="text-[11px] text-slate-500 mt-1">Active workspace roster</p>
+          </div>
+
+          <div className="p-4 rounded-2xl bg-[#0F172A] border border-slate-800/80 shadow-lg">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Active Accounts</span>
+              <ShieldCheck className="w-4 h-4 text-emerald-400" />
+            </div>
+            <p className="text-2xl font-extrabold text-emerald-400 mt-2">
+              {users.filter(u => u.status === 'ACTIVE').length}
+            </p>
+            <p className="text-[11px] text-slate-500 mt-1">
+              {users.length > 0 ? Math.round((users.filter(u => u.status === 'ACTIVE').length / users.length) * 100) : 0}% active rate
+            </p>
+          </div>
+
+          <div className="p-4 rounded-2xl bg-[#0F172A] border border-slate-800/80 shadow-lg">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Departments</span>
+              <Building2 className="w-4 h-4 text-blue-400" />
+            </div>
+            <p className="text-2xl font-extrabold text-blue-400 mt-2">{dynamicDepts.length}</p>
+            <p className="text-[11px] text-slate-500 mt-1">Active business units</p>
+          </div>
+
+          <div className="p-4 rounded-2xl bg-[#0F172A] border border-slate-800/80 shadow-lg">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Leadership</span>
+              <ShieldCheck className="w-4 h-4 text-purple-400" />
+            </div>
+            <p className="text-2xl font-extrabold text-purple-400 mt-2">
+              {users.filter(u => ['Company Admin', 'HR Manager', 'Team Leader'].includes(u.role)).length}
+            </p>
+            <p className="text-[11px] text-slate-500 mt-1">Governing accounts</p>
+          </div>
         </div>
 
         {/* Filter & Search Bar */}
@@ -203,7 +269,7 @@ const UserRoleGovernance = () => {
         {loading ? (
           <div className="flex flex-col items-center justify-center py-32 space-y-4">
             <Loader2 className="w-10 h-10 animate-spin text-indigo-500" />
-            <p className="text-sm font-semibold text-slate-400">Loading tenant user accounts from database...</p>
+            <p className="text-sm font-semibold text-slate-400">Loading tenant user accounts...</p>
           </div>
         ) : (
         <div className="rounded-2xl bg-[#0F172A] border border-slate-800/80 shadow-xl overflow-hidden">

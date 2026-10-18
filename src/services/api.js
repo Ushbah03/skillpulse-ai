@@ -243,6 +243,7 @@ export const adminAPI = {
       body: JSON.stringify(updateData),
     }),
   getUsers: (tenantId) => apiRequest(`/admin/users${tenantId ? `?tenantId=${tenantId}` : ''}`),
+  getDepartments: (tenantId) => apiRequest(`/admin/departments${tenantId ? `?tenantId=${tenantId}` : ''}`),
   createUser: (userData) =>
     apiRequest('/admin/users', {
       method: 'POST',
