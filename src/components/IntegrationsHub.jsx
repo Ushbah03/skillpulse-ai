@@ -62,8 +62,7 @@ const IntegrationsHub = () => {
     if (activeFilter === 'Connected') return item.status === 'Connected';
     if (activeFilter === 'HRIS') return item.type === 'hris' || item.category?.toLowerCase().includes('hris');
     if (activeFilter === 'LMS') return item.type === 'lms' || item.category?.toLowerCase().includes('lms');
-    if (activeFilter === 'SSO') return item.type === 'auth' || item.category?.toLowerCase().includes('sso') || item.category?.toLowerCase().includes('identity');
-    if (activeFilter === 'Payment') return item.type === 'payment' || item.category?.toLowerCase().includes('payment');
+    if (activeFilter === 'Custom Webhooks') return item.type === 'api' || (!['lms', 'hris'].includes(item.type));
     return true;
   });
 
@@ -337,16 +336,16 @@ const IntegrationsHub = () => {
           >
             <div className="absolute top-0 right-0 w-24 h-24 bg-sky-500/5 rounded-full blur-2xl group-hover:bg-sky-500/10 transition-colors" />
             <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">SSO & Identity</span>
+              <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">HRIS & Directory</span>
               <div className="p-2 rounded-xl bg-sky-500/10 border border-sky-500/20 text-sky-400 group-hover:scale-110 transition-transform">
-                <Key className="w-4 h-4" />
+                <Database className="w-4 h-4" />
               </div>
             </div>
             <p className="text-3xl font-extrabold text-sky-400 mt-3 tracking-tight">
-              {integrations.filter(h => h.type === 'auth' || h.type === 'payment').length}
+              {integrations.filter(h => h.type === 'hris').length}
             </p>
             <p className="text-[11px] text-slate-400 mt-1 flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-sky-400"></span> Auth & billing services
+              <span className="w-1.5 h-1.5 rounded-full bg-sky-400"></span> Workforce directories
             </p>
           </motion.div>
         </div>
@@ -359,7 +358,7 @@ const IntegrationsHub = () => {
           className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6 border-b border-slate-800 pb-4"
         >
           <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
-            {['All', 'Connected', 'LMS', 'HRIS', 'SSO', 'Payment'].map((filter) => (
+            {['All', 'Connected', 'LMS', 'HRIS', 'Custom Webhooks'].map((filter) => (
               <button
                 key={filter}
                 onClick={() => setActiveFilter(filter)}
@@ -674,8 +673,7 @@ const IntegrationsHub = () => {
                       className="w-full px-3 py-2 bg-[#1E293B] border border-slate-700 rounded-xl text-xs text-slate-200 focus:outline-none focus:border-indigo-500"
                     >
                       <option value="lms">LMS Video Catalog</option>
-                      <option value="hris">HRIS System</option>
-                      <option value="auth">SSO Identity Provider</option>
+                      <option value="hris">HRIS Employee Directory</option>
                       <option value="api">Custom API Webhook</option>
                     </select>
                   </div>
