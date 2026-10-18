@@ -9,23 +9,23 @@ import { hrAPI } from '../services/api';
 
 // ── PROGRAM POPULARITY BAR CHART ─────────────────────────────────────────────
 const ProgramPopularityChart = ({ programs = [] }) => {
-  const categories = ['COMPLIANCE', 'TECHNICAL', 'LEADERSHIP', 'OPERATIONS', 'SOFT SKILLS'];
-  const colors = {
-    COMPLIANCE: 'bg-indigo-600',
-    TECHNICAL: 'bg-emerald-500',
-    LEADERSHIP: 'bg-blue-500',
-    OPERATIONS: 'bg-purple-500',
-    'SOFT SKILLS': 'bg-amber-500'
-  };
+  const categories = [
+    { key: 'TECHNICAL', label: 'TECH', color: 'bg-emerald-500' },
+    { key: 'DESIGN', label: 'DSGN', color: 'bg-pink-500' },
+    { key: 'SOFT SKILLS', label: 'SOFT', color: 'bg-amber-500' },
+    { key: 'OPERATIONS', label: 'OPER', color: 'bg-purple-500' },
+    { key: 'LEADERSHIP', label: 'LEAD', color: 'bg-blue-500' },
+    { key: 'COMPLIANCE', label: 'COMP', color: 'bg-indigo-600' }
+  ];
 
   const counts = categories.map(cat => {
-    const matching = programs.filter(p => p.category === cat);
+    const matching = programs.filter(p => p.category === cat.key);
     const totalEnrolled = matching.reduce((sum, p) => sum + (Number(p.enrolledCount) || 0), 0);
     return { 
-      category: cat,
-      label: cat.substring(0, 4), 
+      category: cat.key,
+      label: cat.label, 
       count: totalEnrolled, 
-      color: colors[cat] || 'bg-blue-500' 
+      color: cat.color 
     };
   });
 
@@ -36,7 +36,7 @@ const ProgramPopularityChart = ({ programs = [] }) => {
       <div className="flex items-end justify-between h-36 px-2 gap-2">
         {counts.map((bar, i) => {
           const heightPct = bar.count > 0 
-            ? `${Math.max(12, Math.round((bar.count / maxVal) * 100))}%`
+            ? `${Math.max(16, Math.round((bar.count / maxVal) * 100))}%`
             : '4px';
           return (
             <div key={i} className="flex flex-col items-center flex-1 group">
@@ -47,10 +47,10 @@ const ProgramPopularityChart = ({ programs = [] }) => {
                   title={`${bar.category}: ${bar.count} enrolled`}
                 />
               </div>
-              <span className="text-xs font-bold text-slate-500 mt-2 tracking-wider">
+              <span className="text-[11px] font-bold text-slate-500 mt-2 tracking-wider">
                 {bar.label}
               </span>
-              <span className="text-[10px] font-extrabold text-slate-400">
+              <span className="text-[10px] font-extrabold text-slate-500">
                 {bar.count}
               </span>
             </div>
@@ -362,7 +362,8 @@ const TrainingProgramManagement = () => {
   const paginatedPrograms = filteredPrograms.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   // Dynamic Most Enrolled Category calculation for Program Popularity
-  const categoryCounts = ['COMPLIANCE', 'TECHNICAL', 'LEADERSHIP', 'OPERATIONS', 'SOFT SKILLS'].map(cat => ({
+  const categoryKeys = ['TECHNICAL', 'DESIGN', 'SOFT SKILLS', 'OPERATIONS', 'LEADERSHIP', 'COMPLIANCE'];
+  const categoryCounts = categoryKeys.map(cat => ({
     cat,
     count: programs.filter(p => p.category === cat).reduce((sum, p) => sum + (Number(p.enrolledCount) || 0), 0)
   }));
