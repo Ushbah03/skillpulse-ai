@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { 
   Sparkles, ChevronLeft, ChevronRight, Filter, Calendar, 
   Loader2, TrendingUp, TrendingDown, Users, Download
@@ -14,15 +15,26 @@ const DepartmentComparison = () => {
   const [loading, setLoading] = useState(true);
   const [liveAnalytics, setLiveAnalytics] = useState(null);
 
-  const scrollContainerRef = useRef(null);
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(true);
+  // 4 Cards Carousel with One-by-One animated sliding
+  const [startIndex, setStartIndex] = useState(0);
+  const [visibleCount, setVisibleCount] = useState(4);
 
   const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
   const userProfile = {
     name: storedUser.firstName ? `${storedUser.firstName} ${storedUser.lastName}` : (storedUser.name || "HR Manager"),
     avatar: storedUser.avatarUrl || null
   };
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 640) setVisibleCount(1);
+      else if (window.innerWidth < 1024) setVisibleCount(2);
+      else setVisibleCount(4);
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     let isMounted = true;
@@ -43,21 +55,20 @@ const DepartmentComparison = () => {
     return () => { isMounted = false; };
   }, []);
 
-  const checkScroll = () => {
-    if (scrollContainerRef.current) {
-      const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
-      setCanScrollLeft(scrollLeft > 5);
-      setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 5);
-    }
+  const maxIndex = Math.max(0, (liveAnalytics?.departments?.length || 0) - visibleCount);
+
+  const handleNext = () => {
+    setStartIndex(prev => Math.min(prev + 1, maxIndex));
   };
 
-  const handleScroll = (dir) => {
-    if (scrollContainerRef.current) {
-      const offset = dir === 'left' ? -260 : 260;
-      scrollContainerRef.current.scrollBy({ left: offset, behavior: 'smooth' });
-      setTimeout(checkScroll, 300);
-    }
+  const handlePrev = () => {
+    setStartIndex(prev => Math.max(prev - 1, 0));
   };
+
+  const cardWidthCalc = `calc((100% - ${(visibleCount - 1) * 12}px) / ${visibleCount})`;
+  const trackTranslateX = startIndex === 0 
+    ? '0px' 
+    : `calc(-${startIndex} * (${100 / visibleCount}% + ${12 - ((visibleCount - 1) * 12) / visibleCount}px))`;
 
   const colorStyles = [
     { text: 'text-indigo-600', bg: 'bg-indigo-50', border: 'border-indigo-100', bar: 'bg-indigo-500', stroke: '#6366f1' },
@@ -268,71 +279,97 @@ const DepartmentComparison = () => {
         ) : (
           <div className="px-6 py-5 space-y-5">
 
-            {/* SCROLLABLE HORIZONTAL DEPARTMENT CARDS (LOVABLE-STYLE) */}
+            {/* ANIMATED 4-CARD CAROUSEL (SLIDES ONE-BY-ONE) */}
             <div className="bg-transparent">
-              <div className="flex items-center justify-between mb-2 px-0.5">
-                <div className="flex items-center gap-2">
+              <div className="flex items-center justify-between mb-2.5 px-0.5">
+                <div className="flex items-center gap-2.5">
                   <span className="text-xs font-black text-slate-800 uppercase tracking-wider">Department Overview</span>
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200">
+                  <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200">
                     {deptMetrics.length} Departments
                   </span>
+                  <span className="text-[11px] font-semibold text-slate-400 hidden sm:inline">
+                    Showing {startIndex + 1}–{Math.min(startIndex + visibleCount, deptMetrics.length)} of {deptMetrics.length}
+                  </span>
                 </div>
-                <div className="flex items-center gap-1">
-                  <button 
-                    onClick={() => handleScroll('left')} 
-                    disabled={!canScrollLeft} 
-                    className="p-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 disabled:opacity-30 disabled:cursor-not-allowed transition-all shadow-2xs cursor-pointer"
-                    title="Scroll left"
-                  >
-                    <ChevronLeft size={14} className="text-slate-600" />
-                  </button>
-                  <button 
-                    onClick={() => handleScroll('right')} 
-                    disabled={!canScrollRight} 
-                    className="p-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 disabled:opacity-30 disabled:cursor-not-allowed transition-all shadow-2xs cursor-pointer"
-                    title="Scroll right"
-                  >
-                    <ChevronRight size={14} className="text-slate-600" />
-                  </button>
+                
+                <div className="flex items-center gap-2">
+                  {/* Slider step dots */}
+                  <div className="hidden sm:flex items-center gap-1 mr-1">
+                    {Array.from({ length: maxIndex + 1 }).map((_, i) => (
+                      <button
+                        key={i}
+                        onClick={() => setStartIndex(i)}
+                        className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
+                          startIndex === i ? 'w-5 bg-indigo-600' : 'w-1.5 bg-slate-200 hover:bg-slate-300'
+                        }`}
+                        title={`Slide to department ${i + 1}`}
+                      />
+                    ))}
+                  </div>
+
+                  <div className="flex items-center gap-1">
+                    <motion.button 
+                      whileTap={{ scale: 0.9 }}
+                      onClick={handlePrev} 
+                      disabled={startIndex === 0} 
+                      className="p-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 disabled:opacity-30 disabled:cursor-not-allowed transition-all shadow-2xs cursor-pointer text-slate-700"
+                      title="Previous department"
+                    >
+                      <ChevronLeft size={16} />
+                    </motion.button>
+                    <motion.button 
+                      whileTap={{ scale: 0.9 }}
+                      onClick={handleNext} 
+                      disabled={startIndex >= maxIndex} 
+                      className="p-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 disabled:opacity-30 disabled:cursor-not-allowed transition-all shadow-2xs cursor-pointer text-slate-700"
+                      title="Next department"
+                    >
+                      <ChevronRight size={16} />
+                    </motion.button>
+                  </div>
                 </div>
               </div>
 
-              <div 
-                ref={scrollContainerRef}
-                onScroll={checkScroll}
-                className="flex gap-3 overflow-x-auto pb-1.5 pt-0.5 scrollbar-none scroll-smooth"
-                style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-              >
-                {deptMetrics.map((dm) => (
-                  <div 
-                    key={dm.id} 
-                    className="min-w-[215px] max-w-[215px] shrink-0 bg-white border border-slate-200/90 rounded-2xl p-3.5 shadow-2xs hover:border-indigo-400 hover:shadow-xs transition-all flex flex-col justify-between"
-                  >
-                    <div className="flex items-center justify-between">
-                      <span className="text-[11px] font-black text-slate-500 uppercase tracking-wider truncate max-w-[130px]" title={dm.name}>
-                        {dm.name}
-                      </span>
-                      <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md ${dm.hasSkills ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-500'}`}>
-                        {dm.hasSkills ? '↑ active' : '— unassessed'}
-                      </span>
-                    </div>
-                    
-                    <div className="my-2.5">
-                      <div className="flex items-baseline gap-1.5">
-                        <span className="text-2xl font-black text-slate-900 tracking-tight">{dm.score}</span>
-                        <span className="text-[10px] font-bold text-slate-400">score</span>
+              {/* OVERFLOW-HIDDEN 4-CARD VIEWPORT */}
+              <div className="overflow-hidden w-full rounded-2xl py-0.5">
+                <motion.div 
+                  className="flex gap-3"
+                  animate={{ x: trackTranslateX }}
+                  transition={{ type: "spring", stiffness: 280, damping: 28 }}
+                >
+                  {deptMetrics.map((dm) => (
+                    <motion.div 
+                      key={dm.id} 
+                      style={{ width: cardWidthCalc }}
+                      whileHover={{ y: -3, transition: { duration: 0.15 } }}
+                      className="shrink-0 bg-white border border-slate-200/90 rounded-2xl p-4 shadow-2xs hover:border-indigo-400 hover:shadow-xs transition-all flex flex-col justify-between"
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="text-[11px] font-black text-slate-600 uppercase tracking-wider truncate max-w-[130px]" title={dm.name}>
+                          {dm.name}
+                        </span>
+                        <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md ${dm.hasSkills ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-500'}`}>
+                          {dm.hasSkills ? '↑ active' : '— unassessed'}
+                        </span>
                       </div>
-                      <span className="text-[10px] font-semibold text-slate-400 block mt-0.5">
-                        {dm.memberCount} {dm.memberCount === 1 ? 'member' : 'members'}
-                      </span>
-                    </div>
+                      
+                      <div className="my-2.5">
+                        <div className="flex items-baseline gap-1.5">
+                          <span className="text-2xl font-black text-slate-900 tracking-tight">{dm.score}</span>
+                          <span className="text-[10px] font-bold text-slate-400">score</span>
+                        </div>
+                        <span className="text-[10px] font-semibold text-slate-400 block mt-0.5">
+                          {dm.memberCount} {dm.memberCount === 1 ? 'member' : 'members'}
+                        </span>
+                      </div>
 
-                    <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px]">
-                      <span className="text-slate-500 font-semibold">Skill: <strong className="text-slate-800">{dm.skill}</strong></span>
-                      <span className="text-slate-500 font-semibold">Ready: <strong className="text-slate-800">{dm.read}</strong></span>
-                    </div>
-                  </div>
-                ))}
+                      <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px]">
+                        <span className="text-slate-500 font-semibold">Skill: <strong className="text-slate-800">{dm.skill}</strong></span>
+                        <span className="text-slate-500 font-semibold">Ready: <strong className="text-slate-800">{dm.read}</strong></span>
+                      </div>
+                    </motion.div>
+                  ))}
+                </motion.div>
               </div>
             </div>
 
