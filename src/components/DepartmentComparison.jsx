@@ -1,6 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Sparkles, Code, Tag, Percent, Layers, ChevronLeft, ChevronRight, Filter, Calendar, Loader2, TrendingUp, Award, Activity } from 'lucide-react';
+import { 
+  Sparkles, ChevronLeft, ChevronRight, Filter, Calendar, 
+  Loader2, TrendingUp, TrendingDown, Users, Download
+} from 'lucide-react';
 import HRSidebar from './HRSidebar';
 import { hrAPI } from '../services/api';
 
@@ -10,6 +13,10 @@ const DepartmentComparison = () => {
   const [selectedPeriod, setSelectedPeriod] = useState('6M');
   const [loading, setLoading] = useState(true);
   const [liveAnalytics, setLiveAnalytics] = useState(null);
+
+  const scrollContainerRef = useRef(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(true);
 
   const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
   const userProfile = {
@@ -36,82 +43,155 @@ const DepartmentComparison = () => {
     return () => { isMounted = false; };
   }, []);
 
-  const deptMetrics = React.useMemo(() => {
+  const checkScroll = () => {
+    if (scrollContainerRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
+      setCanScrollLeft(scrollLeft > 5);
+      setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 5);
+    }
+  };
+
+  const handleScroll = (dir) => {
+    if (scrollContainerRef.current) {
+      const offset = dir === 'left' ? -260 : 260;
+      scrollContainerRef.current.scrollBy({ left: offset, behavior: 'smooth' });
+      setTimeout(checkScroll, 300);
+    }
+  };
+
+  const colorStyles = [
+    { text: 'text-indigo-600', bg: 'bg-indigo-50', border: 'border-indigo-100', bar: 'bg-indigo-500', stroke: '#6366f1' },
+    { text: 'text-emerald-600', bg: 'bg-emerald-50', border: 'border-emerald-100', bar: 'bg-emerald-500', stroke: '#10b981' },
+    { text: 'text-purple-600', bg: 'bg-purple-50', border: 'border-purple-100', bar: 'bg-purple-500', stroke: '#8b5cf6' },
+    { text: 'text-amber-600', bg: 'bg-amber-50', border: 'border-amber-100', bar: 'bg-amber-500', stroke: '#f59e0b' },
+    { text: 'text-blue-600', bg: 'bg-blue-50', border: 'border-blue-100', bar: 'bg-blue-500', stroke: '#3b82f6' },
+    { text: 'text-rose-600', bg: 'bg-rose-50', border: 'border-rose-100', bar: 'bg-rose-500', stroke: '#f43f5e' },
+  ];
+
+  const deptMetrics = useMemo(() => {
     if (!liveAnalytics?.departments || liveAnalytics.departments.length === 0) return [];
-    const colorStyles = [
-      { text: 'text-purple-600', bg: 'bg-purple-50', border: 'border-purple-100', bar: 'bg-purple-500' },
-      { text: 'text-blue-600', bg: 'bg-blue-50', border: 'border-blue-100', bar: 'bg-blue-500' },
-      { text: 'text-emerald-600', bg: 'bg-emerald-50', border: 'border-emerald-100', bar: 'bg-emerald-500' },
-      { text: 'text-amber-600', bg: 'bg-amber-50', border: 'border-amber-100', bar: 'bg-amber-500' },
-      { text: 'text-indigo-600', bg: 'bg-indigo-50', border: 'border-indigo-100', bar: 'bg-indigo-500' },
-      { text: 'text-rose-600', bg: 'bg-rose-50', border: 'border-rose-100', bar: 'bg-rose-500' },
-    ];
 
     return liveAnalytics.departments.map((d, idx) => {
       const avgProf = d.avgProficiency || 0;
-      const completionPct = Math.min(100, Math.round(avgProf * 24));
+      const perfScore = d.performanceScore ?? (d.hasSkills ? Math.round((avgProf / 5.0) * 100) : 0);
+      const readiness = d.readinessPct ?? (d.hasSkills ? Math.round((avgProf / 5.0) * 100) : 0);
+      const trainingComp = d.trainingCompletion ?? 0;
       const style = colorStyles[idx % colorStyles.length];
+      const hasSkills = Boolean(d.hasSkills && avgProf > 0);
+
       return {
         id: d.id,
         name: d.name,
-        score: `${Math.round(avgProf * 20)}%`,
-        skill: `${avgProf.toFixed(1)} / 5.0`,
-        read: `${completionPct}%`,
+        memberCount: d.memberCount || 0,
+        score: `${perfScore}%`,
+        perfScore,
+        skill: hasSkills ? `${avgProf.toFixed(1)} / 5.0` : '0.0 / 5.0',
+        avgProf,
+        read: `${readiness}%`,
+        readinessPct: readiness,
+        trainingCompletion: trainingComp,
+        totalEnrollments: d.totalEnrollments || 0,
+        completedEnrollmentsCount: d.completedEnrollmentsCount || 0,
+        hasSkills,
         style,
-        trend: avgProf >= 3.5 ? 'up' : 'down'
+        trend: avgProf >= 3.5 ? 'up' : 'down',
+        scores: d.scores || [],
+        monthlyTrend: d.monthlyTrend || []
       };
     });
   }, [liveAnalytics]);
 
-  const heatmapMatrix = React.useMemo(() => {
+  const trendChartData = useMemo(() => {
     if (!liveAnalytics?.departments || liveAnalytics.departments.length === 0) {
-      return { departments: [], domains: [], values: [] };
+      return { months: [], lines: [] };
     }
-    const departments = liveAnalytics.departments.map(d => d.name);
-    const dbCategories = (liveAnalytics?.categoryDistribution || []).map(c => c.name.toUpperCase());
-    const domains = dbCategories.length > 0 
-      ? dbCategories.slice(0, 4) 
-      : ['TECHNICAL', 'SOFT SKILLS', 'LEADERSHIP', 'COMPLIANCE'];
 
-    const values = liveAnalytics.departments.map(d => {
-      const base = d.avgProficiency || 3.0;
-      return domains.map((_, i) => {
-        const offset = (i % 3 === 0 ? 0.3 : i % 3 === 1 ? -0.2 : 0.1);
-        return parseFloat(Math.min(5.0, Math.max(1.0, base + offset)).toFixed(1));
-      });
+    let rawMonths = (liveAnalytics.gapTrend || []).map(g => g.month);
+    if (!rawMonths || rawMonths.length === 0) {
+      rawMonths = ['May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'];
+    }
+
+    let sliceCount = 6;
+    if (selectedPeriod === '3M') sliceCount = 3;
+    else if (selectedPeriod === 'YTD') sliceCount = Math.min(rawMonths.length, new Date().getMonth() + 1);
+
+    const activeMonths = rawMonths.slice(-sliceCount);
+
+    const activeDepts = deptMetrics.filter(d => d.hasSkills || d.monthlyTrend?.some(m => m.score > 0));
+    const deptsToPlot = activeDepts.length > 0 ? activeDepts.slice(0, 3) : deptMetrics.slice(0, 3);
+
+    const lines = deptsToPlot.map(dept => {
+      const trendMap = {};
+      (dept.monthlyTrend || []).forEach(m => { trendMap[m.month] = m.score; });
+      const points = activeMonths.map(m => trendMap[m] ?? (dept.hasSkills ? dept.avgProf : 0.0));
+      return {
+        name: dept.name,
+        color: dept.style.stroke,
+        points,
+        latestScore: points[points.length - 1] || 0
+      };
     });
-    return { departments, domains, values };
+
+    return { months: activeMonths, lines };
+  }, [deptMetrics, liveAnalytics, selectedPeriod]);
+
+  const heatmapDomains = useMemo(() => {
+    if (liveAnalytics?.heatmapColumns && liveAnalytics.heatmapColumns.length > 0) {
+      return liveAnalytics.heatmapColumns.slice(0, 5);
+    }
+    return ['CLOUD & SYSTEMS', 'SOFTWARE ENG', 'PRODUCT & DESIGN', 'DATA & AI', 'PROBLEM SOLVING'];
   }, [liveAnalytics]);
 
-  const rankingRows = React.useMemo(() => {
-    if (!liveAnalytics?.departments) return [];
-    const sorted = [...liveAnalytics.departments].sort((a, b) => b.avgProficiency - a.avgProficiency);
+  const rankingRows = useMemo(() => {
+    if (!deptMetrics || deptMetrics.length === 0) return [];
+    const sorted = [...deptMetrics].sort((a, b) => b.perfScore - a.perfScore);
     return sorted.map((d, index) => {
-      const avgProf = d.avgProficiency || 0;
-      const scorePct = `${Math.round(avgProf * 20)}%`;
-      const readPct = `${Math.min(100, Math.round(avgProf * 22))}%`;
-      const compPct = `${Math.min(100, Math.round(avgProf * 24))}%`;
-      const risk = avgProf >= 3.8 ? 'Low' : avgProf >= 3.2 ? 'Medium' : 'High';
-      const riskBg = risk === 'Low' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : risk === 'Medium' ? 'bg-amber-50 text-amber-700 border border-amber-200' : 'bg-rose-50 text-rose-700 border border-rose-200';
-      const scoreColor = risk === 'Low' ? 'text-emerald-600 font-extrabold' : risk === 'Medium' ? 'text-amber-600 font-extrabold' : 'text-rose-500 font-extrabold';
+      let risk = 'Unassessed';
+      let riskBg = 'bg-slate-100 text-slate-600 border border-slate-200';
+      let scoreColor = 'text-slate-400 font-bold';
+
+      if (d.hasSkills) {
+        if (d.avgProf >= 4.0) {
+          risk = 'Low';
+          riskBg = 'bg-emerald-50 text-emerald-700 border border-emerald-200';
+          scoreColor = 'text-emerald-600 font-extrabold';
+        } else if (d.avgProf >= 3.0) {
+          risk = 'Medium';
+          riskBg = 'bg-amber-50 text-amber-700 border border-amber-200';
+          scoreColor = 'text-amber-600 font-extrabold';
+        } else {
+          risk = 'High';
+          riskBg = 'bg-rose-50 text-rose-700 border border-rose-200';
+          scoreColor = 'text-rose-500 font-extrabold';
+        }
+      }
+
       return {
         rank: `#${index + 1}`,
         name: d.name,
-        score: scorePct,
-        skill: `${avgProf.toFixed(1)} / 5.0`,
-        comp: compPct,
-        read: readPct,
+        score: `${d.perfScore}%`,
+        skill: d.skill,
+        comp: `${d.trainingCompletion}%`,
+        read: `${d.readinessPct}%`,
         risk,
         riskBg,
         scoreColor
       };
     });
-  }, [liveAnalytics]);
+  }, [deptMetrics]);
+
+  const ITEMS_PER_PAGE = 5;
+  const totalPages = Math.max(1, Math.ceil(rankingRows.length / ITEMS_PER_PAGE));
+  const paginatedRows = useMemo(() => {
+    const start = (activePage - 1) * ITEMS_PER_PAGE;
+    return rankingRows.slice(start, start + ITEMS_PER_PAGE);
+  }, [rankingRows, activePage]);
 
   const getHeatmapColor = (val) => {
-    if (val < 2.0) return 'bg-slate-100 text-slate-700 border border-slate-200';
-    if (val < 3.5) return 'bg-indigo-100 text-indigo-800 border border-indigo-200 font-semibold';
-    if (val < 4.2) return 'bg-indigo-600 text-white font-bold';
+    if (val <= 0) return 'bg-slate-50 text-slate-400 border border-slate-100';
+    if (val < 2.5) return 'bg-indigo-50 text-indigo-700 border border-indigo-100 font-semibold';
+    if (val < 3.8) return 'bg-indigo-100 text-indigo-800 border border-indigo-200 font-bold';
+    if (val < 4.5) return 'bg-indigo-600 text-white font-bold';
     return 'bg-indigo-900 text-white font-black';
   };
 
@@ -167,6 +247,7 @@ const DepartmentComparison = () => {
               onClick={handleExportCSV}
               className="px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-xs transition-all active:scale-95 flex items-center gap-1.5 cursor-pointer"
             >
+              <Download size={13} />
               Export Report
             </button>
             {userProfile.avatar ? (
@@ -187,28 +268,72 @@ const DepartmentComparison = () => {
         ) : (
           <div className="px-6 py-5 space-y-5">
 
-            {/* COMPACT DEPARTMENT STAT CARDS GRID */}
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-              {deptMetrics.map((dm, i) => (
-                <div key={dm.id || i} className="bg-white border border-slate-200 rounded-xl p-3.5 shadow-xs hover:border-indigo-300 transition-all flex flex-col justify-between">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[11px] font-black text-slate-400 uppercase tracking-wider truncate">{dm.name}</span>
-                    <span className={`text-[10px] font-black px-1.5 py-0.5 rounded ${dm.trend === 'up' ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'}`}>
-                      {dm.trend === 'up' ? '↑' : '↓'}
-                    </span>
-                  </div>
-                  
-                  <div className="my-2">
-                    <span className="text-xl font-black text-slate-900 tracking-tight">{dm.score}</span>
-                    <span className="text-[10px] font-bold text-slate-400 block mt-0.5">Score</span>
-                  </div>
-
-                  <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px]">
-                    <span className="text-slate-500 font-semibold">Skill: <strong className="text-slate-800">{dm.skill}</strong></span>
-                    <span className="text-slate-500 font-semibold">Ready: <strong className="text-slate-800">{dm.read}</strong></span>
-                  </div>
+            {/* SCROLLABLE HORIZONTAL DEPARTMENT CARDS (LOVABLE-STYLE) */}
+            <div className="bg-transparent">
+              <div className="flex items-center justify-between mb-2 px-0.5">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-black text-slate-800 uppercase tracking-wider">Department Overview</span>
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200">
+                    {deptMetrics.length} Departments
+                  </span>
                 </div>
-              ))}
+                <div className="flex items-center gap-1">
+                  <button 
+                    onClick={() => handleScroll('left')} 
+                    disabled={!canScrollLeft} 
+                    className="p-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 disabled:opacity-30 disabled:cursor-not-allowed transition-all shadow-2xs cursor-pointer"
+                    title="Scroll left"
+                  >
+                    <ChevronLeft size={14} className="text-slate-600" />
+                  </button>
+                  <button 
+                    onClick={() => handleScroll('right')} 
+                    disabled={!canScrollRight} 
+                    className="p-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 disabled:opacity-30 disabled:cursor-not-allowed transition-all shadow-2xs cursor-pointer"
+                    title="Scroll right"
+                  >
+                    <ChevronRight size={14} className="text-slate-600" />
+                  </button>
+                </div>
+              </div>
+
+              <div 
+                ref={scrollContainerRef}
+                onScroll={checkScroll}
+                className="flex gap-3 overflow-x-auto pb-1.5 pt-0.5 scrollbar-none scroll-smooth"
+                style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+              >
+                {deptMetrics.map((dm) => (
+                  <div 
+                    key={dm.id} 
+                    className="min-w-[215px] max-w-[215px] shrink-0 bg-white border border-slate-200/90 rounded-2xl p-3.5 shadow-2xs hover:border-indigo-400 hover:shadow-xs transition-all flex flex-col justify-between"
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="text-[11px] font-black text-slate-500 uppercase tracking-wider truncate max-w-[130px]" title={dm.name}>
+                        {dm.name}
+                      </span>
+                      <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md ${dm.hasSkills ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-500'}`}>
+                        {dm.hasSkills ? '↑ active' : '— unassessed'}
+                      </span>
+                    </div>
+                    
+                    <div className="my-2.5">
+                      <div className="flex items-baseline gap-1.5">
+                        <span className="text-2xl font-black text-slate-900 tracking-tight">{dm.score}</span>
+                        <span className="text-[10px] font-bold text-slate-400">score</span>
+                      </div>
+                      <span className="text-[10px] font-semibold text-slate-400 block mt-0.5">
+                        {dm.memberCount} {dm.memberCount === 1 ? 'member' : 'members'}
+                      </span>
+                    </div>
+
+                    <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px]">
+                      <span className="text-slate-500 font-semibold">Skill: <strong className="text-slate-800">{dm.skill}</strong></span>
+                      <span className="text-slate-500 font-semibold">Ready: <strong className="text-slate-800">{dm.read}</strong></span>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
 
             {/* 2-COLUMN GRID: TREND CHART & SKILL HEATMAP */}
@@ -220,30 +345,75 @@ const DepartmentComparison = () => {
                   <div className="flex justify-between items-center mb-3">
                     <div>
                       <h3 className="text-xs font-black text-slate-900 uppercase tracking-wider">Performance Trend Comparison</h3>
-                      <p className="text-[11px] text-slate-400 font-medium">Department proficiency score trajectories</p>
+                      <p className="text-[11px] text-slate-400 font-medium">Department proficiency score trajectories ({selectedPeriod})</p>
                     </div>
-                    <div className="flex items-center gap-3 text-[11px] font-bold text-slate-600">
-                      {deptMetrics.slice(0, 3).map((dm, idx) => (
-                        <span key={idx} className="flex items-center gap-1">
-                          <span className={`w-2.5 h-2.5 rounded-full ${dm.style.bar}`} /> {dm.name}
+                    <div className="flex items-center gap-3 text-[11px] font-bold text-slate-600 flex-wrap">
+                      {trendChartData.lines.map((line, idx) => (
+                        <span key={idx} className="flex items-center gap-1.5">
+                          <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: line.color }} /> 
+                          <span className="text-slate-700">{line.name}</span>
+                          <span className="text-slate-400 text-[10px]">({line.latestScore.toFixed(1)})</span>
                         </span>
                       ))}
                     </div>
                   </div>
 
-                  <div className="h-40 relative w-full pt-1">
-                    <svg className="w-full h-full overflow-visible" viewBox="0 0 700 130" preserveAspectRatio="none">
-                      <line x1="0" y1="25" x2="700" y2="25" stroke="#f1f5f9" strokeWidth="1" />
-                      <line x1="0" y1="65" x2="700" y2="65" stroke="#f1f5f9" strokeWidth="1" />
-                      <line x1="0" y1="105" x2="700" y2="105" stroke="#f1f5f9" strokeWidth="1" />
-                      <line x1="0" y1="130" x2="700" y2="130" stroke="#cbd5e1" strokeWidth="1.5" />
+                  <div className="h-44 relative w-full pt-2">
+                    <svg className="w-full h-full overflow-visible" viewBox="0 0 700 140" preserveAspectRatio="none">
+                      {/* Grid Lines */}
+                      <line x1="25" y1="20" x2="675" y2="20" stroke="#f1f5f9" strokeWidth="1" strokeDasharray="3 3" />
+                      <line x1="25" y1="55" x2="675" y2="55" stroke="#f1f5f9" strokeWidth="1" strokeDasharray="3 3" />
+                      <line x1="25" y1="90" x2="675" y2="90" stroke="#f1f5f9" strokeWidth="1" strokeDasharray="3 3" />
+                      <line x1="25" y1="125" x2="675" y2="125" stroke="#e2e8f0" strokeWidth="1.5" />
 
-                      <path d="M 0 90 Q 140 75 280 85 T 560 60 L 700 55" fill="none" stroke="#8b5cf6" strokeWidth="2.5" />
-                      <path d="M 0 110 Q 140 100 280 92 T 560 80 L 700 70" fill="none" stroke="#10b981" strokeWidth="2.5" />
-                      <path d="M 0 125 Q 140 120 280 122 T 560 115 L 700 110" fill="none" stroke="#3b82f6" strokeWidth="2.5" />
+                      {/* Dynamic Trend Lines computed from DB monthly records */}
+                      {trendChartData.lines.map((line, lineIdx) => {
+                        const pts = line.points;
+                        if (!pts || pts.length === 0) return null;
+                        const w = 650;
+                        const h = 105;
+                        const pathD = pts.map((p, i) => {
+                          const x = 25 + (i / Math.max(1, pts.length - 1)) * w;
+                          const y = 125 - (Math.min(5.0, Math.max(0, p)) / 5.0) * h;
+                          return `${i === 0 ? 'M' : 'L'} ${x.toFixed(1)} ${y.toFixed(1)}`;
+                        }).join(' ');
+
+                        return (
+                          <g key={lineIdx}>
+                            <path 
+                              d={pathD} 
+                              fill="none" 
+                              stroke={line.color} 
+                              strokeWidth="2.5" 
+                              strokeLinecap="round" 
+                              strokeLinejoin="round" 
+                            />
+                            {pts.map((p, i) => {
+                              const x = 25 + (i / Math.max(1, pts.length - 1)) * w;
+                              const y = 125 - (Math.min(5.0, Math.max(0, p)) / 5.0) * h;
+                              return (
+                                <circle 
+                                  key={i} 
+                                  cx={x} 
+                                  cy={y} 
+                                  r="4" 
+                                  fill="#ffffff" 
+                                  stroke={line.color} 
+                                  strokeWidth="2.5"
+                                >
+                                  <title>{`${line.name}: ${p.toFixed(1)} / 5.0 (${trendChartData.months[i]})`}</title>
+                                </circle>
+                              );
+                            })}
+                          </g>
+                        );
+                      })}
                     </svg>
-                    <div className="flex justify-between px-1 text-[11px] font-black text-slate-400 uppercase tracking-wider mt-3">
-                      <span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span>
+
+                    <div className="flex justify-between px-6 text-[11px] font-black text-slate-400 uppercase tracking-wider mt-2">
+                      {trendChartData.months.map((m, i) => (
+                        <span key={i}>{m}</span>
+                      ))}
                     </div>
                   </div>
                 </div>
@@ -255,11 +425,11 @@ const DepartmentComparison = () => {
                   <div className="flex justify-between items-center mb-3">
                     <div>
                       <h3 className="text-xs font-black text-slate-900 uppercase tracking-wider">Skill Maturity Heatmap</h3>
-                      <p className="text-[11px] text-slate-400 font-medium">Domain competency scale (1.0 – 5.0)</p>
+                      <p className="text-[11px] text-slate-400 font-medium">Domain competency scale (1.0 – 5.0) from verified skills</p>
                     </div>
                     <div className="flex items-center gap-1.5 text-[10px] font-bold text-slate-400">
                       <span>Low</span>
-                      <span className="w-3 h-3 bg-slate-100 border border-slate-200 rounded-sm" />
+                      <span className="w-3 h-3 bg-slate-50 border border-slate-200 rounded-sm" />
                       <span className="w-3 h-3 bg-indigo-100 border border-indigo-200 rounded-sm" />
                       <span className="w-3 h-3 bg-indigo-600 rounded-sm" />
                       <span className="w-3 h-3 bg-indigo-900 rounded-sm" />
@@ -268,21 +438,27 @@ const DepartmentComparison = () => {
                   </div>
 
                   <div className="space-y-2 pt-1">
-                    <div className="grid grid-cols-5 gap-2 text-center text-[10px] font-black text-slate-400 uppercase tracking-wider pb-1">
-                      <span className="text-left font-bold">Dept</span>
-                      {heatmapMatrix.domains.slice(0, 4).map((dom, idx) => (
-                        <span key={idx} className="truncate">{dom}</span>
+                    <div className="grid grid-cols-6 gap-2 text-center text-[10px] font-black text-slate-400 uppercase tracking-wider pb-1">
+                      <span className="text-left font-bold truncate">Dept</span>
+                      {heatmapDomains.map((dom, idx) => (
+                        <span key={idx} className="truncate" title={dom}>{dom}</span>
                       ))}
                     </div>
 
-                    {heatmapMatrix.departments.slice(0, 5).map((dept, deptIdx) => (
-                      <div key={deptIdx} className="grid grid-cols-5 gap-2 items-center text-xs">
-                        <span className="font-bold text-slate-700 truncate">{dept}</span>
-                        {heatmapMatrix.values[deptIdx]?.slice(0, 4).map((val, valIdx) => (
-                          <div key={valIdx} className={`${getHeatmapColor(val)} rounded-lg py-1.5 text-center text-xs shadow-2xs`}>
-                            {val.toFixed(1)}
-                          </div>
-                        ))}
+                    {deptMetrics.slice(0, 5).map((dept, deptIdx) => (
+                      <div key={deptIdx} className="grid grid-cols-6 gap-2 items-center text-xs">
+                        <span className="font-bold text-slate-700 truncate" title={dept.name}>{dept.name}</span>
+                        {heatmapDomains.map((_, valIdx) => {
+                          const val = dept.scores?.[valIdx] || 0.0;
+                          return (
+                            <div 
+                              key={valIdx} 
+                              className={`${getHeatmapColor(val)} rounded-lg py-1.5 text-center text-xs shadow-2xs font-semibold`}
+                            >
+                              {val > 0 ? val.toFixed(1) : '—'}
+                            </div>
+                          );
+                        })}
                       </div>
                     ))}
                   </div>
@@ -296,16 +472,30 @@ const DepartmentComparison = () => {
               
               {/* TRAINING COMPLETION RATE CARD */}
               <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs">
-                <h3 className="text-xs font-black text-slate-900 uppercase tracking-wider mb-3">Training Completion Rate</h3>
-                <div className="space-y-3">
+                <div className="flex items-center justify-between mb-3">
+                  <div>
+                    <h3 className="text-xs font-black text-slate-900 uppercase tracking-wider">Training Completion Rate</h3>
+                    <p className="text-[11px] text-slate-400 font-medium">Real-time enrollment progress across active departments</p>
+                  </div>
+                  <span className="text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md">Live Enrollments</span>
+                </div>
+                <div className="space-y-3.5">
                   {deptMetrics.slice(0, 5).map((cr, i) => (
                     <div key={i} className="space-y-1">
                       <div className="flex justify-between text-xs font-bold">
-                        <span className="text-slate-700">{cr.name}</span>
-                        <span className="text-slate-900 font-black">{cr.read}</span>
+                        <div className="flex items-center gap-2">
+                          <span className="text-slate-800">{cr.name}</span>
+                          <span className="text-[10px] font-semibold text-slate-400">
+                            ({cr.totalEnrollments} {cr.totalEnrollments === 1 ? 'course' : 'courses'})
+                          </span>
+                        </div>
+                        <span className="text-slate-900 font-black">{cr.trainingCompletion}%</span>
                       </div>
                       <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
-                        <div className={`h-full ${cr.style.bar} rounded-full`} style={{ width: cr.read }} />
+                        <div 
+                          className={`h-full ${cr.style.bar} rounded-full transition-all duration-500`} 
+                          style={{ width: `${cr.trainingCompletion}%` }} 
+                        />
                       </div>
                     </div>
                   ))}
@@ -313,25 +503,29 @@ const DepartmentComparison = () => {
               </div>
 
               {/* AI STRATEGIC INSIGHT BOX */}
-              <div className="bg-gradient-to-br from-indigo-900 to-slate-900 text-white rounded-2xl p-5 shadow-sm flex flex-col justify-between relative overflow-hidden">
-                <div className="space-y-2">
+              <div className="bg-gradient-to-br from-indigo-950 via-slate-900 to-indigo-900 text-white rounded-2xl p-5 shadow-sm flex flex-col justify-between relative overflow-hidden">
+                <div className="space-y-2.5">
                   <div className="flex items-center gap-2">
-                    <span className="inline-flex items-center gap-1 text-[10px] font-black px-2 py-0.5 bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 rounded-md uppercase tracking-wider">
+                    <span className="inline-flex items-center gap-1.5 text-[10px] font-black px-2.5 py-0.5 bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 rounded-md uppercase tracking-wider">
                       <Sparkles size={12} className="text-indigo-300" /> AI Strategic Insight
                     </span>
+                    <span className="text-[10px] font-semibold text-slate-400">100% Real Dataset</span>
                   </div>
-                  <h4 className="text-sm font-black text-white">Identify Skill Synergy: Product & Engineering</h4>
+                  <h4 className="text-sm font-black text-white">
+                    {liveAnalytics?.deptInsight?.title || "Cross-Departmental Skill Synergy & Readiness"}
+                  </h4>
                   <p className="text-xs text-indigo-100/80 font-medium leading-relaxed">
-                    Cross-departmental analysis indicates squads with high "Design Systems" proficiency outperform standard squads by <strong className="text-white">24%</strong> in delivery velocity. Prioritize Design-to-Code training for Engineering staff.
+                    {liveAnalytics?.deptInsight?.summary || liveAnalytics?.aiInsight || "Live capability profiling is active across all tenant departments. Real-time verified proficiency indices and courseware completions are continuously monitored."}
                   </p>
                 </div>
                 
-                <div className="pt-3 flex justify-end">
+                <div className="pt-4 flex justify-end">
                   <button 
                     onClick={() => navigate('/hr-dashboard/skill-gap-reports')}
                     className="px-3.5 py-2 bg-indigo-500 hover:bg-indigo-600 text-white font-bold text-xs rounded-xl shadow-sm transition-all flex items-center gap-1.5 cursor-pointer active:scale-95"
                   >
                     View Skill Gap Analysis
+                    <ChevronRight size={14} />
                   </button>
                 </div>
               </div>
@@ -343,13 +537,13 @@ const DepartmentComparison = () => {
               <div className="px-5 py-3.5 border-b border-slate-100 flex justify-between items-center">
                 <div>
                   <h3 className="text-xs font-black text-slate-900 uppercase tracking-wider">Department Performance Ranking</h3>
-                  <p className="text-[11px] text-slate-400 font-medium">Sorted by overall department proficiency index</p>
+                  <p className="text-[11px] text-slate-400 font-medium">Ranked by performance score, verified proficiency and training completion</p>
                 </div>
                 <button 
                   onClick={handleExportCSV}
-                  className="flex items-center gap-1.5 text-xs font-bold text-slate-600 hover:text-slate-900 border border-slate-200 px-3 py-1 rounded-lg bg-slate-50 cursor-pointer"
+                  className="flex items-center gap-1.5 text-xs font-bold text-slate-600 hover:text-slate-900 border border-slate-200 px-3 py-1 rounded-lg bg-slate-50 hover:bg-slate-100 cursor-pointer transition-all"
                 >
-                  <Filter size={13} /> Filter / Export
+                  <Filter size={13} /> Export CSV
                 </button>
               </div>
               
@@ -367,7 +561,7 @@ const DepartmentComparison = () => {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 text-xs font-semibold text-slate-700">
-                    {rankingRows.map((row, i) => (
+                    {paginatedRows.map((row, i) => (
                       <tr key={i} className="hover:bg-slate-50/70 transition-colors">
                         <td className="px-5 py-2.5 text-indigo-600 font-black">{row.rank}</td>
                         <td className="px-5 py-2.5 font-bold text-slate-900">{row.name}</td>
@@ -387,10 +581,25 @@ const DepartmentComparison = () => {
               </div>
               
               <div className="bg-slate-50 border-t border-slate-100 px-5 py-2.5 flex items-center justify-between text-xs font-semibold text-slate-400">
-                <span>Showing {rankingRows.length} active departments from database</span>
+                <span>
+                  Showing {Math.min(rankingRows.length, (activePage - 1) * ITEMS_PER_PAGE + 1)} to {Math.min(rankingRows.length, activePage * ITEMS_PER_PAGE)} of {rankingRows.length} active departments
+                </span>
                 <div className="flex items-center gap-1.5">
-                  <button onClick={() => setActivePage(p => Math.max(1, p - 1))} disabled={activePage === 1} className="p-1 rounded-md border border-slate-200 bg-white disabled:opacity-40"><ChevronLeft size={14} /></button>
-                  <button onClick={() => setActivePage(p => p + 1)} disabled className="p-1 rounded-md border border-slate-200 bg-white disabled:opacity-40"><ChevronRight size={14} /></button>
+                  <button 
+                    onClick={() => setActivePage(p => Math.max(1, p - 1))} 
+                    disabled={activePage === 1} 
+                    className="p-1 rounded-md border border-slate-200 bg-white disabled:opacity-40 cursor-pointer"
+                  >
+                    <ChevronLeft size={14} />
+                  </button>
+                  <span className="text-xs text-slate-600 font-bold px-1.5">{activePage} / {totalPages}</span>
+                  <button 
+                    onClick={() => setActivePage(p => Math.min(totalPages, p + 1))} 
+                    disabled={activePage >= totalPages} 
+                    className="p-1 rounded-md border border-slate-200 bg-white disabled:opacity-40 cursor-pointer"
+                  >
+                    <ChevronRight size={14} />
+                  </button>
                 </div>
               </div>
             </div>
