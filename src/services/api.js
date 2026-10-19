@@ -320,6 +320,11 @@ export const adminAPI = {
     apiRequest('/admin/integrations/sync', {
       method: 'POST',
     }),
+  validateIntegration: (id, payload) =>
+    apiRequest(`/admin/integrations/${id}/validate`, {
+      method: 'POST',
+      body: JSON.stringify(payload || {}),
+    }),
   syncHrisDirectory: (directory) =>
     apiRequest('/admin/integrations/hris/sync', {
       method: 'POST',
