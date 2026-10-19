@@ -284,6 +284,11 @@ export const adminAPI = {
       method: 'PATCH',
       body: JSON.stringify(configData),
     }),
+  updateOrganizationProfile: (data) =>
+    apiRequest('/admin/organization', {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    }),
   getAuditLogs: () => apiRequest('/admin/audit-logs'),
   getSecurityPolicies: () => apiRequest('/admin/security-policies'),
   updateSecurityPolicies: (policiesData) =>

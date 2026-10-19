@@ -18,7 +18,8 @@ import {
   Loader2,
   X,
   Binary,
-  Database
+  Layers,
+  Sparkles
 } from 'lucide-react';
 
 import CompanyAdminSidebar from './CompanyAdminSidebar';
@@ -36,8 +37,9 @@ const OrgSettingsAuditLogs = () => {
   const [activeTab, setActiveTab] = useState('settings');
   const [loadingLogs, setLoadingLogs] = useState(false);
   const [loadingOrg, setLoadingOrg] = useState(true);
+  const [savingOrg, setSavingOrg] = useState(false);
 
-  // Organization Form State (populated from backend)
+  // Organization Form State (populated from database)
   const [orgData, setOrgData] = useState({
     legalName: '',
     domain: '',
@@ -62,66 +64,60 @@ const OrgSettingsAuditLogs = () => {
   useEffect(() => {
     if (location.state?.planRestricted) {
       setIsUpgradeModalOpen(true);
-      // Clear state so it doesn't keep reopening on refresh
       window.history.replaceState({}, document.title, window.location.pathname);
     }
   }, [location.state]);
 
-  useEffect(() => {
-    const fetchOrgData = async () => {
-      setLoadingOrg(true);
-      try {
-        // Handle Stripe payment success verification
-        const urlParams = new URLSearchParams(window.location.search);
-        const sessionId = urlParams.get('session_id');
-        if (sessionId) {
-          const { paymentAPI, authAPI } = await import('../services/api');
-          const verifyRes = await paymentAPI.verifySession(sessionId);
-          if (verifyRes?.success) {
-            window.history.replaceState({}, document.title, window.location.pathname);
-            setSaveSuccess(true);
-            setTimeout(() => setSaveSuccess(false), 3000);
-            
-            // Fetch fresh user data to update plan in localStorage so Sidebar unlocks
-            try {
-              const meRes = await authAPI.getMe();
-              if (meRes?.success && meRes.user) {
-                localStorage.setItem('user', JSON.stringify(meRes.user));
-                // Force a custom event to re-render the sidebar immediately
-                window.dispatchEvent(new Event('user-updated'));
-              }
-            } catch(e) {
-              console.error('Failed to update local user state:', e);
+  const fetchOrgData = async () => {
+    setLoadingOrg(true);
+    try {
+      // Handle Stripe payment success verification
+      const urlParams = new URLSearchParams(window.location.search);
+      const sessionId = urlParams.get('session_id');
+      if (sessionId) {
+        const { paymentAPI, authAPI } = await import('../services/api');
+        const verifyRes = await paymentAPI.verifySession(sessionId);
+        if (verifyRes?.success) {
+          window.history.replaceState({}, document.title, window.location.pathname);
+          setSaveSuccess(true);
+          setTimeout(() => setSaveSuccess(false), 3000);
+          
+          try {
+            const meRes = await authAPI.getMe();
+            if (meRes?.success && meRes.user) {
+              localStorage.setItem('user', JSON.stringify(meRes.user));
+              window.dispatchEvent(new Event('user-updated'));
             }
+          } catch(e) {
+            console.error('Failed to update local user state:', e);
           }
         }
-
-        const res = await adminAPI.getDashboard();
-        if (res?.success) {
-          const d = res.data;
-          setOrgData({
-            legalName: d.tenantName || '',
-            domain: '',
-            themeColor: '#6366F1',
-            maxSeats: d.maxUsers || 0,
-            activeSeats: d.activeUsersCount || 0,
-            subscriptionTier: d.plan || 'PRO'
-          });
-        }
-      } catch (err) {
-        console.warn('Failed to load org data:', err);
-      } finally {
-        setLoadingOrg(false);
       }
-    };
-    fetchOrgData();
-  }, []);
+
+      const res = await adminAPI.getDashboard();
+      if (res?.success && res.data) {
+        const d = res.data;
+        setOrgData({
+          legalName: d.tenantName || '',
+          domain: d.domain || d.slug || '',
+          themeColor: d.themeSettings?.primaryColor || '#6366F1',
+          maxSeats: d.maxUsers || 0,
+          activeSeats: d.activeUsersCount || 0,
+          subscriptionTier: d.plan || 'PRO'
+        });
+      }
+    } catch (err) {
+      console.warn('Failed to load org data:', err);
+    } finally {
+      setLoadingOrg(false);
+    }
+  };
 
   const fetchAuditLogs = async () => {
     setLoadingLogs(true);
     try {
       const res = await adminAPI.getAuditLogs();
-      if (res?.success) {
+      if (res?.success && res.data) {
         const mapped = res.data.map(log => ({
           id: `LOG-${log.id.slice(-4).toUpperCase()}`,
           user: log.user ? `${log.user.firstName} ${log.user.lastName} (${log.user.role})` : 'System',
@@ -141,11 +137,9 @@ const OrgSettingsAuditLogs = () => {
   };
 
   useEffect(() => {
-    if (activeTab === 'audit') {
-      fetchAuditLogs();
-    }
-  }, [activeTab]);
-
+    fetchOrgData();
+    fetchAuditLogs();
+  }, []);
 
   const handleExportCSV = () => {
     if (filteredLogs.length === 0) return;
@@ -188,13 +182,28 @@ const OrgSettingsAuditLogs = () => {
     setIsExportModalOpen(false);
   };
 
-  // Handle Org Settings Form Save
-  const handleSaveOrgSettings = (e) => {
+  // Handle Org Settings Form Save with real API call
+  const handleSaveOrgSettings = async (e) => {
     e.preventDefault();
-    setSaveSuccess(true);
-    setTimeout(() => {
-      setSaveSuccess(false);
-    }, 2500);
+    setSavingOrg(true);
+    try {
+      const res = await adminAPI.updateOrganizationProfile({
+        legalName: orgData.legalName,
+        domain: orgData.domain,
+        themeColor: orgData.themeColor
+      });
+      if (res?.success) {
+        setSaveSuccess(true);
+        setTimeout(() => {
+          setSaveSuccess(false);
+        }, 3000);
+        fetchOrgData();
+      }
+    } catch (err) {
+      console.warn('Failed to update organization profile:', err);
+    } finally {
+      setSavingOrg(false);
+    }
   };
 
   // Filter Audit Logs
@@ -206,6 +215,8 @@ const OrgSettingsAuditLogs = () => {
     return matchesSearch && matchesSeverity;
   });
 
+  const seatUsagePercentage = orgData.maxSeats > 0 ? Math.round((orgData.activeSeats / orgData.maxSeats) * 100) : 0;
+
   return (
     <div className="flex min-h-screen bg-[#0B1120]">
       <CompanyAdminSidebar />
@@ -213,12 +224,22 @@ const OrgSettingsAuditLogs = () => {
       <main className="flex-1 text-slate-100 p-8 pl-80 font-sans">
         
         {/* Page Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4 border-b border-slate-800/80 pb-6">
+        <motion.div 
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.35 }}
+          className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4 border-b border-slate-800/80 pb-6"
+        >
           <div>
-            <h1 className="text-3xl font-extrabold tracking-tight text-white flex items-center gap-3">
-              Organization Settings & Audit Logs
-            </h1>
-            <p className="text-slate-400 text-sm mt-1">
+            <div className="flex items-center gap-3">
+              <div className="p-2.5 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400">
+                <Building2 className="w-6 h-6" />
+              </div>
+              <h1 className="text-3xl font-extrabold tracking-tight text-white">
+                Organization Settings & Audit Logs
+              </h1>
+            </div>
+            <p className="text-slate-400 text-sm mt-1.5 ml-12">
               Manage enterprise branding, subscription usage, and monitor tenant audit activity trails.
             </p>
           </div>
@@ -229,7 +250,7 @@ const OrgSettingsAuditLogs = () => {
               onClick={() => setActiveTab('settings')}
               className={`px-4 py-2 rounded-lg text-xs font-semibold transition-all ${
                 activeTab === 'settings' 
-                  ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20' 
+                  ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/30' 
                   : 'text-slate-400 hover:text-white'
               }`}
             >
@@ -239,34 +260,140 @@ const OrgSettingsAuditLogs = () => {
               onClick={() => setActiveTab('audit')}
               className={`px-4 py-2 rounded-lg text-xs font-semibold transition-all ${
                 activeTab === 'audit' 
-                  ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20' 
+                  ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/30' 
                   : 'text-slate-400 hover:text-white'
               }`}
             >
-              Audit Logs
+              Audit Logs ({auditLogs.length})
             </button>
           </div>
+        </motion.div>
+
+        {/* Live Framework KPI Metrics */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+          <motion.div 
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35, delay: 0.05 }}
+            whileHover={{ y: -4, borderColor: "rgba(99, 102, 241, 0.4)" }}
+            className="p-5 rounded-2xl bg-gradient-to-b from-[#131D31] to-[#0F172A] border border-slate-800/80 shadow-xl relative overflow-hidden transition-all duration-300 group"
+          >
+            <div className="absolute top-0 right-0 w-24 h-24 bg-indigo-500/5 rounded-full blur-2xl group-hover:bg-indigo-500/10 transition-colors" />
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Seats Allocated</span>
+              <div className="p-2 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 group-hover:scale-110 transition-transform">
+                <User className="w-4 h-4" />
+              </div>
+            </div>
+            <p className="text-3xl font-extrabold text-white mt-3 tracking-tight">
+              {orgData.activeSeats} <span className="text-sm font-semibold text-slate-400">/ {orgData.maxSeats}</span>
+            </p>
+            <div className="w-full bg-slate-800 rounded-full h-1.5 mt-2.5 overflow-hidden">
+              <motion.div 
+                initial={{ width: 0 }}
+                animate={{ width: `${seatUsagePercentage}%` }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                className="bg-indigo-500 h-1.5 rounded-full"
+              />
+            </div>
+          </motion.div>
+
+          <motion.div 
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35, delay: 0.1 }}
+            whileHover={{ y: -4, borderColor: "rgba(168, 85, 247, 0.4)" }}
+            className="p-5 rounded-2xl bg-gradient-to-b from-[#131D31] to-[#0F172A] border border-slate-800/80 shadow-xl relative overflow-hidden transition-all duration-300 group"
+          >
+            <div className="absolute top-0 right-0 w-24 h-24 bg-purple-500/5 rounded-full blur-2xl group-hover:bg-purple-500/10 transition-colors" />
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Active Plan</span>
+              <div className="p-2 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-400 group-hover:scale-110 transition-transform">
+                <CreditCard className="w-4 h-4" />
+              </div>
+            </div>
+            <p className="text-3xl font-extrabold text-purple-400 mt-3 tracking-tight">
+              {orgData.subscriptionTier || 'PRO'}
+            </p>
+            <p className="text-[11px] text-slate-400 mt-1 flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-purple-400"></span> Enterprise SLA Active
+            </p>
+          </motion.div>
+
+          <motion.div 
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35, delay: 0.15 }}
+            whileHover={{ y: -4, borderColor: "rgba(16, 185, 129, 0.4)" }}
+            className="p-5 rounded-2xl bg-gradient-to-b from-[#131D31] to-[#0F172A] border border-slate-800/80 shadow-xl relative overflow-hidden transition-all duration-300 group"
+          >
+            <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/5 rounded-full blur-2xl group-hover:bg-emerald-500/10 transition-colors" />
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Audit Records</span>
+              <div className="p-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 group-hover:scale-110 transition-transform">
+                <FileText className="w-4 h-4" />
+              </div>
+            </div>
+            <p className="text-3xl font-extrabold text-emerald-400 mt-3 tracking-tight">
+              {auditLogs.length}
+            </p>
+            <p className="text-[11px] text-slate-400 mt-1 flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Tracked compliance events
+            </p>
+          </motion.div>
+
+          <motion.div 
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35, delay: 0.2 }}
+            whileHover={{ y: -4, borderColor: "rgba(56, 189, 248, 0.4)" }}
+            className="p-5 rounded-2xl bg-gradient-to-b from-[#131D31] to-[#0F172A] border border-slate-800/80 shadow-xl relative overflow-hidden transition-all duration-300 group"
+          >
+            <div className="absolute top-0 right-0 w-24 h-24 bg-sky-500/5 rounded-full blur-2xl group-hover:bg-sky-500/10 transition-colors" />
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Tenant Domain</span>
+              <div className="p-2 rounded-xl bg-sky-500/10 border border-sky-500/20 text-sky-400 group-hover:scale-110 transition-transform">
+                <Globe className="w-4 h-4" />
+              </div>
+            </div>
+            <p className="text-xl font-bold text-sky-400 mt-3 tracking-tight truncate">
+              {orgData.domain || 'apextech'}
+            </p>
+            <p className="text-[11px] text-slate-400 mt-1 flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-sky-400"></span> Workspace subdomain
+            </p>
+          </motion.div>
         </div>
 
         {/* Tab 1: Organization Settings */}
         {activeTab === 'settings' && (
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6 max-w-5xl">
             
-            {saveSuccess && (
-              <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex items-center gap-3 text-sm font-medium">
-                <CheckCircle2 className="w-5 h-5 shrink-0" />
-                Organization parameters updated successfully!
-              </div>
-            )}
+            <AnimatePresence>
+              {saveSuccess && (
+                <motion.div 
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex items-center gap-3 text-sm font-medium"
+                >
+                  <CheckCircle2 className="w-5 h-5 shrink-0" />
+                  Organization profile and settings updated successfully in workspace!
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             {/* License Overview */}
-            <div className="p-6 rounded-2xl bg-[#0F172A] border border-slate-800/80 shadow-xl flex flex-col md:flex-row items-center justify-between gap-6">
+            <motion.div 
+              whileHover={{ y: -2 }}
+              className="p-6 rounded-2xl bg-[#0F172A] border border-slate-800/80 shadow-xl flex flex-col md:flex-row items-center justify-between gap-6"
+            >
               <div className="flex items-center gap-4">
                 <div className="p-3.5 rounded-2xl bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
                   <CreditCard className="w-7 h-7" />
                 </div>
                 <div>
-                  <h3 className="text-base font-bold text-white">{orgData.subscriptionTier}</h3>
+                  <h3 className="text-base font-bold text-white">{orgData.subscriptionTier} Plan</h3>
                   <p className="text-xs text-slate-400 mt-0.5">Enterprise SLA & Priority AI Model Compute Active</p>
                 </div>
               </div>
@@ -277,16 +404,18 @@ const OrgSettingsAuditLogs = () => {
                   <p className="text-xl font-extrabold text-white mt-0.5">{orgData.activeSeats} / {orgData.maxSeats}</p>
                 </div>
                 <div className="w-24 bg-slate-800 h-2 rounded-full overflow-hidden mr-4">
-                  <div className="bg-indigo-500 h-full rounded-full" style={{ width: `${(orgData.activeSeats / orgData.maxSeats) * 100}%` }} />
+                  <div className="bg-indigo-500 h-full rounded-full" style={{ width: `${seatUsagePercentage}%` }} />
                 </div>
-                <button
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                   onClick={() => setIsUpgradeModalOpen(true)}
-                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold rounded-xl shadow-lg shadow-indigo-600/20 transition-all shrink-0"
+                  className="px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white text-xs font-semibold rounded-xl shadow-lg shadow-indigo-600/30 transition-all shrink-0"
                 >
                   Upgrade Plan
-                </button>
+                </motion.button>
               </div>
-            </div>
+            </motion.div>
 
             {/* Organization Form */}
             <form onSubmit={handleSaveOrgSettings} className="p-6 rounded-2xl bg-[#0F172A] border border-slate-800/80 shadow-xl space-y-6">
@@ -306,14 +435,14 @@ const OrgSettingsAuditLogs = () => {
                   <input
                     type="text"
                     required
-                    value={orgData.companyName}
-                    onChange={(e) => setOrgData({ ...orgData, companyName: e.target.value })}
+                    value={orgData.legalName}
+                    onChange={(e) => setOrgData({ ...orgData, legalName: e.target.value })}
                     className="w-full px-3.5 py-2.5 bg-[#1E293B] border border-slate-700 rounded-xl text-xs text-slate-200 focus:outline-none focus:border-indigo-500"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold uppercase text-slate-300 mb-1.5">Primary Domain</label>
+                  <label className="block text-xs font-semibold uppercase text-slate-300 mb-1.5">Primary Domain / Subdomain</label>
                   <div className="relative">
                     <Globe className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
                     <input
@@ -331,14 +460,14 @@ const OrgSettingsAuditLogs = () => {
                   <div className="flex items-center gap-3">
                     <input
                       type="color"
-                      value={orgData.primaryColor}
-                      onChange={(e) => setOrgData({ ...orgData, primaryColor: e.target.value })}
+                      value={orgData.themeColor}
+                      onChange={(e) => setOrgData({ ...orgData, themeColor: e.target.value })}
                       className="w-10 h-10 rounded-xl border border-slate-700 bg-transparent cursor-pointer p-1"
                     />
                     <input
                       type="text"
-                      value={orgData.primaryColor}
-                      onChange={(e) => setOrgData({ ...orgData, primaryColor: e.target.value })}
+                      value={orgData.themeColor}
+                      onChange={(e) => setOrgData({ ...orgData, themeColor: e.target.value })}
                       className="w-full px-3.5 py-2.5 bg-[#1E293B] border border-slate-700 rounded-xl text-xs text-slate-200 font-mono focus:outline-none focus:border-indigo-500"
                     />
                   </div>
@@ -347,13 +476,23 @@ const OrgSettingsAuditLogs = () => {
 
               <div className="pt-4 border-t border-slate-800 flex justify-end">
                 <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
+                  disabled={savingOrg || loadingOrg}
                   type="submit"
-                  className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold shadow-lg shadow-indigo-600/20 transition-all duration-200"
+                  className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white text-sm font-semibold shadow-lg shadow-indigo-600/30 transition-all duration-200 disabled:opacity-50"
                 >
-                  <Save className="w-4 h-4" />
-                  Save Organization Settings
+                  {savingOrg ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Saving Settings...
+                    </>
+                  ) : (
+                    <>
+                      <Save className="w-4 h-4" />
+                      Save Organization Settings
+                    </>
+                  )}
                 </motion.button>
               </div>
             </form>
@@ -394,20 +533,22 @@ const OrgSettingsAuditLogs = () => {
                   </select>
                 </div>
 
-                <button
+                <motion.button
+                  whileHover={{ scale: 1.04 }}
+                  whileTap={{ scale: 0.96 }}
                   onClick={() => setIsExportModalOpen(true)}
                   className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-[#1E293B] hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-semibold transition-all shrink-0"
                 >
                   <Download className="w-4 h-4 text-slate-400" />
                   Export Logs
-                </button>
+                </motion.button>
               </div>
             </div>
 
             {loadingLogs ? (
               <div className="flex flex-col items-center justify-center py-20 space-y-4">
                 <Loader2 className="w-8 h-8 animate-spin text-indigo-500" />
-                <p className="text-sm font-semibold text-slate-400">Loading audit trail from database...</p>
+                <p className="text-sm font-semibold text-slate-400">Loading audit activity trail...</p>
               </div>
             ) : (
             /* Audit Trail Table */
@@ -495,7 +636,7 @@ const OrgSettingsAuditLogs = () => {
                     <Binary className="w-4 h-4 text-slate-400" /> Download as CSV
                   </button>
                   <button onClick={handleExportJSON} className="w-full py-3 bg-[#1E293B] hover:bg-[#2A374A] border border-slate-700/50 rounded-xl text-sm font-medium text-slate-200 transition-colors flex items-center justify-center gap-2">
-                    <Database className="w-4 h-4 text-slate-400" /> Download as JSON
+                    <FileText className="w-4 h-4 text-slate-400" /> Download as JSON
                   </button>
                 </div>
                 <button onClick={() => setIsExportModalOpen(false)} className="absolute top-4 right-4 text-slate-500 hover:text-slate-300">
