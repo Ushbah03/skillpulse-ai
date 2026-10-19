@@ -20,7 +20,8 @@ import {
   Edit3, 
   Briefcase,
   Layers,
-  Sparkles
+  Sparkles,
+  Lock
 } from 'lucide-react';
 import SuperadminSidebar from './SuperadminSidebar';
 import { adminAPI } from '../services/api';
@@ -42,7 +43,7 @@ const UserManagement = () => {
   const [selectedRole, setSelectedRole] = useState('ALL');
   const [selectedTenant, setSelectedTenant] = useState('ALL');
   const [selectedStatus, setSelectedStatus] = useState('ALL');
-  const [toastMsg, setToastMsg] = useState('');
+  const [toastMsg, setToastMsg] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Edit User State
@@ -85,29 +86,37 @@ const UserManagement = () => {
         adminAPI.getTenants()
       ]);
 
+      let loadedTenants = [];
       if (tenantsRes?.success && tenantsRes.data) {
-        setTenants(tenantsRes.data);
-        if (tenantsRes.data.length > 0 && !newUser.tenantId) {
-          setNewUser(prev => ({ ...prev, tenantId: tenantsRes.data[0].id }));
+        loadedTenants = tenantsRes.data;
+        setTenants(loadedTenants);
+        if (loadedTenants.length > 0 && !newUser.tenantId) {
+          setNewUser(prev => ({ ...prev, tenantId: loadedTenants[0].id }));
         }
       }
 
       if (usersRes?.success && usersRes.data) {
-        const mapped = usersRes.data.map(u => ({
-          id: u.id,
-          firstName: u.firstName || '',
-          lastName: u.lastName || '',
-          name: `${u.firstName || ''} ${u.lastName || ''}`.trim() || u.email,
-          email: u.email,
-          tenantId: u.tenantId,
-          tenant: u.tenant?.name || 'Platform (Global)',
-          tenantSlug: u.tenant?.slug || '',
-          department: u.department?.name || 'Unassigned',
-          skillsCount: u._count?.skills || 0,
-          role: u.role,
-          status: u.status || 'ACTIVE',
-          jobTitle: u.jobTitle || u.role.replace('_', ' ')
-        }));
+        const mapped = usersRes.data.map(u => {
+          // Resolve tenant plan from tenant object or lookup
+          const tenantInfo = loadedTenants.find(t => t.id === u.tenantId);
+          const tenantPlan = u.tenant?.plan || tenantInfo?.plan || 'STARTER';
+          return {
+            id: u.id,
+            firstName: u.firstName || '',
+            lastName: u.lastName || '',
+            name: `${u.firstName || ''} ${u.lastName || ''}`.trim() || u.email,
+            email: u.email,
+            tenantId: u.tenantId,
+            tenant: u.tenant?.name || tenantInfo?.name || 'Platform (Global)',
+            tenantSlug: u.tenant?.slug || tenantInfo?.slug || '',
+            tenantPlan: tenantPlan,
+            department: u.department?.name || 'Unassigned',
+            skillsCount: u._count?.skills || 0,
+            role: u.role,
+            status: u.status || 'ACTIVE',
+            jobTitle: u.jobTitle || u.role.replace('_', ' ')
+          };
+        });
         setUsers(mapped);
       }
     } catch (err) {
@@ -121,9 +130,9 @@ const UserManagement = () => {
     loadData();
   }, []);
 
-  const showToast = (msg) => {
-    setToastMsg(msg);
-    setTimeout(() => setToastMsg(''), 4000);
+  const showToast = (text, type = 'success') => {
+    setToastMsg({ text, type });
+    setTimeout(() => setToastMsg(null), 4500);
   };
 
   // Status Update Handler (Active / Inactive / Approve)
@@ -133,9 +142,11 @@ const UserManagement = () => {
       if (res?.success) {
         showToast(`Account status updated to ${newStatus}`);
         setUsers(prev => prev.map(u => u.id === userId ? { ...u, status: newStatus } : u));
+      } else {
+        showToast(res?.message || 'Failed to update status', 'error');
       }
     } catch (err) {
-      console.error('Status update error:', err);
+      showToast(err.message || 'Status update error', 'error');
     }
   };
 
@@ -147,9 +158,11 @@ const UserManagement = () => {
       if (res?.success) {
         showToast(`User ${userEmail} deleted successfully.`);
         setUsers(prev => prev.filter(u => u.id !== userId));
+      } else {
+        showToast(res?.message || 'Failed to delete user', 'error');
       }
     } catch (err) {
-      console.error('Delete user error:', err);
+      showToast(err.message || 'Delete user error', 'error');
     }
   };
 
@@ -166,10 +179,26 @@ const UserManagement = () => {
     });
   };
 
+  // Helper to check if a role is allowed for a given package
+  const isRoleAllowedByPlan = (roleName, plan) => {
+    const normalized = (plan || 'STARTER').toUpperCase();
+    if (['HR_MANAGER', 'TEAM_LEADER'].includes(roleName)) {
+      return normalized !== 'STARTER';
+    }
+    return true;
+  };
+
   // Save User Details & Role
   const handleSaveUserEdits = async (e) => {
     e.preventDefault();
     if (!editingUser) return;
+
+    // Client-side package validation
+    if (!isRoleAllowedByPlan(editForm.role, editingUser.tenantPlan)) {
+      showToast(`Cannot assign ${editForm.role}: The company's ${editingUser.tenantPlan} package does not include this leadership role.`, 'error');
+      return;
+    }
+
     setUpdatingUser(true);
     try {
       const res = await adminAPI.updateUserRole(editingUser.id, {
@@ -182,20 +211,49 @@ const UserManagement = () => {
       });
 
       if (res?.success) {
-        showToast(`User ${editingUser.email} updated successfully!`);
+        showToast(`User ${editingUser.email} profile & role updated successfully!`);
         setEditingUser(null);
         await loadData();
+      } else {
+        showToast(res?.message || 'Failed to update user', 'error');
       }
     } catch (err) {
-      console.error('Update user error:', err);
+      showToast(err.message || 'Update user error', 'error');
     } finally {
       setUpdatingUser(false);
     }
   };
 
+  // Handle Workspace Change in Provision Form
+  const handleTenantChangeInProvision = (targetTenantId) => {
+    const targetTenant = tenants.find(t => t.id === targetTenantId);
+    const targetPlan = targetTenant?.plan || 'STARTER';
+
+    // If switching to Starter and role was HR_MANAGER or TEAM_LEADER, reset to EMPLOYEE
+    let updatedRole = newUser.role;
+    if (!isRoleAllowedByPlan(updatedRole, targetPlan)) {
+      updatedRole = 'EMPLOYEE';
+    }
+
+    setNewUser(prev => ({
+      ...prev,
+      tenantId: targetTenantId,
+      role: updatedRole
+    }));
+  };
+
   // Create User Handler
   const handleCreateUser = async (e) => {
     e.preventDefault();
+
+    const targetTenant = tenants.find(t => t.id === newUser.tenantId);
+    const targetPlan = targetTenant?.plan || 'STARTER';
+
+    if (!isRoleAllowedByPlan(newUser.role, targetPlan)) {
+      showToast(`The selected workspace (${targetTenant?.name}) is on ${targetPlan} plan which does not permit ${newUser.role}.`, 'error');
+      return;
+    }
+
     setSaving(true);
     try {
       const fullName = `${newUser.firstName} ${newUser.lastName}`.trim();
@@ -221,9 +279,11 @@ const UserManagement = () => {
           tenantId: tenants[0]?.id || ''
         });
         await loadData();
+      } else {
+        showToast(res?.message || 'Failed to create user', 'error');
       }
     } catch (err) {
-      console.error('Create user error:', err);
+      showToast(err.message || 'Create user error', 'error');
     } finally {
       setSaving(false);
     }
@@ -243,6 +303,10 @@ const UserManagement = () => {
 
     return matchesSearch && matchesRole && matchesTenant && matchesStatus;
   });
+
+  // Selected provision workspace plan
+  const provisionTargetTenant = tenants.find(t => t.id === newUser.tenantId);
+  const provisionTargetPlan = provisionTargetTenant?.plan || 'PRO';
 
   // Animation variants
   const containerVariants = {
@@ -270,10 +334,18 @@ const UserManagement = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
-            className="fixed bottom-8 right-8 z-50 bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3 border border-indigo-400/30"
+            className={`fixed bottom-8 right-8 z-50 px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3 border ${
+              toastMsg.type === 'error'
+                ? 'bg-rose-950/90 border-rose-500/40 text-rose-200'
+                : 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white border-indigo-400/30'
+            }`}
           >
-            <CheckCircle2 className="w-5 h-5 text-emerald-300 shrink-0" />
-            <span className="font-semibold text-sm">{toastMsg}</span>
+            {toastMsg.type === 'error' ? (
+              <AlertTriangle className="w-5 h-5 text-rose-400 shrink-0" />
+            ) : (
+              <CheckCircle2 className="w-5 h-5 text-emerald-300 shrink-0" />
+            )}
+            <span className="font-semibold text-sm">{toastMsg.text}</span>
           </motion.div>
         )}
       </AnimatePresence>
@@ -297,7 +369,7 @@ const UserManagement = () => {
               </span>
             </div>
             <p className="text-slate-400 text-sm mt-1">
-              Cross-tenant identity governance: provision accounts, assign role permissions, update profiles, and manage access.
+              Cross-tenant identity governance: provision accounts, assign plan-restricted roles, and manage credentials.
             </p>
           </div>
 
@@ -474,6 +546,7 @@ const UserManagement = () => {
                   <tr>
                     <th className="px-6 py-4">User Identity</th>
                     <th className="px-6 py-4">Workspace / Dept</th>
+                    <th className="px-6 py-4">Company Package</th>
                     <th className="px-6 py-4">Assigned Role</th>
                     <th className="px-6 py-4">Account Status</th>
                     <th className="px-6 py-4 text-right">Actions &amp; RBAC</th>
@@ -520,6 +593,18 @@ const UserManagement = () => {
                               )}
                             </span>
                           </div>
+                        </td>
+
+                        <td className="px-6 py-4">
+                          <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[11px] font-bold border ${
+                            u.tenantPlan === 'ENTERPRISE' || u.tenantPlan === 'Enterprise AI'
+                              ? 'bg-purple-500/10 text-purple-300 border-purple-500/20'
+                              : u.tenantPlan === 'PRO' || u.tenantPlan === 'Professional'
+                              ? 'bg-indigo-500/10 text-indigo-300 border-indigo-500/20'
+                              : 'bg-slate-700/30 text-amber-300/80 border-amber-500/20'
+                          }`}>
+                            {u.tenantPlan}
+                          </span>
                         </td>
 
                         <td className="px-6 py-4">
@@ -603,7 +688,7 @@ const UserManagement = () => {
                     ))
                   ) : (
                     <tr>
-                      <td colSpan="5" className="text-center py-12 text-slate-500 text-sm">
+                      <td colSpan="6" className="text-center py-12 text-slate-500 text-sm">
                         No users found matching active filters.
                       </td>
                     </tr>
@@ -632,13 +717,31 @@ const UserManagement = () => {
                   </div>
                   <div>
                     <h2 className="text-lg font-bold text-white">Edit User &amp; Role Assignment</h2>
-                    <p className="text-xs text-slate-400">{editingUser.email} • {editingUser.tenant}</p>
+                    <p className="text-xs text-slate-400 flex items-center gap-1.5 mt-0.5">
+                      <span>{editingUser.email}</span>
+                      <span>•</span>
+                      <span className="font-semibold text-indigo-300">{editingUser.tenant}</span>
+                      <span className="px-1.5 py-0.2 rounded bg-slate-800 text-[10px] font-mono text-amber-300/90 border border-slate-700">
+                        {editingUser.tenantPlan} Plan
+                      </span>
+                    </p>
                   </div>
                 </div>
                 <button onClick={() => setEditingUser(null)} className="text-slate-400 hover:text-white">
                   <X className="w-5 h-5" />
                 </button>
               </div>
+
+              {/* Package restriction notice */}
+              {editingUser.tenantPlan?.toUpperCase() === 'STARTER' && (
+                <div className="mt-4 p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl text-xs text-amber-300 flex items-start gap-2.5">
+                  <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+                  <div>
+                    <span className="font-bold block">Company Plan Restriction Active:</span>
+                    This user's organization is on the <span className="font-bold underline">STARTER</span> package. Multi-tier leadership roles (Team Leader &amp; HR Manager) are locked according to company subscription.
+                  </div>
+                </div>
+              )}
 
               <form onSubmit={handleSaveUserEdits} className="mt-5 space-y-4">
                 <div className="grid grid-cols-2 gap-4">
@@ -698,10 +801,29 @@ const UserManagement = () => {
                       className="w-full px-3.5 py-2.5 bg-[#1E293B] border border-slate-700 rounded-xl text-xs text-slate-200 focus:outline-none focus:border-indigo-500 cursor-pointer font-semibold"
                     >
                       <option value="EMPLOYEE">Employee</option>
-                      <option value="TEAM_LEADER">Team Leader</option>
-                      <option value="HR_MANAGER">HR Manager</option>
                       <option value="COMPANY_ADMIN">Company Admin</option>
-                      <option value="SUPER_ADMIN">Super Admin</option>
+
+                      {/* Premium Roles locked if plan is STARTER */}
+                      {isRoleAllowedByPlan('TEAM_LEADER', editingUser.tenantPlan) ? (
+                        <option value="TEAM_LEADER">Team Leader</option>
+                      ) : (
+                        <option value="TEAM_LEADER" disabled>
+                          🔒 Team Leader (Requires Pro / Enterprise)
+                        </option>
+                      )}
+
+                      {isRoleAllowedByPlan('HR_MANAGER', editingUser.tenantPlan) ? (
+                        <option value="HR_MANAGER">HR Manager</option>
+                      ) : (
+                        <option value="HR_MANAGER" disabled>
+                          🔒 HR Manager (Requires Pro / Enterprise)
+                        </option>
+                      )}
+
+                      {/* Super Admin only for platform level accounts */}
+                      {!editingUser.tenantId && (
+                        <option value="SUPER_ADMIN">Super Admin (Platform Level)</option>
+                      )}
                     </select>
                   </div>
 
@@ -759,13 +881,25 @@ const UserManagement = () => {
                   </div>
                   <div>
                     <h2 className="text-lg font-bold text-white">Provision New User Account</h2>
-                    <p className="text-xs text-slate-400">Create user under specific client workspace.</p>
+                    <p className="text-xs text-slate-400">
+                      Create user under specific client workspace ({provisionTargetPlan} Plan).
+                    </p>
                   </div>
                 </div>
                 <button onClick={() => setIsModalOpen(false)} className="text-slate-400 hover:text-white">
                   <X className="w-5 h-5" />
                 </button>
               </div>
+
+              {provisionTargetPlan?.toUpperCase() === 'STARTER' && (
+                <div className="mt-4 p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl text-xs text-amber-300 flex items-start gap-2.5">
+                  <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+                  <div>
+                    <span className="font-bold block">Starter Package Selected:</span>
+                    The chosen workspace is on the Starter package. Team Leader and HR Manager roles are disabled.
+                  </div>
+                </div>
+              )}
 
               <form onSubmit={handleCreateUser} className="mt-5 space-y-4">
                 <div className="grid grid-cols-2 gap-4">
@@ -824,11 +958,13 @@ const UserManagement = () => {
                     <label className="block text-xs font-semibold uppercase text-slate-400 mb-1">Target Workspace</label>
                     <select
                       value={newUser.tenantId}
-                      onChange={(e) => setNewUser({ ...newUser, tenantId: e.target.value })}
+                      onChange={(e) => handleTenantChangeInProvision(e.target.value)}
                       className="w-full px-3 py-2 bg-[#1E293B] border border-slate-700 rounded-xl text-xs text-slate-200 focus:outline-none focus:border-indigo-500 cursor-pointer font-semibold"
                     >
                       {tenants.map(t => (
-                        <option key={t.id} value={t.id}>{t.name}</option>
+                        <option key={t.id} value={t.id}>
+                          {t.name} ({t.plan || 'PRO'})
+                        </option>
                       ))}
                     </select>
                   </div>
@@ -841,10 +977,19 @@ const UserManagement = () => {
                       className="w-full px-3 py-2 bg-[#1E293B] border border-slate-700 rounded-xl text-xs text-slate-200 focus:outline-none focus:border-indigo-500 cursor-pointer font-semibold"
                     >
                       <option value="EMPLOYEE">Employee</option>
-                      <option value="TEAM_LEADER">Team Leader</option>
-                      <option value="HR_MANAGER">HR Manager</option>
                       <option value="COMPANY_ADMIN">Company Admin</option>
-                      <option value="SUPER_ADMIN">Super Admin</option>
+
+                      {isRoleAllowedByPlan('TEAM_LEADER', provisionTargetPlan) ? (
+                        <option value="TEAM_LEADER">Team Leader</option>
+                      ) : (
+                        <option value="TEAM_LEADER" disabled>🔒 Team Leader (Requires Pro+)</option>
+                      )}
+
+                      {isRoleAllowedByPlan('HR_MANAGER', provisionTargetPlan) ? (
+                        <option value="HR_MANAGER">HR Manager</option>
+                      ) : (
+                        <option value="HR_MANAGER" disabled>🔒 HR Manager (Requires Pro+)</option>
+                      )}
                     </select>
                   </div>
                 </div>
