@@ -4,7 +4,6 @@ import {
   ShieldCheck, 
   Lock, 
   Key, 
-  Globe, 
   Clock, 
   Save, 
   CheckCircle2, 
@@ -27,8 +26,6 @@ const SecurityAccessPolicies = () => {
   const [ssoEnforced, setSsoEnforced] = useState(false);
   const [mfaRequirement, setMfaRequirement] = useState('optional'); // 'all' | 'admins' | 'optional'
   const [sessionTimeout, setSessionTimeout] = useState('60'); // minutes
-  const [ipWhitelistingEnabled, setIpWhitelistingEnabled] = useState(false);
-  const [whitelistedIPs, setWhitelistedIPs] = useState('');
   const [passwordMinLength, setPasswordMinLength] = useState(8);
   const [requireSpecialChar, setRequireSpecialChar] = useState(true);
   const [auditLogRetentionDays, setAuditLogRetentionDays] = useState(90);
@@ -44,8 +41,6 @@ const SecurityAccessPolicies = () => {
           if (d.ssoEnforced !== undefined) setSsoEnforced(d.ssoEnforced);
           if (d.mfaRequirement) setMfaRequirement(d.mfaRequirement);
           if (d.sessionTimeout) setSessionTimeout(String(d.sessionTimeout));
-          if (d.ipWhitelistingEnabled !== undefined) setIpWhitelistingEnabled(d.ipWhitelistingEnabled);
-          if (d.whitelistedIPs !== undefined) setWhitelistedIPs(d.whitelistedIPs);
           if (d.passwordMinLength) setPasswordMinLength(d.passwordMinLength);
           if (d.requireSpecialChar !== undefined) setRequireSpecialChar(d.requireSpecialChar);
           if (d.auditLogRetentionDays) setAuditLogRetentionDays(d.auditLogRetentionDays);
@@ -68,8 +63,6 @@ const SecurityAccessPolicies = () => {
         ssoEnforced,
         mfaRequirement,
         sessionTimeout,
-        ipWhitelistingEnabled,
-        whitelistedIPs,
         passwordMinLength,
         requireSpecialChar,
         auditLogRetentionDays
@@ -90,10 +83,10 @@ const SecurityAccessPolicies = () => {
 
   // Dynamic security posture calculation from actual active settings
   const complianceScore = Math.min(100, (
-    (passwordMinLength >= 12 ? 25 : passwordMinLength >= 8 ? 15 : 5) +
+    (passwordMinLength >= 12 ? 30 : passwordMinLength >= 8 ? 20 : 10) +
     (requireSpecialChar ? 25 : 0) +
     (Number(sessionTimeout) <= 60 ? 25 : Number(sessionTimeout) <= 120 ? 15 : 10) +
-    (mfaRequirement === 'all' ? 25 : mfaRequirement === 'admins' ? 20 : ipWhitelistingEnabled ? 15 : 10)
+    (mfaRequirement === 'all' ? 20 : mfaRequirement === 'admins' ? 15 : 5)
   ));
 
   return (
@@ -376,64 +369,11 @@ const SecurityAccessPolicies = () => {
             </div>
           </motion.div>
 
-          {/* Section 3: IP Whitelisting & Network Restrictions */}
+          {/* Section 3: Audit Data Retention */}
           <motion.div 
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3, delay: 0.2 }}
-            className="p-6 rounded-2xl bg-[#0F172A] border border-slate-800/80 shadow-xl space-y-6 relative overflow-hidden"
-          >
-            <div className="flex items-center gap-3 pb-4 border-b border-slate-800">
-              <div className="p-2.5 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/20">
-                <Globe className="w-5 h-5" />
-              </div>
-              <div>
-                <h2 className="text-lg font-bold text-white">Network & IP Whitelisting</h2>
-                <p className="text-xs text-slate-400">Restrict access to specific corporate IP ranges and VPN subnets.</p>
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between p-4 rounded-xl bg-[#1E293B]/50 border border-slate-800">
-              <div>
-                <h3 className="text-sm font-semibold text-white">Enable Corporate IP Restriction</h3>
-                <p className="text-xs text-slate-400">Block logins attempted outside authorized corporate IP subnets.</p>
-              </div>
-              <button
-                type="button"
-                onClick={() => setIpWhitelistingEnabled(!ipWhitelistingEnabled)}
-                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                  ipWhitelistingEnabled ? 'bg-indigo-600' : 'bg-slate-700'
-                }`}
-              >
-                <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                  ipWhitelistingEnabled ? 'translate-x-6' : 'translate-x-1'
-                }`} />
-              </button>
-            </div>
-
-            {ipWhitelistingEnabled && (
-              <motion.div 
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
-              >
-                <label className="block text-xs font-semibold uppercase text-slate-300 mb-1.5">Whitelisted Subnets / CIDR Blocks (Comma Separated)</label>
-                <textarea
-                  rows="3"
-                  value={whitelistedIPs}
-                  onChange={(e) => setWhitelistedIPs(e.target.value)}
-                  placeholder="Enter authorized IP addresses or CIDR blocks (e.g. 203.0.113.195, 10.0.0.0/16)"
-                  className="w-full px-3.5 py-2.5 bg-[#1E293B] border border-slate-700 rounded-xl text-xs text-slate-200 font-mono focus:outline-none focus:border-indigo-500"
-                />
-              </motion.div>
-            )}
-          </motion.div>
-
-          {/* Section 4: Audit Data Retention */}
-          <motion.div 
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, delay: 0.25 }}
             className="p-6 rounded-2xl bg-[#0F172A] border border-slate-800/80 shadow-xl space-y-6 relative overflow-hidden"
           >
             <div className="flex items-center gap-3 pb-4 border-b border-slate-800">
