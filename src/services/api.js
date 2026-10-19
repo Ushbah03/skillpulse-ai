@@ -288,6 +288,11 @@ export const adminAPI = {
       method: 'PATCH',
       body: JSON.stringify(configData),
     }),
+  testAIConnection: (testData) =>
+    apiRequest('/admin/ai-config/test-connection', {
+      method: 'POST',
+      body: JSON.stringify(testData || {}),
+    }),
   updateOrganizationProfile: (data) =>
     apiRequest('/admin/organization', {
       method: 'PATCH',

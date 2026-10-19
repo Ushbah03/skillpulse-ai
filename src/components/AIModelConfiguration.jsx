@@ -18,7 +18,9 @@ import {
   EyeOff,
   Bot,
   Zap,
-  Globe
+  Globe,
+  Activity,
+  AlertTriangle
 } from 'lucide-react';
 
 import SuperadminSidebar from './SuperadminSidebar';
@@ -74,6 +76,13 @@ const AIModelConfiguration = () => {
   );
   const [guardrailsStrictness, setGuardrailsStrictness] = useState('High');
   const [fallbackEnabled, setFallbackEnabled] = useState(true);
+  const [gapDetectionSensitivity, setGapDetectionSensitivity] = useState('strict');
+  const [skillInferenceThreshold, setSkillInferenceThreshold] = useState(0.75);
+
+  // Baseline Model Testing & Validation States (BRD 6.7.4 & Box 7 Draw.io)
+  const [testingConnection, setTestingConnection] = useState(false);
+  const [testResult, setTestResult] = useState(null);
+  const [testError, setTestError] = useState(null);
 
   const fetchConfig = async () => {
     setLoading(true);
@@ -92,8 +101,8 @@ const AIModelConfiguration = () => {
       if (res?.success && res.data && res.data.length > 0) {
         const active = res.data.find(c => c.isActive) || res.data[0];
         setConfigId(active.id);
-        setActiveModel(active.modelName || 'groq/compound');
-        setProvider(active.provider || 'Groq LPU Cloud (Free Tier)');
+        setActiveModel(active.modelName || 'openai/gpt-oss-120b');
+        setProvider(active.provider || 'Groq LPU Cloud');
         setVersion(active.version || '1.0.0');
         setTemperature(active.temperature ?? 0.2);
         setMaxTokens(active.maxTokens ?? 4096);
@@ -109,6 +118,8 @@ const AIModelConfiguration = () => {
           if (active.hyperparams.systemPrompt) setSystemPrompt(active.hyperparams.systemPrompt);
           if (active.hyperparams.guardrailsStrictness) setGuardrailsStrictness(active.hyperparams.guardrailsStrictness);
           if (active.hyperparams.fallbackEnabled !== undefined) setFallbackEnabled(active.hyperparams.fallbackEnabled);
+          if (active.hyperparams.gapDetectionSensitivity) setGapDetectionSensitivity(active.hyperparams.gapDetectionSensitivity);
+          if (active.hyperparams.skillInferenceThreshold !== undefined) setSkillInferenceThreshold(active.hyperparams.skillInferenceThreshold);
         }
       } else {
         setHasRecord(false);
@@ -126,6 +137,32 @@ const AIModelConfiguration = () => {
     fetchConfig();
   }, []);
 
+  const handleTestConnection = async () => {
+    setTestingConnection(true);
+    setTestResult(null);
+    setTestError(null);
+    try {
+      const res = await adminAPI.testAIConnection({
+        modelName: activeModel,
+        provider,
+        groqApiKey: groqApiKey.trim() || undefined,
+        openAiApiKey: openAiApiKey.trim() || undefined,
+        anthropicApiKey: anthropicApiKey.trim() || undefined,
+        geminiApiKey: geminiApiKey.trim() || undefined,
+        openRouterApiKey: openRouterApiKey.trim() || undefined
+      });
+      if (res?.success) {
+        setTestResult(res);
+      } else {
+        setTestError(res?.error || 'Inference baseline testing failed.');
+      }
+    } catch (err) {
+      setTestError(err.message || 'Failed to reach AI model endpoint.');
+    } finally {
+      setTestingConnection(false);
+    }
+  };
+
   const handleSaveConfig = async () => {
     setSaving(true);
     try {
@@ -134,13 +171,13 @@ const AIModelConfiguration = () => {
         systemPrompt,
         guardrailsStrictness,
         fallbackEnabled,
-        gapDetectionSensitivity: 'strict',
-        skillInferenceThreshold: 0.75
+        gapDetectionSensitivity,
+        skillInferenceThreshold: parseFloat(skillInferenceThreshold)
       };
 
       const payload = {
-        modelName: activeModel || 'groq/compound',
-        provider: provider || 'Groq LPU Cloud (Free Tier)',
+        modelName: activeModel || 'openai/gpt-oss-120b',
+        provider: provider || 'Groq LPU Cloud',
         version: version || '1.0.0',
         temperature: parseFloat(temperature) || 0.2,
         maxTokens: parseInt(maxTokens) || 4096,
@@ -203,30 +240,52 @@ const AIModelConfiguration = () => {
             )}
           </div>
 
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={handleSaveConfig}
-            disabled={saving || loading}
-            className="flex items-center gap-2 px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white text-sm font-bold shadow-lg shadow-indigo-600/20 transition-all shrink-0 cursor-pointer"
-          >
-            {saving ? (
-              <>
-                <Loader2 className="w-4 h-4 animate-spin" />
-                Updating Engine Config...
-              </>
-            ) : isSaved ? (
-              <>
-                <CheckCircle2 className="w-4 h-4 text-emerald-300" />
-                Settings Saved & Live
-              </>
-            ) : (
-              <>
-                <Save className="w-4 h-4" />
-                Save AI Engine Settings
-              </>
-            )}
-          </motion.button>
+          <div className="flex items-center gap-3">
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={handleTestConnection}
+              disabled={testingConnection || loading}
+              className="flex items-center gap-2 px-5 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700/80 disabled:opacity-50 text-white text-sm font-semibold shadow-lg shadow-black/20 transition-all shrink-0 cursor-pointer"
+            >
+              {testingConnection ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin text-emerald-400" />
+                  Testing Pipeline...
+                </>
+              ) : (
+                <>
+                  <Activity className="w-4 h-4 text-emerald-400" />
+                  Test AI Engine Connection
+                </>
+              )}
+            </motion.button>
+
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={handleSaveConfig}
+              disabled={saving || loading}
+              className="flex items-center gap-2 px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white text-sm font-bold shadow-lg shadow-indigo-600/20 transition-all shrink-0 cursor-pointer"
+            >
+              {saving ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Updating Engine Config...
+                </>
+              ) : isSaved ? (
+                <>
+                  <CheckCircle2 className="w-4 h-4 text-emerald-300" />
+                  Settings Saved & Live
+                </>
+              ) : (
+                <>
+                  <Save className="w-4 h-4" />
+                  Save AI Engine Settings
+                </>
+              )}
+            </motion.button>
+          </div>
         </div>
 
         {/* Loading / Empty States */}
@@ -237,20 +296,75 @@ const AIModelConfiguration = () => {
           </div>
         ) : (
         <>
+        {/* Live Baseline Test Results Banner (BRD 6.7.4 & Box 7 Draw.io) */}
+        {testResult && (
+          <motion.div
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-8 p-4 rounded-2xl bg-emerald-950/20 border border-emerald-500/30 flex flex-col md:flex-row items-start md:items-center justify-between gap-4"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0">
+                <CheckCircle className="w-5 h-5" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-bold text-emerald-400 uppercase tracking-wider font-mono">
+                    Baseline Integration Test: {testResult.status}
+                  </span>
+                  <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
+                    {testResult.latencyMs}ms Latency
+                  </span>
+                </div>
+                <p className="text-xs text-slate-300 mt-0.5">
+                  Live verification successful for <span className="font-mono text-white font-semibold">{testResult.model}</span> via <span className="text-indigo-300 font-semibold">{testResult.provider}</span>.
+                </p>
+              </div>
+            </div>
+            <div className="text-right text-[11px] font-mono text-slate-400 shrink-0">
+              Verified: {new Date(testResult.timestamp).toLocaleTimeString()}
+            </div>
+          </motion.div>
+        )}
+
+        {testError && (
+          <motion.div
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-8 p-4 rounded-2xl bg-rose-950/20 border border-rose-500/30 flex items-center justify-between gap-4 text-rose-300"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-rose-500/20 border border-rose-500/30 flex items-center justify-center text-rose-400 shrink-0">
+                <AlertTriangle className="w-5 h-5" />
+              </div>
+              <div>
+                <span className="text-xs font-bold text-rose-400 uppercase tracking-wider font-mono">Baseline Integration Diagnostic Failed</span>
+                <p className="text-xs text-slate-300 mt-0.5">{testError}</p>
+              </div>
+            </div>
+            <button
+              onClick={() => setTestError(null)}
+              className="text-xs text-slate-400 hover:text-white px-2 py-1 rounded cursor-pointer"
+            >
+              Dismiss
+            </button>
+          </motion.div>
+        )}
+
         {/* Active Engine Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-5 mb-8">
           <div className="p-5 rounded-2xl bg-[#0F172A] border border-slate-800/80 shadow-xl">
             <p className="text-xs text-slate-400 font-medium">Primary Active Model</p>
             <p className="text-lg font-extrabold text-white mt-1 uppercase flex items-center gap-2 truncate">
               <Sparkles className="w-4 h-4 text-indigo-400 shrink-0" />
-              <span className="truncate">{activeModel || 'groq/compound'}</span>
+              <span className="truncate">{activeModel || 'openai/gpt-oss-120b'}</span>
             </p>
             <span className={`inline-block mt-2 px-2 py-0.5 rounded text-[10px] font-mono border ${
-              (envStatus.groqSecured || envStatus.openAiSecured || envStatus.anthropicSecured || envStatus.geminiSecured)
+              (envStatus.groqSecured || envStatus.openAiSecured || envStatus.anthropicSecured || envStatus.geminiSecured || envStatus.openRouterSecured)
                 ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
                 : 'bg-amber-500/10 text-amber-400 border-amber-500/20'
             }`}>
-              {(envStatus.groqSecured || envStatus.openAiSecured || envStatus.anthropicSecured || envStatus.geminiSecured) ? 'Active in DB' : 'Pending Key'}
+              {testResult ? `${testResult.latencyMs}ms Live Latency` : (envStatus.groqSecured || envStatus.openAiSecured || envStatus.anthropicSecured || envStatus.geminiSecured || envStatus.openRouterSecured) ? 'Active in DB' : 'Pending Key'}
             </span>
           </div>
 
@@ -271,7 +385,7 @@ const AIModelConfiguration = () => {
               {contextWindow.toLocaleString()} <span className="text-xs font-normal text-slate-400">Tokens</span>
             </p>
             <span className="inline-block mt-2 px-2 py-0.5 rounded text-[10px] font-mono bg-purple-500/10 text-purple-400 border border-purple-500/20">
-              128k Embeddings
+              {(contextWindow / 1000).toFixed(0)}k Tokens / Context
             </span>
           </div>
 
@@ -281,7 +395,7 @@ const AIModelConfiguration = () => {
               {temperature} <span className="text-xs font-normal text-slate-400">/ Top-P {topP}</span>
             </p>
             <span className="inline-block mt-2 px-2 py-0.5 rounded text-[10px] font-mono bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-              Low Hallucination
+              {temperature <= 0.2 ? 'Deterministic / Strict' : temperature <= 0.7 ? 'Balanced Reasoning' : 'Creative Exploration'}
             </span>
           </div>
         </div>
@@ -486,8 +600,14 @@ const AIModelConfiguration = () => {
                     onChange={(e) => setTaskRouting({ ...taskRouting, skillAssessment: e.target.value })}
                     className="bg-[#0F172A] border border-slate-700 text-xs text-indigo-400 font-semibold px-3 py-1.5 rounded-lg focus:outline-none cursor-pointer"
                   >
+                    <option value="openai/gpt-oss-120b" disabled={!envStatus.groqSecured}>
+                      {envStatus.groqSecured ? 'Groq LPU (openai/gpt-oss-120b 🟢)' : 'Groq LPU (🔒 Key Required)'}
+                    </option>
+                    <option value="openai/gpt-oss-20b" disabled={!envStatus.groqSecured}>
+                      {envStatus.groqSecured ? 'Groq LPU (openai/gpt-oss-20b - Fast 🟢)' : 'Groq LPU (🔒 Key Required)'}
+                    </option>
                     <option value="groq/compound" disabled={!envStatus.groqSecured}>
-                      {envStatus.groqSecured ? 'Groq LPU (groq/compound - Free 🟢)' : 'Groq LPU (🔒 Key Required)'}
+                      {envStatus.groqSecured ? 'Groq LPU (groq/compound 🟢)' : 'Groq LPU (🔒 Key Required)'}
                     </option>
                     <option value="meta-llama/llama-3.3-70b-instruct:free" disabled={!envStatus.openRouterSecured}>
                       {envStatus.openRouterSecured ? 'OpenRouter Llama 3.3 70B (Free 🟢)' : 'OpenRouter Llama 3.3 (🔒 Key Required)'}
@@ -517,8 +637,14 @@ const AIModelConfiguration = () => {
                     onChange={(e) => setTaskRouting({ ...taskRouting, resumeParsing: e.target.value })}
                     className="bg-[#0F172A] border border-slate-700 text-xs text-indigo-400 font-semibold px-3 py-1.5 rounded-lg focus:outline-none cursor-pointer"
                   >
+                    <option value="openai/gpt-oss-120b" disabled={!envStatus.groqSecured}>
+                      {envStatus.groqSecured ? 'Groq LPU (openai/gpt-oss-120b 🟢)' : 'Groq LPU (🔒 Key Required)'}
+                    </option>
+                    <option value="openai/gpt-oss-20b" disabled={!envStatus.groqSecured}>
+                      {envStatus.groqSecured ? 'Groq LPU (openai/gpt-oss-20b - Fast 🟢)' : 'Groq LPU (🔒 Key Required)'}
+                    </option>
                     <option value="groq/compound" disabled={!envStatus.groqSecured}>
-                      {envStatus.groqSecured ? 'Groq LPU (groq/compound - Free 🟢)' : 'Groq LPU (🔒 Key Required)'}
+                      {envStatus.groqSecured ? 'Groq LPU (groq/compound 🟢)' : 'Groq LPU (🔒 Key Required)'}
                     </option>
                     <option value="meta-llama/llama-3.3-70b-instruct:free" disabled={!envStatus.openRouterSecured}>
                       {envStatus.openRouterSecured ? 'OpenRouter Llama 3.3 70B (Free 🟢)' : 'OpenRouter Llama 3.3 (🔒 Key Required)'}
@@ -545,8 +671,14 @@ const AIModelConfiguration = () => {
                     onChange={(e) => setTaskRouting({ ...taskRouting, learningRecommendations: e.target.value })}
                     className="bg-[#0F172A] border border-slate-700 text-xs text-indigo-400 font-semibold px-3 py-1.5 rounded-lg focus:outline-none cursor-pointer"
                   >
+                    <option value="openai/gpt-oss-120b" disabled={!envStatus.groqSecured}>
+                      {envStatus.groqSecured ? 'Groq LPU (openai/gpt-oss-120b 🟢)' : 'Groq LPU (🔒 Key Required)'}
+                    </option>
+                    <option value="openai/gpt-oss-20b" disabled={!envStatus.groqSecured}>
+                      {envStatus.groqSecured ? 'Groq LPU (openai/gpt-oss-20b - Fast 🟢)' : 'Groq LPU (🔒 Key Required)'}
+                    </option>
                     <option value="groq/compound" disabled={!envStatus.groqSecured}>
-                      {envStatus.groqSecured ? 'Groq LPU (groq/compound - Free 🟢)' : 'Groq LPU (🔒 Key Required)'}
+                      {envStatus.groqSecured ? 'Groq LPU (groq/compound 🟢)' : 'Groq LPU (🔒 Key Required)'}
                     </option>
                     <option value="qwen/qwen-2.5-72b-instruct:free" disabled={!envStatus.openRouterSecured}>
                       {envStatus.openRouterSecured ? 'OpenRouter Qwen 2.5 72B (Free 🟢)' : 'OpenRouter Qwen 2.5 (🔒 Key Required)'}
@@ -600,7 +732,7 @@ const AIModelConfiguration = () => {
                 onChange={(e) => {
                   const m = e.target.value;
                   setActiveModel(m);
-                  if (m.startsWith('groq/')) setProvider('Groq LPU Cloud (Free Tier)');
+                  if (m.includes('gpt-oss') || m.startsWith('groq/')) setProvider('Groq LPU Cloud');
                   else if (m.includes('llama') || m.includes('deepseek') || m.includes('qwen')) setProvider('OpenRouter Gateway');
                   else if (m.startsWith('gpt-')) setProvider('OpenAI API');
                   else if (m.startsWith('claude-')) setProvider('Anthropic Claude');
@@ -608,8 +740,14 @@ const AIModelConfiguration = () => {
                 }}
                 className="w-full px-3 py-2 bg-[#1E293B] border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500 cursor-pointer"
               >
+                <option value="openai/gpt-oss-120b" disabled={!envStatus.groqSecured}>
+                  {envStatus.groqSecured ? 'Groq LPU Engine (openai/gpt-oss-120b 🟢)' : 'Groq LPU (🔒 Key Required)'}
+                </option>
+                <option value="openai/gpt-oss-20b" disabled={!envStatus.groqSecured}>
+                  {envStatus.groqSecured ? 'Groq LPU Engine (openai/gpt-oss-20b - Fast 🟢)' : 'Groq LPU (🔒 Key Required)'}
+                </option>
                 <option value="groq/compound" disabled={!envStatus.groqSecured}>
-                  {envStatus.groqSecured ? 'Groq LPU Engine (groq/compound 🟢)' : 'Groq LPU (🔒 Key Required)'}
+                  {envStatus.groqSecured ? 'Groq Compound Gateway (groq/compound 🟢)' : 'Groq Compound (🔒 Key Required)'}
                 </option>
                 <option value="meta-llama/llama-3.3-70b-instruct:free" disabled={!envStatus.openRouterSecured}>
                   {envStatus.openRouterSecured ? 'OpenRouter Llama 3.3 70B (Free 🟢)' : 'OpenRouter Llama 3.3 (🔒 Key Required)'}
@@ -702,6 +840,37 @@ const AIModelConfiguration = () => {
                 <option value="High">High (Recommended)</option>
                 <option value="Moderate">Moderate</option>
               </select>
+            </div>
+
+            {/* Gap Detection Sensitivity (BRD 6.7.4) */}
+            <div>
+              <label className="block text-xs font-semibold text-slate-300 mb-2">Gap Detection Sensitivity</label>
+              <select
+                value={gapDetectionSensitivity}
+                onChange={(e) => setGapDetectionSensitivity(e.target.value)}
+                className="w-full bg-[#1E293B] border border-slate-700 text-xs text-white p-2.5 rounded-xl focus:outline-none cursor-pointer"
+              >
+                <option value="strict">Strict (Exact Taxonomy Match)</option>
+                <option value="moderate">Moderate (Semantic Cosine Match)</option>
+                <option value="lenient">Lenient (Broad Category Match)</option>
+              </select>
+            </div>
+
+            {/* Skill Inference Similarity Threshold (BRD 6.7.4 & Draw.io Box 7) */}
+            <div>
+              <div className="flex items-center justify-between text-xs font-semibold mb-2">
+                <span className="text-slate-300">Skill Inference Similarity Threshold</span>
+                <span className="text-indigo-400 font-mono font-bold">{Math.round(skillInferenceThreshold * 100)}%</span>
+              </div>
+              <input
+                type="range"
+                min="0.50"
+                max="0.95"
+                step="0.05"
+                value={skillInferenceThreshold}
+                onChange={(e) => setSkillInferenceThreshold(parseFloat(e.target.value))}
+                className="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-indigo-500"
+              />
             </div>
 
             {/* Fallback Reroute */}
