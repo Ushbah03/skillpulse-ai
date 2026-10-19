@@ -223,21 +223,36 @@ const AIModelConfiguration = () => {
       <main className="flex-1 text-slate-100 ml-0 lg:ml-64 pt-20 lg:pt-8 p-4 md:p-8 w-full font-sans">
         
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4 border-b border-slate-800/80 pb-6">
+        <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4 border-b border-slate-800/80 pb-6 relative">
           <div>
-            <h1 className="text-3xl font-extrabold tracking-tight text-white flex items-center gap-3">
-              <Bot className="w-8 h-8 text-indigo-400" />
-              AI Engine & Provider Governance Hub
-            </h1>
-            <p className="text-slate-400 text-sm mt-1">
-              Configure Multi-Provider AI Keys (Groq, OpenAI, Claude, Gemini), model routing, guardrails, and context parameters.
-            </p>
-            {lastUpdated && (
-              <p className="text-[11px] text-slate-500 font-mono mt-1 flex items-center gap-1.5">
-                <Clock className="w-3.5 h-3.5 text-indigo-400" />
-                Database Record Last Synchronized: {lastUpdated}
-              </p>
-            )}
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 shadow-[0_0_20px_rgba(99,102,241,0.25)]">
+                <Bot className="w-6 h-6 animate-pulse" />
+              </div>
+              <div>
+                <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-white flex items-center gap-2.5">
+                  AI Engine & Provider Governance Hub
+                  <span className="text-[10px] uppercase font-mono px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 font-bold hidden sm:inline-block">
+                    Enterprise LLM Core
+                  </span>
+                </h1>
+                <div className="flex items-center gap-3 mt-1.5 flex-wrap">
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-mono font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shadow-[0_0_12px_rgba(16,185,129,0.15)]">
+                    <span className="relative flex h-2 w-2">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                    </span>
+                    Neural Pipeline Active
+                  </span>
+                  {lastUpdated && (
+                    <span className="text-[11px] text-slate-400 font-mono flex items-center gap-1.5 bg-slate-900/60 px-2.5 py-0.5 rounded-full border border-slate-800">
+                      <Clock className="w-3.5 h-3.5 text-indigo-400" />
+                      DB Synced: <span className="text-slate-200">{lastUpdated}</span>
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
 
           <div className="flex items-center gap-3">
@@ -353,51 +368,98 @@ const AIModelConfiguration = () => {
 
         {/* Active Engine Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-5 mb-8">
-          <div className="p-5 rounded-2xl bg-[#0F172A] border border-slate-800/80 shadow-xl">
-            <p className="text-xs text-slate-400 font-medium">Primary Active Model</p>
-            <p className="text-lg font-extrabold text-white mt-1 uppercase flex items-center gap-2 truncate">
-              <Sparkles className="w-4 h-4 text-indigo-400 shrink-0" />
-              <span className="truncate">{activeModel || 'openai/gpt-oss-120b'}</span>
+          <motion.div
+            whileHover={{ y: -4, scale: 1.015 }}
+            transition={{ duration: 0.2 }}
+            className="p-5 rounded-2xl bg-gradient-to-br from-[#111A2E] via-[#0F172A] to-[#0B1120] border border-slate-800 hover:border-indigo-500/50 shadow-xl hover:shadow-[0_10px_25px_rgba(99,102,241,0.15)] transition-all duration-300 relative overflow-hidden group cursor-default"
+          >
+            <div className="absolute -top-10 -right-10 w-24 h-24 bg-indigo-500/10 rounded-full blur-2xl group-hover:bg-indigo-500/25 transition-all duration-500 pointer-events-none" />
+            <div className="flex items-center justify-between">
+              <p className="text-xs text-slate-400 font-medium">Primary Active Model</p>
+              <div className="w-8 h-8 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 shadow-[0_0_10px_rgba(99,102,241,0.2)]">
+                <Sparkles className="w-4 h-4 animate-pulse" />
+              </div>
+            </div>
+            <p className="text-lg font-black text-white mt-2 uppercase tracking-tight truncate">
+              {activeModel || 'openai/gpt-oss-120b'}
             </p>
-            <span className={`inline-block mt-2 px-2 py-0.5 rounded text-[10px] font-mono border ${
-              (envStatus.groqSecured || envStatus.openAiSecured || envStatus.anthropicSecured || envStatus.geminiSecured || envStatus.openRouterSecured)
-                ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
-                : 'bg-amber-500/10 text-amber-400 border-amber-500/20'
-            }`}>
-              {testResult ? `${testResult.latencyMs}ms Live Latency` : (envStatus.groqSecured || envStatus.openAiSecured || envStatus.anthropicSecured || envStatus.geminiSecured || envStatus.openRouterSecured) ? 'Active in DB' : 'Pending Key'}
-            </span>
-          </div>
+            <div className="mt-3 flex items-center gap-2">
+              <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-semibold border ${
+                (envStatus.groqSecured || envStatus.openAiSecured || envStatus.anthropicSecured || envStatus.geminiSecured || envStatus.openRouterSecured)
+                  ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30 shadow-[0_0_10px_rgba(16,185,129,0.15)]'
+                  : 'bg-amber-500/10 text-amber-400 border-amber-500/30'
+              }`}>
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
+                {testResult ? `${testResult.latencyMs}ms Live Latency` : (envStatus.groqSecured || envStatus.openAiSecured || envStatus.anthropicSecured || envStatus.geminiSecured || envStatus.openRouterSecured) ? 'Active in DB' : 'Pending Key'}
+              </span>
+            </div>
+          </motion.div>
 
-          <div className="p-5 rounded-2xl bg-[#0F172A] border border-slate-800/80 shadow-xl">
-            <p className="text-xs text-slate-400 font-medium">Provider Engine</p>
-            <p className="text-base font-extrabold text-indigo-300 mt-1 flex items-center gap-2 truncate">
-              <Database className="w-4 h-4 text-indigo-400 shrink-0" />
-              <span className="truncate">{provider || 'Groq LPU Cloud'}</span>
+          <motion.div
+            whileHover={{ y: -4, scale: 1.015 }}
+            transition={{ duration: 0.2 }}
+            className="p-5 rounded-2xl bg-gradient-to-br from-[#111A2E] via-[#0F172A] to-[#0B1120] border border-slate-800 hover:border-sky-500/50 shadow-xl hover:shadow-[0_10px_25px_rgba(56,189,248,0.15)] transition-all duration-300 relative overflow-hidden group cursor-default"
+          >
+            <div className="absolute -top-10 -right-10 w-24 h-24 bg-sky-500/10 rounded-full blur-2xl group-hover:bg-sky-500/25 transition-all duration-500 pointer-events-none" />
+            <div className="flex items-center justify-between">
+              <p className="text-xs text-slate-400 font-medium">Provider Engine</p>
+              <div className="w-8 h-8 rounded-xl bg-sky-500/10 border border-sky-500/20 flex items-center justify-center text-sky-400 shadow-[0_0_10px_rgba(56,189,248,0.2)]">
+                <Database className="w-4 h-4" />
+              </div>
+            </div>
+            <p className="text-base font-black text-sky-300 mt-2 tracking-tight truncate">
+              {provider || 'Groq LPU Cloud'}
             </p>
-            <span className="inline-block mt-2 px-2 py-0.5 rounded text-[10px] font-mono bg-slate-800 text-slate-400 border border-slate-700">
-              v{version || '1.0.0'}
-            </span>
-          </div>
+            <div className="mt-3">
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-mono bg-slate-800/90 text-slate-300 border border-slate-700 font-medium">
+                v{version || '1.0.0'} • High Throughput
+              </span>
+            </div>
+          </motion.div>
 
-          <div className="p-5 rounded-2xl bg-[#0F172A] border border-slate-800/80 shadow-xl">
-            <p className="text-xs text-slate-400 font-medium">Context Window Limit</p>
-            <p className="text-2xl font-extrabold text-white mt-1">
-              {contextWindow.toLocaleString()} <span className="text-xs font-normal text-slate-400">Tokens</span>
+          <motion.div
+            whileHover={{ y: -4, scale: 1.015 }}
+            transition={{ duration: 0.2 }}
+            className="p-5 rounded-2xl bg-gradient-to-br from-[#111A2E] via-[#0F172A] to-[#0B1120] border border-slate-800 hover:border-purple-500/50 shadow-xl hover:shadow-[0_10px_25px_rgba(168,85,247,0.15)] transition-all duration-300 relative overflow-hidden group cursor-default"
+          >
+            <div className="absolute -top-10 -right-10 w-24 h-24 bg-purple-500/10 rounded-full blur-2xl group-hover:bg-purple-500/25 transition-all duration-500 pointer-events-none" />
+            <div className="flex items-center justify-between">
+              <p className="text-xs text-slate-400 font-medium">Context Window Limit</p>
+              <div className="w-8 h-8 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400 shadow-[0_0_10px_rgba(168,85,247,0.2)]">
+                <Cpu className="w-4 h-4" />
+              </div>
+            </div>
+            <p className="text-2xl font-black text-white mt-2 tracking-tight">
+              {contextWindow.toLocaleString()} <span className="text-xs font-normal text-slate-400 font-mono">Tokens</span>
             </p>
-            <span className="inline-block mt-2 px-2 py-0.5 rounded text-[10px] font-mono bg-purple-500/10 text-purple-400 border border-purple-500/20">
-              {(contextWindow / 1000).toFixed(0)}k Tokens / Context
-            </span>
-          </div>
+            <div className="mt-3">
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-mono bg-purple-500/10 text-purple-300 border border-purple-500/30 font-medium shadow-[0_0_10px_rgba(168,85,247,0.1)]">
+                {(contextWindow / 1000).toFixed(0)}k Tokens / Context
+              </span>
+            </div>
+          </motion.div>
 
-          <div className="p-5 rounded-2xl bg-[#0F172A] border border-slate-800/80 shadow-xl">
-            <p className="text-xs text-slate-400 font-medium">Temperature / Top-P</p>
-            <p className="text-2xl font-extrabold text-emerald-400 mt-1">
-              {temperature} <span className="text-xs font-normal text-slate-400">/ Top-P {topP}</span>
+          <motion.div
+            whileHover={{ y: -4, scale: 1.015 }}
+            transition={{ duration: 0.2 }}
+            className="p-5 rounded-2xl bg-gradient-to-br from-[#111A2E] via-[#0F172A] to-[#0B1120] border border-slate-800 hover:border-emerald-500/50 shadow-xl hover:shadow-[0_10px_25px_rgba(16,185,129,0.15)] transition-all duration-300 relative overflow-hidden group cursor-default"
+          >
+            <div className="absolute -top-10 -right-10 w-24 h-24 bg-emerald-500/10 rounded-full blur-2xl group-hover:bg-emerald-500/25 transition-all duration-500 pointer-events-none" />
+            <div className="flex items-center justify-between">
+              <p className="text-xs text-slate-400 font-medium">Temperature / Top-P</p>
+              <div className="w-8 h-8 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 shadow-[0_0_10px_rgba(16,185,129,0.2)]">
+                <Sliders className="w-4 h-4" />
+              </div>
+            </div>
+            <p className="text-2xl font-black text-emerald-400 mt-2 tracking-tight">
+              {temperature} <span className="text-xs font-normal text-slate-400 font-mono">/ Top-P {topP}</span>
             </p>
-            <span className="inline-block mt-2 px-2 py-0.5 rounded text-[10px] font-mono bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-              {temperature <= 0.2 ? 'Deterministic / Strict' : temperature <= 0.7 ? 'Balanced Reasoning' : 'Creative Exploration'}
-            </span>
-          </div>
+            <div className="mt-3">
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-mono bg-emerald-500/10 text-emerald-300 border border-emerald-500/30 font-medium shadow-[0_0_10px_rgba(16,185,129,0.1)]">
+                {temperature <= 0.2 ? 'Deterministic / Strict' : temperature <= 0.7 ? 'Balanced Reasoning' : 'Creative Exploration'}
+              </span>
+            </div>
+          </motion.div>
         </div>
 
         {/* Main Grid */}
@@ -420,17 +482,36 @@ const AIModelConfiguration = () => {
               </div>
 
               {/* 1. GROQ API KEY */}
-              <div className="p-4 rounded-xl bg-[#1E293B]/60 border border-slate-800 space-y-2.5">
+              <motion.div 
+                whileHover={{ scale: 1.008 }}
+                transition={{ duration: 0.15 }}
+                className={`p-4 rounded-xl border transition-all duration-300 space-y-2.5 ${
+                  envStatus.groqSecured 
+                    ? 'bg-gradient-to-r from-emerald-950/20 via-[#1E293B]/80 to-[#1E293B]/60 border-emerald-500/40 shadow-[0_0_15px_rgba(16,185,129,0.08)]' 
+                    : 'bg-[#1E293B]/60 border-slate-800'
+                }`}
+              >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <Zap className="w-4 h-4 text-emerald-400" />
+                    <div className="w-6 h-6 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+                      <Zap className="w-3.5 h-3.5" />
+                    </div>
                     <span className="text-xs font-bold text-white font-mono">GROQ_API_KEY</span>
-                    <span className="text-[10px] bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded font-mono border border-emerald-500/20">
+                    <span className="text-[10px] bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded font-mono border border-emerald-500/20 font-semibold">
                       100% Free Engine
                     </span>
                   </div>
-                  <span className={`text-[11px] font-mono font-bold ${envStatus.groqSecured ? 'text-emerald-400' : 'text-amber-400'}`}>
-                    {envStatus.groqSecured ? '✓ Backend Verified' : '⚠ Key Required'}
+                  <span className={`inline-flex items-center gap-1.5 text-[11px] font-mono font-bold ${envStatus.groqSecured ? 'text-emerald-400' : 'text-amber-400'}`}>
+                    {envStatus.groqSecured ? (
+                      <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 shadow-[0_0_10px_rgba(16,185,129,0.2)]">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                        ✓ Backend Verified
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/20">
+                        ⚠ Key Required
+                      </span>
+                    )}
                   </span>
                 </div>
                 <div className="relative">
@@ -439,30 +520,49 @@ const AIModelConfiguration = () => {
                     placeholder="Enter Groq API Key (starts with gsk_...)"
                     value={groqApiKey}
                     onChange={(e) => setGroqApiKey(e.target.value)}
-                    className="w-full pl-3 pr-10 py-2.5 bg-[#0F172A] border border-slate-700 rounded-lg text-xs font-mono text-emerald-400 focus:outline-none focus:border-indigo-500"
+                    className="w-full pl-3 pr-10 py-2.5 bg-[#0F172A] border border-slate-700/80 rounded-lg text-xs font-mono text-emerald-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 transition-all"
                   />
                   <button
                     type="button"
                     onClick={() => setShowGroqKey(!showGroqKey)}
-                    className="absolute right-3 top-2.5 text-slate-400 hover:text-white cursor-pointer"
+                    className="absolute right-3 top-2.5 text-slate-400 hover:text-white hover:scale-110 transition-transform cursor-pointer"
                   >
                     {showGroqKey ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
                 </div>
-              </div>
+              </motion.div>
 
               {/* 2. OPENAI API KEY */}
-              <div className="p-4 rounded-xl bg-[#1E293B]/60 border border-slate-800 space-y-2.5">
+              <motion.div 
+                whileHover={{ scale: 1.008 }}
+                transition={{ duration: 0.15 }}
+                className={`p-4 rounded-xl border transition-all duration-300 space-y-2.5 ${
+                  envStatus.openAiSecured 
+                    ? 'bg-gradient-to-r from-emerald-950/20 via-[#1E293B]/80 to-[#1E293B]/60 border-emerald-500/40 shadow-[0_0_15px_rgba(16,185,129,0.08)]' 
+                    : 'bg-[#1E293B]/60 border-slate-800'
+                }`}
+              >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <Bot className="w-4 h-4 text-sky-400" />
+                    <div className="w-6 h-6 rounded-lg bg-sky-500/10 border border-sky-500/20 flex items-center justify-center text-sky-400">
+                      <Bot className="w-3.5 h-3.5" />
+                    </div>
                     <span className="text-xs font-bold text-white font-mono">OPENAI_API_KEY</span>
-                    <span className="text-[10px] bg-sky-500/10 text-sky-400 px-2 py-0.5 rounded font-mono border border-sky-500/20">
+                    <span className="text-[10px] bg-sky-500/10 text-sky-400 px-2 py-0.5 rounded font-mono border border-sky-500/20 font-semibold">
                       GPT-4o & GPT-4o Mini
                     </span>
                   </div>
-                  <span className={`text-[11px] font-mono font-bold ${envStatus.openAiSecured ? 'text-emerald-400' : 'text-slate-400'}`}>
-                    {envStatus.openAiSecured ? '✓ Backend Verified' : 'Optional / Standby'}
+                  <span className={`inline-flex items-center gap-1.5 text-[11px] font-mono font-bold ${envStatus.openAiSecured ? 'text-emerald-400' : 'text-slate-400'}`}>
+                    {envStatus.openAiSecured ? (
+                      <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 shadow-[0_0_10px_rgba(16,185,129,0.2)]">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                        ✓ Backend Verified
+                      </span>
+                    ) : (
+                      <span className="px-2 py-0.5 rounded-full bg-slate-800/80 border border-slate-700/60 font-medium">
+                        Optional / Standby
+                      </span>
+                    )}
                   </span>
                 </div>
                 <div className="relative">
@@ -471,30 +571,49 @@ const AIModelConfiguration = () => {
                     placeholder="Enter OpenAI API Key (starts with sk-...)"
                     value={openAiApiKey}
                     onChange={(e) => setOpenAiApiKey(e.target.value)}
-                    className="w-full pl-3 pr-10 py-2.5 bg-[#0F172A] border border-slate-700 rounded-lg text-xs font-mono text-slate-200 focus:outline-none focus:border-indigo-500"
+                    className="w-full pl-3 pr-10 py-2.5 bg-[#0F172A] border border-slate-700/80 rounded-lg text-xs font-mono text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 transition-all"
                   />
                   <button
                     type="button"
                     onClick={() => setShowOpenAiKey(!showOpenAiKey)}
-                    className="absolute right-3 top-2.5 text-slate-400 hover:text-white cursor-pointer"
+                    className="absolute right-3 top-2.5 text-slate-400 hover:text-white hover:scale-110 transition-transform cursor-pointer"
                   >
                     {showOpenAiKey ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
                 </div>
-              </div>
+              </motion.div>
 
               {/* 3. ANTHROPIC CLAUDE API KEY */}
-              <div className="p-4 rounded-xl bg-[#1E293B]/60 border border-slate-800 space-y-2.5">
+              <motion.div 
+                whileHover={{ scale: 1.008 }}
+                transition={{ duration: 0.15 }}
+                className={`p-4 rounded-xl border transition-all duration-300 space-y-2.5 ${
+                  envStatus.anthropicSecured 
+                    ? 'bg-gradient-to-r from-emerald-950/20 via-[#1E293B]/80 to-[#1E293B]/60 border-emerald-500/40 shadow-[0_0_15px_rgba(16,185,129,0.08)]' 
+                    : 'bg-[#1E293B]/60 border-slate-800'
+                }`}
+              >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <Sparkles className="w-4 h-4 text-purple-400" />
+                    <div className="w-6 h-6 rounded-lg bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400">
+                      <Sparkles className="w-3.5 h-3.5" />
+                    </div>
                     <span className="text-xs font-bold text-white font-mono">ANTHROPIC_API_KEY</span>
-                    <span className="text-[10px] bg-purple-500/10 text-purple-400 px-2 py-0.5 rounded font-mono border border-purple-500/20">
+                    <span className="text-[10px] bg-purple-500/10 text-purple-400 px-2 py-0.5 rounded font-mono border border-purple-500/20 font-semibold">
                       Claude 3.5 Sonnet
                     </span>
                   </div>
-                  <span className={`text-[11px] font-mono font-bold ${envStatus.anthropicSecured ? 'text-emerald-400' : 'text-slate-400'}`}>
-                    {envStatus.anthropicSecured ? '✓ Backend Verified' : 'Optional / Standby'}
+                  <span className={`inline-flex items-center gap-1.5 text-[11px] font-mono font-bold ${envStatus.anthropicSecured ? 'text-emerald-400' : 'text-slate-400'}`}>
+                    {envStatus.anthropicSecured ? (
+                      <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 shadow-[0_0_10px_rgba(16,185,129,0.2)]">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                        ✓ Backend Verified
+                      </span>
+                    ) : (
+                      <span className="px-2 py-0.5 rounded-full bg-slate-800/80 border border-slate-700/60 font-medium">
+                        Optional / Standby
+                      </span>
+                    )}
                   </span>
                 </div>
                 <div className="relative">
@@ -503,30 +622,49 @@ const AIModelConfiguration = () => {
                     placeholder="Enter Anthropic Claude Key (starts with sk-ant-...)"
                     value={anthropicApiKey}
                     onChange={(e) => setAnthropicApiKey(e.target.value)}
-                    className="w-full pl-3 pr-10 py-2.5 bg-[#0F172A] border border-slate-700 rounded-lg text-xs font-mono text-slate-200 focus:outline-none focus:border-indigo-500"
+                    className="w-full pl-3 pr-10 py-2.5 bg-[#0F172A] border border-slate-700/80 rounded-lg text-xs font-mono text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 transition-all"
                   />
                   <button
                     type="button"
                     onClick={() => setShowClaudeKey(!showClaudeKey)}
-                    className="absolute right-3 top-2.5 text-slate-400 hover:text-white cursor-pointer"
+                    className="absolute right-3 top-2.5 text-slate-400 hover:text-white hover:scale-110 transition-transform cursor-pointer"
                   >
                     {showClaudeKey ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
                 </div>
-              </div>
+              </motion.div>
 
               {/* 4. GOOGLE GEMINI API KEY */}
-              <div className="p-4 rounded-xl bg-[#1E293B]/60 border border-slate-800 space-y-2.5">
+              <motion.div 
+                whileHover={{ scale: 1.008 }}
+                transition={{ duration: 0.15 }}
+                className={`p-4 rounded-xl border transition-all duration-300 space-y-2.5 ${
+                  envStatus.geminiSecured 
+                    ? 'bg-gradient-to-r from-emerald-950/20 via-[#1E293B]/80 to-[#1E293B]/60 border-emerald-500/40 shadow-[0_0_15px_rgba(16,185,129,0.08)]' 
+                    : 'bg-[#1E293B]/60 border-slate-800'
+                }`}
+              >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <Globe className="w-4 h-4 text-blue-400" />
+                    <div className="w-6 h-6 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400">
+                      <Globe className="w-3.5 h-3.5" />
+                    </div>
                     <span className="text-xs font-bold text-white font-mono">GEMINI_API_KEY</span>
-                    <span className="text-[10px] bg-blue-500/10 text-blue-400 px-2 py-0.5 rounded font-mono border border-blue-500/20">
+                    <span className="text-[10px] bg-blue-500/10 text-blue-400 px-2 py-0.5 rounded font-mono border border-blue-500/20 font-semibold">
                       Gemini 1.5 Pro & Flash
                     </span>
                   </div>
-                  <span className={`text-[11px] font-mono font-bold ${envStatus.geminiSecured ? 'text-emerald-400' : 'text-slate-400'}`}>
-                    {envStatus.geminiSecured ? '✓ Backend Verified' : 'Optional / Standby'}
+                  <span className={`inline-flex items-center gap-1.5 text-[11px] font-mono font-bold ${envStatus.geminiSecured ? 'text-emerald-400' : 'text-slate-400'}`}>
+                    {envStatus.geminiSecured ? (
+                      <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 shadow-[0_0_10px_rgba(16,185,129,0.2)]">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                        ✓ Backend Verified
+                      </span>
+                    ) : (
+                      <span className="px-2 py-0.5 rounded-full bg-slate-800/80 border border-slate-700/60 font-medium">
+                        Optional / Standby
+                      </span>
+                    )}
                   </span>
                 </div>
                 <div className="relative">
@@ -535,28 +673,49 @@ const AIModelConfiguration = () => {
                     placeholder="Enter Google Gemini Key (starts with AIzaSy...)"
                     value={geminiApiKey}
                     onChange={(e) => setGeminiApiKey(e.target.value)}
-                    className="w-full pl-3 pr-10 py-2.5 bg-[#0F172A] border border-slate-700 rounded-lg text-xs font-mono text-slate-200 focus:outline-none focus:border-indigo-500"
+                    className="w-full pl-3 pr-10 py-2.5 bg-[#0F172A] border border-slate-700/80 rounded-lg text-xs font-mono text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 transition-all"
                   />
                   <button
                     type="button"
                     onClick={() => setShowGeminiKey(!showGeminiKey)}
-                    className="absolute right-3 top-2.5 text-slate-400 hover:text-white cursor-pointer"
+                    className="absolute right-3 top-2.5 text-slate-400 hover:text-white hover:scale-110 transition-transform cursor-pointer"
                   >
                     {showGeminiKey ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
                 </div>
-              </div>
-              <div className="p-4 rounded-xl bg-[#1E293B]/60 border border-slate-800 space-y-2.5">
+              </motion.div>
+
+              {/* 5. OPENROUTER API KEY */}
+              <motion.div 
+                whileHover={{ scale: 1.008 }}
+                transition={{ duration: 0.15 }}
+                className={`p-4 rounded-xl border transition-all duration-300 space-y-2.5 ${
+                  envStatus.openRouterSecured 
+                    ? 'bg-gradient-to-r from-emerald-950/20 via-[#1E293B]/80 to-[#1E293B]/60 border-emerald-500/40 shadow-[0_0_15px_rgba(16,185,129,0.08)]' 
+                    : 'bg-[#1E293B]/60 border-slate-800'
+                }`}
+              >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <Globe className="w-4 h-4 text-orange-400" />
+                    <div className="w-6 h-6 rounded-lg bg-orange-500/10 border border-orange-500/20 flex items-center justify-center text-orange-400">
+                      <Globe className="w-3.5 h-3.5" />
+                    </div>
                     <span className="text-xs font-bold text-white font-mono">OPENROUTER_API_KEY</span>
-                    <span className="text-[10px] bg-orange-500/10 text-orange-400 px-2 py-0.5 rounded font-mono border border-orange-500/20">
+                    <span className="text-[10px] bg-orange-500/10 text-orange-400 px-2 py-0.5 rounded font-mono border border-orange-500/20 font-semibold">
                       Backup & Open Models
                     </span>
                   </div>
-                  <span className={`text-[11px] font-mono font-bold ${envStatus.openRouterSecured ? 'text-emerald-400' : 'text-slate-400'}`}>
-                    {envStatus.openRouterSecured ? '✓ Backend Verified' : 'Optional / Standby'}
+                  <span className={`inline-flex items-center gap-1.5 text-[11px] font-mono font-bold ${envStatus.openRouterSecured ? 'text-emerald-400' : 'text-slate-400'}`}>
+                    {envStatus.openRouterSecured ? (
+                      <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 shadow-[0_0_10px_rgba(16,185,129,0.2)]">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                        ✓ Backend Verified
+                      </span>
+                    ) : (
+                      <span className="px-2 py-0.5 rounded-full bg-slate-800/80 border border-slate-700/60 font-medium">
+                        Optional / Standby
+                      </span>
+                    )}
                   </span>
                 </div>
                 <div className="relative">
@@ -565,17 +724,17 @@ const AIModelConfiguration = () => {
                     placeholder="Enter OpenRouter Key (starts with sk-or-v1-...)"
                     value={openRouterApiKey}
                     onChange={(e) => setOpenRouterApiKey(e.target.value)}
-                    className="w-full pl-3 pr-10 py-2.5 bg-[#0F172A] border border-slate-700 rounded-lg text-xs font-mono text-slate-200 focus:outline-none focus:border-indigo-500"
+                    className="w-full pl-3 pr-10 py-2.5 bg-[#0F172A] border border-slate-700/80 rounded-lg text-xs font-mono text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 transition-all"
                   />
                   <button
                     type="button"
                     onClick={() => setShowOpenRouterKey(!showOpenRouterKey)}
-                    className="absolute right-3 top-2.5 text-slate-400 hover:text-white cursor-pointer"
+                    className="absolute right-3 top-2.5 text-slate-400 hover:text-white hover:scale-110 transition-transform cursor-pointer"
                   >
                     {showOpenRouterKey ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
                 </div>
-              </div>
+              </motion.div>
 
             </div>
 
@@ -718,15 +877,19 @@ const AIModelConfiguration = () => {
           </div>
 
           {/* Model Parameters Sidebar */}
-          <div className="p-6 rounded-2xl bg-[#0F172A] border border-slate-800/80 shadow-xl space-y-6">
+          <div className="p-6 rounded-2xl bg-gradient-to-b from-[#111A2E] via-[#0F172A] to-[#0B1120] border border-slate-800/90 shadow-2xl space-y-6 relative overflow-hidden">
+            <div className="absolute -top-16 -right-16 w-32 h-32 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
+
             <h2 className="text-base font-bold text-white flex items-center gap-2 border-b border-slate-800 pb-4">
-              <Sliders className="w-5 h-5 text-indigo-400" />
+              <div className="w-7 h-7 rounded-lg bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400">
+                <Sliders className="w-4 h-4" />
+              </div>
               Engine Hyperparameters
             </h2>
 
             {/* Primary Model Selection */}
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Primary Model Name</label>
+              <label className="block text-xs font-semibold text-slate-300 mb-1.5">Primary Model Name</label>
               <select
                 value={activeModel}
                 onChange={(e) => {
@@ -738,7 +901,7 @@ const AIModelConfiguration = () => {
                   else if (m.startsWith('claude-')) setProvider('Anthropic Claude');
                   else if (m.startsWith('gemini-')) setProvider('Google Gemini');
                 }}
-                className="w-full px-3 py-2 bg-[#1E293B] border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500 cursor-pointer"
+                className="w-full px-3 py-2.5 bg-[#0F172A] border border-slate-700/80 rounded-xl text-xs text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 cursor-pointer transition-all"
               >
                 <option value="openai/gpt-oss-120b" disabled={!envStatus.groqSecured}>
                   {envStatus.groqSecured ? 'Groq LPU Engine (openai/gpt-oss-120b 🟢)' : 'Groq LPU (🔒 Key Required)'}
@@ -768,12 +931,12 @@ const AIModelConfiguration = () => {
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Provider Engine Label</label>
+              <label className="block text-xs font-semibold text-slate-300 mb-1.5">Provider Engine Label</label>
               <input
                 type="text"
                 value={provider}
                 onChange={(e) => setProvider(e.target.value)}
-                className="w-full px-3 py-2 bg-[#1E293B] border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500"
+                className="w-full px-3 py-2.5 bg-[#0F172A] border border-slate-700/80 rounded-xl text-xs text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 transition-all"
               />
             </div>
 
@@ -781,7 +944,15 @@ const AIModelConfiguration = () => {
             <div>
               <div className="flex items-center justify-between text-xs font-semibold mb-2">
                 <span className="text-slate-300">Temperature</span>
-                <span className="text-indigo-400 font-mono font-bold">{temperature}</span>
+                <span className={`px-2 py-0.5 rounded text-[11px] font-mono font-bold border transition-colors ${
+                  temperature <= 0.2 
+                    ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30 shadow-[0_0_8px_rgba(16,185,129,0.2)]'
+                    : temperature <= 0.7 
+                    ? 'bg-indigo-500/15 text-indigo-400 border-indigo-500/30 shadow-[0_0_8px_rgba(99,102,241,0.2)]'
+                    : 'bg-amber-500/15 text-amber-400 border-amber-500/30 shadow-[0_0_8px_rgba(245,158,11,0.2)]'
+                }`}>
+                  {temperature}
+                </span>
               </div>
               <input
                 type="range"
@@ -798,7 +969,9 @@ const AIModelConfiguration = () => {
             <div>
               <div className="flex items-center justify-between text-xs font-semibold mb-2">
                 <span className="text-slate-300">Max Output Tokens</span>
-                <span className="text-indigo-400 font-mono font-bold">{maxTokens}</span>
+                <span className="px-2 py-0.5 rounded text-[11px] font-mono font-bold bg-sky-500/15 text-sky-400 border border-sky-500/30 shadow-[0_0_8px_rgba(56,189,248,0.2)]">
+                  {maxTokens}
+                </span>
               </div>
               <input
                 type="range"
@@ -815,7 +988,9 @@ const AIModelConfiguration = () => {
             <div>
               <div className="flex items-center justify-between text-xs font-semibold mb-2">
                 <span className="text-slate-300">Sampling Top-P</span>
-                <span className="text-indigo-400 font-mono font-bold">{topP}</span>
+                <span className="px-2 py-0.5 rounded text-[11px] font-mono font-bold bg-purple-500/15 text-purple-400 border border-purple-500/30 shadow-[0_0_8px_rgba(168,85,247,0.2)]">
+                  {topP}
+                </span>
               </div>
               <input
                 type="range"
@@ -834,7 +1009,7 @@ const AIModelConfiguration = () => {
               <select
                 value={guardrailsStrictness}
                 onChange={(e) => setGuardrailsStrictness(e.target.value)}
-                className="w-full bg-[#1E293B] border border-slate-700 text-xs text-white p-2.5 rounded-xl focus:outline-none cursor-pointer"
+                className="w-full bg-[#0F172A] border border-slate-700/80 text-xs text-white p-2.5 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 cursor-pointer transition-all"
               >
                 <option value="Strict">Strict (Zero Hallucination Filter)</option>
                 <option value="High">High (Recommended)</option>
@@ -848,7 +1023,7 @@ const AIModelConfiguration = () => {
               <select
                 value={gapDetectionSensitivity}
                 onChange={(e) => setGapDetectionSensitivity(e.target.value)}
-                className="w-full bg-[#1E293B] border border-slate-700 text-xs text-white p-2.5 rounded-xl focus:outline-none cursor-pointer"
+                className="w-full bg-[#0F172A] border border-slate-700/80 text-xs text-white p-2.5 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 cursor-pointer transition-all"
               >
                 <option value="strict">Strict (Exact Taxonomy Match)</option>
                 <option value="moderate">Moderate (Semantic Cosine Match)</option>
@@ -860,7 +1035,9 @@ const AIModelConfiguration = () => {
             <div>
               <div className="flex items-center justify-between text-xs font-semibold mb-2">
                 <span className="text-slate-300">Skill Inference Similarity Threshold</span>
-                <span className="text-indigo-400 font-mono font-bold">{Math.round(skillInferenceThreshold * 100)}%</span>
+                <span className="px-2 py-0.5 rounded text-[11px] font-mono font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 shadow-[0_0_8px_rgba(16,185,129,0.2)]">
+                  {Math.round(skillInferenceThreshold * 100)}%
+                </span>
               </div>
               <input
                 type="range"
@@ -880,17 +1057,20 @@ const AIModelConfiguration = () => {
                 <p className="text-[11px] text-slate-400">Reroute on API error 5xx</p>
               </div>
 
-              <button
+              <motion.button
+                whileTap={{ scale: 0.95 }}
                 type="button"
                 onClick={() => setFallbackEnabled(!fallbackEnabled)}
-                className={`w-12 h-6 rounded-full transition-colors p-1 cursor-pointer ${
-                  fallbackEnabled ? 'bg-indigo-600' : 'bg-slate-800'
+                className={`w-12 h-6 rounded-full transition-colors p-1 cursor-pointer flex items-center ${
+                  fallbackEnabled ? 'bg-indigo-600 shadow-[0_0_12px_rgba(99,102,241,0.4)]' : 'bg-slate-800 border border-slate-700'
                 }`}
               >
-                <div className={`w-4 h-4 rounded-full bg-white transition-transform ${
-                  fallbackEnabled ? 'translate-x-6' : 'translate-x-0'
-                }`} />
-              </button>
+                <motion.div
+                  animate={{ x: fallbackEnabled ? 24 : 0 }}
+                  transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                  className="w-4 h-4 rounded-full bg-white shadow-md"
+                />
+              </motion.button>
             </div>
           </div>
 
