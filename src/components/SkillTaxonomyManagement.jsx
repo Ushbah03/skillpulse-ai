@@ -124,6 +124,25 @@ const SkillTaxonomyManagement = () => {
     fetchTaxonomy();
   }, []);
 
+  // AI-Driven Taxonomy Synchronization via Groq LPU (Llama-3.3-70b)
+  const handleAiAutoSync = async () => {
+    setIsAiGenerating(true);
+    try {
+      const res = await adminAPI.aiSyncTaxonomy();
+      if (res?.success) {
+        showToast(res.message || 'AI Taxonomy Sync Complete via Llama-3.3-70b!', 'success');
+        await fetchTaxonomy();
+      } else {
+        showToast(res?.message || 'Failed to sync taxonomy with AI.', 'error');
+      }
+    } catch (err) {
+      const errorMsg = err?.response?.data?.message || err?.message || 'AI taxonomy synchronization failed.';
+      showToast(errorMsg, 'error');
+    } finally {
+      setIsAiGenerating(false);
+    }
+  };
+
   // Toggle Category Accordion
   const toggleCategory = (id) => {
     setExpandedCategories(prev =>
@@ -500,13 +519,13 @@ const SkillTaxonomyManagement = () => {
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              onClick={() => fetchTaxonomy(true)}
+              onClick={handleAiAutoSync}
               disabled={isAiGenerating || loading}
               className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-indigo-400 border border-indigo-500/30 text-sm font-semibold transition-all duration-200"
-              title="Re-query database and synchronize taxonomy"
+              title="Run Real AI Semantic Tagging & Normalization via Llama-3.3-70b"
             >
-              <RefreshCw className={`w-4 h-4 ${isAiGenerating ? 'animate-spin' : ''}`} />
-              {isAiGenerating ? 'Syncing Framework...' : 'AI Auto-Sync Taxonomy'}
+              <Sparkles className={`w-4 h-4 ${isAiGenerating ? 'animate-spin' : ''}`} />
+              {isAiGenerating ? 'AI Syncing (Llama-3.3-70b)...' : 'AI Auto-Sync Taxonomy'}
             </motion.button>
 
             <motion.button

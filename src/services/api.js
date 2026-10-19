@@ -273,6 +273,10 @@ export const adminAPI = {
     apiRequest(`/admin/taxonomy/skills/${id}`, {
       method: 'DELETE',
     }),
+  aiSyncTaxonomy: () =>
+    apiRequest('/admin/taxonomy/ai-sync', {
+      method: 'POST',
+    }),
   getAIConfigs: () => apiRequest('/admin/ai-config'),
   createAIConfig: (configData) =>
     apiRequest('/admin/ai-config', {
