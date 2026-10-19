@@ -37,6 +37,8 @@ const SkillTaxonomyManagement = () => {
   const [isAiGenerating, setIsAiGenerating] = useState(false);
   const [toastMsg, setToastMsg] = useState({ text: '', type: 'success' });
   const [blockedDeleteSkill, setBlockedDeleteSkill] = useState(null);
+  const [skillToDelete, setSkillToDelete] = useState(null);
+  const [deleting, setDeleting] = useState(false);
 
   // New Skill Form State
   const [newSkill, setNewSkill] = useState({
@@ -234,8 +236,8 @@ const SkillTaxonomyManagement = () => {
     }
   };
 
-  // Delete Skill Handler (Documented in 6.3.4: Skill in Use -> Block & Show Warning, Else Confirm & Delete)
-  const handleDeleteSkill = async (skill) => {
+  // Delete Skill Handler (Documented in 6.3.4: Skill in Use -> Block & Show Warning, Else Custom Modal Confirm & Delete)
+  const handleDeleteSkill = (skill) => {
     const isLinked = (skill.userSkillsCount || 0) > 0 || (skill.skillGapsCount || 0) > 0;
     
     if (isLinked) {
@@ -244,14 +246,18 @@ const SkillTaxonomyManagement = () => {
       return;
     }
 
-    if (!window.confirm(`Are you sure you want to remove '${skill.name}' from the global taxonomy?`)) {
-      return;
-    }
+    // Trigger custom dark themed confirmation modal (replaces generic browser window.confirm)
+    setSkillToDelete(skill);
+  };
 
+  const handleConfirmDelete = async () => {
+    if (!skillToDelete) return;
+    setDeleting(true);
     try {
-      const res = await adminAPI.deleteSkill(skill.id);
+      const res = await adminAPI.deleteSkill(skillToDelete.id);
       if (res?.success) {
-        showToast(`Skill '${skill.name}' removed from taxonomy.`, 'success');
+        showToast(`Skill '${skillToDelete.name}' removed from taxonomy.`, 'success');
+        setSkillToDelete(null);
         await fetchTaxonomy();
       } else {
         showToast(res?.message || 'Failed to delete skill.', 'error');
@@ -259,6 +265,8 @@ const SkillTaxonomyManagement = () => {
     } catch (err) {
       const errorMsg = err?.response?.data?.message || err?.message || 'Failed to delete skill node.';
       showToast(errorMsg, 'error');
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -415,6 +423,59 @@ const SkillTaxonomyManagement = () => {
                   className="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold transition-colors border border-slate-700"
                 >
                   Understood & Close
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Custom Confirmation Modal for Unlinked Skill Deletion (Replaces generic browser window.confirm) */}
+      <AnimatePresence>
+        {skillToDelete && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="w-full max-w-md bg-[#0F172A] border border-rose-500/40 rounded-2xl shadow-2xl p-6"
+            >
+              <div className="flex items-center gap-3.5 pb-4 border-b border-slate-800">
+                <div className="p-3 rounded-xl bg-rose-500/10 text-rose-400 border border-rose-500/30">
+                  <Trash2 className="w-6 h-6" />
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-white">Confirm Skill Deletion</h3>
+                  <p className="text-xs text-rose-400/90 font-medium">Remove from Global Taxonomy</p>
+                </div>
+              </div>
+
+              <div className="mt-4 space-y-3 text-xs text-slate-300 leading-relaxed">
+                <p>
+                  Are you sure you want to remove competency <span className="font-bold text-white underline">{skillToDelete.name}</span> from the global taxonomy?
+                </p>
+                <p className="text-slate-400">
+                  This skill node is currently unlinked from active user profiles and assessments. Once deleted, it will be permanently removed from the master competency repository.
+                </p>
+              </div>
+
+              <div className="mt-6 flex justify-end gap-3">
+                <button
+                  type="button"
+                  disabled={deleting}
+                  onClick={() => setSkillToDelete(null)}
+                  className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold transition-colors border border-slate-700"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  disabled={deleting}
+                  onClick={handleConfirmDelete}
+                  className="flex items-center gap-2 px-5 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 disabled:opacity-50 text-white text-xs font-semibold transition-colors shadow-lg shadow-rose-600/20"
+                >
+                  {deleting && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+                  {deleting ? 'Deleting...' : 'Delete Skill'}
                 </button>
               </div>
             </motion.div>
