@@ -313,10 +313,10 @@ const CompanyAdminDashboard = () => {
                   <Activity className="w-4 h-4 text-indigo-400" />
                   Monthly User Onboarding & Seat Utilization
                 </h3>
-                <p className="text-xs text-slate-400">Cumulative member count registered across annual timeline</p>
+                <p className="text-xs text-slate-400">Cumulative member count registered year-to-date (elapsed months only)</p>
               </div>
               <span className="text-xs text-indigo-400 bg-indigo-500/10 px-3 py-1 rounded-lg font-medium border border-indigo-500/20">
-                Current Year Metrics
+                YTD {new Date().getFullYear()}
               </span>
             </div>
 
