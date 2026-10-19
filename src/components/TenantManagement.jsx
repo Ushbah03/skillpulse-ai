@@ -16,7 +16,11 @@ import {
   Check,
   Key,
   Lock,
-  RefreshCw
+  RefreshCw,
+  Edit3,
+  Users,
+  ExternalLink,
+  Layers
 } from 'lucide-react';
 
 import SuperadminSidebar from './SuperadminSidebar';
@@ -52,6 +56,17 @@ const TenantManagement = () => {
   const [createdCredentials, setCreatedCredentials] = useState(null);
   const [copied, setCopied] = useState(false);
 
+  // Edit Tenant State
+  const [editingTenant, setEditingTenant] = useState(null);
+  const [editForm, setEditForm] = useState({
+    name: '',
+    domain: '',
+    tier: 'Professional',
+    maxUsers: 250,
+    status: 'ACTIVE'
+  });
+  const [updatingTenant, setUpdatingTenant] = useState(false);
+
   // Form State for Onboarding Tenant
   const [newTenant, setNewTenant] = useState({
     name: '',
@@ -60,10 +75,9 @@ const TenantManagement = () => {
     allocatedSeats: 1000,
     adminEmail: '',
     adminPassword: 'AdminPass2026!',
-    authMethod: 'STANDARD', // 'STANDARD' | 'GOOGLE_SSO'
+    authMethod: 'STANDARD',
     adminFirstName: 'Company',
-    adminLastName: 'Admin',
-    region: 'US-East (N. Virginia)'
+    adminLastName: 'Admin'
   });
 
   const generateRandomPassword = () => {
@@ -84,16 +98,17 @@ const TenantManagement = () => {
           id: `TEN-${t.id.slice(-4).toUpperCase()}`,
           rawId: t.id,
           name: t.name,
-          domain: t.domain || `${t.slug}.com`,
-          tier: PLAN_MAP[t.plan] || 'Professional',
-          status: STATUS_MAP[t.status] || 'Active',
+          slug: t.slug,
+          domain: t.domain || t.slug,
+          tier: PLAN_MAP[t.plan] || t.plan,
+          status: STATUS_MAP[t.status] || t.status,
           rawStatus: t.status,
-          allocatedSeats: t.maxUsers || 500,
+          allocatedSeats: t.maxUsers ?? 0,
           usedSeats: t._count?.users || 0,
-          adminEmail: t.adminEmail || 'admin@' + (t.domain || `${t.slug}.com`),
-          joinedDate: new Date(t.createdAt).toISOString().split('T')[0],
-          renewalDate: new Date(new Date(t.createdAt).setFullYear(new Date(t.createdAt).getFullYear() + 1)).toISOString().split('T')[0],
-          region: t.region || 'US-East (N. Virginia)'
+          adminEmail: t.adminEmail || null,
+          departmentsCount: t._count?.departments || 0,
+          teamsCount: t._count?.teams || 0,
+          joinedDate: t.createdAt ? new Date(t.createdAt).toLocaleDateString() : '—'
         }));
         setTenants(mapped);
       }
@@ -160,10 +175,9 @@ const TenantManagement = () => {
           adminPassword: 'AdminPass2026!',
           authMethod: 'STANDARD',
           adminFirstName: 'Company',
-          adminLastName: 'Admin',
-          region: 'US-East (N. Virginia)'
+          adminLastName: 'Admin'
         });
-        fetchTenants();
+        await fetchTenants();
       }
     } catch (err) {
       console.warn('Failed to create tenant:', err);
@@ -173,14 +187,46 @@ const TenantManagement = () => {
   };
 
   // Change Tenant Status (ACTIVE, SUSPENDED, PENDING_PAYMENT)
-  const changeTenantStatus = async (id, newStatus) => {
-    const tenant = tenants.find(t => t.id === id);
-    if (!tenant) return;
+  const changeTenantStatus = async (rawId, newStatus) => {
     try {
-      await adminAPI.updateTenant(tenant.rawId, { status: newStatus });
-      fetchTenants();
+      await adminAPI.updateTenant(rawId, { status: newStatus });
+      await fetchTenants();
     } catch (err) {
       console.warn('Failed to update tenant status:', err);
+    }
+  };
+
+  // Open Edit Modal
+  const openEditModal = (tenant) => {
+    setEditingTenant(tenant);
+    setEditForm({
+      name: tenant.name,
+      domain: tenant.domain,
+      tier: tenant.tier,
+      maxUsers: tenant.allocatedSeats,
+      status: tenant.rawStatus
+    });
+  };
+
+  // Save Tenant Edits
+  const handleSaveTenantEdits = async (e) => {
+    e.preventDefault();
+    if (!editingTenant) return;
+    setUpdatingTenant(true);
+    try {
+      await adminAPI.updateTenant(editingTenant.rawId, {
+        name: editForm.name,
+        domain: editForm.domain,
+        plan: PLAN_REVERSE[editForm.tier] || 'PRO',
+        maxUsers: parseInt(editForm.maxUsers),
+        status: editForm.status
+      });
+      setEditingTenant(null);
+      await fetchTenants();
+    } catch (err) {
+      console.warn('Failed to update tenant:', err);
+    } finally {
+      setUpdatingTenant(false);
     }
   };
 
@@ -190,28 +236,58 @@ const TenantManagement = () => {
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const totalSeatsAllocated = tenants.reduce((acc, curr) => acc + Number(curr.allocatedSeats), 0);
+  const totalSeatsUsed = tenants.reduce((acc, curr) => acc + Number(curr.usedSeats), 0);
+  const activeTenantsCount = tenants.filter(t => t.rawStatus === 'ACTIVE').length;
+  const pendingOrSuspendedCount = tenants.filter(t => t.rawStatus !== 'ACTIVE').length;
+
+  // Animation variants
+  const containerVariants = {
+    hidden: { opacity: 0, y: 15 },
+    visible: { 
+      opacity: 1, 
+      y: 0, 
+      transition: { duration: 0.4, staggerChildren: 0.08 } 
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 10 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.3 } }
+  };
+
   return (
     <div className="flex min-h-screen bg-[#0B1120]">
       <SuperadminSidebar />
 
-      <main className="flex-1 text-slate-100 ml-0 lg:ml-64 pt-20 lg:pt-8 p-4 md:p-8 w-full font-sans">
+      <motion.main 
+        initial="hidden"
+        animate="visible"
+        variants={containerVariants}
+        className="flex-1 text-slate-100 ml-0 lg:ml-64 pt-20 lg:pt-8 p-4 md:p-8 w-full font-sans"
+      >
         
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4 border-b border-slate-800/80 pb-6">
           <div>
-            <h1 className="text-3xl font-extrabold tracking-tight text-white flex items-center gap-3">
-              Tenant &amp; Organization Management
-            </h1>
+            <div className="flex items-center gap-3">
+              <h1 className="text-3xl font-extrabold tracking-tight text-white flex items-center gap-3">
+                Tenant &amp; Organization Management
+              </h1>
+              <span className="px-3 py-1 text-xs font-semibold rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+                {tenants.length} Workspaces
+              </span>
+            </div>
             <p className="text-slate-400 text-sm mt-1">
-              Onboard new client companies, adjust seat quotas, manage SLA tiers, and control payment activation.
+              Onboard client workspaces, adjust seat quotas, configure SLA tiers, and monitor live PostgreSQL tenant environments.
             </p>
           </div>
 
           <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
             onClick={() => setIsModalOpen(true)}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold shadow-lg shadow-indigo-600/20 transition-all duration-200 shrink-0"
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white text-sm font-semibold shadow-lg shadow-indigo-600/30 transition-all duration-200 shrink-0"
           >
             <Plus className="w-4 h-4" />
             Onboard New Tenant
@@ -220,37 +296,88 @@ const TenantManagement = () => {
 
         {/* Metrics Overview */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-5 mb-8">
-          <div className="p-5 rounded-2xl bg-[#0F172A] border border-slate-800/80 shadow-xl">
-            <p className="text-xs text-slate-400 font-medium">Total Registered Tenants</p>
-            <p className="text-2xl font-extrabold text-white mt-1">{tenants.length}</p>
-          </div>
-          <div className="p-5 rounded-2xl bg-[#0F172A] border border-slate-800/80 shadow-xl">
-            <p className="text-xs text-slate-400 font-medium">Active Subscriptions</p>
-            <p className="text-2xl font-extrabold text-emerald-400 mt-1">
-              {tenants.filter(t => t.status === 'Active').length}
+          
+          {/* Metric 1 */}
+          <motion.div 
+            variants={itemVariants} 
+            whileHover={{ y: -4, transition: { duration: 0.2 } }}
+            className="p-5 rounded-2xl bg-[#0F172A] border border-slate-800/80 shadow-xl relative overflow-hidden group hover:border-indigo-500/40 transition-colors"
+          >
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Total Workspaces</span>
+              <div className="p-2 rounded-xl bg-indigo-500/10 text-indigo-400">
+                <Building2 className="w-5 h-5" />
+              </div>
+            </div>
+            <p className="text-3xl font-extrabold text-white">{tenants.length}</p>
+            <p className="text-[11px] text-slate-400 mt-2">
+              <span className="text-indigo-400 font-semibold">{totalSeatsUsed} active users</span> across organizations
             </p>
-          </div>
-          <div className="p-5 rounded-2xl bg-[#0F172A] border border-slate-800/80 shadow-xl">
-            <p className="text-xs text-slate-400 font-medium">Total Provisioned Seats</p>
-            <p className="text-2xl font-extrabold text-indigo-400 mt-1">
-              {tenants.reduce((acc, curr) => acc + Number(curr.allocatedSeats), 0)}
+          </motion.div>
+
+          {/* Metric 2 */}
+          <motion.div 
+            variants={itemVariants} 
+            whileHover={{ y: -4, transition: { duration: 0.2 } }}
+            className="p-5 rounded-2xl bg-[#0F172A] border border-slate-800/80 shadow-xl relative overflow-hidden group hover:border-emerald-500/40 transition-colors"
+          >
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Active Workspaces</span>
+              <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-400">
+                <CheckCircle2 className="w-5 h-5" />
+              </div>
+            </div>
+            <p className="text-3xl font-extrabold text-emerald-400">{activeTenantsCount}</p>
+            <p className="text-[11px] text-slate-400 mt-2">
+              Operational &amp; verified SLA access
             </p>
-          </div>
-          <div className="p-5 rounded-2xl bg-[#0F172A] border border-slate-800/80 shadow-xl">
-            <p className="text-xs text-slate-400 font-medium">Pending Payment / Suspended</p>
-            <p className="text-2xl font-extrabold text-amber-400 mt-1">
-              {tenants.filter(t => t.status !== 'Active').length}
+          </motion.div>
+
+          {/* Metric 3 */}
+          <motion.div 
+            variants={itemVariants} 
+            whileHover={{ y: -4, transition: { duration: 0.2 } }}
+            className="p-5 rounded-2xl bg-[#0F172A] border border-slate-800/80 shadow-xl relative overflow-hidden group hover:border-purple-500/40 transition-colors"
+          >
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Allocated Seats</span>
+              <div className="p-2 rounded-xl bg-purple-500/10 text-purple-400">
+                <Users className="w-5 h-5" />
+              </div>
+            </div>
+            <p className="text-3xl font-extrabold text-white">{totalSeatsAllocated.toLocaleString()}</p>
+            <p className="text-[11px] text-slate-400 mt-2">
+              <span className="text-purple-400 font-semibold">{totalSeatsUsed} consumed</span> ({totalSeatsAllocated > 0 ? Math.round((totalSeatsUsed / totalSeatsAllocated) * 100) : 0}% utilization)
             </p>
-          </div>
+          </motion.div>
+
+          {/* Metric 4 */}
+          <motion.div 
+            variants={itemVariants} 
+            whileHover={{ y: -4, transition: { duration: 0.2 } }}
+            className="p-5 rounded-2xl bg-[#0F172A] border border-slate-800/80 shadow-xl relative overflow-hidden group hover:border-amber-500/40 transition-colors"
+          >
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Pending / Suspended</span>
+              <div className="p-2 rounded-xl bg-amber-500/10 text-amber-400">
+                <ShieldAlert className="w-5 h-5" />
+              </div>
+            </div>
+            <p className="text-3xl font-extrabold text-amber-400">{pendingOrSuspendedCount}</p>
+            <p className="text-[11px] text-slate-400 mt-2">
+              {tenants.filter(t => t.rawStatus === 'PENDING_PAYMENT').length} pending payment • {tenants.filter(t => t.rawStatus === 'SUSPENDED').length} suspended
+            </p>
+          </motion.div>
+
         </div>
 
         {/* Search & Filter Controls */}
-        <div className="p-4 rounded-2xl bg-[#0F172A] border border-slate-800/80 shadow-xl mb-6 flex flex-col md:flex-row items-center justify-between gap-4">
+        <motion.div variants={itemVariants} className="p-4 rounded-2xl bg-[#0F172A] border border-slate-800/80 shadow-xl mb-6 flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="relative w-full md:w-96">
             <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
             <input
               type="text"
-              placeholder="Search by company, domain, or ID..."
+              placeholder="Search by workspace, domain, or ID..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-10 pr-4 py-2 bg-[#1E293B] text-slate-200 border border-slate-700/60 rounded-xl text-sm focus:outline-none focus:border-indigo-500 transition-colors placeholder:text-slate-500"
@@ -287,32 +414,32 @@ const TenantManagement = () => {
               </select>
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {loading ? (
-          <div className="flex flex-col items-center justify-center py-20 bg-[#0F172A] border border-slate-800/80 rounded-2xl">
+          <div className="flex flex-col items-center justify-center py-24 bg-[#0F172A] border border-slate-800/80 rounded-2xl">
             <Loader2 className="w-8 h-8 animate-spin text-indigo-500" />
-            <p className="text-sm text-slate-400 mt-3">Fetching client environments from database...</p>
+            <p className="text-sm text-slate-400 mt-3 font-medium">Fetching real client environments from PostgreSQL database...</p>
           </div>
         ) : (
         /* Directory Table */
-        <div className="rounded-2xl bg-[#0F172A] border border-slate-800/80 shadow-xl overflow-hidden">
+        <motion.div variants={itemVariants} className="rounded-2xl bg-[#0F172A] border border-slate-800/80 shadow-xl overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm text-slate-300">
               <thead className="bg-[#1E293B]/60 text-xs font-bold uppercase tracking-wider text-slate-400 border-b border-slate-800">
                 <tr>
-                  <th className="px-6 py-4">Tenant / Domain</th>
+                  <th className="px-6 py-4">Workspace &amp; Domain</th>
                   <th className="px-6 py-4">SLA Plan Tier</th>
                   <th className="px-6 py-4">Seat Utilization</th>
                   <th className="px-6 py-4">Status</th>
-                  <th className="px-6 py-4">Primary Admin</th>
+                  <th className="px-6 py-4">Primary Administrator</th>
                   <th className="px-6 py-4 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800/60">
                 {filteredTenants.length > 0 ? (
                   filteredTenants.map((tenant) => (
-                    <tr key={tenant.id} className="hover:bg-slate-800/30 transition-colors">
+                    <tr key={tenant.id} className="hover:bg-slate-800/40 transition-colors group">
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
                           <div className="p-2.5 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400">
@@ -325,16 +452,28 @@ const TenantManagement = () => {
                                 {tenant.id}
                               </span>
                             </div>
-                            <div className="text-xs text-slate-400 flex items-center gap-1 mt-0.5">
-                              <Globe className="w-3 h-3 text-slate-500" />
-                              {tenant.domain}
+                            <div className="text-xs text-slate-400 flex items-center gap-2 mt-0.5">
+                              <span className="flex items-center gap-1">
+                                <Globe className="w-3 h-3 text-slate-500" />
+                                {tenant.domain}
+                              </span>
+                              <span>•</span>
+                              <span className="text-[11px] text-slate-500">
+                                {tenant.departmentsCount} Depts
+                              </span>
                             </div>
                           </div>
                         </div>
                       </td>
 
                       <td className="px-6 py-4">
-                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+                        <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border ${
+                          tenant.tier === 'Enterprise AI'
+                            ? 'bg-purple-500/10 text-purple-400 border-purple-500/20'
+                            : tenant.tier === 'Professional'
+                            ? 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20'
+                            : 'bg-slate-700/30 text-slate-300 border-slate-700'
+                        }`}>
                           <CreditCard className="w-3 h-3" />
                           {tenant.tier}
                         </span>
@@ -344,14 +483,18 @@ const TenantManagement = () => {
                         <div className="w-36">
                           <div className="flex justify-between text-xs mb-1">
                             <span className="font-semibold text-slate-200">{tenant.usedSeats} / {tenant.allocatedSeats}</span>
-                            <span className="text-slate-400 text-[11px]">{Math.round((tenant.usedSeats / tenant.allocatedSeats) * 100)}%</span>
+                            <span className="text-slate-400 text-[11px]">
+                              {tenant.allocatedSeats > 0 ? Math.round((tenant.usedSeats / tenant.allocatedSeats) * 100) : 0}%
+                            </span>
                           </div>
                           <div className="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
                             <div 
-                              className={`h-full rounded-full ${
-                                (tenant.usedSeats / tenant.allocatedSeats) > 0.9 ? 'bg-amber-400' : 'bg-indigo-500'
+                              className={`h-full rounded-full transition-all duration-500 ${
+                                (tenant.usedSeats / (tenant.allocatedSeats || 1)) > 0.9 
+                                  ? 'bg-amber-400' 
+                                  : 'bg-indigo-500'
                               }`} 
-                              style={{ width: `${(tenant.usedSeats / tenant.allocatedSeats) * 100}%` }}
+                              style={{ width: `${Math.min(100, (tenant.usedSeats / (tenant.allocatedSeats || 1)) * 100)}%` }}
                             />
                           </div>
                         </div>
@@ -372,38 +515,52 @@ const TenantManagement = () => {
                         </span>
                       </td>
 
-                      <td className="px-6 py-4 text-xs text-slate-300 font-mono">
-                        {tenant.adminEmail}
+                      <td className="px-6 py-4 text-xs font-mono">
+                        {tenant.adminEmail ? (
+                          <span className="text-slate-300">{tenant.adminEmail}</span>
+                        ) : (
+                          <span className="text-slate-500 italic">No admin assigned</span>
+                        )}
                       </td>
 
                       <td className="px-6 py-4 text-right">
                         <div className="flex items-center justify-end gap-2">
-                          {tenant.status === 'Payment Pending' && (
+                          <button
+                            onClick={() => openEditModal(tenant)}
+                            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 border border-transparent hover:border-slate-700 transition-all"
+                            title="Edit Tenant Configuration"
+                          >
+                            <Edit3 className="w-4 h-4" />
+                          </button>
+
+                          {tenant.rawStatus === 'PENDING_PAYMENT' && (
                             <button
-                              onClick={() => changeTenantStatus(tenant.id, 'ACTIVE')}
+                              onClick={() => changeTenantStatus(tenant.rawId, 'ACTIVE')}
                               className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 border border-emerald-500/30 transition-all flex items-center gap-1"
                               title="Clear payment & enable portal access"
                             >
                               <CheckCircle2 className="w-3.5 h-3.5" />
-                              Clear Payment &amp; Activate
+                              Activate
                             </button>
                           )}
 
-                          {tenant.status === 'Active' && (
+                          {tenant.rawStatus === 'ACTIVE' && (
                             <button
-                              onClick={() => changeTenantStatus(tenant.id, 'SUSPENDED')}
+                              onClick={() => changeTenantStatus(tenant.rawId, 'SUSPENDED')}
                               className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 transition-all"
+                              title="Suspend organization access"
                             >
-                              Suspend Access
+                              Suspend
                             </button>
                           )}
 
-                          {tenant.status === 'Suspended' && (
+                          {tenant.rawStatus === 'SUSPENDED' && (
                             <button
-                              onClick={() => changeTenantStatus(tenant.id, 'ACTIVE')}
+                              onClick={() => changeTenantStatus(tenant.rawId, 'ACTIVE')}
                               className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 transition-all"
+                              title="Resume organization access"
                             >
-                              Resume Access
+                              Resume
                             </button>
                           )}
                         </div>
@@ -412,7 +569,7 @@ const TenantManagement = () => {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="6" className="text-center py-10 text-slate-500">
+                    <td colSpan="6" className="text-center py-12 text-slate-500 text-sm">
                       No client tenants match the active filters.
                     </td>
                   </tr>
@@ -420,10 +577,126 @@ const TenantManagement = () => {
               </tbody>
             </table>
           </div>
-        </div>
+        </motion.div>
         )}
 
-      </main>
+      </motion.main>
+
+      {/* Edit Tenant Modal */}
+      <AnimatePresence>
+        {editingTenant && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="w-full max-w-lg bg-[#0F172A] border border-slate-800 rounded-2xl shadow-2xl p-6"
+            >
+              <div className="flex items-center justify-between pb-4 border-b border-slate-800">
+                <div className="flex items-center gap-3">
+                  <div className="p-2.5 rounded-xl bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+                    <Edit3 className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-bold text-white">Edit Tenant Configuration</h2>
+                    <p className="text-xs text-slate-400">{editingTenant.name} ({editingTenant.id})</p>
+                  </div>
+                </div>
+                <button onClick={() => setEditingTenant(null)} className="text-slate-400 hover:text-white">
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <form onSubmit={handleSaveTenantEdits} className="mt-5 space-y-4">
+                <div>
+                  <label className="block text-xs font-semibold uppercase text-slate-400 mb-1">Company Legal Name</label>
+                  <input
+                    type="text"
+                    required
+                    value={editForm.name}
+                    onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                    className="w-full px-3.5 py-2.5 bg-[#1E293B] border border-slate-700 rounded-xl text-xs text-slate-200 focus:outline-none focus:border-indigo-500"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-semibold uppercase text-slate-400 mb-1">Domain / Subdomain</label>
+                    <input
+                      type="text"
+                      value={editForm.domain}
+                      onChange={(e) => setEditForm({ ...editForm, domain: e.target.value })}
+                      className="w-full px-3.5 py-2.5 bg-[#1E293B] border border-slate-700 rounded-xl text-xs text-slate-200 focus:outline-none focus:border-indigo-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold uppercase text-slate-400 mb-1">Status</label>
+                    <select
+                      value={editForm.status}
+                      onChange={(e) => setEditForm({ ...editForm, status: e.target.value })}
+                      className="w-full px-3.5 py-2.5 bg-[#1E293B] border border-slate-700 rounded-xl text-xs text-slate-200 focus:outline-none focus:border-indigo-500 cursor-pointer font-semibold"
+                    >
+                      <option value="ACTIVE">ACTIVE</option>
+                      <option value="PENDING_PAYMENT">PENDING_PAYMENT</option>
+                      <option value="SUSPENDED">SUSPENDED</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-semibold uppercase text-slate-400 mb-1">SLA Subscription Tier</label>
+                    <select
+                      value={editForm.tier}
+                      onChange={(e) => {
+                        const selectedTier = e.target.value;
+                        const defaultSeats = selectedTier === 'Starter' ? 30 : selectedTier === 'Professional' ? 250 : 1000;
+                        setEditForm({ ...editForm, tier: selectedTier, maxUsers: defaultSeats });
+                      }}
+                      className="w-full px-3.5 py-2.5 bg-[#1E293B] border border-slate-700 rounded-xl text-xs text-slate-200 focus:outline-none focus:border-indigo-500 cursor-pointer font-semibold"
+                    >
+                      <option value="Enterprise AI">Enterprise AI (1000 Seats)</option>
+                      <option value="Professional">Professional (250 Seats)</option>
+                      <option value="Starter">Starter (30 Seats)</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold uppercase text-slate-400 mb-1">Max Seat License Limit</label>
+                    <input
+                      type="number"
+                      min={editingTenant.usedSeats}
+                      required
+                      value={editForm.maxUsers}
+                      onChange={(e) => setEditForm({ ...editForm, maxUsers: e.target.value })}
+                      className="w-full px-3.5 py-2.5 bg-[#1E293B] border border-slate-700 rounded-xl text-xs text-slate-200 focus:outline-none focus:border-indigo-500 font-bold"
+                    />
+                  </div>
+                </div>
+
+                <div className="pt-4 border-t border-slate-800 flex justify-end gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setEditingTenant(null)}
+                    className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={updatingTenant}
+                    className="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold transition-colors flex items-center gap-2"
+                  >
+                    {updatingTenant && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+                    Save Configuration
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
       {/* Onboard New Tenant Modal */}
       <AnimatePresence>
@@ -442,7 +715,7 @@ const TenantManagement = () => {
                   </div>
                   <div>
                     <h2 className="text-lg font-bold text-white">Onboard New Client Tenant</h2>
-                    <p className="text-xs text-slate-400">Configure isolated tenant workspace &amp; admin access.</p>
+                    <p className="text-xs text-slate-400">Configure isolated tenant workspace &amp; admin access in PostgreSQL.</p>
                   </div>
                 </div>
                 <button onClick={() => setIsModalOpen(false)} className="text-slate-400 hover:text-white">
@@ -465,11 +738,11 @@ const TenantManagement = () => {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-semibold uppercase text-slate-400 mb-1">Domain</label>
+                    <label className="block text-xs font-semibold uppercase text-slate-400 mb-1">Domain / Subdomain</label>
                     <input
                       type="text"
                       required
-                      placeholder="e.g. acme.com"
+                      placeholder="e.g. acme"
                       value={newTenant.domain}
                       onChange={(e) => setNewTenant({ ...newTenant, domain: e.target.value })}
                       className="w-full px-3.5 py-2 bg-[#1E293B] border border-slate-700 rounded-xl text-xs text-slate-200 focus:outline-none focus:border-indigo-500"
@@ -581,7 +854,7 @@ const TenantManagement = () => {
                   <button
                     type="submit"
                     disabled={saving}
-                    className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold transition-colors flex items-center gap-2"
+                    className="px-5 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white text-xs font-semibold transition-colors flex items-center gap-2 shadow-lg shadow-indigo-600/30"
                   >
                     {saving && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                     Confirm Onboarding
@@ -608,9 +881,9 @@ const TenantManagement = () => {
                   <CheckCircle2 className="w-6 h-6" />
                 </div>
                 <div>
-                  <h2 className="text-lg font-bold text-white">Tenant Onboarded!</h2>
+                  <h2 className="text-lg font-bold text-white">Tenant Workspace Onboarded!</h2>
                   <p className="text-xs text-amber-400 font-medium flex items-center gap-1 mt-0.5">
-                    <AlertTriangle className="w-3.5 h-3.5" /> Initial Status: PENDING_PAYMENT
+                    <AlertTriangle className="w-3.5 h-3.5" /> Status: PENDING_PAYMENT
                   </p>
                 </div>
               </div>
@@ -652,7 +925,7 @@ const TenantManagement = () => {
                   <Lock className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
                   <div>
                     <span className="font-bold block mb-0.5">Portal Access Block Active</span>
-                    This tenant status is set to <span className="font-bold underline">PENDING_PAYMENT</span>. Until payment is cleared by Super Admin or completed online, no employees or admins can access their portal.
+                    This tenant status is set to <span className="font-bold underline">PENDING_PAYMENT</span>. Until payment is cleared by Super Admin or completed online, no employees or admins can access their workspace.
                   </div>
                 </div>
 
