@@ -82,84 +82,108 @@ const PERMISSION_DEFINITIONS = [
     label: 'Multi-Tenant Provisioning & Control',
     category: 'Global Infrastructure',
     description: 'Create, suspend, and configure multi-tenant enterprise accounts and subdomains.',
-    isRootPrivilege: true
+    isRootPrivilege: true,
+    planTier: 'SUPERADMIN ONLY',
+    planBadgeColor: 'bg-purple-500/10 text-purple-400 border-purple-500/20'
   },
   {
     key: 'aiConfigAccess',
     label: 'Global LLM & AI Engine Configuration',
     category: 'Global Infrastructure',
     description: 'Manage Groq, OpenAI, Gemini API keys, provider routing, guardrails, and model fallbacks.',
-    isRootPrivilege: true
+    isRootPrivilege: true,
+    planTier: 'SUPERADMIN ONLY',
+    planBadgeColor: 'bg-purple-500/10 text-purple-400 border-purple-500/20'
   },
   {
     key: 'billingAccess',
     label: 'Billing, Subscriptions & Invoicing',
     category: 'Commercial & Financial',
     description: 'Manage SaaS pricing tiers, enterprise payment methods, and invoices.',
-    isRootPrivilege: false
+    isRootPrivilege: false,
+    planTier: 'STARTER, PRO, ENTERPRISE',
+    planBadgeColor: 'bg-blue-500/10 text-blue-400 border-blue-500/20'
   },
   {
     key: 'securityAuditLogs',
     label: 'Security & Audit Trail Log Inspection',
     category: 'Governance & Security',
     description: 'View cross-tenant audit traces, actor IPs, and session authentication events.',
-    isRootPrivilege: false
+    isRootPrivilege: false,
+    planTier: 'PRO & ENTERPRISE',
+    planBadgeColor: 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20'
   },
   {
     key: 'userManagement',
     label: 'User Directory & Access Control',
     category: 'Identity & Access',
     description: 'Invite new team members, activate/deactivate accounts, and assign workspace roles.',
-    isRootPrivilege: false
+    isRootPrivilege: false,
+    planTier: 'STARTER, PRO, ENTERPRISE',
+    planBadgeColor: 'bg-blue-500/10 text-blue-400 border-blue-500/20'
   },
   {
     key: 'taxonomyEdit',
     label: 'Skill Taxonomy & Framework Editing',
     category: 'Competency Framework',
     description: 'Create, update, and manage core skill benchmarks and proficiencies.',
-    isRootPrivilege: false
+    isRootPrivilege: false,
+    planTier: 'PRO & ENTERPRISE',
+    planBadgeColor: 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20'
   },
   {
     key: 'globalIntegrations',
     label: 'HRIS & LMS API Integration Sync',
     category: 'Integrations & Sync',
     description: 'Configure and synchronize BambooHR, Workday, Coursera, and Udemy webhooks.',
-    isRootPrivilege: false
+    isRootPrivilege: false,
+    planTier: 'ENTERPRISE ONLY',
+    planBadgeColor: 'bg-amber-500/10 text-amber-400 border-amber-500/20'
   },
   {
     key: 'workforceAnalytics',
     label: 'Organization Skill & Workforce Analytics',
     category: 'Talent Intelligence',
     description: 'Access organization-wide skill distribution matrices and critical shortage analytics.',
-    isRootPrivilege: false
+    isRootPrivilege: false,
+    planTier: 'PRO & ENTERPRISE',
+    planBadgeColor: 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20'
   },
   {
     key: 'careerSuccession',
     label: 'Career Readiness & Succession Planning',
     category: 'Talent Intelligence',
     description: 'View promotion readiness ratings, high-potential pipelines, and succession candidates.',
-    isRootPrivilege: false
+    isRootPrivilege: false,
+    planTier: 'ENTERPRISE ONLY',
+    planBadgeColor: 'bg-amber-500/10 text-amber-400 border-amber-500/20'
   },
   {
     key: 'teamFormation',
     label: 'AI-Based Project Team Formation',
     category: 'Operations & Teams',
     description: 'Create project requirements and match high-readiness team members via AI.',
-    isRootPrivilege: false
+    isRootPrivilege: false,
+    planTier: 'PRO & ENTERPRISE',
+    planBadgeColor: 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20'
   },
   {
     key: 'learningAssignment',
     label: 'Assign Learning Programs & Roadmaps',
     category: 'Learning & Development',
     description: 'Enroll subordinates or employees into mandatory compliance and upskilling courses.',
-    isRootPrivilege: false
+    isRootPrivilege: false,
+    planTier: 'PRO & ENTERPRISE',
+    planBadgeColor: 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20'
   },
   {
     key: 'selfAssessment',
     label: 'Personal AI Skill Assessment & Portfolio',
     category: 'Employee Core',
     description: 'Undergo self-assessments, upload proof of certifications, and view career scores.',
-    isRootPrivilege: false
+    isRootPrivilege: false,
+    planTier: 'ALL PLANS (CORE)',
+    planBadgeColor: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
   }
 ];
 
@@ -405,6 +429,16 @@ const RoleManagement = () => {
   // Handle reassigning user role
   const handleConfirmReassign = async () => {
     if (!reassignModalUser) return;
+    
+    // Strict Plan-Based Ceiling Validation:
+    // STARTER plan tenants cannot assign premium roles (HR_MANAGER, TEAM_LEADER)
+    const PREMIUM_ROLES = ['HR_MANAGER', 'TEAM_LEADER'];
+    const tenantPlan = reassignModalUser.tenant?.plan || 'STARTER';
+    if (PREMIUM_ROLES.includes(targetNewRole) && tenantPlan === 'STARTER') {
+      alert(`Plan Restriction Enforced: The tenant '${reassignModalUser.tenant?.name || 'Company'}' is on the STARTER subscription plan, which does not allow assigning the premium '${targetNewRole}' role. Upgrade the company subscription to Professional or Enterprise in Billing to unlock premium roles.`);
+      return;
+    }
+
     try {
       setReassigning(true);
       const res = await adminAPI.updateUser(reassignModalUser.id, {
@@ -716,6 +750,21 @@ const RoleManagement = () => {
                 </div>
               </div>
 
+              {/* Multi-Tenant Plan Ceiling Guarantee Banner */}
+              <div className="mt-6 p-4 rounded-xl bg-gradient-to-r from-blue-950/40 via-indigo-950/30 to-purple-950/40 border border-indigo-500/20 flex items-start gap-3.5">
+                <div className="p-2 rounded-lg bg-indigo-500/10 text-indigo-400 shrink-0 mt-0.5 border border-indigo-500/20">
+                  <ShieldCheck className="w-4 h-4" />
+                </div>
+                <div className="text-xs">
+                  <p className="font-bold text-slate-200">
+                    Two-Layer Security Architecture: Subscription Plan Ceilings &times; Role Responsibilities
+                  </p>
+                  <p className="text-slate-400 mt-1 leading-relaxed">
+                    A company's subscription plan (<strong className="text-amber-400">STARTER</strong>, <strong className="text-indigo-400">PRO</strong>, <strong className="text-purple-400">ENTERPRISE</strong>) acts as an <em>immutable security ceiling</em>. Toggling capabilities here defines this role's maximum privileges, but the platform strictly enforces plan boundaries: <strong>a user's effective permissions can never exceed what their company's subscription plan allows.</strong>
+                  </p>
+                </div>
+              </div>
+
               {/* Conflict Warning Banner (Documented in 6.3.7 Draw.io) */}
               <AnimatePresence>
                 {activeConflicts.length > 0 && (
@@ -801,9 +850,14 @@ const RoleManagement = () => {
                                     </span>
                                   )}
                                 </div>
-                                <span className="inline-block mt-0.5 px-1.5 py-0.5 rounded text-[10px] font-mono bg-slate-800 text-slate-400 border border-slate-700">
-                                  {perm.category}
-                                </span>
+                                <div className="flex flex-wrap items-center gap-1.5 mt-1">
+                                  <span className="inline-block px-1.5 py-0.5 rounded text-[10px] font-mono bg-slate-800 text-slate-400 border border-slate-700">
+                                    {perm.category}
+                                  </span>
+                                  <span className={`inline-block px-1.5 py-0.5 rounded text-[10px] font-mono font-bold border ${perm.planBadgeColor}`}>
+                                    Plan: {perm.planTier}
+                                  </span>
+                                </div>
                               </div>
                             </div>
 
@@ -875,6 +929,7 @@ const RoleManagement = () => {
                         <tr>
                           <th className="py-3 px-4">User</th>
                           <th className="py-3 px-4">Company / Tenant</th>
+                          <th className="py-3 px-4">Tenant Plan (Ceiling)</th>
                           <th className="py-3 px-4">Department</th>
                           <th className="py-3 px-4">Status</th>
                           <th className="py-3 px-4 text-right">Actions</th>
@@ -883,7 +938,7 @@ const RoleManagement = () => {
                       <tbody className="divide-y divide-slate-800/60">
                         {paginatedUsers.length === 0 ? (
                           <tr>
-                            <td colSpan="5" className="py-8 text-center text-slate-500">
+                            <td colSpan="6" className="py-8 text-center text-slate-500">
                               No active database users currently hold the <strong>{selectedRole.name}</strong> role.
                             </td>
                           </tr>
@@ -909,6 +964,19 @@ const RoleManagement = () => {
                                 <span className="flex items-center gap-1.5 text-slate-300 font-medium">
                                   <Building2 className="w-3.5 h-3.5 text-slate-500" />
                                   {user.tenant?.name || 'Platform Core (Global)'}
+                                </span>
+                              </td>
+                              <td className="py-3 px-4">
+                                <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono font-bold border ${
+                                  user.tenant?.plan === 'ENTERPRISE'
+                                    ? 'bg-purple-500/10 text-purple-400 border-purple-500/30'
+                                    : user.tenant?.plan === 'PRO'
+                                    ? 'bg-indigo-500/10 text-indigo-400 border-indigo-500/30'
+                                    : user.tenant?.plan === 'STARTER'
+                                    ? 'bg-amber-500/10 text-amber-400 border-amber-500/30'
+                                    : 'bg-slate-800 text-slate-400 border-slate-700'
+                                }`}>
+                                  {user.tenant?.plan || 'GLOBAL ROOT'}
                                 </span>
                               </td>
                               <td className="py-3 px-4 text-slate-400">
