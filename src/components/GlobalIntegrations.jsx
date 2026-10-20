@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Cable, 
@@ -20,7 +20,11 @@ import {
   Copy,
   Check,
   Radio,
-  Server
+  Server,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight
 } from 'lucide-react';
 
 import SuperadminSidebar from './SuperadminSidebar';
@@ -77,9 +81,18 @@ const GlobalIntegrations = () => {
   const [dangerModal, setDangerModal] = useState(null);
   const [updatingId, setUpdatingId] = useState(null);
 
+  // Pagination State for Connectors
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(6);
+
   useEffect(() => {
     fetchIntegrations();
   }, []);
+
+  // Reset to page 1 when filter/search/pageSize changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, categoryFilter, pageSize]);
 
   const fetchIntegrations = async () => {
     try {
@@ -98,12 +111,22 @@ const GlobalIntegrations = () => {
     }
   };
 
-  const filteredIntegrations = integrations.filter((item) => {
-    const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          item.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = categoryFilter === 'All' || item.category === categoryFilter;
-    return matchesSearch && matchesCategory;
-  });
+  const filteredIntegrations = useMemo(() => {
+    return integrations.filter((item) => {
+      const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                            item.description.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesCategory = categoryFilter === 'All' || item.category === categoryFilter;
+      return matchesSearch && matchesCategory;
+    });
+  }, [integrations, searchTerm, categoryFilter]);
+
+  // Pagination Calculations
+  const totalPages = Math.ceil(filteredIntegrations.length / pageSize) || 1;
+  const startIndex = (currentPage - 1) * pageSize;
+  const endIndex = Math.min(startIndex + pageSize, filteredIntegrations.length);
+  const paginatedIntegrations = useMemo(() => {
+    return filteredIntegrations.slice(startIndex, endIndex);
+  }, [filteredIntegrations, startIndex, endIndex]);
 
   const handleUpdateStatus = async (id, targetStatus) => {
     try {
@@ -233,10 +256,14 @@ const GlobalIntegrations = () => {
   const healthPercentage = totalCount > 0 ? Math.round((activeCount / totalCount) * 100) : 100;
 
   return (
-    <div className="flex min-h-screen bg-[#0B1120]">
+    <div className="flex min-h-screen bg-[#0B1120] relative overflow-hidden">
+      {/* Ambient Animated Glow Orbs */}
+      <div className="absolute top-10 left-1/4 w-96 h-96 bg-indigo-600/10 rounded-full blur-3xl pointer-events-none animate-pulse" />
+      <div className="absolute top-1/2 right-10 w-96 h-96 bg-violet-600/5 rounded-full blur-3xl pointer-events-none" />
+
       <SuperadminSidebar />
 
-      <main className="flex-1 text-slate-100 ml-0 lg:ml-64 pt-20 lg:pt-8 p-4 md:p-8 w-full font-sans">
+      <main className="flex-1 text-slate-100 ml-0 lg:ml-64 pt-20 lg:pt-8 p-4 md:p-8 w-full font-sans relative z-10">
         
         {/* Sync Feedback Toast Banner */}
         <AnimatePresence>
@@ -419,7 +446,7 @@ const GlobalIntegrations = () => {
         ) : (
           /* Connector Cards */
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredIntegrations.map((item) => {
+            {paginatedIntegrations.map((item) => {
               const isPlatform = item.isPlatform || item.type === 'platform';
               const isCurrentlyValidating = validatingId === item.id;
               const hasFeedback = validationFeedback && validationFeedback.id === item.id;
@@ -573,6 +600,85 @@ const GlobalIntegrations = () => {
                 <p className="text-xs text-slate-400 mt-1">Try a different category or search term.</p>
               </div>
             )}
+          </div>
+        )}
+
+        {/* PAGINATION CONTROLS FOR CONNECTORS */}
+        {!loading && filteredIntegrations.length > 0 && (
+          <div className="mt-8 p-4 bg-[#0F172A] border border-slate-800/80 rounded-2xl shadow-xl flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400">
+            <div className="flex items-center gap-4">
+              <span>
+                Showing <span className="font-bold text-white">{filteredIntegrations.length > 0 ? startIndex + 1 : 0}</span> to <span className="font-bold text-white">{endIndex}</span> of <span className="font-bold text-white">{filteredIntegrations.length}</span> enterprise connectors
+              </span>
+
+              <div className="flex items-center gap-2">
+                <span className="text-slate-500">Per page:</span>
+                <select
+                  value={pageSize}
+                  onChange={(e) => setPageSize(Number(e.target.value))}
+                  className="bg-[#1E293B] border border-slate-700 text-slate-200 rounded-lg px-2 py-1 focus:outline-none focus:border-indigo-500 cursor-pointer font-mono"
+                >
+                  <option value={3}>3</option>
+                  <option value={6}>6</option>
+                  <option value={9}>9</option>
+                  <option value={12}>12</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Pagination Navigation */}
+            <div className="flex items-center gap-1.5">
+              <button
+                onClick={() => setCurrentPage(1)}
+                disabled={currentPage === 1}
+                title="First Page"
+                className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed text-slate-300 transition-colors border border-slate-700/60"
+              >
+                <ChevronsLeft className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+                title="Previous Page"
+                className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed text-slate-300 transition-colors border border-slate-700/60"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+
+              {/* Numbered Page Buttons */}
+              <div className="flex items-center gap-1">
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                  <button
+                    key={page}
+                    onClick={() => setCurrentPage(page)}
+                    className={`w-7 h-7 rounded-lg text-xs font-semibold transition-all ${
+                      currentPage === page
+                        ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30'
+                        : 'bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white border border-slate-700/60'
+                    }`}
+                  >
+                    {page}
+                  </button>
+                ))}
+              </div>
+
+              <button
+                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                disabled={currentPage === totalPages || totalPages === 0}
+                title="Next Page"
+                className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed text-slate-300 transition-colors border border-slate-700/60"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => setCurrentPage(totalPages)}
+                disabled={currentPage === totalPages || totalPages === 0}
+                title="Last Page"
+                className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed text-slate-300 transition-colors border border-slate-700/60"
+              >
+                <ChevronsRight className="w-4 h-4" />
+              </button>
+            </div>
           </div>
         )}
 
