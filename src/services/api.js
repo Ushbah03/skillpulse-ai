@@ -340,6 +340,17 @@ export const adminAPI = {
     apiRequest('/admin/integrations/lms/sync', {
       method: 'POST',
     }),
+  getRolePermissions: () => apiRequest('/admin/roles/permissions'),
+  updateRolePermissions: (payload) =>
+    apiRequest('/admin/roles/permissions', {
+      method: 'PATCH',
+      body: JSON.stringify(payload),
+    }),
+  resetRolePermissions: (payload) =>
+    apiRequest('/admin/roles/reset-permissions', {
+      method: 'POST',
+      body: JSON.stringify(payload || {}),
+    }),
 };
 
 // ----------------------------------------------------
