@@ -458,7 +458,7 @@ const RoleManagement = () => {
 
       <SuperadminSidebar activeItem="roles" />
 
-      <main className="flex-1 ml-0 lg:ml-64 pt-20 lg:pt-8 p-4 md:p-8 w-full z-10 max-w-7xl mx-auto">
+      <main className="flex-1 ml-0 lg:ml-64 pt-20 lg:pt-8 p-4 md:p-8 w-full font-sans relative z-10">
         
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4 border-b border-slate-800/80 pb-6">
@@ -600,8 +600,8 @@ const RoleManagement = () => {
         {/* Layout Grid: Left Roles Selection, Right Content Workspace */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           
-          {/* Left Column: 5 System Roles (4 cols) */}
-          <div className="lg:col-span-4 space-y-4">
+          {/* Left Column: 5 System Roles (3 cols on XL) */}
+          <div className="lg:col-span-4 xl:col-span-3 space-y-4">
             <div className="flex items-center justify-between mb-2">
               <h2 className="text-xs font-bold uppercase tracking-wider text-slate-400">
                 System Role Hierarchy (5)
@@ -665,8 +665,8 @@ const RoleManagement = () => {
             })}
           </div>
 
-          {/* Right Column: Active Role Workspace (8 cols) */}
-          <div className="lg:col-span-8 space-y-6">
+          {/* Right Column: Active Role Workspace (9 cols on XL) */}
+          <div className="lg:col-span-8 xl:col-span-9 space-y-6">
             
             {/* Selected Role Header Card */}
             <div className="p-6 rounded-2xl bg-[#0F172A]/90 backdrop-blur-xl border border-slate-800/80 shadow-xl">
@@ -760,12 +760,14 @@ const RoleManagement = () => {
               {/* TAB 1: PERMISSION MATRIX */}
               {activeTab === 'permissions' && (
                 <div className="mt-6">
-                  <div className="flex items-center justify-between text-xs font-bold uppercase text-slate-400 tracking-wider pb-3 border-b border-slate-800">
-                    <span>Access Capability Privilege</span>
-                    <span>Permission State</span>
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between text-xs font-bold uppercase text-slate-400 tracking-wider pb-3 border-b border-slate-800 gap-2">
+                    <span>12 System Access Capability Flags</span>
+                    <span className="text-[11px] font-mono text-indigo-400 font-semibold normal-case">
+                      {Object.values(currentRolePermissions).filter(Boolean).length} Granted / {12 - Object.values(currentRolePermissions).filter(Boolean).length} Restricted
+                    </span>
                   </div>
 
-                  <div className="mt-4 space-y-3">
+                  <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
                     {PERMISSION_DEFINITIONS.map((perm) => {
                       const isGranted = !!currentRolePermissions[perm.key];
                       const hasConflict = activeConflicts.some(c => c.key === perm.key);
@@ -773,59 +775,66 @@ const RoleManagement = () => {
                       return (
                         <div
                           key={perm.key}
-                          className={`p-4 rounded-xl border transition-all flex items-center justify-between gap-4 ${
+                          className={`p-4 rounded-xl border transition-all flex flex-col justify-between gap-3 ${
                             hasConflict
-                              ? 'bg-rose-950/20 border-rose-500/40'
+                              ? 'bg-rose-950/20 border-rose-500/40 shadow-lg shadow-rose-950/30'
                               : isGranted
-                              ? 'bg-[#1E293B]/50 border-slate-800 hover:border-slate-700'
+                              ? 'bg-[#1E293B]/50 border-slate-800 hover:border-slate-700 shadow-md'
                               : 'bg-[#0B1120]/40 border-slate-800/60 opacity-80 hover:opacity-100'
                           }`}
                         >
-                          <div className="flex items-start gap-3">
-                            <div className={`p-2 rounded-lg mt-0.5 ${
-                              isGranted
-                                ? 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20'
-                                : 'bg-slate-800 text-slate-500'
-                            }`}>
-                              {isGranted ? <CheckCircle2 className="w-4 h-4" /> : <XCircle className="w-4 h-4" />}
-                            </div>
-                            <div>
-                              <div className="flex items-center gap-2">
-                                <span className="text-sm font-bold text-white">{perm.label}</span>
-                                <span className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-slate-800 text-slate-400 border border-slate-700">
+                          <div className="flex items-start justify-between gap-3">
+                            <div className="flex items-start gap-2.5">
+                              <div className={`p-2 rounded-lg mt-0.5 shrink-0 ${
+                                isGranted
+                                  ? 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20'
+                                  : 'bg-slate-800 text-slate-500'
+                              }`}>
+                                {isGranted ? <CheckCircle2 className="w-4 h-4" /> : <XCircle className="w-4 h-4" />}
+                              </div>
+                              <div>
+                                <div className="flex flex-wrap items-center gap-1.5">
+                                  <span className="text-sm font-bold text-white">{perm.label}</span>
+                                  {perm.isRootPrivilege && (
+                                    <span className="px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-purple-500/10 text-purple-400 border border-purple-500/20">
+                                      Root Only
+                                    </span>
+                                  )}
+                                </div>
+                                <span className="inline-block mt-0.5 px-1.5 py-0.5 rounded text-[10px] font-mono bg-slate-800 text-slate-400 border border-slate-700">
                                   {perm.category}
                                 </span>
-                                {perm.isRootPrivilege && (
-                                  <span className="px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-purple-500/10 text-purple-400 border border-purple-500/20">
-                                    Root Only
-                                  </span>
-                                )}
                               </div>
-                              <p className="text-xs text-slate-400 mt-1">{perm.description}</p>
-                              <span className="text-[11px] text-slate-500 font-mono mt-0.5 block">
-                                Flag: <code className="text-indigo-300">{perm.key}</code>
-                              </span>
+                            </div>
+
+                            {/* Toggle Switch */}
+                            <div className="flex items-center gap-2 shrink-0">
+                              <button
+                                type="button"
+                                onClick={() => handleTogglePermission(perm.key)}
+                                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-[#0B1120] ${
+                                  isGranted ? 'bg-indigo-600' : 'bg-slate-700'
+                                }`}
+                              >
+                                <span
+                                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                                    isGranted ? 'translate-x-6' : 'translate-x-1'
+                                  }`}
+                                />
+                              </button>
                             </div>
                           </div>
 
-                          {/* Toggle Switch */}
-                          <div className="flex items-center gap-3 shrink-0">
-                            <button
-                              type="button"
-                              onClick={() => handleTogglePermission(perm.key)}
-                              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-[#0B1120] ${
-                                isGranted ? 'bg-indigo-600' : 'bg-slate-700'
-                              }`}
-                            >
-                              <span
-                                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                                  isGranted ? 'translate-x-6' : 'translate-x-1'
-                                }`}
-                              />
-                            </button>
-                            <span className={`text-xs font-bold w-16 text-right ${
+                          <p className="text-xs text-slate-400 leading-relaxed">{perm.description}</p>
+
+                          <div className="pt-2 border-t border-slate-800/60 flex items-center justify-between text-[11px]">
+                            <span className="text-slate-500 font-mono">
+                              Flag: <code className="text-indigo-300 font-mono">{perm.key}</code>
+                            </span>
+                            <span className={`font-bold flex items-center gap-1 ${
                               isGranted ? 'text-emerald-400' : 'text-slate-500'
                             }`}>
+                              <span className={`w-1.5 h-1.5 rounded-full ${isGranted ? 'bg-emerald-400' : 'bg-slate-600'}`} />
                               {isGranted ? 'Granted' : 'Restricted'}
                             </span>
                           </div>
