@@ -317,10 +317,10 @@ const SuperAdminDashboard = () => {
         </div>
 
         {/* Core Dashboard Section Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-8 items-start">
           
           {/* Top Tenant Activity Overview (Spans 8 Columns) */}
-          <div className="lg:col-span-8 p-6 rounded-2xl bg-[#0F172A]/90 backdrop-blur-xl border border-slate-800/80 shadow-xl flex flex-col justify-between">
+          <div className="lg:col-span-8 p-6 rounded-2xl bg-[#0F172A]/90 backdrop-blur-xl border border-slate-800/80 shadow-xl">
             <div>
               <div className="flex items-center justify-between pb-4 border-b border-slate-800">
                 <div className="flex items-center gap-3">
@@ -328,8 +328,8 @@ const SuperAdminDashboard = () => {
                     <Layers className="w-5 h-5" />
                   </div>
                   <div>
-                    <h2 className="text-lg font-bold text-white">Enterprise Client Tenants &amp; Seat Capacity</h2>
-                    <p className="text-xs text-slate-400">Real-time seat allocation, subscription plan, and operational status.</p>
+                    <h2 className="text-lg font-bold text-white">Top Enterprise Tenants by Seat Quota</h2>
+                    <p className="text-xs text-slate-400">Showing top 5 active client workspaces out of {tenantsCount} total registered.</p>
                   </div>
                 </div>
                 <Link 
@@ -340,10 +340,10 @@ const SuperAdminDashboard = () => {
                 </Link>
               </div>
 
-              <div className="mt-5 space-y-3.5">
-                {recentTenants.length > 0 ? (
-                  recentTenants.map((tenant) => (
-                    <div key={tenant.id || tenant.name} className="p-4 rounded-xl bg-[#1E293B]/50 border border-slate-800/80 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:border-slate-700 transition-all">
+              <div className="mt-5 space-y-3">
+                {recentTenants.slice(0, 5).length > 0 ? (
+                  recentTenants.slice(0, 5).map((tenant) => (
+                    <div key={tenant.id || tenant.name} className="p-3.5 rounded-xl bg-[#1E293B]/50 border border-slate-800/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:border-slate-700 transition-all">
                       <div className="flex-1">
                         <div className="flex items-center gap-2.5">
                           <span className="font-bold text-sm text-white">{tenant.name}</span>
@@ -358,7 +358,7 @@ const SuperAdminDashboard = () => {
                             {tenant.tier}
                           </span>
                         </div>
-                        <div className="mt-2.5 w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                        <div className="mt-2 w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
                           <div 
                             className={`h-full rounded-full ${
                               tenant.usage > 85 ? 'bg-amber-500' : 'bg-indigo-500'
@@ -388,14 +388,16 @@ const SuperAdminDashboard = () => {
               </div>
             </div>
 
-            <div className="pt-4 border-t border-slate-800 mt-6 flex items-center justify-between text-xs text-slate-400">
-              <span>Showing latest client workspaces from Neon DB</span>
-              <span className="font-mono text-emerald-400 font-semibold">{activeTenantCount} Active • {suspendedTenantCount} Suspended</span>
+            <div className="pt-4 border-t border-slate-800 mt-5 flex items-center justify-between text-xs text-slate-400">
+              <span>Top 5 workspaces shown • Full directory available in Tenant Management</span>
+              <Link to="/superadmin/tenants" className="font-mono text-indigo-400 hover:text-indigo-300 font-semibold flex items-center gap-1">
+                Manage All {tenantsCount} Tenants <ArrowRight className="w-3 h-3" />
+              </Link>
             </div>
           </div>
 
           {/* Infrastructure Health & Prisma Telemetry (Spans 4 Columns) */}
-          <div className="lg:col-span-4 p-6 rounded-2xl bg-[#0F172A]/90 backdrop-blur-xl border border-slate-800/80 shadow-xl flex flex-col justify-between">
+          <div className="lg:col-span-4 p-6 rounded-2xl bg-[#0F172A]/90 backdrop-blur-xl border border-slate-800/80 shadow-xl">
             <div>
               <div className="flex items-center gap-3 pb-4 border-b border-slate-800">
                 <div className="p-2.5 rounded-xl bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
@@ -407,7 +409,7 @@ const SuperAdminDashboard = () => {
                 </div>
               </div>
 
-              <div className="mt-5 space-y-4">
+              <div className="mt-4 space-y-3">
                 <div className="flex items-center justify-between text-xs">
                   <span className="text-slate-400 font-medium">PostgreSQL Pooler Status</span>
                   <span className="text-emerald-400 font-mono font-bold flex items-center gap-1.5">
@@ -415,39 +417,59 @@ const SuperAdminDashboard = () => {
                     100% Operational
                   </span>
                 </div>
-                <div className="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                <div className="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
                   <div className="bg-emerald-500 h-full rounded-full" style={{ width: '100%' }} />
                 </div>
 
-                <div className="flex items-center justify-between text-xs pt-1">
+                <div className="flex items-center justify-between text-xs pt-0.5">
                   <span className="text-slate-400 font-medium">Query Latency</span>
                   <span className="text-sky-300 font-mono font-bold">{latency}</span>
                 </div>
 
-                <div className="flex items-center justify-between text-xs pt-1">
+                <div className="flex items-center justify-between text-xs pt-0.5">
                   <span className="text-slate-400 font-medium">Process Heap Load</span>
                   <span className="text-amber-400 font-mono font-bold">{cpuLoad} ({memoryUsedMB} MB / {memoryTotalMB} MB)</span>
                 </div>
 
-                <div className="flex items-center justify-between text-xs pt-1">
+                <div className="flex items-center justify-between text-xs pt-0.5">
                   <span className="text-slate-400 font-medium">Platform SLA Availability</span>
                   <span className="text-emerald-400 font-mono font-bold">{uptime}</span>
                 </div>
 
-                <div className="flex items-center justify-between text-xs pt-1">
-                  <span className="text-slate-400 font-medium">Recorded Audit Event Traces</span>
+                <div className="flex items-center justify-between text-xs pt-0.5">
+                  <span className="text-slate-400 font-medium">Recorded Audit Traces</span>
                   <span className="text-purple-300 font-mono font-bold">{totalAuditLogs} Events</span>
                 </div>
 
-                <div className="flex items-center justify-between text-xs pt-1">
-                  <span className="text-slate-400 font-medium">User Directory Total Profiles</span>
+                <div className="flex items-center justify-between text-xs pt-0.5">
+                  <span className="text-slate-400 font-medium">Active User Profiles</span>
                   <span className="text-indigo-300 font-mono font-bold">{totalUsersCount} Users</span>
                 </div>
               </div>
             </div>
 
-            <div className="pt-6 border-t border-slate-800 mt-6">
-              <div className="p-3.5 rounded-xl bg-indigo-600/10 border border-indigo-500/20 flex items-center justify-between">
+            <div className="pt-4 border-t border-slate-800 mt-4 space-y-3">
+              {/* Plan Distribution Mini Bar */}
+              <div>
+                <div className="flex items-center justify-between text-[11px] text-slate-400 mb-1.5 font-mono">
+                  <span>Tenants Plan Breakdown</span>
+                  <span className="text-slate-300 font-bold">{tenantsCount} Total</span>
+                </div>
+                <div className="flex items-center gap-1.5 text-[10px] font-mono">
+                  <span className="px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20 font-bold">
+                    Starter: {planDistribution.STARTER}
+                  </span>
+                  <span className="px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 font-bold">
+                    Pro: {planDistribution.PRO}
+                  </span>
+                  <span className="px-2 py-0.5 rounded bg-purple-500/10 text-purple-400 border border-purple-500/20 font-bold">
+                    Ent: {planDistribution.ENTERPRISE}
+                  </span>
+                </div>
+              </div>
+
+              {/* Primary AI Engine */}
+              <div className="p-3 rounded-xl bg-indigo-600/10 border border-indigo-500/20 flex items-center justify-between">
                 <div>
                   <span className="text-xs text-indigo-300 font-bold block">Primary AI Engine</span>
                   <span className="text-[11px] text-slate-400 font-mono">
