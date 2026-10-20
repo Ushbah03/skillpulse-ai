@@ -325,6 +325,12 @@ export const adminAPI = {
       method: 'POST',
       body: JSON.stringify(payload || {}),
     }),
+  getPricingTiers: () => apiRequest('/admin/billing/tiers'),
+  updatePricingTiers: (tiers) =>
+    apiRequest('/admin/billing/tiers', {
+      method: 'PATCH',
+      body: JSON.stringify({ tiers }),
+    }),
   syncHrisDirectory: (directory) =>
     apiRequest('/admin/integrations/hris/sync', {
       method: 'POST',
