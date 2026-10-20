@@ -23,7 +23,8 @@ import {
   Save,
   RefreshCw,
   Layers,
-  Sparkles
+  Sparkles,
+  Lock
 } from 'lucide-react';
 
 import SuperadminSidebar from './SuperadminSidebar';
@@ -184,16 +185,16 @@ const BillingAndSubscriptions = () => {
   const openEditModal = (sub) => {
     setSelectedEditTenant(sub);
     const planKey = (sub.plan || 'PRO').toUpperCase();
-    const fixedSeats = sub.seats || pricingTiers[planKey]?.defaultSeats || 250;
+    const fixedSeats = pricingTiers[planKey]?.defaultSeats || (planKey === 'STARTER' ? 30 : planKey === 'PRO' ? 250 : 1000);
     setEditPlan(planKey);
     setEditStatus(sub.rawStatus || 'ACTIVE');
     setEditMaxUsers(fixedSeats);
   };
 
-  // Handle Plan Dropdown Change in Modal
+  // Handle Plan Dropdown Change in Modal (Automatically updates fixed seats)
   const handlePlanSelectChange = (newPlanKey) => {
     setEditPlan(newPlanKey);
-    const fixedSeats = pricingTiers[newPlanKey]?.defaultSeats || 250;
+    const fixedSeats = pricingTiers[newPlanKey]?.defaultSeats || (newPlanKey === 'STARTER' ? 30 : newPlanKey === 'PRO' ? 250 : 1000);
     setEditMaxUsers(fixedSeats);
   };
 
@@ -863,15 +864,24 @@ const BillingAndSubscriptions = () => {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold uppercase text-slate-400 mb-1">Maximum Licensed User Seats</label>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="block text-xs font-semibold uppercase text-slate-400">Maximum Licensed User Seats</label>
+                    <span className="text-[10px] font-bold text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded-full flex items-center gap-1">
+                      <Lock className="w-3 h-3 text-amber-400" /> Fixed by Plan Tier
+                    </span>
+                  </div>
                   <input
                     type="number"
+                    readOnly
+                    disabled
                     value={editMaxUsers}
-                    onChange={(e) => setEditMaxUsers(Number(e.target.value))}
-                    className="w-full px-3.5 py-2 bg-[#1E293B] border border-slate-700/80 rounded-xl text-xs text-indigo-300 font-mono font-bold focus:outline-none focus:border-indigo-500"
+                    className="w-full px-3.5 py-2.5 bg-slate-800/80 border border-slate-700/80 rounded-xl text-xs text-indigo-300 font-mono font-bold focus:outline-none cursor-not-allowed select-none opacity-80"
                   />
-                  <p className="text-[11px] text-slate-500 mt-1">
-                    Default seats based on plan: Starter ({pricingTiers.STARTER?.defaultSeats || 30}) · Professional ({pricingTiers.PRO?.defaultSeats || 250}) · Enterprise AI ({pricingTiers.ENTERPRISE?.defaultSeats || 1000}).
+                  <p className="text-[11px] text-slate-500 mt-1.5 flex items-center gap-1.5">
+                    <span>🔒</span>
+                    <span>
+                      Seat capacity is automatically fixed based on plan tier: Starter ({pricingTiers.STARTER?.defaultSeats || 30} seats) · Professional ({pricingTiers.PRO?.defaultSeats || 250} seats) · Enterprise AI ({pricingTiers.ENTERPRISE?.defaultSeats || 1000} seats). Cannot be manually edited.
+                    </span>
                   </p>
                 </div>
 
