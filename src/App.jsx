@@ -66,12 +66,7 @@ import AIModelConfiguration from './components/AIModelConfiguration';
 import SystemParameters from './components/SystemParameters';
 import SecuritySettings from './components/SecuritySettings';
 import AuditLogsPage from './components/AuditTrailLogs';
-import TrainingRequests from './components/TrainingRequests';
-import AdminTeamReports from './components/AdminTeamReports';
-import HRISIntegrationDashboard from './components/HRISIntegrationDashboard';
-import LMSIntegrationDashboard from './components/LMSIntegrationDashboard';
-import ThirdPartyAPISettings from './components/ThirdPartyAPISettings';
-import PaymentGatewayBillingSettings from './components/PaymentGatewayBillingSettings';
+// Super Admin Management Components
 
 // COMPANY ADMIN COMPONENTS
 import CompanyAdminDashboard from './components/CompanyAdminDashboard';
