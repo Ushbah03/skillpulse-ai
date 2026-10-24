@@ -3,6 +3,7 @@ import {
   Search, Target, Zap, Clock, TrendingUp, CheckCircle2, Lock, Sparkles, Check, Play, BookOpen, Award, X, Loader2, Video, ExternalLink, RotateCcw, RefreshCw, XCircle, ChevronLeft, ChevronRight
 } from 'lucide-react';
 import { employeeAPI } from '../services/api';
+import SkillPulseLoader from './SkillPulseLoader';
 
 const LearningRecommendations = () => {
   const [courses, setCourses] = useState([]);
@@ -34,7 +35,7 @@ const LearningRecommendations = () => {
 
   // Course Player Modal State
   const [activeCourse, setActiveCourse] = useState(null);
-  const [activeTab, setActiveTab] = useState('video'); // 'video' | 'modules' | 'assignment'
+  const [activeTab, setActiveTab] = useState('video'); // 'video' | 'modules'
   const [completedModules, setCompletedModules] = useState([]); 
   const [currentModuleIdx, setCurrentModuleIdx] = useState(0);
   const [isVideoWatched, setIsVideoWatched] = useState(false);
@@ -69,9 +70,9 @@ const LearningRecommendations = () => {
   ];
 
   const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
-  const workspaceName = storedUser.tenant?.name || 'Apex Tech Solutions Workspace';
+  const workspaceName = storedUser.tenant?.name || 'Enterprise Corp Workspace';
   const planTier = (storedUser.tenant?.plan || storedUser.tenant?.subscriptionTier || storedUser.tenant?.planTier || 'PRO').toUpperCase();
-  const isLmsLocked = planTier === 'STARTER'; // Only STARTER plan locks video playback & LMS courseware
+  const isLmsLocked = planTier === 'STARTER';
 
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
 
@@ -110,7 +111,6 @@ const LearningRecommendations = () => {
       if (res.success) {
         setToastMsg(`Successfully enrolled in "${res.data?.course?.title || 'course'}"!`);
         setTimeout(() => setToastMsg(''), 4000);
-        // Refresh local courses list
         loadData();
       }
     } catch (err) {
@@ -177,7 +177,7 @@ const LearningRecommendations = () => {
   };
 
   const getModuleVideoUrl = (rawUrl, modIdx) => {
-    let videoId = 'jwCmIBJ8Jtc'; // Active verified default course stream
+    let videoId = 'jwCmIBJ8Jtc';
 
     if (useBackupStream && activeCourse) {
       const firstSkill = (Array.isArray(activeCourse.skillsTaught) && activeCourse.skillsTaught[0]) || '';
@@ -204,7 +204,7 @@ const LearningRecommendations = () => {
         setToastMsg(`🎉 Course Completed! Skill Gap for "${activeCourse.title}" is resolved & verified in DB.`);
         setTimeout(() => setToastMsg(''), 5000);
         setActiveCourse(null);
-        loadData(); // Reload DB state
+        loadData();
       }
     } catch (err) {
       console.error('Error updating progress:', err);
@@ -226,7 +226,6 @@ const LearningRecommendations = () => {
 
     const matchesSearch = !q || titleMatch || providerMatch || descMatch || categoryMatch || skillsMatch;
 
-    // Category Filter
     let matchesCategory = true;
     if (selectedCategory === 'Frontend & Web') {
       matchesCategory = /react|next|vue|angular|css|tailwind|typescript/i.test(c.title + ' ' + (c.provider || '') + ' ' + (c.category || ''));
@@ -242,7 +241,6 @@ const LearningRecommendations = () => {
       matchesCategory = /problem solving|agile|scrum|critical thinking/i.test(c.title + ' ' + (c.provider || '') + ' ' + (c.category || ''));
     }
 
-    // Level Filter
     let matchesLevel = true;
     if (selectedLevel !== 'All') {
       matchesLevel = c.level?.toLowerCase() === selectedLevel.toLowerCase();
@@ -251,11 +249,9 @@ const LearningRecommendations = () => {
     return matchesSearch && matchesCategory && matchesLevel;
   });
 
-  // Pagination State for All Available Catalog Courses
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
 
-  // Reset to page 1 when search query or dropdown filters change
   useEffect(() => {
     setCurrentPage(1);
   }, [searchQuery, selectedCategory, selectedLevel]);
@@ -265,56 +261,58 @@ const LearningRecommendations = () => {
   const endIndex = startIndex + itemsPerPage;
   const paginatedCatalogCourses = filteredCourses.slice(startIndex, endIndex);
 
+  if (loading) {
+    return <SkillPulseLoader message="Analyzing Skill Vectors & Curating Courses..." />;
+  }
+
   return (
-    <div className="bg-[#F8FAFC] min-h-screen p-10 font-sans">
+    <div className="bg-transparent min-h-screen p-6 md:p-10 font-sans">
       
       {/* Toast Notification */}
       {toastMsg && (
-        <div className="fixed bottom-8 right-8 z-50 bg-emerald-600 text-white px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3 animate-bounce">
-          <Check className="w-5 h-5 shrink-0" />
+        <div className="fixed bottom-8 right-8 z-50 bg-[#17233E] text-white px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3 border border-[#1988A3]/40">
+          <Check className="w-5 h-5 shrink-0 text-[#11C6DE]" />
           <span className="font-bold text-sm">{toastMsg}</span>
         </div>
       )}
 
-      {/* 1. Header Section */}
+      {/* Header Section */}
       <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
         <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="text-[10px] font-black uppercase tracking-wider bg-blue-50 text-blue-600 px-2 py-0.5 rounded-md border border-blue-100">
+          <div className="flex items-center gap-2 mb-2">
+            <span className="text-[10px] font-black uppercase tracking-wider bg-[#1988A3]/10 text-[#1988A3] px-2.5 py-1 rounded-lg border border-[#1988A3]/25">
               {workspaceName}
             </span>
           </div>
-          <h1 className="text-3xl font-black text-slate-900 tracking-tight">Learning Recommendations</h1>
-          <p className="text-slate-500 text-base mt-1 font-medium">AI-powered personalized learning linked directly to your skill gaps</p>
+          <h1 className="text-3xl md:text-4xl font-black text-[#17233E] tracking-tight">Learning Recommendations</h1>
+          <p className="text-[#5A6D89] text-sm md:text-base mt-1 font-medium">AI-powered personalized learning linked directly to your skill gaps</p>
         </div>
         
-        {/* Prominent High-Contrast Search Bar & Dropdown Filter */}
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           <div className="relative">
-            <Search className="absolute left-4 top-3.5 text-blue-600 w-5 h-5" />
+            <Search className="absolute left-4 top-3.5 text-[#8A9CB7] w-4 h-4" />
             <input 
               type="text" 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder={`Search ${courses.length || 45}+ video courses or skills...`} 
-              className="pl-12 pr-10 py-3 bg-white border-2 border-slate-300 hover:border-blue-400 focus:border-blue-600 rounded-2xl w-72 text-sm font-semibold text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-4 focus:ring-blue-500/10 shadow-md transition-all" 
+              placeholder={`Search ${courses.length || 45}+ courses or skills...`} 
+              className="pl-11 pr-10 py-2.5 bg-white/70 backdrop-blur-md border border-[#8A9CB7]/30 rounded-2xl w-60 md:w-72 text-sm text-[#17233E] placeholder:text-[#8A9CB7] focus:outline-none focus:border-[#1988A3] shadow-sm transition-all" 
             />
             {searchQuery && (
               <button 
                 onClick={() => setSearchQuery('')}
-                className="absolute right-3.5 top-3.5 text-slate-400 hover:text-slate-700 bg-slate-100 hover:bg-slate-200 p-0.5 rounded-full transition-colors"
+                className="absolute right-3.5 top-3 text-[#8A9CB7] hover:text-[#17233E] p-0.5 rounded-full"
               >
                 <X className="w-4 h-4" />
               </button>
             )}
           </div>
 
-          {/* Difficulty Level Select Filter */}
           <div className="relative">
             <select
               value={selectedLevel}
               onChange={(e) => setSelectedLevel(e.target.value)}
-              className="px-4 py-3 bg-white border-2 border-slate-300 hover:border-blue-400 focus:border-blue-600 rounded-2xl text-sm font-bold text-slate-800 focus:outline-none focus:ring-4 focus:ring-blue-500/10 shadow-md cursor-pointer transition-all"
+              className="px-4 py-2.5 bg-white/70 backdrop-blur-md border border-[#8A9CB7]/30 rounded-2xl text-xs font-bold text-[#17233E] focus:outline-none focus:border-[#1988A3] shadow-sm cursor-pointer"
             >
               <option value="All">All Skill Levels</option>
               <option value="Beginner">Beginner</option>
@@ -339,10 +337,10 @@ const LearningRecommendations = () => {
           <button
             key={cat}
             onClick={() => setSelectedCategory(cat)}
-            className={`px-4 py-2.5 rounded-2xl text-xs font-extrabold tracking-wide transition-all whitespace-nowrap border ${
+            className={`px-4 py-2 rounded-2xl text-xs font-black tracking-wide transition-all whitespace-nowrap border ${
               selectedCategory === cat
-                ? 'bg-blue-600 text-white border-blue-600 shadow-lg shadow-blue-600/30 scale-105'
-                : 'bg-white text-slate-600 hover:text-blue-600 border-slate-200 hover:border-blue-300 shadow-sm'
+                ? 'bg-[#17233E] text-white border-[#17233E] shadow-md shadow-[#17233E]/20 scale-105'
+                : 'bg-white/70 backdrop-blur-md text-[#5A6D89] hover:text-[#17233E] border-[#8A9CB7]/30 hover:border-[#1988A3]/40 shadow-sm'
             }`}
           >
             {cat === 'All' ? `⚡ All ${courses.length || 45} Courses` : cat}
@@ -350,35 +348,31 @@ const LearningRecommendations = () => {
         ))}
       </div>
 
-      {/* 2. Top Stats Cards */}
-      <div className="grid grid-cols-4 gap-6 mb-10">
-        <LearningStat label="Available Courses" value={courses.length} sub="Curated for your profile" color="blue" />
-        <LearningStat label="Active Gaps" value={gaps.length} sub="Targeted for training" color="indigo" />
+      {/* Top Stats Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+        <LearningStat label="Available Courses" value={courses.length} sub="Curated for your profile" color="cyan" />
+        <LearningStat label="Active Gaps" value={gaps.length} sub="Targeted for training" color="navy" />
         <LearningStat label="Readiness Boost" value={gaps.length > 0 ? "+25.0%" : "Optimized"} sub="Upon completing gaps" color="emerald" />
-        <LearningStat label="AI Confidence" value="98%" sub="Based on career trajectory" color="orange" />
+        <LearningStat label="AI Confidence" value="98%" sub="Based on career trajectory" color="amber" />
       </div>
 
-      {/* 3. Top 5 AI Recommendations */}
+      {/* Top 5 AI Recommendations */}
       <div className="mb-14">
         <div className="flex justify-between items-center mb-6">
           <div>
             <div className="flex items-center gap-3 mb-1">
-              <h3 className="text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2">
-                <Sparkles className="w-6 h-6 text-purple-600" /> Top Recommended Courses for You
+              <h3 className="text-xl md:text-2xl font-black text-[#17233E] tracking-tight flex items-center gap-2">
+                <Sparkles className="w-5 h-5 text-[#1988A3]" /> Top Recommended Courses for You
               </h3>
-              <span className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white text-[10px] font-black px-3 py-1 rounded-md uppercase tracking-widest flex items-center gap-1 shadow-sm">
-                <Sparkles className="w-3 h-3 text-amber-300" /> AI Skill-Gap Recommendation Engine
+              <span className="bg-gradient-to-r from-[#17233E] via-[#1B3154] to-[#1988A3] text-white text-[9px] font-black px-3 py-1 rounded-md uppercase tracking-widest flex items-center gap-1 shadow-sm">
+                <Sparkles className="w-3 h-3 text-[#11C6DE]" /> AI Skill-Gap Engine
               </span>
             </div>
-            <p className="text-slate-500 text-sm font-medium">Scored in real-time based on your active skill gaps, department role, and career growth requirements.</p>
+            <p className="text-[#5A6D89] text-xs md:text-sm font-medium">Scored in real-time based on your active skill gaps, department role, and career growth requirements.</p>
           </div>
         </div>
 
-        {loading ? (
-          <div className="flex justify-center items-center py-16 bg-white rounded-[2.5rem] border border-slate-100">
-            <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
-          </div>
-        ) : filteredCourses.length > 0 ? (
+        {filteredCourses.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredCourses.slice(0, 5).map((c, idx) => {
               const progressPct = c.progressPct || 0;
@@ -416,26 +410,26 @@ const LearningRecommendations = () => {
             })}
           </div>
         ) : (
-          <div className="bg-white p-12 rounded-[2.5rem] text-center border border-slate-100">
-            <CheckCircle2 className="w-12 h-12 text-emerald-500 mx-auto mb-4" />
-            <h4 className="text-xl font-bold text-slate-800 mb-2">No Active Skill Gaps Found!</h4>
-            <p className="text-slate-500 text-sm max-w-md mx-auto">
+          <div className="glass-panel p-12 rounded-[2.5rem] text-center">
+            <CheckCircle2 className="w-12 h-12 text-[#1988A3] mx-auto mb-4" />
+            <h4 className="text-xl font-bold text-[#17233E] mb-2">No Active Skill Gaps Found!</h4>
+            <p className="text-[#5A6D89] text-sm max-w-md mx-auto">
               Great job! All your skill gaps are currently resolved. Take a new assessment to benchmark higher proficiency levels.
             </p>
           </div>
         )}
       </div>
 
-      {/* 4. All Available Catalog Courses with Pagination */}
-      <div className="mb-12 border-t border-slate-200/60 pt-10">
-        <div className="flex justify-between items-center mb-6">
+      {/* All Available Catalog Courses with Pagination */}
+      <div className="mb-12 border-t border-[#8A9CB7]/20 pt-10">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
           <div>
-            <h3 className="text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2">
-              <BookOpen className="w-6 h-6 text-blue-600" /> All Available Courses
+            <h3 className="text-xl md:text-2xl font-black text-[#17233E] tracking-tight flex items-center gap-2">
+              <BookOpen className="w-5 h-5 text-[#1988A3]" /> All Available Courses
             </h3>
-            <p className="text-slate-500 text-sm font-medium">Browse all training modules and catalog courses across your organization.</p>
+            <p className="text-[#5A6D89] text-xs md:text-sm font-medium">Browse all training modules and catalog courses across your organization.</p>
           </div>
-          <span className="text-xs font-bold text-slate-500 bg-slate-100 px-3.5 py-1.5 rounded-full border border-slate-200">
+          <span className="text-xs font-bold text-[#5A6D89] bg-[#17233E]/5 px-3.5 py-1.5 rounded-full border border-[#8A9CB7]/20">
             Showing {filteredCourses.length > 0 ? `${startIndex + 1}-${Math.min(endIndex, filteredCourses.length)} of ${filteredCourses.length}` : '0'} total courses
           </span>
         </div>
@@ -479,19 +473,16 @@ const LearningRecommendations = () => {
 
             {/* Catalog Pagination Navigation Bar */}
             {totalCatalogPages > 1 && (
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-10 pt-6 border-t border-slate-200/60">
-                <div className="text-xs font-bold text-slate-500">
-                  Showing <span className="text-slate-900 font-extrabold">{startIndex + 1}</span> to <span className="text-slate-900 font-extrabold">{Math.min(endIndex, filteredCourses.length)}</span> of <span className="text-slate-900 font-extrabold">{filteredCourses.length}</span> courses (Page {currentPage} of {totalCatalogPages})
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-10 pt-6 border-t border-[#8A9CB7]/20">
+                <div className="text-xs font-bold text-[#5A6D89]">
+                  Showing <span className="text-[#17233E] font-black">{startIndex + 1}</span> to <span className="text-[#17233E] font-black">{Math.min(endIndex, filteredCourses.length)}</span> of <span className="text-[#17233E] font-black">{filteredCourses.length}</span> courses (Page {currentPage} of {totalCatalogPages})
                 </div>
 
                 <div className="flex items-center gap-2">
                   <button
-                    onClick={() => {
-                      setCurrentPage(prev => Math.max(prev - 1, 1));
-                    }}
+                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                     disabled={currentPage === 1}
-                    className="p-2.5 rounded-xl border border-slate-200 text-slate-600 hover:text-blue-600 hover:border-blue-300 disabled:opacity-40 disabled:cursor-not-allowed bg-white shadow-sm transition-all"
-                    title="Previous Page"
+                    className="p-2.5 rounded-xl border border-[#8A9CB7]/30 text-[#5A6D89] hover:text-[#17233E] hover:border-[#1988A3] disabled:opacity-40 disabled:cursor-not-allowed bg-white/70 backdrop-blur-md shadow-sm transition-all"
                   >
                     <ChevronLeft className="w-4 h-4" />
                   </button>
@@ -499,13 +490,11 @@ const LearningRecommendations = () => {
                   {Array.from({ length: totalCatalogPages }, (_, i) => i + 1).map((pageNum) => (
                     <button
                       key={pageNum}
-                      onClick={() => {
-                        setCurrentPage(pageNum);
-                      }}
-                      className={`w-9 h-9 rounded-xl text-xs font-extrabold transition-all border ${
+                      onClick={() => setCurrentPage(pageNum)}
+                      className={`w-9 h-9 rounded-xl text-xs font-black transition-all border ${
                         currentPage === pageNum
-                          ? 'bg-blue-600 text-white border-blue-600 shadow-md shadow-blue-600/20 scale-105'
-                          : 'bg-white text-slate-600 hover:text-blue-600 border-slate-200 hover:border-blue-300 shadow-sm'
+                          ? 'bg-[#17233E] text-white border-[#17233E] shadow-md shadow-[#17233E]/20 scale-105'
+                          : 'bg-white/70 backdrop-blur-md text-[#5A6D89] hover:text-[#17233E] border-[#8A9CB7]/30 hover:border-[#1988A3]/40 shadow-sm'
                       }`}
                     >
                       {pageNum}
@@ -513,12 +502,9 @@ const LearningRecommendations = () => {
                   ))}
 
                   <button
-                    onClick={() => {
-                      setCurrentPage(prev => Math.min(prev + 1, totalCatalogPages));
-                    }}
+                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalCatalogPages))}
                     disabled={currentPage === totalCatalogPages}
-                    className="p-2.5 rounded-xl border border-slate-200 text-slate-600 hover:text-blue-600 hover:border-blue-300 disabled:opacity-40 disabled:cursor-not-allowed bg-white shadow-sm transition-all"
-                    title="Next Page"
+                    className="p-2.5 rounded-xl border border-[#8A9CB7]/30 text-[#5A6D89] hover:text-[#17233E] hover:border-[#1988A3] disabled:opacity-40 disabled:cursor-not-allowed bg-white/70 backdrop-blur-md shadow-sm transition-all"
                   >
                     <ChevronRight className="w-4 h-4" />
                   </button>
@@ -527,85 +513,59 @@ const LearningRecommendations = () => {
             )}
           </>
         ) : (
-          <div className="bg-white p-8 rounded-2xl border border-slate-200 text-center text-slate-500 font-medium text-sm">
+          <div className="glass-panel p-8 rounded-2xl text-center text-[#5A6D89] font-medium text-sm">
             No catalog courses found matching your filter criteria.
           </div>
         )}
       </div>
 
-      {/* 4. Plan Upgrade Required Modal for STARTER Tier (Lively & Animated Corporate Style) */}
+      {/* Plan Upgrade Modal for STARTER Tier */}
       {showUpgradeModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/80 backdrop-blur-md p-6 animate-in fade-in duration-300">
-          <div className="bg-white rounded-[2.5rem] p-8 max-w-lg w-full text-center shadow-2xl border border-slate-100 relative overflow-hidden animate-in zoom-in-95 duration-300">
-            {/* Glowing Ambient Light Orbs */}
-            <div className="absolute top-0 right-0 w-36 h-36 bg-amber-400/20 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none animate-pulse" />
-            <div className="absolute bottom-0 left-0 w-36 h-36 bg-blue-500/10 rounded-full blur-3xl -ml-10 -mb-10 pointer-events-none animate-pulse" />
-            
-            {/* Animated Lock Icon Badge */}
-            <div className="relative w-20 h-20 mx-auto mb-6 flex items-center justify-center">
-              <div className="absolute inset-0 bg-amber-500/20 rounded-3xl blur-md animate-pulse" />
-              <div className="relative w-16 h-16 bg-gradient-to-tr from-amber-100 to-amber-50 text-amber-600 rounded-2xl flex items-center justify-center border border-amber-200/80 shadow-md transform hover:rotate-6 transition-all duration-300">
-                <Lock className="w-8 h-8 text-amber-600 animate-bounce" />
-              </div>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#17233E]/70 backdrop-blur-md p-6">
+          <div className="bg-white/95 backdrop-blur-2xl rounded-[2.5rem] p-8 max-w-lg w-full text-center shadow-2xl border border-white/80 relative overflow-hidden">
+            <div className="relative w-16 h-16 mx-auto mb-5 flex items-center justify-center bg-amber-500/10 text-amber-600 rounded-2xl border border-amber-500/20">
+              <Lock className="w-8 h-8 text-amber-600" />
             </div>
             
-            <span className="bg-amber-100/80 text-amber-800 text-[10px] font-black px-3.5 py-1 rounded-full uppercase tracking-widest inline-flex items-center gap-1.5 mb-3 border border-amber-200 shadow-sm animate-pulse">
+            <span className="bg-amber-500/10 text-amber-800 text-[10px] font-black px-3.5 py-1 rounded-full uppercase tracking-widest inline-flex items-center gap-1.5 mb-3 border border-amber-500/20">
               <Sparkles className="w-3 h-3 text-amber-600" /> STARTER TIER RESTRICTION
             </span>
 
-            <h3 className="text-2xl font-black text-slate-900 mb-2 tracking-tight">
+            <h3 className="text-2xl font-black text-[#17233E] mb-2 tracking-tight">
               LMS & Video Streaming Locked
             </h3>
             
-            <p className="text-slate-500 text-sm font-medium mb-6 leading-relaxed">
-              Your organization (<span className="font-bold text-slate-800">{workspaceName}</span>) is currently on the <span className="font-bold text-slate-800">Starter Plan</span>.
+            <p className="text-[#5A6D89] text-sm font-medium mb-6 leading-relaxed">
+              Your organization (<span className="font-bold text-[#17233E]">{workspaceName}</span>) is currently on the <span className="font-bold text-[#17233E]">Starter Plan</span>.
               <br/><br/>
-              Skill gap recommendations are active, but live video streaming and interactive courseware execution require upgrading to the <span className="font-bold text-blue-600">Growth Tier</span> or <span className="font-bold text-indigo-600">Enterprise Tier</span>.
+              Skill gap recommendations are active, but live video streaming and interactive courseware execution require upgrading to the <span className="font-bold text-[#1988A3]">Growth Tier</span> or <span className="font-bold text-[#17233E]">Enterprise Tier</span>.
             </p>
 
-            {/* Interactive Admin Contact Card */}
-            <div className="bg-gradient-to-r from-blue-50/80 to-slate-50 p-4 rounded-2xl border border-blue-100 mb-6 text-left flex items-start gap-3.5 shadow-sm hover:shadow-md transition-all group">
-              <div className="p-2 bg-blue-600 text-white rounded-xl shadow-md group-hover:scale-110 transition-transform">
-                <Sparkles className="w-4 h-4" />
-              </div>
-              <div>
-                <h5 className="text-xs font-bold text-slate-900">Contact Your Administrator</h5>
-                <p className="text-[11px] text-slate-500 font-medium mt-0.5 leading-normal">
-                  Reach out to your Workspace Admin to request an organizational plan upgrade.
-                </p>
-              </div>
-            </div>
-
-            {/* Action Buttons */}
-            <div className="flex gap-3">
-              <button
-                onClick={() => setShowUpgradeModal(false)}
-                className="w-full py-3.5 bg-[#0F172A] hover:bg-slate-800 text-white rounded-2xl text-xs font-black uppercase tracking-wider transition-all shadow-lg hover:shadow-slate-900/20 active:scale-95"
-              >
-                Close Notice
-              </button>
-            </div>
+            <button
+              onClick={() => setShowUpgradeModal(false)}
+              className="w-full py-3.5 bg-[#17233E] hover:bg-[#1988A3] text-white rounded-2xl text-xs font-black uppercase tracking-wider transition-all shadow-lg"
+            >
+              Close Notice
+            </button>
           </div>
         </div>
       )}
 
-
-
-      {/* 30-Day AI Personalized Learning Roadmap Modal */}
+      {/* 30-Day AI Learning Roadmap Modal */}
       {showRoadmapModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 md:p-6 overflow-y-auto animate-in fade-in duration-200">
-          <div className="bg-[#0F172A] rounded-[2.5rem] shadow-2xl w-full max-w-3xl overflow-hidden border border-purple-500/20 text-white p-8">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#17233E]/70 backdrop-blur-md p-4 md:p-6 overflow-y-auto">
+          <div className="bg-gradient-to-br from-[#17233E] via-[#1B3154] to-[#121E33] rounded-[2.5rem] shadow-2xl w-full max-w-3xl overflow-hidden border border-white/10 text-white p-8">
             <div className="flex justify-between items-start mb-6 border-b border-white/10 pb-6">
               <div>
-                <div className="inline-flex items-center gap-2 bg-purple-500/20 text-purple-300 px-3.5 py-1 rounded-full text-[10px] font-black uppercase tracking-widest mb-3 border border-purple-500/30">
-                  <Sparkles className="w-3.5 h-3.5 text-amber-300 animate-pulse" /> SkillPulse AI Learning Coach
+                <div className="inline-flex items-center gap-2 bg-[#1988A3]/20 text-[#11C6DE] px-3.5 py-1 rounded-full text-[10px] font-black uppercase tracking-widest mb-3 border border-[#1988A3]/30">
+                  <Sparkles className="w-3.5 h-3.5 text-[#11C6DE] animate-pulse" /> SkillPulse AI Learning Coach
                 </div>
                 <h2 className="text-2xl font-black text-white tracking-tight">30-Day AI Personalized Learning Roadmap</h2>
-                <p className="text-slate-300 text-sm mt-1 font-medium">{roadmapData?.summary || 'Targeted 30-day learning plan to bridge critical skill gaps.'}</p>
+                <p className="text-[#8A9CB7] text-sm mt-1 font-medium">{roadmapData?.summary || 'Targeted 30-day learning plan to bridge critical skill gaps.'}</p>
               </div>
               <button 
                 onClick={() => setShowRoadmapModal(false)}
-                className="p-2.5 rounded-2xl bg-white/10 text-slate-300 hover:text-white hover:bg-white/20 transition-all"
+                className="p-2.5 rounded-2xl bg-white/10 text-[#8A9CB7] hover:text-white hover:bg-white/20 transition-all"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -613,37 +573,37 @@ const LearningRecommendations = () => {
 
             {generatingRoadmap ? (
               <div className="py-20 text-center space-y-4">
-                <Loader2 className="w-10 h-10 animate-spin text-purple-400 mx-auto" />
-                <p className="text-purple-300 font-bold text-sm">Generating real-time LLM Learning Roadmap from your DB Skill Gaps...</p>
+                <Loader2 className="w-10 h-10 animate-spin text-[#11C6DE] mx-auto" />
+                <p className="text-[#11C6DE] font-bold text-sm">Generating real-time LLM Learning Roadmap from your DB Skill Gaps...</p>
               </div>
             ) : (
               <div className="space-y-6">
-                <div className="bg-purple-900/30 border border-purple-500/30 p-4 rounded-2xl flex items-center justify-between">
+                <div className="bg-white/5 border border-white/10 p-4 rounded-2xl flex items-center justify-between">
                   <div>
-                    <p className="text-[10px] font-black text-purple-300 uppercase tracking-widest">Target Role Trajectory</p>
+                    <p className="text-[10px] font-black text-[#8A9CB7] uppercase tracking-widest">Target Role Trajectory</p>
                     <p className="text-lg font-bold text-white">{roadmapData?.targetRole || 'Senior Specialist'}</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-[10px] font-black text-purple-300 uppercase tracking-widest">Duration</p>
+                    <p className="text-[10px] font-black text-[#8A9CB7] uppercase tracking-widest">Duration</p>
                     <p className="text-lg font-bold text-emerald-400">{roadmapData?.estimatedCompletionDays || 30} Days</p>
                   </div>
                 </div>
 
                 <div className="space-y-4">
-                  <h4 className="text-sm font-black uppercase tracking-wider text-slate-400">Weekly Milestones & Actions</h4>
+                  <h4 className="text-xs font-black uppercase tracking-wider text-[#8A9CB7]">Weekly Milestones & Actions</h4>
                   {roadmapData?.weeklyMilestones?.map((m, idx) => (
-                    <div key={idx} className="p-4 bg-white/5 border border-white/10 rounded-2xl flex items-start gap-4 hover:border-purple-500/40 transition-all">
-                      <div className="w-9 h-9 rounded-xl bg-purple-600 text-white font-black text-sm flex items-center justify-center shrink-0 shadow-lg shadow-purple-900/50">
+                    <div key={idx} className="p-4 bg-white/5 border border-white/10 rounded-2xl flex items-start gap-4 hover:border-[#1988A3]/40 transition-all">
+                      <div className="w-9 h-9 rounded-xl bg-[#1988A3] text-white font-black text-xs flex items-center justify-center shrink-0 shadow-lg shadow-[#1988A3]/30">
                         W{m.week}
                       </div>
                       <div className="flex-1">
                         <div className="flex items-center justify-between mb-1">
                           <h5 className="font-bold text-white text-sm">{m.focus}</h5>
-                          <span className="text-[10px] font-black uppercase bg-purple-500/20 text-purple-300 px-2 py-0.5 rounded border border-purple-500/30">
+                          <span className="text-[10px] font-black uppercase bg-[#1988A3]/20 text-[#11C6DE] px-2 py-0.5 rounded border border-[#1988A3]/30">
                             {m.recommendedSkill}
                           </span>
                         </div>
-                        <p className="text-slate-300 text-xs font-medium leading-relaxed">{m.action}</p>
+                        <p className="text-[#8A9CB7] text-xs font-medium leading-relaxed">{m.action}</p>
                       </div>
                     </div>
                   ))}
@@ -651,7 +611,7 @@ const LearningRecommendations = () => {
 
                 <button
                   onClick={() => setShowRoadmapModal(false)}
-                  className="w-full py-4 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white rounded-2xl font-black text-sm uppercase tracking-wider transition-all shadow-lg shadow-purple-900/40"
+                  className="w-full py-3.5 bg-gradient-to-r from-[#1988A3] to-[#11C6DE] hover:brightness-110 text-[#17233E] rounded-2xl font-black text-xs uppercase tracking-wider transition-all shadow-lg shadow-[#1988A3]/30"
                 >
                   Start 30-Day Learning Plan
                 </button>
@@ -661,44 +621,44 @@ const LearningRecommendations = () => {
         </div>
       )}
 
-      {/* 5. Interactive Dual Video + AI Course Player Modal (Sleek Enterprise Dark UI) */}
+      {/* Interactive Dual Video + AI Course Player Modal */}
       {activeCourse && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 md:p-6 overflow-y-auto animate-in fade-in duration-200">
-          <div className="bg-[#0B1120] rounded-2xl shadow-2xl w-full max-w-5xl overflow-hidden border border-slate-800 flex flex-col max-h-[92vh]">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#17233E]/80 backdrop-blur-md p-4 md:p-6 overflow-y-auto">
+          <div className="bg-[#17233E] rounded-2xl shadow-2xl w-full max-w-5xl overflow-hidden border border-white/10 flex flex-col max-h-[92vh]">
             
             {/* Modal Header Bar */}
-            <div className="bg-[#0F172A] p-5 text-white flex justify-between items-center border-b border-slate-800/80 shrink-0">
+            <div className="bg-[#121E33] p-5 text-white flex justify-between items-center border-b border-white/10 shrink-0">
               <div className="flex items-center gap-3.5">
-                <div className="p-2.5 bg-indigo-600/20 text-indigo-400 border border-indigo-500/30 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-600/10">
+                <div className="p-2.5 bg-[#1988A3]/20 text-[#11C6DE] border border-[#1988A3]/30 rounded-xl flex items-center justify-center">
                   <Play className="w-5 h-5 fill-current" />
                 </div>
                 <div>
                   <div className="flex items-center gap-2 mb-0.5">
-                    <span className="bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">
+                    <span className="bg-[#1988A3]/10 text-[#11C6DE] border border-[#1988A3]/20 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">
                       {activeCourse.provider}
                     </span>
-                    <span className="text-xs font-semibold text-slate-400">• {activeCourse.durationHours || 12} Hours Courseware</span>
+                    <span className="text-xs font-semibold text-[#8A9CB7]">• {activeCourse.durationHours || 12} Hours Courseware</span>
                   </div>
-                  <h2 className="text-lg font-bold text-white tracking-tight">{activeCourse.title}</h2>
+                  <h2 className="text-base md:text-lg font-bold text-white tracking-tight">{activeCourse.title}</h2>
                 </div>
               </div>
 
               <button 
                 onClick={() => setActiveCourse(null)} 
-                className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 border border-transparent hover:border-slate-700 transition-all"
+                className="p-2 rounded-xl text-[#8A9CB7] hover:text-white hover:bg-white/10 transition-all"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             {/* Modal Tab Navigation */}
-            <div className="bg-[#0B1120] border-b border-slate-800/80 px-6 py-2.5 flex items-center gap-3 shrink-0">
+            <div className="bg-[#17233E] border-b border-white/10 px-6 py-2.5 flex items-center gap-3 shrink-0">
               <button 
                 onClick={() => setActiveTab('video')}
                 className={`py-2 px-4 font-bold text-xs rounded-xl flex items-center gap-2 transition-all ${
                   activeTab === 'video' 
-                    ? 'bg-indigo-600/20 text-indigo-400 border border-indigo-500/30 shadow-md' 
-                    : 'text-slate-400 hover:text-slate-200 border border-transparent hover:bg-slate-800/50'
+                    ? 'bg-[#1988A3]/20 text-[#11C6DE] border border-[#1988A3]/40 shadow-md' 
+                    : 'text-[#8A9CB7] hover:text-white'
                 }`}
               >
                 <Video className="w-3.5 h-3.5" /> 1. Video Lecture Player
@@ -707,8 +667,8 @@ const LearningRecommendations = () => {
                 onClick={() => setActiveTab('modules')}
                 className={`py-2 px-4 font-bold text-xs rounded-xl flex items-center gap-2 transition-all ${
                   activeTab === 'modules' 
-                    ? 'bg-indigo-600/20 text-indigo-400 border border-indigo-500/30 shadow-md' 
-                    : 'text-slate-400 hover:text-slate-200 border border-transparent hover:bg-slate-800/50'
+                    ? 'bg-[#1988A3]/20 text-[#11C6DE] border border-[#1988A3]/40 shadow-md' 
+                    : 'text-[#8A9CB7] hover:text-white'
                 }`}
               >
                 <BookOpen className="w-3.5 h-3.5" /> 2. AI Interactive Modules ({completedModules.length}/4)
@@ -716,10 +676,9 @@ const LearningRecommendations = () => {
             </div>
 
             {/* Modal Content Body */}
-            <div className="p-6 overflow-y-auto flex-1 bg-[#0F172A]">
+            <div className="p-6 overflow-y-auto flex-1 bg-[#121E33]">
               {activeTab === 'video' && (
                 <div className="space-y-5">
-                  {/* Module Chapter Selector Pills */}
                   <div className="flex items-center gap-2 overflow-x-auto pb-1">
                     {MODULE_CHAPTERS.map((ch, idx) => {
                       const isCompleted = completedModules.includes(idx);
@@ -735,203 +694,65 @@ const LearningRecommendations = () => {
                           disabled={!isUnlocked}
                           className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap flex items-center gap-2 border ${
                             isCurrent
-                              ? 'bg-indigo-600/20 text-indigo-400 border-indigo-500/50 shadow-md shadow-indigo-600/10'
+                              ? 'bg-[#1988A3]/20 text-[#11C6DE] border-[#1988A3]/50'
                               : isCompleted
-                                ? 'bg-[#0B1120] text-indigo-300 border-indigo-500/30'
+                                ? 'bg-white/5 text-emerald-400 border-emerald-500/30'
                                 : isUnlocked
-                                  ? 'bg-[#0B1120] text-slate-300 border-slate-800 hover:border-slate-700'
-                                  : 'bg-[#0B1120]/40 text-slate-600 border-slate-800/40 cursor-not-allowed opacity-50'
+                                  ? 'bg-white/5 text-[#8A9CB7] border-white/10 hover:border-white/20'
+                                  : 'bg-white/5 text-slate-600 border-white/5 cursor-not-allowed opacity-50'
                           }`}
                         >
                           {isCompleted ? (
-                            <CheckCircle2 className="w-3.5 h-3.5 text-indigo-400" />
+                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
                           ) : isCurrent ? (
-                            <Play className="w-3.5 h-3.5 text-indigo-400 fill-current" />
+                            <Play className="w-3.5 h-3.5 text-[#11C6DE] fill-current" />
                           ) : (
-                            <Lock className="w-3.5 h-3.5 text-slate-500" />
+                            <span className="w-3.5 h-3.5 rounded-full border border-current text-[9px] flex items-center justify-center">{idx + 1}</span>
                           )}
-                          <span>Ch {idx + 1}: {ch.title.split(':')[0]}</span>
+                          Module {idx + 1}
                         </button>
                       );
                     })}
                   </div>
 
-                  {/* Theater Video Container or 100% Celebration Screen */}
-                  {completedModules.length === 4 ? (
-                    <div className="aspect-video w-full bg-gradient-to-br from-indigo-950 via-[#0B1120] to-slate-950 rounded-2xl border border-indigo-500/40 p-8 flex flex-col items-center justify-center text-center shadow-2xl relative overflow-hidden">
-                      <div className="w-20 h-20 bg-indigo-500/20 text-indigo-400 border border-indigo-500/40 rounded-3xl flex items-center justify-center mb-5 shadow-xl shadow-indigo-600/20 animate-bounce">
-                        <Award className="w-10 h-10 text-indigo-400" />
-                      </div>
+                  <div className="relative aspect-video rounded-2xl overflow-hidden bg-black border border-white/10 shadow-2xl">
+                    <iframe
+                      src={getModuleVideoUrl(activeCourse.videoUrl, currentModuleIdx)}
+                      title={activeCourse.title}
+                      className="w-full h-full"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                    />
+                  </div>
 
-                      <span className="bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 text-xs font-black px-3.5 py-1 rounded-full uppercase tracking-widest mb-3">
-                        100% COURSEWARE COMPLETED
-                      </span>
-
-                      <h3 className="text-2xl font-black text-white mb-2 tracking-tight">
-                        Congratulations! All 4 Video Chapters Completed 🎉
-                      </h3>
-
-                      <p className="text-slate-400 text-xs max-w-lg mb-6 leading-relaxed">
-                        You have successfully finished all video chapters for <span className="text-indigo-300 font-bold">{activeCourse.title}</span>. Click below to submit completion and verify your skill in PostgreSQL DB.
-                      </p>
-
-                      <div className="flex items-center gap-4">
-                        <button
-                          onClick={handleCompleteCourse}
-                          disabled={updatingProgress}
-                          className="px-6 py-3 bg-gradient-to-r from-indigo-600 via-indigo-500 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white rounded-xl text-xs font-extrabold transition-all shadow-xl shadow-indigo-600/30 flex items-center gap-2 border border-indigo-400/30"
-                        >
-                          {updatingProgress && <Loader2 className="w-4 h-4 animate-spin" />}
-                          {updatingProgress ? 'Verifying in DB...' : '✓ Submit & Clear Skill Gap in DB'}
-                        </button>
-
-                        <button
-                          onClick={() => {
-                            setCompletedModules([]);
-                            setCurrentModuleIdx(0);
-                          }}
-                          className="px-4 py-3 bg-[#1E293B] hover:bg-slate-800 text-slate-300 rounded-xl text-xs font-semibold transition-all border border-slate-700 flex items-center gap-2"
-                        >
-                          <RotateCcw className="w-4 h-4 text-slate-400" />
-                          Replay Video Lecture
-                        </button>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="aspect-video w-full bg-black rounded-2xl overflow-hidden shadow-2xl relative border border-slate-800">
-                      <iframe 
-                        key={currentModuleIdx}
-                        src={getModuleVideoUrl(activeCourse.externalUrl, currentModuleIdx)} 
-                        title={activeCourse.title}
-                        className="w-full h-full border-0"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-                        referrerPolicy="strict-origin-when-cross-origin"
-                        allowFullScreen
-                      ></iframe>
-                    </div>
-                  )}
-
-                  {/* Dark Glass About Card & Automated Next Video Button */}
-                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-[#0B1120] p-5 rounded-2xl border border-slate-800/80 shadow-lg">
+                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white/5 p-4 rounded-xl border border-white/10">
                     <div>
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="text-[10px] font-bold uppercase tracking-wider bg-indigo-500/10 text-indigo-400 px-2 py-0.5 rounded border border-indigo-500/20">
-                          Playing Chapter {currentModuleIdx + 1} of 4
-                        </span>
-                        <span className="text-xs text-slate-400 font-medium">• {MODULE_CHAPTERS[currentModuleIdx]?.duration}</span>
-                      </div>
-                      <h4 className="font-bold text-white text-sm mb-1">{MODULE_CHAPTERS[currentModuleIdx]?.title}</h4>
-                      <p className="text-slate-400 text-xs leading-relaxed max-w-2xl">{MODULE_CHAPTERS[currentModuleIdx]?.desc}</p>
+                      <h4 className="font-bold text-white text-sm">{MODULE_CHAPTERS[currentModuleIdx]?.title}</h4>
+                      <p className="text-xs text-[#8A9CB7] mt-0.5">{MODULE_CHAPTERS[currentModuleIdx]?.desc}</p>
                     </div>
-
-                    <div className="flex items-center gap-3 shrink-0">
-                      <button
-                        onClick={handleCompleteCurrentModuleVideo}
-                        className="px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white shadow-lg shadow-indigo-600/30 border border-indigo-500/30"
-                      >
-                        <CheckCircle2 className="w-4 h-4" />
-                        {completedModules.includes(currentModuleIdx)
-                          ? `Completed Chapter ${currentModuleIdx + 1} ✓`
-                          : currentModuleIdx < 3
-                            ? `✓ Finish Chapter ${currentModuleIdx + 1} & Play Next Video`
-                            : `✓ Finish Final Chapter ${currentModuleIdx + 1}`}
-                      </button>
-
-                      <button
-                        onClick={() => setUseBackupStream(prev => !prev)}
-                        title="Click if primary YouTube video is unavailable or restricted"
-                        className={`px-3 py-2.5 rounded-xl border text-xs font-semibold flex items-center justify-center gap-1.5 transition-all ${
-                          useBackupStream
-                            ? 'bg-amber-500/20 text-amber-300 border-amber-500/40 shadow-sm shadow-amber-500/10'
-                            : 'bg-slate-800/80 text-slate-300 border-slate-700 hover:bg-slate-700'
-                        }`}
-                      >
-                        <RefreshCw className={`w-3.5 h-3.5 ${useBackupStream ? 'animate-spin' : ''}`} />
-                        {useBackupStream ? 'Backup Stream' : 'Switch Stream'}
-                      </button>
-
-                      <a
-                        href={(() => {
-                          const raw = activeCourse.externalUrl || '';
-                          const clean = raw.replace('youtube-nocookie.com', 'youtube.com');
-                          const match = clean.match(/(?:v=|\/embed\/|\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
-                          if (match && match[1]) {
-                            return `https://www.youtube.com/watch?v=${match[1]}`;
-                          }
-                          return 'https://www.youtube.com';
-                        })()}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="px-3.5 py-2.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 text-xs font-bold shadow-sm flex items-center justify-center gap-2 transition-all"
-                      >
-                        <ExternalLink className="w-3.5 h-3.5" />
-                        YouTube
-                      </a>
-                    </div>
+                    <button
+                      onClick={handleCompleteCurrentModuleVideo}
+                      className="px-4 py-2 bg-[#1988A3] hover:bg-[#11C6DE] hover:text-[#17233E] text-white rounded-xl text-xs font-bold transition-all flex items-center gap-2 shrink-0 shadow-md"
+                    >
+                      <Check className="w-4 h-4" /> Mark Module Watched (+25%)
+                    </button>
                   </div>
                 </div>
               )}
 
               {activeTab === 'modules' && (
                 <div className="space-y-4">
-                  <div className="bg-[#0B1120] border border-slate-800 p-4 rounded-2xl flex justify-between items-center mb-4">
-                    <div>
-                      <h4 className="font-bold text-white text-sm">Automated Chapter Progression</h4>
-                      <p className="text-xs text-slate-400 font-medium">
-                        Chapter modules are automatically verified as you finish each video lecture in Tab 1
-                      </p>
-                    </div>
-                    <div className="text-right">
-                      <span className="text-xl font-extrabold text-indigo-400">{Math.round((completedModules.length / 4) * 100)}%</span>
-                    </div>
-                  </div>
-
-                  {MODULE_CHAPTERS.map((mod, idx) => {
-                    const isChecked = completedModules.includes(idx);
-                    const isCurrent = currentModuleIdx === idx && !isChecked;
-                    const isLocked = !isChecked && !isCurrent && (idx > 0 && !completedModules.includes(idx - 1));
-
+                  {MODULE_CHAPTERS.map((ch, idx) => {
+                    const isDone = completedModules.includes(idx);
                     return (
-                      <div 
-                        key={idx}
-                        className={`p-4 rounded-2xl border transition-all flex items-start gap-4 ${
-                          isChecked 
-                            ? 'bg-[#0B1120] border-indigo-500/40 text-white shadow-lg shadow-indigo-500/5' 
-                            : isCurrent
-                              ? 'bg-[#0B1120] border-indigo-500/60 text-white shadow-md'
-                              : 'bg-[#0B1120]/50 border-slate-800/60 text-slate-400 opacity-60'
-                        }`}
-                      >
-                        <div className={`w-6 h-6 rounded-lg flex items-center justify-center mt-0.5 border transition-all shrink-0 ${
-                          isChecked 
-                            ? 'bg-indigo-600 border-indigo-500 text-white shadow-sm shadow-indigo-500/40' 
-                            : isCurrent
-                              ? 'border-indigo-500/60 bg-indigo-500/20 text-indigo-400 animate-pulse'
-                              : 'border-slate-700 bg-slate-900 text-slate-600'
-                        }`}>
-                          {isChecked ? (
-                            <Check className="w-4 h-4" />
-                          ) : isCurrent ? (
-                            <Play className="w-3 h-3 fill-current" />
-                          ) : (
-                            <Lock className="w-3 h-3" />
-                          )}
+                      <div key={idx} className={`p-4 rounded-2xl border transition-all ${isDone ? 'bg-emerald-500/10 border-emerald-500/25' : 'bg-white/5 border-white/10'}`}>
+                        <div className="flex justify-between items-center mb-1">
+                          <h5 className="font-bold text-white text-sm">{ch.title}</h5>
+                          <span className={`text-[10px] font-black uppercase px-2 py-0.5 rounded ${isDone ? 'bg-emerald-500/20 text-emerald-400' : 'bg-white/10 text-[#8A9CB7]'}`}>
+                            {isDone ? 'Completed' : ch.duration}
+                          </span>
                         </div>
-                        <div className="flex-1">
-                          <div className="flex items-center justify-between gap-2">
-                            <h5 className={`font-bold text-sm ${isChecked ? 'text-white' : isCurrent ? 'text-indigo-300' : 'text-slate-400'}`}>{mod.title}</h5>
-                            <span className={`text-[10px] font-bold px-2 py-0.5 rounded ${
-                              isChecked 
-                                ? 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30' 
-                                : isCurrent 
-                                  ? 'bg-blue-500/20 text-blue-300 border border-blue-500/30' 
-                                  : 'bg-slate-800 text-slate-500 border border-slate-700'
-                            }`}>
-                              {isChecked ? '✓ Auto-Completed (25%)' : isCurrent ? '▶ Playing in Video Player' : '🔒 Locked'}
-                            </span>
-                          </div>
-                          <p className="text-slate-400 text-xs mt-0.5">{mod.desc}</p>
-                        </div>
+                        <p className="text-xs text-[#8A9CB7]">{ch.desc}</p>
                       </div>
                     );
                   })}
@@ -939,23 +760,23 @@ const LearningRecommendations = () => {
               )}
             </div>
 
-            {/* Modal Footer Controls */}
-            <div className="bg-[#0F172A] p-5 border-t border-slate-800/80 flex flex-col md:flex-row md:items-center justify-between gap-4 shrink-0">
+            {/* Modal Footer Bar */}
+            <div className="bg-[#121E33] p-4 border-t border-white/10 flex flex-col sm:flex-row justify-between items-center gap-4 shrink-0">
               <div className="flex items-center gap-3">
-                <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Calculated Progress:</span>
-                <div className="w-32 h-2 bg-slate-800 rounded-full overflow-hidden">
+                <span className="text-xs font-bold text-[#8A9CB7]">Overall Progress:</span>
+                <div className="w-32 h-2 bg-white/10 rounded-full overflow-hidden">
                   <div 
-                    className="h-full bg-indigo-500 transition-all duration-300"
-                    style={{ width: `${Math.round((completedModules.length / 4) * 100)}%` }}
+                    className="h-full bg-gradient-to-r from-[#1988A3] to-[#11C6DE] rounded-full transition-all duration-300" 
+                    style={{ width: `${(completedModules.length / 4) * 100}%` }} 
                   />
                 </div>
-                <span className="text-xs font-bold text-indigo-400">{Math.round((completedModules.length / 4) * 100)}%</span>
+                <span className="text-xs font-bold text-[#11C6DE]">{Math.round((completedModules.length / 4) * 100)}%</span>
               </div>
 
               <div className="flex items-center gap-3 justify-end">
                 <button
                   onClick={() => setActiveCourse(null)}
-                  className="px-5 py-2.5 bg-[#1E293B] hover:bg-slate-700 text-slate-300 border border-slate-700 rounded-xl text-xs font-semibold transition-all"
+                  className="px-5 py-2.5 bg-white/5 hover:bg-white/10 text-[#8A9CB7] hover:text-white border border-white/10 rounded-xl text-xs font-semibold transition-all"
                 >
                   Close Player
                 </button>
@@ -963,10 +784,10 @@ const LearningRecommendations = () => {
                 <button
                   onClick={handleCompleteCourse}
                   disabled={updatingProgress || !isVideoWatched}
-                  className="px-6 py-2.5 bg-gradient-to-r from-indigo-600 via-indigo-500 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-2 shadow-lg shadow-indigo-600/25 border border-indigo-500/30 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-6 py-2.5 bg-gradient-to-r from-[#1988A3] to-[#11C6DE] hover:brightness-110 text-[#17233E] rounded-xl text-xs font-black uppercase tracking-wider transition-all flex items-center gap-2 shadow-lg shadow-[#1988A3]/25 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {updatingProgress && <Loader2 className="w-4 h-4 animate-spin" />}
-                  {updatingProgress ? 'Verifying in DB...' : '✓ Complete Course & Clear Skill Gap'}
+                  {updatingProgress && <Loader2 className="w-4 h-4 animate-spin text-[#17233E]" />}
+                  {updatingProgress ? 'Verifying in DB...' : '✓ Complete Course & Clear Gap'}
                 </button>
               </div>
             </div>
@@ -981,13 +802,21 @@ const LearningRecommendations = () => {
 
 // --- Helper Components ---
 
-const LearningStat = ({ label, value, sub }) => (
-  <div className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm">
-    <p className="text-slate-400 text-[10px] font-black uppercase tracking-widest mb-2">{label}</p>
-    <h3 className="text-3xl font-black text-slate-900 mb-1">{value}</h3>
-    <p className="text-slate-500 text-xs font-medium">{sub}</p>
-  </div>
-);
+const LearningStat = ({ label, value, sub, color }) => {
+  const themes = {
+    cyan: 'bg-[#1988A3]/10 border border-[#1988A3]/20',
+    navy: 'bg-[#17233E]/10 border border-[#17233E]/20',
+    emerald: 'bg-emerald-500/10 border border-emerald-500/20',
+    amber: 'bg-amber-500/10 border border-amber-500/20'
+  };
+  return (
+    <div className="glass-panel p-6 rounded-[2rem]">
+      <p className="text-[#5A6D89] text-[10px] font-black uppercase tracking-widest mb-2">{label}</p>
+      <h3 className="text-3xl font-black text-[#17233E] mb-1">{value}</h3>
+      <p className="text-[#5A6D89] text-xs font-medium">{sub}</p>
+    </div>
+  );
+};
 
 const CourseCard = ({ 
   title, category, match, duration, readiness, isGapMatch, matchedGapSkill, 
@@ -997,9 +826,13 @@ const CourseCard = ({
   const isInProgress = (progressPct > 0 && progressPct < 100);
 
   return (
-    <div className={`bg-white rounded-[2.5rem] border ${isRejected ? 'border-rose-200 shadow-md ring-1 ring-rose-100' : isTopAiRecommendation ? 'border-purple-300 shadow-lg ring-2 ring-purple-500/10' : isGapMatch ? 'border-purple-200 shadow-md ring-1 ring-purple-100' : 'border-slate-100 shadow-sm'} overflow-hidden group hover:border-blue-300 transition-all flex flex-col justify-between`}>
-      <div className="bg-slate-900 h-36 relative flex items-center justify-center p-6 text-center">
-        <span className={`absolute top-4 right-4 text-[9px] font-black px-2.5 py-1 rounded-full border ${isTopAiRecommendation || isGapMatch ? 'bg-purple-600 text-white border-purple-400 shadow-sm' : 'bg-white/20 backdrop-blur-md text-white border-white/20'}`}>{match}</span>
+    <div className={`glass-panel rounded-[2.5rem] overflow-hidden group hover:border-[#1988A3]/50 transition-all flex flex-col justify-between ${
+      isRejected ? 'border-rose-300' : isTopAiRecommendation ? 'border-[#1988A3]/40 shadow-lg' : ''
+    }`}>
+      <div className="bg-gradient-to-r from-[#17233E] via-[#1B3154] to-[#121E33] h-36 relative flex items-center justify-center p-6 text-center">
+        <span className="absolute top-4 right-4 text-[9px] font-black px-2.5 py-1 rounded-full border bg-[#1988A3] text-white border-[#1988A3]/50 shadow-sm">
+          {match}
+        </span>
         
         {/* Course Lifecycle Badges */}
         {isRejected ? (
@@ -1007,15 +840,15 @@ const CourseCard = ({
             <XCircle className="w-3 h-3" /> REQUEST REJECTED
           </span>
         ) : isTopAiRecommendation && aiRank ? (
-          <span className="absolute top-4 left-4 bg-gradient-to-r from-purple-600 to-indigo-600 text-white text-[9px] font-black px-2.5 py-1 rounded-full border border-purple-300 flex items-center gap-1 shadow-md">
-            <Sparkles className="w-3 h-3 text-amber-300" /> #{aiRank} AI RECOMMENDATION
+          <span className="absolute top-4 left-4 bg-gradient-to-r from-[#1988A3] to-[#11C6DE] text-[#17233E] text-[9px] font-black px-2.5 py-1 rounded-full border border-[#11C6DE]/50 flex items-center gap-1 shadow-md">
+            <Sparkles className="w-3 h-3 text-[#17233E]" /> #{aiRank} AI RECOMMENDATION
           </span>
         ) : isCompleted ? (
           <span className="absolute top-4 left-4 bg-emerald-500 text-white text-[9px] font-black px-2.5 py-1 rounded-full border border-emerald-400 flex items-center gap-1 shadow-sm">
             <CheckCircle2 className="w-3 h-3" /> COMPLETED (100%)
           </span>
         ) : isInProgress ? (
-          <span className="absolute top-4 left-4 bg-indigo-600 text-white text-[9px] font-black px-2.5 py-1 rounded-full border border-indigo-400 flex items-center gap-1 shadow-md animate-pulse">
+          <span className="absolute top-4 left-4 bg-[#1988A3] text-white text-[9px] font-black px-2.5 py-1 rounded-full border border-[#1988A3]/40 flex items-center gap-1 shadow-md animate-pulse">
             <Play className="w-3 h-3 fill-current" /> IN PROGRESS ({progressPct}%)
           </span>
         ) : isPending ? (
@@ -1023,12 +856,12 @@ const CourseCard = ({
             <Clock className="w-3 h-3" /> PENDING {approvalTarget.toUpperCase()} APPROVAL
           </span>
         ) : isGapMatch ? (
-          <span className="absolute top-4 left-4 bg-purple-600 text-white text-[9px] font-black px-2.5 py-1 rounded-full border border-purple-400 flex items-center gap-1 shadow-sm animate-pulse">
-            <Sparkles className="w-3 h-3 text-amber-300" /> AI GAP TARGET
+          <span className="absolute top-4 left-4 bg-[#1988A3] text-white text-[9px] font-black px-2.5 py-1 rounded-full border border-[#1988A3]/40 flex items-center gap-1 shadow-sm animate-pulse">
+            <Sparkles className="w-3 h-3 text-[#11C6DE]" /> AI GAP TARGET
           </span>
         ) : isEnrolled ? (
-          <span className="absolute top-4 left-4 bg-blue-600 text-white text-[9px] font-black px-2.5 py-1 rounded-full border border-blue-400 flex items-center gap-1 shadow-sm">
-            <Check className="w-3 h-3" /> APPROVED & ENROLLED
+          <span className="absolute top-4 left-4 bg-[#17233E] text-white text-[9px] font-black px-2.5 py-1 rounded-full border border-[#1988A3]/30 flex items-center gap-1 shadow-sm">
+            <Check className="w-3 h-3 text-[#11C6DE]" /> APPROVED & ENROLLED
           </span>
         ) : isLmsLocked ? (
           <span className="absolute top-4 left-4 bg-amber-500/20 backdrop-blur-md text-amber-300 text-[9px] font-black px-2.5 py-1 rounded-full border border-amber-500/30 flex items-center gap-1">
@@ -1036,66 +869,66 @@ const CourseCard = ({
           </span>
         ) : null}
 
-        <h4 className="text-white text-base font-black uppercase italic leading-tight">{title}</h4>
+        <h4 className="text-white text-sm md:text-base font-black uppercase italic leading-tight">{title}</h4>
       </div>
       <div className="p-6 flex-1 flex flex-col justify-between">
         <div>
           <div className="flex flex-wrap gap-2 mb-3">
-            <span className="bg-blue-50 text-blue-600 text-[9px] font-black px-2 py-1 rounded uppercase tracking-wider">{category}</span>
+            <span className="bg-[#17233E]/5 text-[#17233E] text-[9px] font-black px-2 py-1 rounded uppercase tracking-wider">{category}</span>
             {aiReason ? (
-              <span className="bg-purple-50 text-purple-700 text-[9px] font-black px-2 py-1 rounded uppercase tracking-wider flex items-center gap-1 border border-purple-100">
+              <span className="bg-[#1988A3]/10 text-[#1988A3] text-[9px] font-black px-2 py-1 rounded uppercase tracking-wider flex items-center gap-1 border border-[#1988A3]/20">
                 {aiReason}
               </span>
             ) : isGapMatch ? (
-              <span className="bg-purple-100 text-purple-700 text-[9px] font-black px-2 py-1 rounded uppercase tracking-wider flex items-center gap-1 border border-purple-200">
-                <Sparkles className="w-2.5 h-2.5 text-purple-600" /> Gap: {matchedGapSkill}
+              <span className="bg-[#1988A3]/15 text-[#1988A3] text-[9px] font-black px-2 py-1 rounded uppercase tracking-wider flex items-center gap-1 border border-[#1988A3]/30">
+                <Sparkles className="w-2.5 h-2.5 text-[#1988A3]" /> Gap: {matchedGapSkill}
               </span>
             ) : (
-              <span className="bg-emerald-50 text-emerald-600 text-[9px] font-black px-2 py-1 rounded uppercase tracking-wider">AI Verified</span>
+              <span className="bg-emerald-500/10 text-emerald-700 text-[9px] font-black px-2 py-1 rounded uppercase tracking-wider">AI Verified</span>
             )}
           </div>
-          <h4 className="text-base font-bold text-slate-800 mb-4 leading-tight">{title}</h4>
+          <h4 className="text-sm md:text-base font-bold text-[#17233E] mb-4 leading-tight">{title}</h4>
         </div>
         <div>
           {/* Visual Learning Progress Bar */}
           {isInProgress && (
-            <div className="mb-4 bg-slate-50 p-3 rounded-xl border border-slate-100">
-              <div className="flex justify-between items-center text-[10px] font-extrabold text-slate-600 mb-1.5">
+            <div className="mb-4 bg-white/70 p-3 rounded-xl border border-[#8A9CB7]/25">
+              <div className="flex justify-between items-center text-[10px] font-extrabold text-[#5A6D89] mb-1.5">
                 <span>Learning Progress</span>
-                <span className="text-indigo-600 font-black">{progressPct}%</span>
+                <span className="text-[#1988A3] font-black">{progressPct}%</span>
               </div>
-              <div className="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
+              <div className="w-full h-2 bg-[#17233E]/10 rounded-full overflow-hidden">
                 <div 
-                  className="h-full bg-gradient-to-r from-indigo-500 to-blue-600 rounded-full transition-all duration-300" 
+                  className="h-full bg-gradient-to-r from-[#1988A3] to-[#11C6DE] rounded-full transition-all duration-300" 
                   style={{ width: `${progressPct}%` }} 
                 />
               </div>
             </div>
           )}
 
-          <div className="flex justify-between items-center text-slate-500 text-xs font-bold mb-6">
-            <div className="flex items-center gap-1.5"><Clock className="w-3.5 h-3.5" /> {duration}</div>
-            <div className="flex items-center gap-1.5"><TrendingUp className="w-3.5 h-3.5 text-emerald-500" /> {readiness}</div>
+          <div className="flex justify-between items-center text-[#5A6D89] text-xs font-bold mb-6">
+            <div className="flex items-center gap-1.5"><Clock className="w-3.5 h-3.5 text-[#8A9CB7]" /> {duration}</div>
+            <div className="flex items-center gap-1.5"><TrendingUp className="w-3.5 h-3.5 text-[#1988A3]" /> {readiness}</div>
           </div>
           
           {isLmsLocked ? (
             <button 
               onClick={onLaunch}
-              className="w-full py-3 rounded-xl font-bold text-xs bg-amber-500/10 text-amber-700 border border-amber-200 hover:bg-amber-500/20 transition-all shadow-sm flex items-center justify-center gap-2"
+              className="w-full py-2.5 rounded-xl font-bold text-xs bg-amber-500/10 text-amber-700 border border-amber-200 hover:bg-amber-500/20 transition-all shadow-sm flex items-center justify-center gap-2"
             >
               <Lock className="w-3.5 h-3.5 text-amber-600" /> Upgrade Plan to Access
             </button>
           ) : isCompleted ? (
             <button 
               onClick={onLaunch}
-              className="w-full py-3 rounded-xl font-bold text-xs bg-emerald-600 hover:bg-emerald-700 text-white shadow-md shadow-emerald-200 transition-all flex items-center justify-center gap-2"
+              className="w-full py-2.5 rounded-xl font-bold text-xs bg-emerald-600 hover:bg-emerald-700 text-white shadow-md transition-all flex items-center justify-center gap-2"
             >
               <CheckCircle2 className="w-4 h-4" /> ✓ Completed (Review Course)
             </button>
           ) : isInProgress ? (
             <button 
               onClick={onLaunch}
-              className="w-full py-3 rounded-xl font-bold text-xs bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white shadow-lg shadow-indigo-600/25 transition-all flex items-center justify-center gap-2"
+              className="w-full py-2.5 rounded-xl font-bold text-xs bg-gradient-to-r from-[#1988A3] to-[#11C6DE] hover:brightness-110 text-[#17233E] shadow-md transition-all flex items-center justify-center gap-2"
             >
               <Play className="w-3.5 h-3.5 fill-current" /> ▶ Continue Course ({progressPct}%)
             </button>
@@ -1103,7 +936,7 @@ const CourseCard = ({
             <button 
               onClick={onEnroll}
               disabled={isLoading}
-              className="w-full py-3 rounded-xl font-bold text-xs bg-rose-600 hover:bg-rose-700 text-white transition-all shadow-md flex items-center justify-center gap-2"
+              className="w-full py-2.5 rounded-xl font-bold text-xs bg-rose-600 hover:bg-rose-700 text-white transition-all shadow-md flex items-center justify-center gap-2"
             >
               {isLoading && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
               {isLoading ? 'Re-Submitting Request...' : '🔄 Try Again (Re-Request Enrollment)'}
@@ -1111,14 +944,14 @@ const CourseCard = ({
           ) : isPending ? (
             <button 
               disabled
-              className="w-full py-3 rounded-xl font-bold text-xs bg-amber-50 text-amber-700 border border-amber-200 cursor-not-allowed transition-all shadow-sm flex items-center justify-center gap-2"
+              className="w-full py-2.5 rounded-xl font-bold text-xs bg-amber-50 text-amber-700 border border-amber-200 cursor-not-allowed transition-all shadow-sm flex items-center justify-center gap-2"
             >
               <Clock className="w-3.5 h-3.5 text-amber-600" /> Pending {approvalTarget} Approval
             </button>
           ) : isEnrolled ? (
             <button 
               onClick={onLaunch}
-              className="w-full py-3 rounded-xl font-bold text-xs bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-200 transition-all flex items-center justify-center gap-2"
+              className="w-full py-2.5 rounded-xl font-bold text-xs bg-[#17233E] hover:bg-[#1988A3] text-white shadow-md transition-all flex items-center justify-center gap-2"
             >
               <Play className="w-3.5 h-3.5 fill-current" /> ▶ Start Course
             </button>
@@ -1126,7 +959,7 @@ const CourseCard = ({
             <button 
               onClick={onEnroll}
               disabled={isLoading}
-              className="w-full py-3 rounded-xl font-bold text-xs bg-slate-900 hover:bg-slate-800 text-white transition-all shadow-md flex items-center justify-center gap-2"
+              className="w-full py-2.5 rounded-xl font-bold text-xs bg-[#17233E] hover:bg-[#1988A3] text-white transition-all shadow-md flex items-center justify-center gap-2"
             >
               {isLoading && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
               {isLoading ? 'Submitting...' : 'Request Enrollment'}
@@ -1137,36 +970,5 @@ const CourseCard = ({
     </div>
   );
 };
-
-const GapRow = ({ title, tag, gain, desc, onEnroll }) => (
-  <div className="flex justify-between items-center p-5 bg-slate-50/50 border border-slate-100 rounded-2xl hover:bg-slate-50 transition-colors">
-    <div className="flex items-center gap-4">
-      <div className="w-10 h-10 bg-amber-100 rounded-full flex items-center justify-center shadow-sm">
-        <Zap className="w-5 h-5 text-amber-600" />
-      </div>
-      <div>
-        <div className="flex items-center gap-2 mb-0.5">
-          <h5 className="font-bold text-slate-800 text-base">{title}</h5>
-          <span className="bg-orange-100 text-orange-600 text-[8px] font-black px-1.5 py-0.5 rounded uppercase tracking-wider">{tag}</span>
-        </div>
-        <p className="text-slate-500 text-xs">{desc}</p>
-      </div>
-    </div>
-    <div className="flex items-center gap-6">
-      <div className="text-right">
-        <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Readiness Gain</p>
-        <p className="text-emerald-500 font-black text-lg">{gain}</p>
-      </div>
-      {onEnroll && (
-        <button 
-          onClick={onEnroll}
-          className="border-2 border-blue-600 text-blue-600 px-5 py-2 rounded-xl font-bold text-xs hover:bg-blue-600 hover:text-white transition-all"
-        >
-          Launch Course
-        </button>
-      )}
-    </div>
-  </div>
-);
 
 export default LearningRecommendations;

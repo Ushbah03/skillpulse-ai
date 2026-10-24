@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { employeeAPI } from '../services/api';
-import { Loader2, Download } from 'lucide-react';
+import { Download } from 'lucide-react';
+import SkillPulseLoader from './SkillPulseLoader';
 
 const Certifications = () => {
   const [completed, setCompleted] = useState([]);
@@ -10,7 +11,7 @@ const Certifications = () => {
   const [searchQuery, setSearchQuery] = useState('');
 
   const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
-  const workspaceName = storedUser.tenant?.name || 'Apex Tech Solutions Workspace';
+  const workspaceName = storedUser.tenant?.name || 'Enterprise Corp Workspace';
   const userInitials = `${storedUser.firstName?.charAt(0) || 'E'}${storedUser.lastName?.charAt(0) || 'Z'}`;
 
   useEffect(() => {
@@ -85,7 +86,7 @@ const Certifications = () => {
       desc: 'Complete 1 course or assessment', 
       unlocked: completed.length >= 1 || skillCerts.length >= 1,
       icon: <IconZap className="w-6 h-6" />,
-      bg: 'bg-amber-50',
+      bg: 'bg-amber-500/10',
       color: 'text-amber-500'
     },
     { 
@@ -94,8 +95,8 @@ const Certifications = () => {
       desc: 'Verify 1 skill in DB assessment', 
       unlocked: verifiedSkills.length >= 1 || skillCerts.length >= 1,
       icon: <IconStar className="w-6 h-6" />,
-      bg: 'bg-purple-50',
-      color: 'text-purple-500'
+      bg: 'bg-[#1988A3]/10',
+      color: 'text-[#1988A3]'
     },
     { 
       id: 'b-3', 
@@ -103,8 +104,8 @@ const Certifications = () => {
       desc: 'Complete 3 learning items', 
       unlocked: (completed.length + skillCerts.length) >= 3,
       icon: <IconRocket className="w-6 h-6" />,
-      bg: 'bg-blue-50',
-      color: 'text-blue-500'
+      bg: 'bg-[#17233E]/10',
+      color: 'text-[#17233E]'
     },
     { 
       id: 'b-4', 
@@ -112,14 +113,13 @@ const Certifications = () => {
       desc: 'Complete 5 learning items', 
       unlocked: (completed.length + skillCerts.length) >= 5,
       icon: <IconMoon className="w-6 h-6" />,
-      bg: 'bg-indigo-50',
-      color: 'text-indigo-500'
+      bg: 'bg-emerald-500/10',
+      color: 'text-emerald-600'
     }
   ];
 
   const unlockedBadgesCount = badgesList.filter(b => b.unlocked).length;
 
-  // --- Certificate Download Handler (Landscape Style) ---
   const downloadCertificate = (cert) => {
     const user = JSON.parse(localStorage.getItem('user') || '{}');
     const studentName = user.firstName ? `${user.firstName} ${user.lastName || ''}` : 'Waqar Mughal';
@@ -150,22 +150,22 @@ const Certifications = () => {
     body {
       margin: 0;
       padding: 30px;
-      background-color: #F8FAFC;
+      background-color: #E9EAF7;
       font-family: 'Inter', sans-serif;
       display: flex;
       justify-content: center;
       align-items: center;
       min-height: 100vh;
-      color: #0F172A;
+      color: #17233E;
     }
     .certificate-page {
       width: 1000px;
       background: #FFFFFF;
       padding: 45px 60px 35px 60px;
       position: relative;
-      box-shadow: 0 20px 40px -15px rgba(15, 23, 42, 0.12);
-      border: 3px solid #0F172A;
-      outline: 1px solid #CBD5E1;
+      box-shadow: 0 20px 40px -15px rgba(23, 35, 62, 0.15);
+      border: 3px solid #17233E;
+      outline: 1px solid #8A9CB7;
       outline-offset: -12px;
       text-align: center;
     }
@@ -174,14 +174,14 @@ const Certifications = () => {
       font-size: 11px;
       font-weight: 700;
       letter-spacing: 5px;
-      color: #64748B;
+      color: #1988A3;
       text-transform: uppercase;
     }
     .cert-title {
       font-family: 'Cinzel', serif;
       font-size: 34px;
       font-weight: 700;
-      color: #0F172A;
+      color: #17233E;
       letter-spacing: 4px;
       text-transform: uppercase;
       margin: 12px 0 4px 0;
@@ -189,14 +189,14 @@ const Certifications = () => {
     .divider-line {
       width: 70px;
       height: 2px;
-      background: #0F172A;
+      background: #1988A3;
       margin: 10px auto 18px auto;
     }
     .presented-text {
       font-size: 12px;
       font-weight: 600;
       letter-spacing: 3px;
-      color: #64748B;
+      color: #5A6D89;
       text-transform: uppercase;
     }
     .recipient-name {
@@ -204,13 +204,13 @@ const Certifications = () => {
       font-size: 48px;
       font-style: italic;
       font-weight: 600;
-      color: #0F172A;
+      color: #17233E;
       margin: 8px 0 12px 0;
       line-height: 1.1;
     }
     .cert-body {
       font-size: 14px;
-      color: #334155;
+      color: #5A6D89;
       line-height: 1.6;
       max-width: 680px;
       margin: 0 auto 20px auto;
@@ -220,7 +220,7 @@ const Certifications = () => {
       font-family: 'Cinzel', serif;
       font-size: 22px;
       font-weight: 700;
-      color: #0F172A;
+      color: #17233E;
       margin-top: 6px;
       display: inline-block;
       letter-spacing: 1.5px;
@@ -229,26 +229,27 @@ const Certifications = () => {
     .seal-emblem {
       width: 70px;
       height: 70px;
-      border: 1.5px solid #0F172A;
+      border: 1.5px solid #17233E;
       border-radius: 50%;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       margin: 20px auto 25px auto;
-      color: #0F172A;
+      color: #17233E;
     }
     .seal-text {
       font-size: 8px;
       font-weight: 800;
       letter-spacing: 1.5px;
       text-transform: uppercase;
+      color: #1988A3;
     }
     .seal-sub {
       font-size: 7px;
       font-weight: 700;
       letter-spacing: 1px;
-      color: #64748B;
+      color: #5A6D89;
       margin-top: 1px;
       text-transform: uppercase;
     }
@@ -263,11 +264,11 @@ const Certifications = () => {
     }
     .meta-block {
       font-size: 11px;
-      color: #64748B;
+      color: #5A6D89;
       line-height: 1.6;
     }
     .meta-block strong {
-      color: #0F172A;
+      color: #17233E;
       font-weight: 700;
       letter-spacing: 1px;
       text-transform: uppercase;
@@ -279,7 +280,7 @@ const Certifications = () => {
       position: fixed;
       top: 24px;
       right: 24px;
-      background: #0F172A;
+      background: #17233E;
       color: #FFFFFF;
       border: none;
       padding: 12px 24px;
@@ -287,10 +288,10 @@ const Certifications = () => {
       font-weight: 600;
       font-size: 13px;
       cursor: pointer;
-      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);
+      box-shadow: 0 4px 12px rgba(23, 35, 62, 0.2);
       z-index: 1000;
     }
-    .print-btn:hover { background: #334155; }
+    .print-btn:hover { background: #1988A3; }
     
     @media print {
       body {
@@ -304,7 +305,7 @@ const Certifications = () => {
         width: 100vw !important;
         height: 100vh !important;
         box-shadow: none !important;
-        border: 4px solid #0F172A !important;
+        border: 4px solid #17233E !important;
         outline-offset: -16px !important;
         page-break-after: avoid;
         page-break-inside: avoid;
@@ -365,64 +366,68 @@ const Certifications = () => {
     }
   };
 
+  if (loading) {
+    return <SkillPulseLoader message="Validating Credentials & Blockchain Hashes..." />;
+  }
+
   return (
-    <div className="p-8 bg-[#F8F9FE] min-h-screen font-sans text-slate-900">
+    <div className="bg-transparent min-h-screen p-6 md:p-8 font-sans text-[#17233E]">
       
       {/* Top Header */}
       <header className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-8">
         <div>
-          <span className="text-[10px] font-black uppercase tracking-wider bg-indigo-50 text-indigo-600 px-2.5 py-1 rounded-md border border-indigo-100 mb-2 inline-block">
+          <span className="text-[10px] font-black uppercase tracking-wider bg-[#1988A3]/10 text-[#1988A3] px-2.5 py-1 rounded-md border border-[#1988A3]/25 mb-2 inline-block">
             {workspaceName}
           </span>
-          <h1 className="text-3xl font-extrabold tracking-tight">Certifications & Achievements</h1>
-          <p className="text-sm text-slate-500 font-medium mt-1">Track, verify, and export your enterprise course & skill credentials</p>
+          <h1 className="text-3xl md:text-4xl font-black tracking-tight text-[#17233E]">Certifications & Achievements</h1>
+          <p className="text-sm md:text-base text-[#5A6D89] font-medium mt-1">Track, verify, and export your enterprise course & skill credentials</p>
         </div>
 
         <div className="flex items-center gap-4">
           <div className="relative w-72">
-            <IconSearch className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5 pointer-events-none" />
+            <IconSearch className="w-4 h-4 text-[#8A9CB7] absolute left-3.5 top-3.5 pointer-events-none" />
             <input 
               type="text" 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search certificates..." 
-              className="w-full pl-10 pr-4 py-2.5 bg-white rounded-xl border-2 border-slate-300 text-xs font-bold text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-indigo-600 shadow-sm transition-all"
+              className="w-full pl-10 pr-4 py-2.5 bg-white/70 backdrop-blur-md rounded-2xl border border-[#8A9CB7]/30 text-xs font-bold text-[#17233E] placeholder:text-[#8A9CB7] focus:outline-none focus:border-[#1988A3] shadow-sm transition-all"
             />
           </div>
 
-          <div className="w-10 h-10 rounded-xl bg-indigo-600 border-2 border-white shadow-md flex items-center justify-center text-white font-bold text-sm">
+          <div className="w-10 h-10 rounded-2xl bg-[#17233E] border-2 border-white shadow-md flex items-center justify-center text-white font-black text-sm">
             {userInitials}
           </div>
         </div>
       </header>
 
-      {/* Top Stats Cards - 100% Live DB Metrics */}
+      {/* Top Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5 mb-10">
         <HeaderStatCard 
           label="Total Certifications" value={allCertifications.length} 
-          icon={<IconFile className="w-6 h-6" />} 
-          bgClass="bg-indigo-50" colorClass="text-indigo-600"
+          icon={<IconFile className="w-6 h-6 text-[#17233E]" />} 
+          bgClass="bg-[#17233E]/10" colorClass="text-[#17233E]"
           badge={allCertifications.length > 0 ? `${allCertifications.length} Issued` : '0 Issued'} 
-          badgeColor={allCertifications.length > 0 ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-500"}
+          badgeColor={allCertifications.length > 0 ? "bg-emerald-500/10 text-emerald-700 border border-emerald-500/20" : "bg-slate-100 text-slate-500"}
         />
         <HeaderStatCard 
           label="Badges Earned" value={unlockedBadgesCount} 
-          icon={<IconAward className="w-6 h-6" />} 
-          bgClass="bg-orange-50" colorClass="text-orange-600"
+          icon={<IconAward className="w-6 h-6 text-[#1988A3]" />} 
+          bgClass="bg-[#1988A3]/10" colorClass="text-[#1988A3]"
           badge={`${unlockedBadgesCount}/${badgesList.length} Unlocked`} 
-          badgeColor={unlockedBadgesCount > 0 ? "bg-indigo-100 text-indigo-700" : "bg-slate-100 text-slate-500"}
+          badgeColor={unlockedBadgesCount > 0 ? "bg-[#1988A3]/10 text-[#1988A3] border border-[#1988A3]/20" : "bg-slate-100 text-slate-500"}
         />
         <HeaderStatCard 
           label="Course Certificates" value={completed.length} 
-          icon={<IconCheckCircle className="w-6 h-6" />} 
-          bgClass="bg-emerald-50" colorClass="text-emerald-600"
-          badge={`${completed.length} Completed`} badgeColor="bg-slate-100 text-slate-600" 
+          icon={<IconCheckCircle className="w-6 h-6 text-emerald-600" />} 
+          bgClass="bg-emerald-500/10" colorClass="text-emerald-600"
+          badge={`${completed.length} Completed`} badgeColor="bg-[#17233E]/5 text-[#5A6D89]" 
         />
         <HeaderStatCard 
           label="Skill Certificates" value={skillCerts.length > 0 ? skillCerts.length : verifiedSkills.length} 
-          icon={<IconStar className="w-6 h-6" />} 
-          bgClass="bg-purple-50" colorClass="text-purple-600"
-          badge="Assessment Verified" badgeColor="bg-amber-100 text-amber-700" 
+          icon={<IconStar className="w-6 h-6 text-amber-500" />} 
+          bgClass="bg-amber-500/10" colorClass="text-amber-600"
+          badge="Assessment Verified" badgeColor="bg-amber-500/10 text-amber-700 border border-amber-500/20" 
         />
       </div>
 
@@ -434,17 +439,13 @@ const Certifications = () => {
           {/* My Certifications Section */}
           <section>
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-bold text-slate-900">My Certifications</h2>
-              <span className="text-xs font-semibold text-slate-500 bg-slate-100 px-3 py-1 rounded-lg">
+              <h2 className="text-xl font-black text-[#17233E]">My Certifications</h2>
+              <span className="text-xs font-semibold text-[#5A6D89] bg-[#17233E]/5 px-3 py-1 rounded-lg">
                 Showing {filteredCerts.length} Verified Credentials
               </span>
             </div>
             
-            {loading ? (
-              <div className="flex justify-center items-center py-12">
-                <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
-              </div>
-            ) : filteredCerts.length > 0 ? (
+            {filteredCerts.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {filteredCerts.map((c, i) => (
                   <CertCard 
@@ -459,12 +460,12 @@ const Certifications = () => {
                 ))}
               </div>
             ) : (
-              <div className="text-center py-12 bg-white rounded-2xl border border-slate-100 p-8 space-y-3">
-                <div className="w-12 h-12 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center mx-auto">
+              <div className="text-center py-12 glass-panel rounded-2xl p-8 space-y-3">
+                <div className="w-12 h-12 bg-[#1988A3]/10 text-[#1988A3] rounded-full flex items-center justify-center mx-auto">
                   <IconFile className="w-6 h-6" />
                 </div>
-                <h4 className="font-bold text-slate-800 text-base">No Certificates Earned Yet</h4>
-                <p className="text-xs text-slate-500 max-w-md mx-auto">
+                <h4 className="font-bold text-[#17233E] text-base">No Certificates Earned Yet</h4>
+                <p className="text-xs text-[#5A6D89] max-w-md mx-auto">
                   Pass a Skill Assessment with 75%+ score or complete 100% of any courseware item to generate your official enterprise certificate PDF.
                 </p>
               </div>
@@ -475,10 +476,10 @@ const Certifications = () => {
           <section>
             <div className="flex justify-between items-center mb-6">
               <div>
-                <h2 className="text-xl font-bold text-slate-900">Badges & Recognition</h2>
-                <p className="text-xs text-slate-500 font-medium">Unlocked automatically as you achieve course & assessment milestones</p>
+                <h2 className="text-xl font-black text-[#17233E]">Badges & Recognition</h2>
+                <p className="text-xs text-[#5A6D89] font-medium">Unlocked automatically as you achieve course & assessment milestones</p>
               </div>
-              <span className="text-xs font-bold text-slate-600 bg-slate-100 px-3 py-1 rounded-full border border-slate-200">
+              <span className="text-xs font-bold text-[#5A6D89] bg-[#17233E]/5 px-3 py-1 rounded-full border border-[#8A9CB7]/20">
                 {unlockedBadgesCount} of {badgesList.length} Badges Earned
               </span>
             </div>
@@ -507,52 +508,52 @@ const Certifications = () => {
 
 /* --- SUB-COMPONENTS --- */
 
-const HeaderStatCard = ({ label, value, icon, badge, badgeColor, bgClass, colorClass }) => (
-  <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow">
+const HeaderStatCard = ({ label, value, icon, badge, badgeColor, bgClass }) => (
+  <div className="glass-panel p-5 rounded-2xl hover:border-[#1988A3]/40 transition-all">
     <div className="flex justify-between items-start mb-3">
-      <div className={`w-11 h-11 ${bgClass} ${colorClass} rounded-xl flex items-center justify-center`}>
+      <div className={`w-11 h-11 ${bgClass} rounded-xl flex items-center justify-center`}>
         {icon}
       </div>
-      <span className={`text-[9px] font-extrabold px-2 py-0.5 rounded-md uppercase tracking-wider ${badgeColor}`}>
+      <span className={`text-[9px] font-black px-2 py-0.5 rounded-md uppercase tracking-wider ${badgeColor}`}>
         {badge}
       </span>
     </div>
-    <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-0.5">{label}</p>
-    <h3 className="text-2xl font-black text-slate-900">{value}</h3>
+    <p className="text-[#5A6D89] text-[10px] font-black uppercase tracking-widest mb-0.5">{label}</p>
+    <h3 className="text-2xl font-black text-[#17233E]">{value}</h3>
   </div>
 );
 
 const CertCard = ({ title, provider, date, skills, certType, onDownload }) => (
-  <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col justify-between">
+  <div className="glass-panel p-6 rounded-2xl hover:border-[#1988A3]/50 hover:shadow-lg transition-all duration-300 flex flex-col justify-between">
     <div>
       <div className="flex justify-between items-start mb-5">
         <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
-          certType === 'ASSESSMENT' ? 'bg-purple-50 text-purple-600' : 'bg-indigo-50 text-indigo-600'
+          certType === 'ASSESSMENT' ? 'bg-[#1988A3]/10 text-[#1988A3] border border-[#1988A3]/20' : 'bg-[#17233E]/10 text-[#17233E] border border-[#17233E]/20'
         }`}>
           {certType === 'ASSESSMENT' ? <IconStar className="w-6 h-6" /> : <IconFile className="w-6 h-6" />}
         </div>
         <div className="text-right">
-          <span className="text-[9px] text-slate-400 font-bold block uppercase tracking-wider mb-0.5">
+          <span className="text-[9px] text-[#8A9CB7] font-bold block uppercase tracking-wider mb-0.5">
             {certType === 'ASSESSMENT' ? 'Verified Test' : 'Issued'}
           </span>
-          <span className="text-xs font-bold text-slate-700">{date}</span>
+          <span className="text-xs font-bold text-[#17233E]">{date}</span>
         </div>
       </div>
       
       <div className="flex items-center gap-2 mb-1">
-        <span className={`text-[9px] font-bold px-2.5 py-0.5 rounded-md uppercase tracking-wider ${
-          certType === 'ASSESSMENT' ? 'bg-purple-100 text-purple-700' : 'bg-indigo-100 text-indigo-700'
+        <span className={`text-[9px] font-black px-2.5 py-0.5 rounded-md uppercase tracking-wider ${
+          certType === 'ASSESSMENT' ? 'bg-[#1988A3]/15 text-[#1988A3] border border-[#1988A3]/30' : 'bg-[#17233E]/10 text-[#17233E] border border-[#17233E]/20'
         }`}>
           {certType === 'ASSESSMENT' ? 'Skill Certificate' : 'Course Certificate'}
         </span>
       </div>
 
-      <h4 className="text-base font-bold mb-1 leading-snug text-slate-900 h-11 overflow-hidden">{title}</h4>
-      <p className="text-xs text-slate-400 font-medium mb-5 italic">Issued by {provider}</p>
+      <h4 className="text-base font-bold mb-1 leading-snug text-[#17233E] h-11 overflow-hidden">{title}</h4>
+      <p className="text-xs text-[#8A9CB7] font-medium mb-5 italic">Issued by {provider}</p>
       
       <div className="flex flex-wrap gap-1.5 mb-6">
         {skills.map(s => (
-          <span key={s} className="text-[9px] font-bold bg-slate-50 text-slate-600 px-2.5 py-1 rounded-md border border-slate-100 tracking-wider">
+          <span key={s} className="text-[9px] font-bold bg-white/70 text-[#5A6D89] px-2.5 py-1 rounded-md border border-[#8A9CB7]/25 tracking-wider">
             #{s}
           </span>
         ))}
@@ -562,7 +563,7 @@ const CertCard = ({ title, provider, date, skills, certType, onDownload }) => (
     <div className="flex gap-2">
       <button 
         onClick={onDownload}
-        className="grow bg-[#F0F3FF] text-indigo-600 py-2.5 rounded-xl text-xs font-bold hover:bg-indigo-100 transition flex items-center justify-center gap-1.5"
+        className="grow bg-[#17233E] hover:bg-[#1988A3] text-white py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 shadow-sm"
       >
         <Download className="w-3.5 h-3.5" />
         Download PDF
@@ -572,17 +573,17 @@ const CertCard = ({ title, provider, date, skills, certType, onDownload }) => (
 );
 
 const BadgeItem = ({ label, desc, icon, bg, color, locked }) => (
-  <div className={`flex flex-col items-center p-5 rounded-2xl border border-slate-100 transition-all ${locked ? 'opacity-40 bg-slate-50 border-slate-200' : 'bg-white shadow-sm hover:-translate-y-1 hover:shadow-md'}`}>
-    <div className={`w-12 h-12 ${bg} ${color} rounded-full flex items-center justify-center mb-3 shadow-sm relative`}>
+  <div className={`flex flex-col items-center p-5 rounded-2xl border transition-all ${locked ? 'opacity-40 bg-white/40 border-[#8A9CB7]/20' : 'glass-panel hover:-translate-y-1 hover:border-[#1988A3]/40'}`}>
+    <div className={`w-12 h-12 ${bg} ${color} rounded-2xl flex items-center justify-center mb-3 shadow-sm relative`}>
       {icon}
       {locked && (
-        <span className="absolute -top-1 -right-1 bg-slate-800 text-white p-0.5 rounded-full text-[8px]">
+        <span className="absolute -top-1 -right-1 bg-[#17233E] text-white p-0.5 rounded-full text-[8px]">
           🔒
         </span>
       )}
     </div>
-    <span className="text-xs font-bold text-slate-900 text-center leading-tight mb-1">{label}</span>
-    <span className="text-[10px] text-slate-400 text-center font-medium leading-normal">{locked ? `🔒 ${desc}` : '✓ Unlocked'}</span>
+    <span className="text-xs font-bold text-[#17233E] text-center leading-tight mb-1">{label}</span>
+    <span className="text-[10px] text-[#5A6D89] text-center font-medium leading-normal">{locked ? `🔒 ${desc}` : '✓ Unlocked'}</span>
   </div>
 );
 

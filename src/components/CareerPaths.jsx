@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { employeeAPI } from '../services/api';
-import { Loader2, Sparkles, Navigation } from 'lucide-react';
+import { Sparkles, Navigation } from 'lucide-react';
+import SkillPulseLoader from './SkillPulseLoader';
 
 const CareerPaths = () => {
   const navigate = useNavigate();
@@ -10,7 +11,7 @@ const CareerPaths = () => {
   const [selectedPathId, setSelectedPathId] = useState('path-1');
 
   const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
-  const workspaceName = storedUser.tenant?.name || 'Apex Tech Solutions Workspace';
+  const workspaceName = storedUser.tenant?.name || 'Enterprise Corp Workspace';
 
   useEffect(() => {
     async function fetchCareerData() {
@@ -30,14 +31,7 @@ const CareerPaths = () => {
   }, []);
 
   if (loading) {
-    return (
-      <div className="p-8 bg-[#F8F9FE] min-h-screen flex items-center justify-center">
-        <div className="flex flex-col items-center gap-3 text-indigo-600">
-          <Loader2 className="w-10 h-10 animate-spin" />
-          <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Loading Career Pathway Intelligence...</span>
-        </div>
-      </div>
-    );
+    return <SkillPulseLoader message="Calculating Career Pathway Trajectories..." />;
   }
 
   const profile = data?.userProfile || {};
@@ -60,37 +54,37 @@ const CareerPaths = () => {
   };
 
   return (
-    <div className="p-4 md:p-8 bg-[#F8F9FE] min-h-screen font-sans text-slate-900">
+    <div className="bg-transparent min-h-screen p-6 md:p-8 font-sans text-[#17233E]">
       
       {/* Top Header */}
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div>
-          <span className="text-[10px] font-black uppercase tracking-wider bg-blue-50 text-blue-600 px-2.5 py-1 rounded-md border border-blue-100 mb-2 inline-block">
+          <span className="text-[10px] font-black uppercase tracking-wider bg-[#1988A3]/10 text-[#1988A3] px-2.5 py-1 rounded-md border border-[#1988A3]/25 mb-2 inline-block">
             {workspaceName}
           </span>
-          <h1 className="text-3xl font-extrabold tracking-tight">Career Path Suggestions</h1>
-          <p className="text-slate-500 text-sm mt-1 font-medium">
+          <h1 className="text-3xl md:text-4xl font-black tracking-tight text-[#17233E]">Career Path Suggestions</h1>
+          <p className="text-[#5A6D89] text-sm md:text-base mt-1 font-medium">
             Career progression pathways calculated live from your verified skill inventory & department benchmarks
           </p>
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-indigo-600 border-2 border-white shadow-md flex items-center justify-center text-white font-bold text-sm shrink-0">
+          <div className="w-10 h-10 rounded-2xl bg-[#17233E] border-2 border-white shadow-md flex items-center justify-center text-white font-black text-sm shrink-0">
             {storedUser.firstName?.charAt(0) || 'E'}{storedUser.lastName?.charAt(0) || 'Z'}
           </div>
         </div>
       </header>
 
       {/* Hero Banner Section */}
-      <section className="relative w-full bg-gradient-to-r from-blue-600 to-indigo-600 rounded-3xl md:rounded-[2.5rem] p-8 md:p-12 text-white overflow-hidden mb-10 shadow-xl shadow-indigo-100">
+      <section className="relative w-full bg-gradient-to-r from-[#17233E] via-[#1B3154] to-[#1988A3] rounded-3xl md:rounded-[2.5rem] p-8 md:p-12 text-white overflow-hidden mb-10 shadow-2xl border border-white/10">
         <div className="relative z-10 max-w-2xl">
-          <span className="bg-white/20 backdrop-blur-md px-4 py-1.5 rounded-full text-xs font-bold mb-6 inline-block">
+          <span className="bg-white/10 backdrop-blur-md border border-white/20 px-4 py-1.5 rounded-full text-xs font-bold mb-6 inline-block text-[#11C6DE]">
             Current Role: {currentTitle}
           </span>
           <h2 className="text-3xl md:text-5xl font-black mb-6 leading-[1.15]">
-            You are <span className="text-blue-200">{heroReadiness}</span> ready for a {heroTargetRole} role.
+            You are <span className="text-[#11C6DE]">{heroReadiness}</span> ready for a {heroTargetRole} role.
           </h2>
-          <p className="text-blue-100 text-sm md:text-lg leading-relaxed mb-6 opacity-90">
+          <p className="text-[#8A9CB7] text-sm md:text-base leading-relaxed mb-6 font-medium">
             {gaps.length > 0 
               ? `Based on your verified skills in ${profile.department || 'Development'}, your current readiness is ${heroReadiness}. Bridging your ${gaps.length} remaining skill gaps through active courseware will unlock 100% readiness for this position.`
               : `Your verified skill inventory meets 100% of benchmark criteria for advanced ${heroTargetRole} tracks. You are eligible for immediate career promotion review.`
@@ -98,7 +92,7 @@ const CareerPaths = () => {
           </p>
 
           {activeSelectedPath.aiRationale && (
-            <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4 mb-8 text-xs text-blue-100 font-medium">
+            <div className="bg-white/10 backdrop-blur-md border border-white/15 rounded-2xl p-4 mb-8 text-xs text-[#8A9CB7] font-medium">
               <span className="font-bold text-white uppercase tracking-wider block mb-1">AI Recommendation Rationale:</span>
               {activeSelectedPath.aiRationale}
             </div>
@@ -107,7 +101,7 @@ const CareerPaths = () => {
           <div className="flex flex-wrap gap-4">
             <button 
               onClick={() => navigate('/dashboard/learning', { state: { courseId: acceleration.targetCourseId } })}
-              className="px-7 py-3.5 bg-white text-blue-600 rounded-2xl font-black text-sm md:text-base shadow-lg hover:bg-blue-50 transition-all active:scale-95 flex items-center gap-2"
+              className="px-7 py-3.5 bg-gradient-to-r from-[#1988A3] to-[#11C6DE] hover:brightness-110 text-[#17233E] rounded-2xl font-black text-xs md:text-sm uppercase tracking-wider shadow-lg shadow-[#1988A3]/25 transition-all flex items-center gap-2"
             >
               <Navigation className="w-4 h-4" />
               Start Path Now
@@ -119,12 +113,12 @@ const CareerPaths = () => {
         <div className="hidden lg:flex absolute right-12 top-1/2 -translate-y-1/2 items-center justify-center">
           <div className="relative w-56 h-56">
             <svg className="w-full h-full transform -rotate-90" viewBox="0 0 240 240">
-              <circle cx="120" cy="120" r="100" stroke="currentColor" strokeWidth="16" fill="transparent" className="text-white/15" />
-              <circle cx="120" cy="120" r="100" stroke="currentColor" strokeWidth="16" fill="transparent" strokeDasharray="628" strokeDashoffset={628 - (628 * (parseInt(heroReadiness) / 100))} className="text-white" strokeLinecap="round" />
+              <circle cx="120" cy="120" r="100" stroke="currentColor" strokeWidth="16" fill="transparent" className="text-white/10" />
+              <circle cx="120" cy="120" r="100" stroke="#11C6DE" strokeWidth="16" fill="transparent" strokeDasharray="628" strokeDashoffset={628 - (628 * (parseInt(heroReadiness) / 100))} strokeLinecap="round" />
             </svg>
             <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className="text-5xl font-black">{heroReadiness}</span>
-              <span className="text-[10px] font-black uppercase tracking-[0.2em] opacity-70 mt-1">Readiness</span>
+              <span className="text-5xl font-black text-white">{heroReadiness}</span>
+              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#11C6DE] mt-1">Readiness</span>
             </div>
           </div>
         </div>
@@ -132,11 +126,11 @@ const CareerPaths = () => {
 
       {/* Career Roadmap Timeline */}
       <section className="mb-10">
-        <h3 className="text-xl font-bold mb-6 px-1">Career Progression Roadmap</h3>
-        <div className="bg-white p-8 md:p-12 rounded-3xl border border-slate-100 shadow-sm relative overflow-x-auto">
+        <h3 className="text-xl font-black text-[#17233E] mb-6 px-1">Career Progression Roadmap</h3>
+        <div className="glass-panel p-8 md:p-12 rounded-[2.5rem] relative overflow-x-auto">
           <div className="relative min-w-[650px] px-8 py-4">
             {/* Connecting Bar */}
-            <div className="absolute top-11 left-16 right-16 h-1 bg-slate-100 z-0"></div>
+            <div className="absolute top-11 left-16 right-16 h-1 bg-[#17233E]/10 z-0"></div>
             
             <div className="flex justify-between items-start relative z-10">
               {roadmapSteps.map((s, idx) => (
@@ -161,8 +155,8 @@ const CareerPaths = () => {
         <div className="col-span-12 lg:col-span-8 space-y-8">
           <div>
             <div className="flex justify-between items-center mb-6 px-1">
-              <h3 className="text-xl font-bold">Top Recommended Paths</h3>
-              <span className="text-xs font-semibold text-slate-400">Click path to view active alignment</span>
+              <h3 className="text-xl font-black text-[#17233E]">Top Recommended Paths</h3>
+              <span className="text-xs font-semibold text-[#5A6D89]">Click path to view active alignment</span>
             </div>
             
             <div className="space-y-4">
@@ -184,20 +178,20 @@ const CareerPaths = () => {
           </div>
 
           {/* Chart Section */}
-          <div className="bg-white p-6 md:p-8 rounded-3xl border border-slate-100 shadow-sm">
+          <div className="glass-panel p-6 md:p-8 rounded-[2.5rem]">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
               <div>
-                <h4 className="text-lg font-bold text-slate-900">Projected Readiness Progress</h4>
-                <p className="text-slate-400 text-xs mt-0.5">Forecasted growth based on your active learning path</p>
+                <h4 className="text-lg font-black text-[#17233E]">Projected Readiness Progress</h4>
+                <p className="text-[#5A6D89] text-xs mt-0.5 font-medium">Forecasted growth based on your active learning path</p>
               </div>
               <div className="flex gap-4 items-center">
                 <div className="flex items-center gap-2">
-                  <span className="w-3 h-3 bg-blue-600 rounded-full"></span>
-                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Actual</span>
+                  <span className="w-3 h-3 bg-[#1988A3] rounded-full"></span>
+                  <span className="text-[10px] font-bold text-[#5A6D89] uppercase tracking-wider">Actual</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="w-3 h-3 border-2 border-blue-300 rounded-full bg-blue-50"></span>
-                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Forecast</span>
+                  <span className="w-3 h-3 border-2 border-[#1988A3]/40 rounded-full bg-[#1988A3]/10"></span>
+                  <span className="text-[10px] font-bold text-[#5A6D89] uppercase tracking-wider">Forecast</span>
                 </div>
               </div>
             </div>
@@ -220,10 +214,10 @@ const CareerPaths = () => {
         <div className="col-span-12 lg:col-span-4 space-y-8">
           
           {/* Gap Analysis */}
-          <div className="bg-white p-6 md:p-8 rounded-3xl shadow-sm border border-slate-100">
+          <div className="glass-panel p-6 md:p-8 rounded-[2.5rem]">
             <div className="flex justify-between items-center mb-6">
-              <h4 className="text-lg font-bold text-slate-900">Active Gap Alignment</h4>
-              <span className="text-xs font-bold text-slate-500 bg-slate-100 px-2.5 py-0.5 rounded-full">
+              <h4 className="text-lg font-black text-[#17233E]">Active Gap Alignment</h4>
+              <span className="text-xs font-bold text-[#5A6D89] bg-[#17233E]/5 px-2.5 py-0.5 rounded-full">
                 {gaps.length} Gaps
               </span>
             </div>
@@ -248,20 +242,20 @@ const CareerPaths = () => {
                 })}
               </div>
             ) : (
-              <div className="text-center py-6 bg-slate-50 rounded-2xl p-4">
+              <div className="text-center py-6 bg-white/70 rounded-2xl p-4 border border-[#8A9CB7]/20">
                 <p className="text-xs font-bold text-emerald-600">✓ 100% Skills Aligned</p>
-                <p className="text-[11px] text-slate-400 mt-1">No active skill gaps found in your skill profile.</p>
+                <p className="text-[11px] text-[#5A6D89] mt-1">No active skill gaps found in your skill profile.</p>
               </div>
             )}
           </div>
 
           {/* AI Acceleration Plan */}
-          <div className="bg-[#1E0B4B] p-6 md:p-8 rounded-3xl text-white relative overflow-hidden shadow-xl">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -translate-y-16 translate-x-16 pointer-events-none"></div>
+          <div className="bg-gradient-to-br from-[#17233E] via-[#1B3154] to-[#121E33] p-6 md:p-8 rounded-[2.5rem] text-white relative overflow-hidden shadow-2xl border border-white/10">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-[#1988A3]/15 rounded-full blur-2xl pointer-events-none"></div>
             
             <div className="flex items-center gap-2 mb-6 relative z-10">
-              <Sparkles className="w-5 h-5 text-purple-300" />
-              <h4 className="text-lg font-bold">Target Acceleration Plan</h4>
+              <Sparkles className="w-5 h-5 text-[#11C6DE]" />
+              <h4 className="text-lg font-black">Target Acceleration Plan</h4>
             </div>
             
             <div className="space-y-3.5 mb-6">
@@ -269,14 +263,14 @@ const CareerPaths = () => {
               <PlanItem label="TARGET CERTIFICATION" value={acceleration.targetCertification} />
               
               <div className="bg-white/10 rounded-2xl p-5 text-center border border-white/10 mt-4">
-                <p className="text-blue-200 text-[10px] font-bold uppercase tracking-widest mb-1">Estimated Readiness Increase</p>
-                <h5 className="text-2xl md:text-3xl font-black text-emerald-400">{acceleration.estimatedIncrease}</h5>
+                <p className="text-[#8A9CB7] text-[10px] font-bold uppercase tracking-widest mb-1">Estimated Readiness Increase</p>
+                <h5 className="text-2xl md:text-3xl font-black text-[#11C6DE]">{acceleration.estimatedIncrease}</h5>
               </div>
             </div>
 
             <button 
               onClick={() => navigate('/dashboard/learning', { state: { courseId: acceleration.targetCourseId } })}
-              className="w-full py-3.5 bg-white text-[#1E0B4B] rounded-xl font-bold text-sm hover:bg-slate-100 transition-all active:scale-95"
+              className="w-full py-3.5 bg-gradient-to-r from-[#1988A3] to-[#11C6DE] hover:brightness-110 text-[#17233E] rounded-2xl font-black text-xs uppercase tracking-wider transition-all shadow-lg shadow-[#1988A3]/25"
             >
               Start Acceleration
             </button>
@@ -290,11 +284,11 @@ const CareerPaths = () => {
 
 /* --- Sub-Components --- */
 
-const RoadmapStep = ({ label, sub, status, flag, star }) => (
+const RoadmapStep = ({ label, sub, status, flag }) => (
   <div className="flex flex-col items-center z-10">
     <div className={`w-14 h-14 rounded-full border-[5px] border-white shadow-md flex items-center justify-center transition-transform hover:scale-105 ${
-      status === 'active' ? 'bg-blue-600 text-white' : 
-      status === 'pending' ? 'bg-indigo-100 text-indigo-600' : 
+      status === 'active' ? 'bg-[#1988A3] text-white' : 
+      status === 'pending' ? 'bg-[#1988A3]/15 text-[#1988A3]' : 
       'bg-slate-100 text-slate-300'
     }`}>
       {status === 'active' && (flag ? <IconFlag className="w-5 h-5" /> : <IconUser className="w-5 h-5" />)}
@@ -302,10 +296,10 @@ const RoadmapStep = ({ label, sub, status, flag, star }) => (
       {status === 'locked' && <div className="w-3.5 h-3.5 bg-slate-300 rounded-full"></div>}
     </div>
     <div className="mt-4 text-center">
-      <span className={`text-[10px] font-black uppercase tracking-widest block mb-1 ${status === 'active' ? 'text-blue-600' : 'text-slate-400'}`}>
+      <span className={`text-[10px] font-black uppercase tracking-widest block mb-1 ${status === 'active' ? 'text-[#1988A3]' : 'text-[#8A9CB7]'}`}>
         {sub}
       </span>
-      <p className={`text-sm font-bold ${status === 'locked' ? 'text-slate-400' : 'text-slate-900'}`}>{label}</p>
+      <p className={`text-sm font-bold ${status === 'locked' ? 'text-[#8A9CB7]' : 'text-[#17233E]'}`}>{label}</p>
     </div>
   </div>
 );
@@ -313,46 +307,46 @@ const RoadmapStep = ({ label, sub, status, flag, star }) => (
 const RecommendationCard = ({ title, dept, gaps, time, readiness, subText, aiPick, isSelected, onSelect }) => (
   <div 
     onClick={onSelect}
-    className={`bg-white p-6 md:p-8 rounded-3xl border transition-all duration-200 cursor-pointer flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 group ${
-      isSelected ? 'border-2 border-indigo-600 shadow-md ring-2 ring-indigo-100' : 'border-slate-100 hover:border-slate-300 shadow-sm'
+    className={`glass-panel p-6 md:p-8 rounded-[2rem] border transition-all duration-200 cursor-pointer flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 group ${
+      isSelected ? 'border-[#1988A3] shadow-lg ring-2 ring-[#1988A3]/20' : 'hover:border-[#1988A3]/40'
     }`}
   >
     <div className="flex gap-5 items-center">
       <div className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-colors shrink-0 ${
-        isSelected ? 'bg-indigo-600 text-white' : 'bg-slate-50 text-slate-400 group-hover:bg-blue-50 group-hover:text-blue-600'
+        isSelected ? 'bg-[#17233E] text-white' : 'bg-white text-[#8A9CB7] group-hover:bg-[#1988A3]/10 group-hover:text-[#1988A3]'
       }`}>
         <IconPath className="w-6 h-6" />
       </div>
       <div>
         <div className="flex items-center gap-2.5 mb-1">
-          <h4 className="text-lg md:text-xl font-bold text-slate-900">{title}</h4>
+          <h4 className="text-lg md:text-xl font-bold text-[#17233E]">{title}</h4>
           {aiPick && (
-            <span className="bg-purple-100 text-purple-700 text-[9px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+            <span className="bg-[#1988A3]/15 text-[#1988A3] border border-[#1988A3]/30 text-[9px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider">
               PRIMARY
             </span>
           )}
         </div>
-        <p className="text-slate-400 text-xs md:text-sm font-medium mb-3">{dept}</p>
+        <p className="text-[#5A6D89] text-xs md:text-sm font-medium mb-3">{dept}</p>
         <div className="flex gap-6">
           <div>
-            <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-0.5">SKILL GAPS</p>
-            <p className="text-xs md:text-sm font-bold text-slate-700">{gaps}</p>
+            <p className="text-[9px] font-black text-[#8A9CB7] uppercase tracking-widest mb-0.5">SKILL GAPS</p>
+            <p className="text-xs md:text-sm font-bold text-[#17233E]">{gaps}</p>
           </div>
           <div>
-            <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-0.5">TIME TO READY</p>
-            <p className="text-xs md:text-sm font-bold text-slate-700">{time}</p>
+            <p className="text-[9px] font-black text-[#8A9CB7] uppercase tracking-widest mb-0.5">TIME TO READY</p>
+            <p className="text-xs md:text-sm font-bold text-[#17233E]">{time}</p>
           </div>
         </div>
       </div>
     </div>
 
-    <div className="w-full sm:w-auto flex sm:flex-col justify-between sm:justify-center items-end gap-2 border-t sm:border-t-0 border-slate-100 pt-4 sm:pt-0">
+    <div className="w-full sm:w-auto flex sm:flex-col justify-between sm:justify-center items-end gap-2 border-t sm:border-t-0 border-[#8A9CB7]/20 pt-4 sm:pt-0">
       <div className="text-left sm:text-right">
         <div className="flex items-baseline gap-1 sm:justify-end">
-          <span className="text-2xl md:text-3xl font-black text-slate-900">{readiness}</span>
-          <span className="text-xs font-bold text-slate-400 italic">Ready</span>
+          <span className="text-2xl md:text-3xl font-black text-[#17233E]">{readiness}</span>
+          <span className="text-xs font-bold text-[#8A9CB7] italic">Ready</span>
         </div>
-        <p className="text-[10px] font-black uppercase tracking-tight mt-0.5 text-emerald-500">
+        <p className="text-[10px] font-black uppercase tracking-tight mt-0.5 text-emerald-600">
           {subText}
         </p>
       </div>
@@ -363,12 +357,12 @@ const RecommendationCard = ({ title, dept, gaps, time, readiness, subText, aiPic
 const GapMetric = ({ label, status, color, width }) => (
   <div>
     <div className="flex justify-between items-center mb-1.5">
-      <span className="text-xs md:text-sm font-bold text-slate-700">{label}</span>
+      <span className="text-xs md:text-sm font-bold text-[#17233E]">{label}</span>
       <span className={`text-[10px] font-black uppercase ${status === 'CRITICAL' ? 'text-rose-500' : 'text-amber-500'}`}>
         {status}
       </span>
     </div>
-    <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
+    <div className="h-2 w-full bg-[#17233E]/10 rounded-full overflow-hidden">
       <div className={`h-full ${color} rounded-full transition-all duration-500`} style={{ width }}></div>
     </div>
   </div>
@@ -376,7 +370,7 @@ const GapMetric = ({ label, status, color, width }) => (
 
 const PlanItem = ({ label, value }) => (
   <div className="bg-white/5 border border-white/10 rounded-2xl p-4">
-    <p className="text-[9px] font-black text-blue-200 uppercase tracking-widest mb-1">{label}</p>
+    <p className="text-[9px] font-black text-[#8A9CB7] uppercase tracking-widest mb-1">{label}</p>
     <p className="text-xs md:text-sm font-bold text-white leading-tight">{value}</p>
   </div>
 );
@@ -385,19 +379,19 @@ const Bar = ({ height, label, active, forecast }) => (
   <div className="flex-1 flex flex-col items-center gap-3 h-full justify-end">
     <div 
       className={`w-full rounded-xl transition-all duration-500 relative ${
-        active ? 'bg-blue-600 shadow-md shadow-blue-200' : 
-        forecast ? 'bg-blue-100 border-2 border-blue-300 border-dashed' : 
-        'bg-blue-400'
+        active ? 'bg-[#1988A3] shadow-md shadow-[#1988A3]/30' : 
+        forecast ? 'bg-[#1988A3]/20 border-2 border-[#1988A3]/40 border-dashed' : 
+        'bg-[#17233E]/30'
       }`} 
       style={{ height }}
     >
       {active && (
-        <div className="absolute -top-7 left-1/2 -translate-x-1/2 text-[9px] font-black text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded border border-blue-200 shadow-xs">
+        <div className="absolute -top-7 left-1/2 -translate-x-1/2 text-[9px] font-black text-[#17233E] bg-[#11C6DE] px-1.5 py-0.5 rounded shadow-xs">
           NOW
         </div>
       )}
     </div>
-    <span className={`text-[10px] font-black uppercase ${active ? 'text-blue-600' : 'text-slate-400'}`}>{label}</span>
+    <span className={`text-[10px] font-black uppercase ${active ? 'text-[#1988A3]' : 'text-[#8A9CB7]'}`}>{label}</span>
   </div>
 );
 

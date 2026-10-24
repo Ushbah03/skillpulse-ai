@@ -1,30 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
-  PlayCircle,
-  Clock,
-  Globe,
-  Award,
-  CheckCircle2,
-  ChevronRight,
-  Star,
-  Users,
-  Lock,
-  ShieldCheck,
-  Zap,
-  Check,
-  Loader2,
-  Play,
-  ExternalLink,
-  RefreshCw,
-  BookOpen,
-  Sparkles,
-  ArrowLeft,
-  Search,
-  X,
-  XCircle
+  Clock, Globe, Award, CheckCircle2, ChevronRight, Star, Users, Lock, ShieldCheck, Zap, Check, Loader2, Play, BookOpen, Sparkles, ArrowLeft, Search, X, XCircle, Video
 } from 'lucide-react';
 import { employeeAPI } from '../services/api';
+import SkillPulseLoader from './SkillPulseLoader';
 
 const CourseDetails = () => {
   const navigate = useNavigate();
@@ -79,7 +59,7 @@ const CourseDetails = () => {
   ];
 
   const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
-  const workspaceName = storedUser.tenant?.name || 'Apex Tech Solutions Workspace';
+  const workspaceName = storedUser.tenant?.name || 'Enterprise Corp Workspace';
   const planTier = (storedUser.tenant?.plan || storedUser.tenant?.subscriptionTier || storedUser.tenant?.planTier || 'PRO').toUpperCase();
   const isLmsLocked = planTier === 'STARTER';
 
@@ -105,7 +85,6 @@ const CourseDetails = () => {
     loadCourseData();
   }, [courseIdParam]);
 
-  // Click outside to close search dropdown
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (searchRef.current && !searchRef.current.contains(e.target)) {
@@ -240,21 +219,16 @@ const CourseDetails = () => {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-[#F8FAFC] flex flex-col items-center justify-center gap-3">
-        <Loader2 className="w-9 h-9 animate-spin text-blue-600" />
-        <p className="text-slate-500 font-bold text-xs">Loading Course Specifications from Database...</p>
-      </div>
-    );
+    return <SkillPulseLoader message="Loading Course Specifications..." />;
   }
 
   if (!course) {
     return (
-      <div className="min-h-screen bg-[#F8FAFC] p-12 text-center text-slate-500">
-        <h3 className="text-xl font-bold text-slate-800 mb-2">Course details not found</h3>
+      <div className="min-h-screen bg-transparent p-12 text-center text-[#5A6D89]">
+        <h3 className="text-xl font-bold text-[#17233E] mb-2">Course details not found</h3>
         <button 
           onClick={() => navigate('/dashboard/learning')}
-          className="mt-4 px-6 py-2.5 bg-blue-600 text-white rounded-xl text-xs font-bold shadow-md"
+          className="mt-4 px-6 py-2.5 bg-[#17233E] hover:bg-[#1988A3] text-white rounded-xl text-xs font-black uppercase tracking-wider shadow-md"
         >
           Return to Learning Catalog
         </button>
@@ -272,39 +246,39 @@ const CourseDetails = () => {
   const approvalTarget = course.approvalTarget || (course.hasTeam ? 'Leader' : 'HR');
 
   return (
-    <div className="bg-[#F8FAFC] min-h-screen p-8 font-sans">
+    <div className="bg-transparent min-h-screen p-6 md:p-8 font-sans">
       
       {/* Toast Notification */}
       {toastMsg && (
-        <div className="fixed bottom-8 right-8 z-50 bg-emerald-600 text-white px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3 animate-bounce">
-          <CheckCircle2 className="w-5 h-5 shrink-0" />
+        <div className="fixed bottom-8 right-8 z-50 bg-[#17233E] text-white px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3 border border-[#1988A3]/40">
+          <CheckCircle2 className="w-5 h-5 shrink-0 text-[#11C6DE]" />
           <span className="font-bold text-sm">{toastMsg}</span>
         </div>
       )}
 
-      {/* Top Header Controls & High-Contrast Course Search Bar */}
+      {/* Top Header Controls & Search */}
       <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <button 
             onClick={() => navigate('/dashboard/learning')}
-            className="flex items-center gap-2 text-slate-500 hover:text-slate-800 font-bold text-xs mb-3 transition-colors"
+            className="flex items-center gap-2 text-[#5A6D89] hover:text-[#17233E] font-bold text-xs mb-3 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" /> Back to Learning Catalog
           </button>
 
-          <div className="flex items-center gap-2 text-[10px] font-black text-slate-400 uppercase tracking-widest">
-            <span className="bg-blue-50 text-blue-600 px-2.5 py-0.5 rounded border border-blue-100">{workspaceName}</span>
-            <ChevronRight className="w-3 h-3 text-slate-300" />
+          <div className="flex items-center gap-2 text-[10px] font-black text-[#5A6D89] uppercase tracking-widest">
+            <span className="bg-[#1988A3]/10 text-[#1988A3] px-2.5 py-0.5 rounded border border-[#1988A3]/25">{workspaceName}</span>
+            <ChevronRight className="w-3 h-3 text-[#8A9CB7]" />
             <span>{course.provider || 'YouTube Educational LMS'}</span>
-            <ChevronRight className="w-3 h-3 text-slate-300" />
-            <span className="text-blue-600 font-bold">{course.title}</span>
+            <ChevronRight className="w-3 h-3 text-[#8A9CB7]" />
+            <span className="text-[#1988A3] font-bold">{course.title}</span>
           </div>
         </div>
 
         {/* High-Contrast Interactive Course Search Bar */}
         <div className="relative flex-1 max-w-md" ref={searchRef}>
           <div className="relative flex items-center">
-            <Search className="w-4 h-4 text-slate-400 absolute left-3.5 pointer-events-none" />
+            <Search className="w-4 h-4 text-[#8A9CB7] absolute left-3.5 pointer-events-none" />
             <input
               type="text"
               value={searchQuery}
@@ -313,23 +287,22 @@ const CourseDetails = () => {
                 setShowSearchDropdown(true);
               }}
               onFocus={() => setShowSearchDropdown(true)}
-              placeholder="Search 27 courses (e.g. React, Figma, Node, AWS)..."
-              className="w-full pl-10 pr-9 py-2.5 bg-white rounded-xl border-2 border-slate-300 focus:border-blue-600 text-xs font-bold text-slate-800 focus:outline-none shadow-sm transition-all placeholder:text-slate-400"
+              placeholder="Search courses (e.g. React, Figma, Node, AWS)..."
+              className="w-full pl-10 pr-9 py-2.5 bg-white/70 backdrop-blur-md rounded-2xl border border-[#8A9CB7]/30 focus:border-[#1988A3] text-xs font-bold text-[#17233E] focus:outline-none shadow-sm transition-all placeholder:text-[#8A9CB7]"
             />
             {searchQuery && (
               <button 
                 onClick={() => { setSearchQuery(''); setShowSearchDropdown(false); }}
-                className="absolute right-3 text-slate-400 hover:text-slate-600"
+                className="absolute right-3 text-[#8A9CB7] hover:text-[#17233E]"
               >
                 <X className="w-3.5 h-3.5" />
               </button>
             )}
           </div>
 
-          {/* Floating Search Results Dropdown */}
           {showSearchDropdown && (
-            <div className="absolute left-0 right-0 top-full mt-2 bg-white rounded-2xl border border-slate-200 shadow-2xl z-30 max-h-72 overflow-y-auto p-2">
-              <div className="px-3 py-1.5 text-[10px] font-black uppercase tracking-wider text-slate-400 border-b border-slate-100 mb-1 flex justify-between">
+            <div className="absolute left-0 right-0 top-full mt-2 bg-white/95 backdrop-blur-2xl rounded-2xl border border-[#8A9CB7]/30 shadow-2xl z-30 max-h-72 overflow-y-auto p-2">
+              <div className="px-3 py-1.5 text-[10px] font-black uppercase tracking-wider text-[#5A6D89] border-b border-[#8A9CB7]/15 mb-1 flex justify-between">
                 <span>Matching Courses ({filteredSearchCourses.length})</span>
                 <span>Click to Select</span>
               </div>
@@ -339,20 +312,20 @@ const CourseDetails = () => {
                     key={c.id}
                     onClick={() => handleSelectCourse(c.id)}
                     className={`p-3 rounded-xl cursor-pointer transition-all flex items-center justify-between ${
-                      c.id === course.id ? 'bg-blue-50 text-blue-700 font-extrabold' : 'hover:bg-slate-50 text-slate-700'
+                      c.id === course.id ? 'bg-[#1988A3]/15 text-[#1988A3] font-black' : 'hover:bg-slate-50 text-[#17233E]'
                     }`}
                   >
                     <div className="pr-3">
                       <p className="text-xs font-bold leading-snug">{c.title}</p>
-                      <p className="text-[10px] text-slate-400 font-medium mt-0.5">{c.provider || 'YouTube Educational LMS'} • {c.level || 'Intermediate'}</p>
+                      <p className="text-[10px] text-[#8A9CB7] font-medium mt-0.5">{c.provider || 'YouTube Educational LMS'} • {c.level || 'Intermediate'}</p>
                     </div>
-                    <span className="text-[10px] font-black bg-slate-100 text-slate-600 px-2 py-0.5 rounded shrink-0">
+                    <span className="text-[10px] font-black bg-[#17233E]/5 text-[#5A6D89] px-2 py-0.5 rounded shrink-0">
                       {c.durationHours || 12}h
                     </span>
                   </div>
                 ))
               ) : (
-                <div className="p-4 text-center text-xs text-slate-400 font-medium">
+                <div className="p-4 text-center text-xs text-[#5A6D89] font-medium">
                   No courses matching "{searchQuery}"
                 </div>
               )}
@@ -367,39 +340,39 @@ const CourseDetails = () => {
         <div className="lg:col-span-2 space-y-6">
 
           {/* Hero Banner Card */}
-          <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm relative overflow-hidden">
+          <div className="glass-panel p-8 rounded-[2.5rem] relative overflow-hidden">
             <div className="flex items-center gap-2 mb-4">
-              <span className="bg-blue-50 text-blue-600 text-[10px] font-black px-3 py-1 rounded-md uppercase tracking-wider">
+              <span className="bg-[#17233E]/5 text-[#17233E] text-[10px] font-black px-3 py-1 rounded-md uppercase tracking-wider">
                 {course.provider || 'YouTube Educational LMS'}
               </span>
-              <span className="bg-emerald-50 text-emerald-600 text-[10px] font-black px-3 py-1 rounded-md uppercase tracking-wider flex items-center gap-1">
-                <Sparkles className="w-3 h-3" /> AI Verified Skill Match
+              <span className="bg-emerald-500/10 text-emerald-700 text-[10px] font-black px-3 py-1 rounded-md uppercase tracking-wider flex items-center gap-1 border border-emerald-500/20">
+                <Sparkles className="w-3 h-3 text-[#1988A3]" /> AI Verified Skill Match
               </span>
             </div>
 
-            <h1 className="text-3xl font-black text-slate-900 mb-4 leading-tight">
+            <h1 className="text-2xl md:text-3xl font-black text-[#17233E] mb-4 leading-tight">
               {course.title}
             </h1>
-            <p className="text-slate-500 text-sm font-medium leading-relaxed mb-8 max-w-2xl">
+            <p className="text-[#5A6D89] text-sm font-medium leading-relaxed mb-8 max-w-2xl">
               {course.description || "Master industry standards and scale your system with advanced architecture blueprints."}
             </p>
 
-            <div className="flex flex-wrap items-center gap-6 border-t border-slate-100 pt-6">
+            <div className="flex flex-wrap items-center gap-6 border-t border-[#8A9CB7]/20 pt-6">
               <div className="flex items-center gap-2">
                 <Star className="w-4 h-4 fill-current text-amber-400" />
-                <span className="font-black text-slate-800 text-sm">{course.rating || 4.9}</span>
-                <span className="text-xs text-slate-400 font-medium">(2,450 ratings)</span>
+                <span className="font-black text-[#17233E] text-sm">{course.rating || 4.9}</span>
+                <span className="text-xs text-[#8A9CB7] font-medium">(2,450 ratings)</span>
               </div>
-              <div className="flex items-center gap-2 text-slate-600 text-xs font-bold">
-                <Users className="w-4 h-4 text-slate-400" />
+              <div className="flex items-center gap-2 text-[#5A6D89] text-xs font-bold">
+                <Users className="w-4 h-4 text-[#8A9CB7]" />
                 {course.level || 'Intermediate'} Level
               </div>
-              <div className="flex items-center gap-2 text-slate-600 text-xs font-bold">
-                <Clock className="w-4 h-4 text-slate-400" />
+              <div className="flex items-center gap-2 text-[#5A6D89] text-xs font-bold">
+                <Clock className="w-4 h-4 text-[#8A9CB7]" />
                 {course.durationHours || 12} Hours Total
               </div>
-              <div className="flex items-center gap-2 text-slate-600 text-xs font-bold">
-                <Globe className="w-4 h-4 text-slate-400" />
+              <div className="flex items-center gap-2 text-[#5A6D89] text-xs font-bold">
+                <Globe className="w-4 h-4 text-[#8A9CB7]" />
                 English (Auto-Subtitles)
               </div>
             </div>
@@ -407,17 +380,17 @@ const CourseDetails = () => {
 
           {/* Skills Taught Section */}
           {Array.isArray(course.skillsTaught) && course.skillsTaught.length > 0 && (
-            <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
+            <div className="glass-panel p-8 rounded-[2.5rem]">
               <div className="flex items-center gap-2 mb-4">
                 <Zap className="w-5 h-5 text-amber-500" />
-                <h3 className="text-lg font-bold text-slate-800">Target Skills & Proficiency Boost</h3>
+                <h3 className="text-lg font-black text-[#17233E]">Target Skills & Proficiency Boost</h3>
               </div>
               <div className="flex flex-wrap gap-3">
                 {course.skillsTaught.map((skillName, idx) => (
-                  <div key={idx} className="bg-indigo-50/80 border border-indigo-100 text-indigo-700 px-4 py-2 rounded-2xl flex items-center gap-2 text-xs font-bold">
-                    <CheckCircle2 className="w-4 h-4 text-indigo-600" />
+                  <div key={idx} className="bg-[#1988A3]/10 border border-[#1988A3]/25 text-[#17233E] px-4 py-2 rounded-2xl flex items-center gap-2 text-xs font-bold">
+                    <CheckCircle2 className="w-4 h-4 text-[#1988A3]" />
                     <span>{skillName}</span>
-                    <span className="bg-indigo-200/60 text-indigo-900 text-[10px] font-black px-2 py-0.5 rounded-full">
+                    <span className="bg-[#1988A3] text-white text-[9px] font-black px-2 py-0.5 rounded-full">
                       Target 4.5/5
                     </span>
                   </div>
@@ -427,13 +400,13 @@ const CourseDetails = () => {
           )}
 
           {/* Interactive Curriculum Modules List */}
-          <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm space-y-4">
+          <div className="glass-panel p-8 rounded-[2.5rem] space-y-4">
             <div className="flex justify-between items-center mb-2">
               <div>
-                <h3 className="text-xl font-bold text-slate-800">Course Syllabus & Chapters</h3>
-                <p className="text-xs text-slate-400 font-medium">4 Video Modules • Hands-on capstone project</p>
+                <h3 className="text-lg md:text-xl font-black text-[#17233E]">Course Syllabus & Chapters</h3>
+                <p className="text-xs text-[#5A6D89] font-medium">4 Video Modules • Hands-on capstone project</p>
               </div>
-              <span className="text-xs font-black text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full border border-indigo-100">
+              <span className="text-xs font-black text-[#1988A3] bg-[#1988A3]/10 px-3 py-1 rounded-full border border-[#1988A3]/20">
                 {progressPct}% Completed
               </span>
             </div>
@@ -446,27 +419,27 @@ const CourseDetails = () => {
                     key={idx}
                     className={`p-4 rounded-2xl border flex items-center justify-between transition-all ${
                       isModDone 
-                        ? 'bg-emerald-50/40 border-emerald-200/80 text-slate-800'
-                        : 'bg-slate-50/50 border-slate-100 text-slate-600'
+                        ? 'bg-emerald-500/10 border-emerald-500/25 text-[#17233E]'
+                        : 'bg-white/70 border-[#8A9CB7]/25 text-[#5A6D89]'
                     }`}
                   >
                     <div className="flex items-center gap-3">
                       <div className={`w-8 h-8 rounded-xl flex items-center justify-center text-xs font-bold ${
-                        isModDone ? 'bg-emerald-600 text-white' : 'bg-slate-200 text-slate-600'
+                        isModDone ? 'bg-emerald-600 text-white' : 'bg-[#17233E]/10 text-[#17233E]'
                       }`}>
                         {isModDone ? <Check className="w-4 h-4" /> : idx + 1}
                       </div>
                       <div>
-                        <h5 className="font-bold text-xs text-slate-800">{mod.title}</h5>
-                        <p className="text-[11px] text-slate-400 font-medium">{mod.desc}</p>
+                        <h5 className="font-bold text-xs text-[#17233E]">{mod.title}</h5>
+                        <p className="text-[11px] text-[#5A6D89] font-medium">{mod.desc}</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-3 shrink-0">
-                      <span className="text-[11px] font-bold text-slate-400">{mod.duration}</span>
+                      <span className="text-[11px] font-bold text-[#8A9CB7]">{mod.duration}</span>
                       {isEnrolled && (
                         <button
                           onClick={handleLaunchPlayer}
-                          className="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] font-bold flex items-center gap-1 shadow-sm"
+                          className="px-3 py-1.5 rounded-lg bg-[#17233E] hover:bg-[#1988A3] text-white text-[11px] font-bold flex items-center gap-1 shadow-sm"
                         >
                           <Play className="w-3 h-3 fill-current" /> Play
                         </button>
@@ -479,8 +452,8 @@ const CourseDetails = () => {
           </div>
 
           {/* Learning Objectives Grid */}
-          <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
-            <h3 className="text-xl font-bold text-slate-800 mb-6">What you'll learn</h3>
+          <div className="glass-panel p-8 rounded-[2.5rem]">
+            <h3 className="text-lg md:text-xl font-black text-[#17233E] mb-6">What you'll learn</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <ObjectiveCard text="Integrate scalable software design parameters and architectural patterns." />
               <ObjectiveCard text="Establish clean zero-trust security models for cloud-native microservices." />
@@ -491,140 +464,101 @@ const CourseDetails = () => {
 
         </div>
 
-        {/* RIGHT SIDEBAR CARD (STATIONARY PREVIEW & PLAYER CONTROLS) */}
+        {/* RIGHT SIDEBAR CARD */}
         <div className="space-y-6">
-          <div className="bg-white p-6 rounded-[2.5rem] border border-slate-100 shadow-xl sticky top-8">
+          <div className="glass-panel p-6 rounded-[2.5rem] sticky top-8">
             
             {/* Dark Video Preview Thumbnail */}
-            <div className="relative bg-slate-900 rounded-2xl h-48 overflow-hidden mb-6 flex items-center justify-center group cursor-pointer" onClick={isEnrolled ? handleLaunchPlayer : handleEnroll}>
-              <img 
-                src={course.thumbnailUrl || 'https://images.unsplash.com/photo-1581291518633-83b4ebd1d83e?w=800&auto=format&fit=crop&q=60'} 
-                alt={course.title}
-                className="w-full h-full object-cover opacity-60 group-hover:opacity-40 transition-opacity"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-900/40 to-transparent" />
-
-              <div className="relative z-10 w-14 h-14 bg-indigo-600/90 rounded-full flex items-center justify-center text-white shadow-2xl group-hover:scale-110 transition-transform">
-                <Play className="w-6 h-6 fill-current ml-0.5" />
+            <div className="relative bg-gradient-to-r from-[#17233E] via-[#1B3154] to-[#121E33] rounded-2xl h-48 overflow-hidden mb-6 flex items-center justify-center group cursor-pointer" onClick={isEnrolled ? handleLaunchPlayer : handleEnroll}>
+              <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-all flex items-center justify-center">
+                <div className="w-14 h-14 rounded-full bg-white/90 text-[#17233E] flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform">
+                  <Play className="w-6 h-6 fill-current ml-0.5 text-[#1988A3]" />
+                </div>
               </div>
-
-              <span className="absolute bottom-3 left-3 bg-slate-900/90 text-white text-[10px] font-bold px-2.5 py-1 rounded-md border border-slate-700">
-                Interactive Video Player
+              <span className="absolute bottom-3 right-3 bg-[#17233E]/80 backdrop-blur-md text-white text-[10px] font-bold px-2 py-0.5 rounded">
+                Course Preview
               </span>
             </div>
 
-            {/* Lifecycle Status & Progress Display */}
-            <div className="mb-6">
-              <div className="flex justify-between items-center mb-2">
-                <span className="text-xs text-slate-400 font-bold uppercase tracking-wider">Course Status</span>
-                {isCompleted ? (
-                  <span className="bg-emerald-100 text-emerald-700 text-[10px] font-black px-2.5 py-0.5 rounded-full border border-emerald-200 flex items-center gap-1">
-                    <CheckCircle2 className="w-3 h-3" /> COMPLETED
-                  </span>
-                ) : isInProgress ? (
-                  <span className="bg-indigo-100 text-indigo-700 text-[10px] font-black px-2.5 py-0.5 rounded-full border border-indigo-200 flex items-center gap-1">
-                    <Play className="w-3 h-3 fill-current" /> IN PROGRESS ({progressPct}%)
-                  </span>
-                ) : isRejected ? (
-                  <span className="bg-rose-100 text-rose-700 text-[10px] font-black px-2.5 py-0.5 rounded-full border border-rose-200 flex items-center gap-1">
-                    <XCircle className="w-3 h-3 text-rose-600" /> REQUEST REJECTED
-                  </span>
-                ) : isPending ? (
-                  <span className="bg-amber-100 text-amber-700 text-[10px] font-black px-2.5 py-0.5 rounded-full border border-amber-200 flex items-center gap-1">
-                    <Clock className="w-3 h-3" /> PENDING {approvalTarget.toUpperCase()} APPROVAL
-                  </span>
-                ) : isApproved ? (
-                  <span className="bg-blue-100 text-blue-700 text-[10px] font-black px-2.5 py-0.5 rounded-full border border-blue-200 flex items-center gap-1">
-                    <Check className="w-3 h-3" /> AUTHORIZED & ENROLLED
-                  </span>
-                ) : (
-                  <span className="bg-slate-100 text-slate-600 text-[10px] font-black px-2.5 py-0.5 rounded-full border border-slate-200">
-                    OPEN FOR ENROLLMENT
-                  </span>
-                )}
-              </div>
-
-              {/* Progress Bar for Enrolled Courses */}
-              {isEnrolled && (
-                <div className="mt-3 bg-slate-50 p-3 rounded-xl border border-slate-100">
-                  <div className="flex justify-between items-center text-[10px] font-extrabold text-slate-600 mb-1">
-                    <span>Overall Progress</span>
-                    <span className="text-indigo-600 font-black">{progressPct}%</span>
-                  </div>
-                  <div className="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
-                    <div 
-                      className="h-full bg-gradient-to-r from-indigo-500 to-blue-600 rounded-full transition-all duration-300" 
-                      style={{ width: `${progressPct}%` }} 
-                    />
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Primary Action Button */}
-            <div className="space-y-3 mb-6">
+            {/* Lifecycle Status & Primary Action */}
+            <div className="space-y-4">
               {isLmsLocked ? (
-                <button 
-                  onClick={handleLaunchPlayer}
-                  className="w-full py-3.5 rounded-xl font-bold text-xs bg-amber-500/10 text-amber-700 border border-amber-200 flex items-center justify-center gap-2"
-                >
-                  <Lock className="w-4 h-4 text-amber-600" /> Upgrade Plan to Access
-                </button>
+                <div className="p-4 bg-amber-500/10 border border-amber-500/20 rounded-2xl text-center">
+                  <p className="text-xs font-bold text-amber-700 mb-2">Requires Growth or Enterprise Tier</p>
+                  <button 
+                    onClick={handleLaunchPlayer}
+                    className="w-full py-3 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-xs font-black uppercase tracking-wider transition-all"
+                  >
+                    View Plan Upgrade Details
+                  </button>
+                </div>
               ) : isCompleted ? (
-                <button 
-                  onClick={handleLaunchPlayer}
-                  className="w-full py-3.5 rounded-xl font-bold text-xs bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg shadow-emerald-200 transition-all flex items-center justify-center gap-2"
-                >
-                  <CheckCircle2 className="w-4 h-4" /> Course Completed (Review)
-                </button>
+                <div>
+                  <div className="p-3 bg-emerald-500/10 border border-emerald-500/25 rounded-2xl flex items-center gap-2 mb-3 text-emerald-700 text-xs font-bold">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span>Skill Gap Cleared & Verified in Database!</span>
+                  </div>
+                  <button 
+                    onClick={handleLaunchPlayer}
+                    className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-black uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-md"
+                  >
+                    <Play className="w-4 h-4 fill-current" /> Review Course Lessons
+                  </button>
+                </div>
               ) : isInProgress ? (
-                <button 
-                  onClick={handleLaunchPlayer}
-                  className="w-full py-3.5 rounded-xl font-bold text-xs bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white shadow-lg shadow-indigo-600/30 transition-all flex items-center justify-center gap-2"
-                >
-                  <Play className="w-4 h-4 fill-current" /> ▶ Continue Course ({progressPct}%)
-                </button>
-              ) : isRejected ? (
-                <button 
-                  onClick={handleEnroll}
-                  disabled={isEnrolling}
-                  className="w-full py-3.5 rounded-xl font-bold text-xs bg-rose-600 hover:bg-rose-700 text-white transition-all shadow-md flex items-center justify-center gap-2"
-                >
-                  {isEnrolling && <Loader2 className="w-4 h-4 animate-spin" />}
-                  {isEnrolling ? 'Re-Submitting Request...' : '🔄 Try Again (Re-Request Enrollment)'}
-                </button>
+                <div>
+                  <div className="mb-3">
+                    <div className="flex justify-between text-xs font-bold text-[#5A6D89] mb-1">
+                      <span>Progress</span>
+                      <span className="text-[#1988A3] font-black">{progressPct}%</span>
+                    </div>
+                    <div className="w-full h-2 bg-[#17233E]/10 rounded-full overflow-hidden">
+                      <div className="h-full bg-gradient-to-r from-[#1988A3] to-[#11C6DE] rounded-full" style={{ width: `${progressPct}%` }} />
+                    </div>
+                  </div>
+                  <button 
+                    onClick={handleLaunchPlayer}
+                    className="w-full py-3 bg-gradient-to-r from-[#1988A3] to-[#11C6DE] hover:brightness-110 text-[#17233E] rounded-xl text-xs font-black uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-lg shadow-[#1988A3]/25"
+                  >
+                    <Play className="w-4 h-4 fill-current" /> Resume Course ({progressPct}%)
+                  </button>
+                </div>
               ) : isPending ? (
-                <button 
-                  disabled
-                  className="w-full py-3.5 rounded-xl font-bold text-xs bg-amber-50 text-amber-700 border border-amber-200 cursor-not-allowed flex items-center justify-center gap-2"
-                >
-                  <Clock className="w-4 h-4 text-amber-600" /> Pending {approvalTarget} Approval
-                </button>
-              ) : isApproved ? (
+                <div className="p-4 bg-amber-500/10 border border-amber-500/20 rounded-2xl text-center">
+                  <p className="text-xs font-bold text-amber-700">Enrollment request pending {approvalTarget} approval.</p>
+                </div>
+              ) : isEnrolled ? (
                 <button 
                   onClick={handleLaunchPlayer}
-                  className="w-full py-3.5 rounded-xl font-bold text-xs bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-200 transition-all flex items-center justify-center gap-2"
+                  className="w-full py-3 bg-[#17233E] hover:bg-[#1988A3] text-white rounded-xl text-xs font-black uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-md"
                 >
-                  <Play className="w-4 h-4 fill-current" /> ▶ Start Course Player
+                  <Play className="w-4 h-4 fill-current" /> Start Course Now
                 </button>
               ) : (
                 <button 
                   onClick={handleEnroll}
                   disabled={isEnrolling}
-                  className="w-full py-3.5 rounded-xl font-bold text-xs bg-slate-900 hover:bg-slate-800 text-white shadow-lg transition-all flex items-center justify-center gap-2"
+                  className="w-full py-3 bg-[#17233E] hover:bg-[#1988A3] text-white rounded-xl text-xs font-black uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-lg shadow-[#17233E]/20"
                 >
-                  {isEnrolling && <Loader2 className="w-4 h-4 animate-spin" />}
+                  {isEnrolling && <Loader2 className="w-4 h-4 animate-spin text-[#11C6DE]" />}
                   {isEnrolling ? 'Submitting Request...' : 'Request Enrollment'}
                 </button>
               )}
-            </div>
 
-            {/* Course Features Guarantee */}
-            <div className="space-y-3 pt-4 border-t border-slate-100">
-              <FeatureItem text="100% Verified YouTube Video Stream" />
-              <FeatureItem text="PostgreSQL DB Progress Persistence" />
-              <FeatureItem text="Automated Skill Gap Clearance upon 100%" />
-              <FeatureItem text="Official Enterprise Credential Certificate" />
+              <div className="text-[11px] text-[#5A6D89] space-y-2 border-t border-[#8A9CB7]/20 pt-4 font-medium">
+                <div className="flex justify-between">
+                  <span>Certificate:</span>
+                  <span className="font-bold text-[#17233E]">Included on Completion</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Prerequisites:</span>
+                  <span className="font-bold text-[#17233E]">None required</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Access:</span>
+                  <span className="font-bold text-[#17233E]">Full Lifetime</span>
+                </div>
+              </div>
             </div>
 
           </div>
@@ -632,174 +566,70 @@ const CourseDetails = () => {
 
       </div>
 
-      {/* 4-Chapter Video Player Modal */}
+      {/* Video Player Modal */}
       {showPlayer && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-md p-4 sm:p-6 animate-in fade-in duration-200">
-          <div className="bg-[#0F172A] border border-slate-800 rounded-3xl w-full max-w-5xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#17233E]/80 backdrop-blur-md p-4 md:p-6 overflow-y-auto">
+          <div className="bg-[#17233E] rounded-2xl shadow-2xl w-full max-w-5xl overflow-hidden border border-white/10 flex flex-col max-h-[92vh]">
             
-            {/* Modal Top Header Bar */}
-            <div className="bg-[#0B1120] px-6 py-4 border-b border-slate-800 flex justify-between items-center shrink-0">
+            {/* Header */}
+            <div className="bg-[#121E33] p-5 text-white flex justify-between items-center border-b border-white/10 shrink-0">
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center text-indigo-400">
+                <div className="p-2 bg-[#1988A3]/20 text-[#11C6DE] rounded-xl">
                   <Play className="w-4 h-4 fill-current" />
                 </div>
                 <div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-extrabold uppercase tracking-wider bg-indigo-500/10 text-indigo-400 px-2 py-0.5 rounded border border-indigo-500/20">
-                      {course.provider || 'YouTube Educational LMS'}
-                    </span>
-                    <span className="text-xs text-slate-400 font-medium">• {course.durationHours || 12} Hours Courseware</span>
-                  </div>
-                  <h3 className="font-bold text-white text-base leading-tight mt-0.5">{course.title}</h3>
+                  <h3 className="font-bold text-sm md:text-base text-white">{course.title}</h3>
+                  <p className="text-xs text-[#8A9CB7]">{course.provider || 'YouTube Educational LMS'}</p>
                 </div>
               </div>
-              <button 
-                onClick={() => setShowPlayer(false)}
-                className="w-8 h-8 rounded-full bg-slate-800/80 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center transition-all"
-              >
-                <X className="w-4 h-4" />
+              <button onClick={() => setShowPlayer(false)} className="text-[#8A9CB7] hover:text-white p-2 rounded-xl">
+                <X className="w-5 h-5" />
               </button>
             </div>
 
-            {/* Modal Sub-Header Tabs */}
-            <div className="bg-[#0B1120]/60 px-6 py-2 border-b border-slate-800/60 flex gap-4 text-xs font-bold shrink-0">
-              <button
-                onClick={() => setActiveTab('video')}
-                className={`py-2 px-3 rounded-lg flex items-center gap-2 transition-all ${
-                  activeTab === 'video' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-400 hover:text-white'
-                }`}
-              >
-                <Play className="w-3.5 h-3.5" /> 1. Video Lecture Player
-              </button>
-              <button
-                onClick={() => setActiveTab('modules')}
-                className={`py-2 px-3 rounded-lg flex items-center gap-2 transition-all ${
-                  activeTab === 'modules' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-400 hover:text-white'
-                }`}
-              >
-                <BookOpen className="w-3.5 h-3.5" /> 2. AI Interactive Modules ({completedModules.length}/4)
-              </button>
-            </div>
-
-            {/* Player Main Body */}
-            <div className="p-6 overflow-y-auto flex-1 space-y-6">
-              {activeTab === 'video' && (
-                <div className="space-y-4">
-                  
-                  {/* Embedded Iframe Player */}
-                  <div className="relative w-full aspect-video bg-black rounded-2xl overflow-hidden border border-slate-800 shadow-2xl">
-                    <iframe 
-                      key={currentModuleIdx}
-                      src={getModuleVideoUrl(course.externalUrl, currentModuleIdx)} 
-                      title={course.title}
-                      className="w-full h-full border-0"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-                      referrerPolicy="strict-origin-when-cross-origin"
-                      allowFullScreen
-                    ></iframe>
-                  </div>
-
-                  {/* Chapter Control Bar */}
-                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-[#0B1120] p-5 rounded-2xl border border-slate-800/80 shadow-lg">
-                    <div>
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="text-[10px] font-bold uppercase tracking-wider bg-indigo-500/10 text-indigo-400 px-2 py-0.5 rounded border border-indigo-500/20">
-                          Playing Chapter {currentModuleIdx + 1} of 4
-                        </span>
-                        <span className="text-xs text-slate-400 font-medium">• {MODULE_CHAPTERS[currentModuleIdx]?.duration}</span>
-                      </div>
-                      <h4 className="font-bold text-white text-sm mb-1">{MODULE_CHAPTERS[currentModuleIdx]?.title}</h4>
-                      <p className="text-slate-400 text-xs leading-relaxed max-w-2xl">{MODULE_CHAPTERS[currentModuleIdx]?.desc}</p>
-                    </div>
-
-                    <div className="flex items-center gap-3 shrink-0">
-                      <button
-                        onClick={handleCompleteCurrentModuleVideo}
-                        className="px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white shadow-lg shadow-indigo-600/30 border border-indigo-500/30"
-                      >
-                        <CheckCircle2 className="w-4 h-4" />
-                        {completedModules.includes(currentModuleIdx)
-                          ? `Chapter ${currentModuleIdx + 1} Completed`
-                          : currentModuleIdx < 3
-                            ? `Finish Chapter ${currentModuleIdx + 1} & Play Next`
-                            : `Finish Final Chapter ${currentModuleIdx + 1}`}
-                      </button>
-
-                      <button
-                        onClick={() => setUseBackupStream(prev => !prev)}
-                        title="Click if primary YouTube video is unavailable"
-                        className={`px-3 py-2.5 rounded-xl border text-xs font-semibold flex items-center justify-center gap-1.5 transition-all ${
-                          useBackupStream
-                            ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
-                            : 'bg-slate-800/80 text-slate-300 border-slate-700 hover:bg-slate-700'
-                        }`}
-                      >
-                        <RefreshCw className={`w-3.5 h-3.5 ${useBackupStream ? 'animate-spin' : ''}`} />
-                        {useBackupStream ? 'Backup Stream' : 'Switch Stream'}
-                      </button>
-                    </div>
-                  </div>
-
-                </div>
-              )}
-
-              {activeTab === 'modules' && (
-                <div className="space-y-4">
-                  {MODULE_CHAPTERS.map((mod, idx) => {
-                    const isChecked = completedModules.includes(idx);
-                    return (
-                      <div 
-                        key={idx}
-                        className={`p-4 rounded-2xl border transition-all flex items-start gap-4 ${
-                          isChecked 
-                            ? 'bg-[#0B1120] border-indigo-500/40 text-white shadow-lg' 
-                            : 'bg-[#0B1120]/50 border-slate-800/60 text-slate-400'
-                        }`}
-                      >
-                        <div className={`w-6 h-6 rounded-lg flex items-center justify-center mt-0.5 border ${
-                          isChecked ? 'bg-indigo-600 border-indigo-500 text-white' : 'border-slate-700 bg-slate-900 text-slate-600'
-                        }`}>
-                          {isChecked ? <Check className="w-4 h-4" /> : <Lock className="w-3 h-3" />}
-                        </div>
-                        <div className="flex-1">
-                          <h5 className="font-bold text-sm text-white">{mod.title}</h5>
-                          <p className="text-slate-400 text-xs mt-0.5">{mod.desc}</p>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-
-            {/* Modal Footer Controls */}
-            <div className="bg-[#0F172A] p-5 border-t border-slate-800/80 flex flex-col md:flex-row md:items-center justify-between gap-4 shrink-0">
-              <div className="flex items-center gap-3">
-                <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Calculated Progress:</span>
-                <div className="w-32 h-2 bg-slate-800 rounded-full overflow-hidden">
-                  <div 
-                    className="h-full bg-indigo-500 transition-all duration-300"
-                    style={{ width: `${Math.round((completedModules.length / 4) * 100)}%` }}
-                  />
-                </div>
-                <span className="text-xs font-bold text-indigo-400">{Math.round((completedModules.length / 4) * 100)}%</span>
+            {/* Content */}
+            <div className="p-6 overflow-y-auto flex-1 bg-[#121E33] space-y-4">
+              <div className="relative aspect-video rounded-2xl overflow-hidden bg-black border border-white/10 shadow-2xl">
+                <iframe
+                  src={getModuleVideoUrl(course.videoUrl, currentModuleIdx)}
+                  title={course.title}
+                  className="w-full h-full"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
               </div>
 
-              <div className="flex items-center gap-3 justify-end">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white/5 p-4 rounded-xl border border-white/10">
+                <div>
+                  <h4 className="font-bold text-white text-sm">{MODULE_CHAPTERS[currentModuleIdx]?.title}</h4>
+                  <p className="text-xs text-[#8A9CB7] mt-0.5">{MODULE_CHAPTERS[currentModuleIdx]?.desc}</p>
+                </div>
                 <button
-                  onClick={() => setShowPlayer(false)}
-                  className="px-5 py-2.5 bg-[#1E293B] hover:bg-slate-700 text-slate-300 border border-slate-700 rounded-xl text-xs font-semibold transition-all"
+                  onClick={handleCompleteCurrentModuleVideo}
+                  className="px-4 py-2 bg-[#1988A3] hover:bg-[#11C6DE] hover:text-[#17233E] text-white rounded-xl text-xs font-bold transition-all flex items-center gap-2 shrink-0 shadow-md"
                 >
+                  <Check className="w-4 h-4" /> Mark Module Watched (+25%)
+                </button>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="bg-[#121E33] p-4 border-t border-white/10 flex flex-col sm:flex-row justify-between items-center gap-4 shrink-0">
+              <div className="flex items-center gap-3">
+                <span className="text-xs font-bold text-[#8A9CB7]">Progress:</span>
+                <span className="text-xs font-bold text-[#11C6DE]">{Math.round((completedModules.length / 4) * 100)}%</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <button onClick={() => setShowPlayer(false)} className="px-5 py-2.5 bg-white/5 hover:bg-white/10 text-[#8A9CB7] hover:text-white rounded-xl text-xs font-semibold">
                   Close Player
                 </button>
-
                 <button
                   onClick={handleCompleteCourse}
                   disabled={updatingProgress || !isVideoWatched}
-                  className="px-6 py-2.5 bg-gradient-to-r from-indigo-600 via-indigo-500 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-2 shadow-lg shadow-indigo-600/25 border border-indigo-500/30 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-6 py-2.5 bg-gradient-to-r from-[#1988A3] to-[#11C6DE] hover:brightness-110 text-[#17233E] rounded-xl text-xs font-black uppercase tracking-wider transition-all flex items-center gap-2 shadow-lg shadow-[#1988A3]/25 disabled:opacity-50"
                 >
-                  {updatingProgress && <Loader2 className="w-4 h-4 animate-spin" />}
-                  {updatingProgress ? 'Verifying in DB...' : 'Complete Course & Clear Skill Gap'}
+                  {updatingProgress && <Loader2 className="w-4 h-4 animate-spin text-[#17233E]" />}
+                  {updatingProgress ? 'Verifying...' : '✓ Complete Course & Clear Gap'}
                 </button>
               </div>
             </div>
@@ -813,16 +643,9 @@ const CourseDetails = () => {
 };
 
 const ObjectiveCard = ({ text }) => (
-  <div className="flex gap-3 items-start bg-slate-50 p-4 rounded-2xl border border-slate-100">
-    <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />
-    <p className="text-slate-600 text-xs font-bold leading-relaxed">{text}</p>
-  </div>
-);
-
-const FeatureItem = ({ text }) => (
-  <div className="flex items-center gap-2.5 text-xs text-slate-600 font-medium">
-    <ShieldCheck className="w-4 h-4 text-emerald-500 shrink-0" />
-    <span>{text}</span>
+  <div className="flex items-start gap-3 p-4 bg-white/70 backdrop-blur-md rounded-2xl border border-[#8A9CB7]/25">
+    <CheckCircle2 className="w-5 h-5 text-[#1988A3] shrink-0 mt-0.5" />
+    <span className="text-xs text-[#17233E] font-medium leading-relaxed">{text}</span>
   </div>
 );
 
