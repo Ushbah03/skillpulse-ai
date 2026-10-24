@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
+import { authAPI } from '../services/api';
 import UpgradeRequiredScreen from './UpgradeRequiredScreen';
 
 /**
@@ -142,11 +143,7 @@ const PaymentPendingWall = ({ user }) => {
             </button>
 
             <button
-              onClick={() => {
-                localStorage.removeItem('token');
-                localStorage.removeItem('user');
-                window.location.href = '/login';
-              }}
+              onClick={() => authAPI.logout()}
               className="w-full py-3 text-sm text-slate-500 hover:text-slate-300 transition-colors"
             >
               Sign out &amp; use a different account
@@ -186,11 +183,7 @@ const ApprovalPendingWall = ({ user }) => (
         </p>
       </div>
       <button
-        onClick={() => {
-          localStorage.removeItem('token');
-          localStorage.removeItem('user');
-          window.location.href = '/login';
-        }}
+        onClick={() => authAPI.logout()}
         className="w-full py-3 text-sm text-slate-500 hover:text-slate-300 transition-colors"
       >
         Sign out &amp; use a different account
@@ -207,8 +200,31 @@ import AccountSuspended from './AccountSuspended';
  */
 export const ProtectedRoute = ({ allowedRoles, allowedPlans }) => {
   const location = useLocation();
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem('token') || localStorage.getItem('authToken');
   const storedUser = localStorage.getItem('user');
+
+  // Multi-layer listener to prevent bfcache restoration or stale state on browser Back/Forward or tab-switching
+  useEffect(() => {
+    const verifyAuth = () => {
+      const currentToken = localStorage.getItem('token') || localStorage.getItem('authToken');
+      const currentUser = localStorage.getItem('user');
+      if (!currentToken || !currentUser) {
+        window.location.replace('/login');
+      }
+    };
+
+    window.addEventListener('pageshow', verifyAuth);
+    window.addEventListener('popstate', verifyAuth);
+    window.addEventListener('storage', verifyAuth);
+    window.addEventListener('focus', verifyAuth);
+
+    return () => {
+      window.removeEventListener('pageshow', verifyAuth);
+      window.removeEventListener('popstate', verifyAuth);
+      window.removeEventListener('storage', verifyAuth);
+      window.removeEventListener('focus', verifyAuth);
+    };
+  }, [location.pathname]);
 
   // 1. Not logged in
   if (!token || !storedUser) {
@@ -219,8 +235,7 @@ export const ProtectedRoute = ({ allowedRoles, allowedPlans }) => {
   try {
     user = JSON.parse(storedUser);
   } catch (err) {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    authAPI.logout();
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 

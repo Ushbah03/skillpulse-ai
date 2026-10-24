@@ -4,7 +4,57 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
     <title>SkillPulse AI • Enterprise Skill Intelligence Platform</title>
+    <!-- Immediate Authentication & BFCache Navigation Guard -->
+    <script>
+      (function () {
+        function checkProtectedAuth() {
+          try {
+            var path = window.location.pathname || '';
+            var publicPaths = [
+              '/',
+              '/login',
+              '/signup',
+              '/features',
+              '/pricing',
+              '/about',
+              '/faq',
+              '/contact',
+              '/forgot-password',
+              '/checkout',
+              '/workspace-suspended',
+              '/account-suspended'
+            ];
+            var isPublic = publicPaths.some(function (p) {
+              return path === p || (p !== '/' && (path.startsWith(p + '/') || path === p));
+            });
+
+            if (!isPublic) {
+              var token = localStorage.getItem('token') || localStorage.getItem('authToken');
+              var user = localStorage.getItem('user');
+              if (!token || !user) {
+                var root = document.getElementById('root');
+                if (root) {
+                  root.style.display = 'none';
+                }
+                window.location.replace('/login');
+              }
+            }
+          } catch (e) {}
+        }
+
+        // Run synchronously before DOM parsing continues
+        checkProtectedAuth();
+
+        // Catch browser Back/Forward navigation, bfcache restoration, and inter-tab storage changes
+        window.addEventListener('pageshow', checkProtectedAuth);
+        window.addEventListener('popstate', checkProtectedAuth);
+        window.addEventListener('storage', checkProtectedAuth);
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

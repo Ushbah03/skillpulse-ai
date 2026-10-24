@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import { authAPI } from '../services/api';
 import { 
   LayoutDashboard, UserCircle, 
   ClipboardCheck, 
@@ -34,11 +35,7 @@ const Sidebar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('user');
-    localStorage.removeItem('userRole');
-    window.location.replace('/login');
+    authAPI.logout();
   };
 
   return (

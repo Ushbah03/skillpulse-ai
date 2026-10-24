@@ -43,9 +43,7 @@ export async function apiRequest(endpoint, options = {}) {
     if (!response.ok) {
       // Handle token expiration / unauthorized
       if (response.status === 401 && !endpoint.includes('/auth/login')) {
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        window.location.href = '/login';
+        authAPI.logout();
       }
       throw new Error(data.message || 'Something went wrong with the request.');
     }
@@ -61,9 +59,7 @@ export async function apiRequest(endpoint, options = {}) {
 
         if (!fallbackResponse.ok) {
           if (fallbackResponse.status === 401 && !endpoint.includes('/auth/login')) {
-            localStorage.removeItem('token');
-            localStorage.removeItem('user');
-            window.location.href = '/login';
+            authAPI.logout();
           }
           throw new Error(fallbackData.message || 'Something went wrong with the request.');
         }
@@ -115,6 +111,19 @@ export const authAPI = {
     }),
 
   getMe: () => apiRequest('/auth/me'),
+
+  logout: () => {
+    try {
+      localStorage.removeItem('token');
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('user');
+      localStorage.removeItem('userRole');
+      sessionStorage.clear();
+    } catch (e) {
+      console.error('Logout error:', e);
+    }
+    window.location.replace('/login');
+  },
 };
 
 // ----------------------------------------------------

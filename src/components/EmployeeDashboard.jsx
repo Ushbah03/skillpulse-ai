@@ -104,15 +104,19 @@ const EmployeeDashboard = () => {
     readinessPct = 0;
   }
 
-  // Filter dynamic lists by Search Query
+  // Filter dynamic lists by Search Query safely
   const searchLower = searchQuery.toLowerCase().trim();
-  const filteredCourses = courses.filter(c => 
+  const safeCourses = Array.isArray(courses) ? courses : [];
+  const safeGaps = Array.isArray(activeGapsList) ? activeGapsList : [];
+  const safeSkills = Array.isArray(skillsList) ? skillsList : [];
+
+  const filteredCourses = safeCourses.filter(c => 
     !searchLower || c.title?.toLowerCase().includes(searchLower) || c.provider?.toLowerCase().includes(searchLower)
   );
-  const filteredGaps = activeGapsList.filter(g => 
+  const filteredGaps = safeGaps.filter(g => 
     !searchLower || g.skill?.name?.toLowerCase().includes(searchLower) || g.severity?.toLowerCase().includes(searchLower)
   );
-  const matchingSkills = skillsList.filter(s => 
+  const matchingSkills = safeSkills.filter(s => 
     !searchLower || s.skill?.name?.toLowerCase().includes(searchLower)
   );
 

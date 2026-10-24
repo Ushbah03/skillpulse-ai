@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { authAPI } from '../services/api';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -46,11 +47,7 @@ const CompanyAdminSidebar = () => {
   }
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('user');
-    localStorage.removeItem('userRole');
-    window.location.replace('/login');
+    authAPI.logout();
   };
 
   const isLocked = (minPlan) => {

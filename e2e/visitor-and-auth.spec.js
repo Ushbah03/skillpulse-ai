@@ -95,4 +95,53 @@ test.describe('SkillPulse AI - End-to-End Visitor & Authentication Suite', () =>
     ).toBeVisible({ timeout: 15000 });
   });
 
+  test('TC-06: Post-Logout Back Button Protection (No Stale Dashboard Resurfacing)', async ({ page }) => {
+    // 1. Ensure desktop viewport so sidebar is displayed
+    await page.setViewportSize({ width: 1280, height: 800 });
+
+    // 2. Mock employee API endpoints so mock token does not trigger 401
+    await page.route(/.*\/employee\/.*/, async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ success: true, data: [] })
+      });
+    });
+
+    // 3. Establish mock authenticated employee session
+    await page.goto('/login');
+    await page.evaluate(() => {
+      localStorage.setItem('token', 'test-jwt-token-post-logout');
+      localStorage.setItem('user', JSON.stringify({
+        id: 'usr_emp_test_1',
+        name: 'Test Employee',
+        email: 'test.emp@skillpulse.internal',
+        role: 'EMPLOYEE',
+        tenant: { id: 'tnt_1', name: 'Acme Test Corp', status: 'ACTIVE', plan: 'STARTER' }
+      }));
+    });
+
+    // 4. Navigate into dashboard
+    await page.goto('/dashboard');
+    await expect(page).toHaveURL(/\/dashboard/);
+    await expect(page.locator('aside')).toBeVisible();
+
+    // 5. Trigger Logout via visible Sidebar Logout button
+    const logoutBtn = page.locator('aside button:has-text("Logout")');
+    await logoutBtn.click();
+
+    // 6. Verify redirected to /login and localStorage tokens cleared
+    await expect(page).toHaveURL(/\/login/);
+    const tokenAfterLogout = await page.evaluate(() => localStorage.getItem('token'));
+    expect(tokenAfterLogout).toBeNull();
+
+    // 7. Simulate user pressing browser Back button (<-)
+    await page.goBack();
+
+    // 8. Verify user is bounced back to /login and CANNOT see the dashboard
+    await expect(page).toHaveURL(/\/login/);
+    await expect(page.locator('text=Sign in to your account')).toBeVisible();
+    await expect(page.locator('aside nav')).not.toBeVisible();
+  });
+
 });

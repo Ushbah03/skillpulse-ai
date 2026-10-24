@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { authAPI } from '../services/api';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getRoleDefaultPath } from './ProtectedRoute';
@@ -22,12 +23,7 @@ const Navbar = () => {
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('user');
-    localStorage.removeItem('userRole');
-    setCurrentUser(null);
-    window.location.replace('/login');
+    authAPI.logout();
   };
 
   const dashboardPath = currentUser?.role ? getRoleDefaultPath(currentUser.role) : '/dashboard';
