@@ -80,7 +80,6 @@ const FAQPage = () => {
     }
   ];
 
-  // Dynamic filter logic
   const filteredFaqs = faqs.filter((faq) => {
     const matchesCategory = activeTab === 'All' || faq.category === activeTab;
     const matchesSearch = 
@@ -90,60 +89,45 @@ const FAQPage = () => {
   });
 
   return (
-    <div className="bg-[#E9EAF7] font-sans text-[#17233E] overflow-x-hidden selection:bg-[#1988A3] selection:text-white relative min-h-screen">
-      {/* Global Background Atmosphere */}
+    <div className="bg-[#0E1626] font-sans text-white overflow-x-hidden selection:bg-[#1988A3] selection:text-white relative min-h-screen">
+      {/* Ambient Glass Glow */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-        <div className="absolute top-0 right-1/4 w-[600px] h-[600px] bg-[#1988A3]/10 blur-[150px] rounded-full" />
-        <div className="absolute top-1/3 left-10 w-[500px] h-[500px] bg-[#8A9CB7]/25 blur-[140px] rounded-full" />
-        <div className="absolute bottom-1/4 right-10 w-[650px] h-[650px] bg-[#1B3154]/8 blur-[160px] rounded-full" />
-        <div className="absolute inset-0 bg-[radial-gradient(#8A9CB7_1px,transparent_1px)] [background-size:32px_32px] opacity-25" />
+        <div className="absolute top-0 right-1/4 w-[600px] h-[600px] bg-[#1988A3]/12 blur-[170px] rounded-full" />
+        <div className="absolute top-1/3 left-10 w-[500px] h-[500px] bg-[#1B3154]/25 blur-[160px] rounded-full" />
+        <div className="absolute bottom-1/4 right-10 w-[650px] h-[650px] bg-[#17233E]/35 blur-[180px] rounded-full" />
+        <div className="absolute inset-0 bg-[radial-gradient(rgba(138,156,183,0.12)_1px,transparent_1px)] [background-size:36px_36px] opacity-40" />
       </div>
 
       {/* 1. HERO HEADER */}
       <section className="relative pt-16 sm:pt-20 pb-16 px-6 text-center overflow-hidden z-10">
         <div className="container mx-auto max-w-4xl relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="inline-flex items-center gap-2 bg-[#1988A3]/10 border border-[#1988A3]/25 px-4 py-1.5 rounded-full mb-6 backdrop-blur-md"
-          >
-            <HelpCircle className="w-4 h-4 text-[#1988A3] animate-pulse" />
-            <span className="text-[#1988A3] text-xs font-bold uppercase tracking-widest font-mono">
+          <div className="inline-flex items-center gap-2 bg-[#1988A3]/15 border border-[#1988A3]/30 px-4 py-1.5 rounded-full mb-6 backdrop-blur-md">
+            <HelpCircle className="w-4 h-4 text-[#11C6DE] animate-pulse" />
+            <span className="text-[#11C6DE] text-xs font-bold uppercase tracking-widest font-mono">
               KNOWLEDGE BASE & FAQ
             </span>
-          </motion.div>
+          </div>
 
-          <motion.h1 
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.9, delay: 0.1 }}
-            className="text-3xl md:text-5xl font-extrabold mb-4 tracking-tight leading-tight text-[#17233E]"
-          >
+          <h1 className="text-3xl md:text-5xl font-extrabold mb-4 tracking-tight leading-tight text-white">
             Frequently Asked <br />
-            <span className="bg-gradient-to-r from-[#17233E] via-[#1B3154] to-[#1988A3] bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-[#11C6DE] via-[#1988A3] to-[#E9EAF7] bg-clip-text text-transparent">
               Questions
             </span>
-          </motion.h1>
+          </h1>
 
-          <motion.p 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.9, delay: 0.2 }}
-            className="text-[#5A6D89] text-base md:text-lg max-w-xl mx-auto font-normal leading-relaxed mb-10"
-          >
+          <p className="text-[#8A9CB7] text-base md:text-lg max-w-xl mx-auto font-normal leading-relaxed mb-10">
             Clear answers about SkillPulse AI architecture, 5-tier role governance, subscription plans, and security.
-          </motion.p>
+          </p>
 
           {/* Search Input */}
           <div className="relative max-w-2xl mx-auto group">
-            <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-[#5A6D89] w-5 h-5 group-focus-within:text-[#1988A3] transition-colors" />
+            <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-[#8A9CB7] w-5 h-5 group-focus-within:text-[#11C6DE] transition-colors" />
             <input 
               type="text" 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search questions (e.g. RBAC, seats, AI gap detection)..." 
-              className="w-full pl-14 pr-6 py-4 bg-white/90 rounded-2xl border border-white text-[#17233E] placeholder-[#8A9CB7] focus:outline-none focus:border-[#1988A3] focus:ring-2 focus:ring-[#1988A3]/20 transition-all text-sm backdrop-blur-xl shadow-lg"
+              className="w-full pl-14 pr-6 py-4 bg-white/5 rounded-2xl border border-white/10 text-white placeholder-[#8A9CB7] focus:outline-none focus:border-[#1988A3] focus:ring-1 focus:ring-[#1988A3]/40 transition-all text-sm backdrop-blur-xl shadow-2xl"
             />
           </div>
         </div>
@@ -165,8 +149,8 @@ const FAQPage = () => {
                 }}
                 className={`px-5 py-2.5 rounded-full text-xs font-bold transition-all duration-300 cursor-pointer ${
                   activeTab === cat 
-                    ? "bg-[#17233E] text-white shadow-md shadow-[#17233E]/20" 
-                    : "bg-white/80 text-[#5A6D89] hover:text-[#17233E] border border-white shadow-sm"
+                    ? "bg-[#1988A3] text-white shadow-lg shadow-[#1988A3]/30" 
+                    : "bg-white/5 text-[#8A9CB7] hover:text-white border border-white/10"
                 }`}
               >
                 {cat}
@@ -184,8 +168,8 @@ const FAQPage = () => {
                     key={faq.question}
                     className={`rounded-2xl border transition-all duration-300 overflow-hidden ${
                       isOpen 
-                        ? "border-[#1988A3]/60 bg-white shadow-md" 
-                        : "border-white bg-white/85 hover:border-[#8A9CB7]/40 shadow-sm"
+                        ? "border-[#1988A3]/60 bg-[#17233E]/70 shadow-lg" 
+                        : "border-white/10 bg-white/5 hover:border-white/20"
                     }`}
                   >
                     <button 
@@ -193,10 +177,10 @@ const FAQPage = () => {
                       onClick={() => setOpenQuestion(isOpen ? '' : faq.question)}
                       className="w-full flex items-center justify-between p-5 text-left cursor-pointer select-none"
                     >
-                      <span className={`text-sm sm:text-base font-semibold pr-4 transition-colors ${isOpen ? 'text-[#1988A3]' : 'text-[#17233E]'}`}>
+                      <span className={`text-sm sm:text-base font-semibold pr-4 transition-colors ${isOpen ? 'text-[#11C6DE]' : 'text-white'}`}>
                         {faq.question}
                       </span>
-                      <div className={`w-6 h-6 rounded-full border flex items-center justify-center font-bold text-xs shrink-0 transition-colors ${isOpen ? 'border-[#1988A3] bg-[#1988A3] text-white' : 'border-[#8A9CB7]/40 text-[#5A6D89]'}`}>
+                      <div className={`w-6 h-6 rounded-full border flex items-center justify-center font-bold text-xs shrink-0 transition-colors ${isOpen ? 'border-[#1988A3] bg-[#1988A3] text-white' : 'border-white/20 text-[#8A9CB7]'}`}>
                         {isOpen ? '-' : '+'}
                       </div>
                     </button>
@@ -209,7 +193,7 @@ const FAQPage = () => {
                           exit={{ height: 0, opacity: 0 }}
                           transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
                         >
-                          <div className="px-5 pb-5 pt-0 text-[#5A6D89] text-xs leading-relaxed font-normal border-t border-[#8A9CB7]/15">
+                          <div className="px-5 pb-5 pt-0 text-[#8A9CB7] text-xs leading-relaxed font-normal border-t border-white/5">
                             {faq.answer}
                           </div>
                         </motion.div>
@@ -219,22 +203,22 @@ const FAQPage = () => {
                 );
               })
             ) : (
-              <div className="text-center py-12 text-[#5A6D89] text-xs font-mono">
+              <div className="text-center py-12 text-[#8A9CB7] text-xs font-mono">
                 No matching questions found. Try adjusting your search query or selecting another category.
               </div>
             )}
           </div>
 
           {/* Support Box */}
-          <div className="mt-14 text-center bg-white/85 border border-white rounded-3xl p-8 max-w-xl mx-auto backdrop-blur-xl shadow-xl">
-            <div className="w-12 h-12 bg-[#1988A3]/10 border border-[#1988A3]/25 text-[#1988A3] rounded-2xl flex items-center justify-center mx-auto mb-4">
+          <div className="mt-14 text-center glass-container rounded-3xl p-8 max-w-xl mx-auto shadow-2xl">
+            <div className="w-12 h-12 bg-[#1988A3]/20 border border-[#1988A3]/40 text-[#11C6DE] rounded-2xl flex items-center justify-center mx-auto mb-4">
               <Mail className="w-6 h-6" />
             </div>
-            <h3 className="text-xl font-extrabold text-[#17233E] mb-2">Have a specific question?</h3>
-            <p className="text-[#5A6D89] text-xs font-normal mb-6">Reach out to our team for detailed information on platform features or enterprise deployments.</p>
+            <h3 className="text-xl font-extrabold text-white mb-2">Have a specific question?</h3>
+            <p className="text-[#8A9CB7] text-xs font-normal mb-6">Reach out to our team for detailed information on platform features or enterprise deployments.</p>
             <Link 
               to="/contact"
-              className="bg-[#1988A3] hover:bg-[#157289] text-white px-7 py-3 rounded-xl font-bold text-xs transition-all shadow-md shadow-[#1988A3]/25 inline-block cursor-pointer"
+              className="bg-[#1988A3] hover:bg-[#157289] text-white px-7 py-3 rounded-xl font-bold text-xs transition-all shadow-lg shadow-[#1988A3]/30 inline-block cursor-pointer"
             >
               Contact Support
             </Link>
@@ -246,20 +230,20 @@ const FAQPage = () => {
       {/* 3. BOTTOM CTA */}
       <section className="py-16 px-6 text-center relative z-10 mb-8">
         <div className="container mx-auto max-w-3xl">
-          <h2 className="text-3xl md:text-5xl font-extrabold text-[#17233E] mb-4 tracking-tight">Ready to Explore SkillPulse AI?</h2>
-          <p className="text-[#5A6D89] text-base mb-8 max-w-lg mx-auto font-normal">
+          <h2 className="text-3xl md:text-5xl font-extrabold text-white mb-4 tracking-tight">Ready to Explore SkillPulse AI?</h2>
+          <p className="text-[#8A9CB7] text-base mb-8 max-w-lg mx-auto font-normal">
             Discover multi-tenant workforce intelligence, skill gap inference, and 5-tier role governance.
           </p>
           <div className="flex flex-wrap justify-center gap-4">
             <Link 
               to="/features"
-              className="bg-[#17233E] hover:bg-[#1B3154] text-white px-8 py-3.5 rounded-xl font-bold text-sm transition-all shadow-md shadow-[#17233E]/20"
+              className="bg-[#1988A3] hover:bg-[#157289] text-white px-8 py-3.5 rounded-xl font-bold text-sm transition-all shadow-md shadow-[#1988A3]/30"
             >
               Explore Features
             </Link>
             <Link 
               to="/pricing"
-              className="bg-white/80 hover:bg-white text-[#17233E] border border-[#8A9CB7]/40 px-8 py-3.5 rounded-xl font-bold text-sm transition-all shadow-sm"
+              className="bg-white/10 hover:bg-white/15 text-white border border-white/15 px-8 py-3.5 rounded-xl font-bold text-sm transition-all shadow-sm"
             >
               View Pricing Tiers
             </Link>
