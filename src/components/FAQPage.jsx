@@ -89,38 +89,27 @@ const FAQPage = () => {
     return matchesCategory && matchesSearch;
   });
 
-  const fadeInUp = {
-    hidden: { opacity: 0, y: 35 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.215, 0.610, 0.355, 1] } }
-  };
-
   return (
-    <div className="bg-[#0B1120] font-sans text-slate-100 overflow-x-hidden selection:bg-indigo-600 selection:text-white relative min-h-screen">
-      {/* Keyframe Animations & Background Canvas */}
-      <style>{`
-        @keyframes aurora { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(40px, -30px) scale(1.1); } }
-        .animate-aurora { animation: aurora 14s ease-in-out infinite; }
-      `}</style>
-      
+    <div className="bg-[#E9EAF7] font-sans text-[#17233E] overflow-x-hidden selection:bg-[#1988A3] selection:text-white relative min-h-screen">
       {/* Global Background Atmosphere */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-        <div className="absolute top-0 right-1/4 w-[600px] h-[600px] bg-indigo-600/15 blur-[160px] rounded-full animate-aurora" />
-        <div className="absolute top-1/3 left-10 w-[500px] h-[500px] bg-purple-600/15 blur-[150px] rounded-full" />
-        <div className="absolute bottom-1/4 right-10 w-[650px] h-[650px] bg-indigo-900/20 blur-[180px] rounded-full" />
-        <div className="absolute inset-0 bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:32px_32px] opacity-20" />
+        <div className="absolute top-0 right-1/4 w-[600px] h-[600px] bg-[#1988A3]/10 blur-[150px] rounded-full" />
+        <div className="absolute top-1/3 left-10 w-[500px] h-[500px] bg-[#8A9CB7]/25 blur-[140px] rounded-full" />
+        <div className="absolute bottom-1/4 right-10 w-[650px] h-[650px] bg-[#1B3154]/8 blur-[160px] rounded-full" />
+        <div className="absolute inset-0 bg-[radial-gradient(#8A9CB7_1px,transparent_1px)] [background-size:32px_32px] opacity-25" />
       </div>
 
       {/* 1. HERO HEADER */}
-      <section className="relative text-white pt-24 pb-20 px-6 text-center overflow-hidden z-10">
+      <section className="relative pt-16 sm:pt-20 pb-16 px-6 text-center overflow-hidden z-10">
         <div className="container mx-auto max-w-4xl relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="inline-flex items-center gap-2 bg-indigo-500/10 border border-indigo-500/20 px-4 py-1.5 rounded-full mb-6 backdrop-blur-md"
+            className="inline-flex items-center gap-2 bg-[#1988A3]/10 border border-[#1988A3]/25 px-4 py-1.5 rounded-full mb-6 backdrop-blur-md"
           >
-            <HelpCircle className="w-4 h-4 text-indigo-400 animate-pulse" />
-            <span className="text-indigo-300 text-xs font-bold uppercase tracking-widest font-mono">
+            <HelpCircle className="w-4 h-4 text-[#1988A3] animate-pulse" />
+            <span className="text-[#1988A3] text-xs font-bold uppercase tracking-widest font-mono">
               KNOWLEDGE BASE & FAQ
             </span>
           </motion.div>
@@ -129,10 +118,10 @@ const FAQPage = () => {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.9, delay: 0.1 }}
-            className="text-3xl md:text-4xl lg:text-5xl font-extrabold mb-5 tracking-tight leading-tight"
+            className="text-3xl md:text-5xl font-extrabold mb-4 tracking-tight leading-tight text-[#17233E]"
           >
             Frequently Asked <br />
-            <span className="bg-gradient-to-r from-indigo-300 via-indigo-200 to-purple-300 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-[#17233E] via-[#1B3154] to-[#1988A3] bg-clip-text text-transparent">
               Questions
             </span>
           </motion.h1>
@@ -141,36 +130,31 @@ const FAQPage = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.9, delay: 0.2 }}
-            className="text-slate-400 text-lg md:text-xl max-w-xl mx-auto font-light leading-relaxed mb-12"
+            className="text-[#5A6D89] text-base md:text-lg max-w-xl mx-auto font-normal leading-relaxed mb-10"
           >
             Clear answers about SkillPulse AI architecture, 5-tier role governance, subscription plans, and security.
           </motion.p>
 
           {/* Search Input */}
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8, delay: 0.3 }}
-            className="relative max-w-2xl mx-auto group"
-          >
-            <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5 group-focus-within:text-indigo-400 transition-colors" />
+          <div className="relative max-w-2xl mx-auto group">
+            <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-[#5A6D89] w-5 h-5 group-focus-within:text-[#1988A3] transition-colors" />
             <input 
               type="text" 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search questions (e.g. RBAC, seats, AI gap detection)..." 
-              className="w-full pl-14 pr-6 py-4 bg-[#0F172B]/90 rounded-2xl border border-slate-800 text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500/80 focus:ring-1 focus:ring-indigo-500/50 transition-all text-sm backdrop-blur-xl shadow-2xl"
+              className="w-full pl-14 pr-6 py-4 bg-white/90 rounded-2xl border border-white text-[#17233E] placeholder-[#8A9CB7] focus:outline-none focus:border-[#1988A3] focus:ring-2 focus:ring-[#1988A3]/20 transition-all text-sm backdrop-blur-xl shadow-lg"
             />
-          </motion.div>
+          </div>
         </div>
       </section>
 
       {/* 2. CATEGORY TABS & ACCORDION LIST */}
-      <section className="py-12 px-6 md:px-12 relative z-10">
+      <section className="py-8 px-6 md:px-12 relative z-10">
         <div className="container mx-auto max-w-5xl">
           
           {/* Categories Tabs */}
-          <div className="flex flex-wrap justify-center gap-2 mb-12">
+          <div className="flex flex-wrap justify-center gap-2 mb-10">
             {categories.map((cat) => (
               <button
                 key={cat}
@@ -181,8 +165,8 @@ const FAQPage = () => {
                 }}
                 className={`px-5 py-2.5 rounded-full text-xs font-bold transition-all duration-300 cursor-pointer ${
                   activeTab === cat 
-                    ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/30" 
-                    : "bg-[#0F172B]/80 text-slate-400 hover:text-white border border-slate-800/80"
+                    ? "bg-[#17233E] text-white shadow-md shadow-[#17233E]/20" 
+                    : "bg-white/80 text-[#5A6D89] hover:text-[#17233E] border border-white shadow-sm"
                 }`}
               >
                 {cat}
@@ -191,32 +175,29 @@ const FAQPage = () => {
           </div>
 
           {/* FAQ Accordion List */}
-          <div className="space-y-4 max-w-3xl mx-auto">
+          <div className="space-y-3.5 max-w-3xl mx-auto">
             {filteredFaqs.length > 0 ? (
-              filteredFaqs.map((faq, index) => {
+              filteredFaqs.map((faq) => {
                 const isOpen = openQuestion === faq.question;
                 return (
-                  <motion.div 
+                  <div 
                     key={faq.question}
-                    initial={{ opacity: 0, y: 15 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.04 }}
                     className={`rounded-2xl border transition-all duration-300 overflow-hidden ${
                       isOpen 
-                        ? "border-indigo-500/50 bg-[#0F172B]/90 shadow-xl" 
-                        : "border-slate-800/80 bg-[#0F172B]/60 hover:border-slate-700"
+                        ? "border-[#1988A3]/60 bg-white shadow-md" 
+                        : "border-white bg-white/85 hover:border-[#8A9CB7]/40 shadow-sm"
                     }`}
                   >
                     <button 
                       type="button"
                       onClick={() => setOpenQuestion(isOpen ? '' : faq.question)}
-                      className="w-full flex items-center justify-between p-6 text-left cursor-pointer select-none"
+                      className="w-full flex items-center justify-between p-5 text-left cursor-pointer select-none"
                     >
-                      <span className={`text-base font-semibold pr-4 transition-colors ${isOpen ? 'text-indigo-300' : 'text-slate-200'}`}>
+                      <span className={`text-sm sm:text-base font-semibold pr-4 transition-colors ${isOpen ? 'text-[#1988A3]' : 'text-[#17233E]'}`}>
                         {faq.question}
                       </span>
-                      <div className={`w-6 h-6 rounded-full border flex items-center justify-center font-bold text-xs shrink-0 transition-colors ${isOpen ? 'border-indigo-500 bg-indigo-600 text-white' : 'border-slate-700 text-slate-400'}`}>
-                        {isOpen ? '−' : '+'}
+                      <div className={`w-6 h-6 rounded-full border flex items-center justify-center font-bold text-xs shrink-0 transition-colors ${isOpen ? 'border-[#1988A3] bg-[#1988A3] text-white' : 'border-[#8A9CB7]/40 text-[#5A6D89]'}`}>
+                        {isOpen ? '-' : '+'}
                       </div>
                     </button>
                     
@@ -226,64 +207,59 @@ const FAQPage = () => {
                           initial={{ height: 0, opacity: 0 }}
                           animate={{ height: "auto", opacity: 1 }}
                           exit={{ height: 0, opacity: 0 }}
-                          transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                          transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
                         >
-                          <div className="px-6 pb-6 pt-0 text-slate-400 text-xs leading-relaxed font-light border-t border-slate-800/50">
+                          <div className="px-5 pb-5 pt-0 text-[#5A6D89] text-xs leading-relaxed font-normal border-t border-[#8A9CB7]/15">
                             {faq.answer}
                           </div>
                         </motion.div>
                       )}
                     </AnimatePresence>
-                  </motion.div>
+                  </div>
                 );
               })
             ) : (
-              <div className="text-center py-12 text-slate-500 text-xs font-mono">
+              <div className="text-center py-12 text-[#5A6D89] text-xs font-mono">
                 No matching questions found. Try adjusting your search query or selecting another category.
               </div>
             )}
           </div>
 
           {/* Support Box */}
-          <motion.div 
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="mt-16 text-center bg-[#0F172B]/90 border border-slate-800 rounded-3xl p-8 md:p-10 max-w-2xl mx-auto backdrop-blur-xl shadow-2xl"
-          >
-            <div className="w-12 h-12 bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 rounded-2xl flex items-center justify-center mx-auto mb-4">
+          <div className="mt-14 text-center bg-white/85 border border-white rounded-3xl p-8 max-w-xl mx-auto backdrop-blur-xl shadow-xl">
+            <div className="w-12 h-12 bg-[#1988A3]/10 border border-[#1988A3]/25 text-[#1988A3] rounded-2xl flex items-center justify-center mx-auto mb-4">
               <Mail className="w-6 h-6" />
             </div>
-            <h3 className="text-xl font-bold text-white mb-2">Have a specific question?</h3>
-            <p className="text-slate-400 text-xs font-light mb-6">Reach out to our team for detailed information on platform features or enterprise deployments.</p>
+            <h3 className="text-xl font-extrabold text-[#17233E] mb-2">Have a specific question?</h3>
+            <p className="text-[#5A6D89] text-xs font-normal mb-6">Reach out to our team for detailed information on platform features or enterprise deployments.</p>
             <Link 
               to="/contact"
-              className="bg-indigo-600 hover:bg-indigo-500 text-white px-8 py-3 rounded-xl font-bold text-xs transition-all shadow-lg shadow-indigo-600/30 inline-block cursor-pointer"
+              className="bg-[#1988A3] hover:bg-[#157289] text-white px-7 py-3 rounded-xl font-bold text-xs transition-all shadow-md shadow-[#1988A3]/25 inline-block cursor-pointer"
             >
               Contact Support
             </Link>
-          </motion.div>
+          </div>
 
         </div>
       </section>
 
       {/* 3. BOTTOM CTA */}
-      <section className="py-20 px-6 text-center relative z-10">
+      <section className="py-16 px-6 text-center relative z-10 mb-8">
         <div className="container mx-auto max-w-3xl">
-          <h2 className="text-3xl md:text-5xl font-extrabold text-white mb-6 tracking-tight">Ready to Explore SkillPulse AI?</h2>
-          <p className="text-slate-400 text-base mb-8 max-w-lg mx-auto font-light">
+          <h2 className="text-3xl md:text-5xl font-extrabold text-[#17233E] mb-4 tracking-tight">Ready to Explore SkillPulse AI?</h2>
+          <p className="text-[#5A6D89] text-base mb-8 max-w-lg mx-auto font-normal">
             Discover multi-tenant workforce intelligence, skill gap inference, and 5-tier role governance.
           </p>
           <div className="flex flex-wrap justify-center gap-4">
             <Link 
               to="/features"
-              className="bg-indigo-600 hover:bg-indigo-500 text-white px-8 py-3.5 rounded-xl font-bold text-sm transition-all shadow-lg shadow-indigo-600/30 hover:scale-105"
+              className="bg-[#17233E] hover:bg-[#1B3154] text-white px-8 py-3.5 rounded-xl font-bold text-sm transition-all shadow-md shadow-[#17233E]/20"
             >
               Explore Features
             </Link>
             <Link 
               to="/pricing"
-              className="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 px-8 py-3.5 rounded-xl font-bold text-sm transition-all hover:scale-105"
+              className="bg-white/80 hover:bg-white text-[#17233E] border border-[#8A9CB7]/40 px-8 py-3.5 rounded-xl font-bold text-sm transition-all shadow-sm"
             >
               View Pricing Tiers
             </Link>

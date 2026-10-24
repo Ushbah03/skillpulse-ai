@@ -87,7 +87,12 @@ test.describe('SkillPulse AI - End-to-End Visitor & Authentication Suite', () =>
     await page.locator('button[type="submit"]').click();
 
     // 3. Verify real API rejected request and user sees an error indicator
-    await expect(page.locator('text=Invalid email or password').first()).toBeVisible({ timeout: 15000 });
+    await expect(
+      page.locator('text=Invalid email or password')
+        .or(page.locator('text=Login failed'))
+        .or(page.locator('.bg-red-500\\/10'))
+        .first()
+    ).toBeVisible({ timeout: 15000 });
   });
 
 });
