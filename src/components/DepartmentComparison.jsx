@@ -103,9 +103,9 @@ const DepartmentComparison = () => {
 
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth < 768) setVisibleCount(1);
-      else if (window.innerWidth < 1280) setVisibleCount(2);
-      else if (window.innerWidth < 1600) setVisibleCount(3);
+      if (window.innerWidth < 640) setVisibleCount(1);
+      else if (window.innerWidth < 1024) setVisibleCount(2);
+      else if (window.innerWidth < 1440) setVisibleCount(3);
       else setVisibleCount(4);
     };
     handleResize();
@@ -133,6 +133,13 @@ const DepartmentComparison = () => {
   }, []);
 
   const maxIndex = Math.max(0, (liveAnalytics?.departments?.length || 0) - visibleCount);
+
+  // Ensure startIndex never exceeds maxIndex when visibleCount or data changes
+  useEffect(() => {
+    if (startIndex > maxIndex) {
+      setStartIndex(maxIndex);
+    }
+  }, [maxIndex, startIndex]);
 
   const handleNext = () => {
     setStartIndex(prev => Math.min(prev + 1, maxIndex));
@@ -334,7 +341,7 @@ const DepartmentComparison = () => {
       </div>
       <HRSidebar />
 
-      <div className="flex-1 ml-0 lg:ml-64 pt-20 lg:pt-8 p-4 md:p-8 w-full relative z-10 space-y-8">
+      <main className="flex-1 min-w-0 ml-0 lg:ml-64 pt-20 lg:pt-8 p-4 md:p-8 relative z-10 space-y-8">
         
         {/* HEADER NAVIGATION BAR */}
         <header className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl p-6 rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-wrap items-center justify-between gap-4 sticky top-4 z-20">
@@ -377,7 +384,7 @@ const DepartmentComparison = () => {
             <SkillPulseLoader message="Analyzing Organization Skill Matrices..." fullScreen={false} />
           </div>
         ) : (
-          <div className="px-6 py-5 space-y-5">
+          <div className="space-y-8">
 
             {/* ANIMATED 4-CARD CAROUSEL (SLIDES ONE-BY-ONE) */}
             <div className="bg-transparent">
@@ -792,7 +799,7 @@ const DepartmentComparison = () => {
 
           </div>
         )}
-      </div>
+      </main>
     </div>
   );
 };
