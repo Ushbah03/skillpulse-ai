@@ -5,6 +5,7 @@ import {
   ChevronRight, Award, ShieldCheck, RefreshCw, UserCheck, Loader2
 } from 'lucide-react';
 import HRSidebar from './HRSidebar';
+import SkillPulseLoader from './SkillPulseLoader';
 import { hrAPI } from '../services/api';
 
 
@@ -419,13 +420,21 @@ const SuccessionPipeline = () => {
   };
 
   return (
-    <div style={{ fontFamily: "'Inter', 'Segoe UI', system-ui, sans-serif" }} className="flex min-h-screen bg-[#f8fafc]">
+    <div className="flex min-h-screen bg-[#E9EAF7] font-sans text-[#17233E] relative overflow-x-hidden selection:bg-[#1988A3] selection:text-white">
+      {/* Ambient Gradient Depth - Glowing mesh orbs behind frosted glass panels */}
+      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+        <div className="absolute top-10 left-1/4 w-[550px] h-[550px] bg-[#1988A3]/20 blur-[130px] rounded-full animate-pulse" />
+        <div className="absolute top-1/3 -right-20 w-[500px] h-[500px] bg-[#11C6DE]/16 blur-[140px] rounded-full" />
+        <div className="absolute top-2/3 left-10 w-[600px] h-[600px] bg-[#1B3154]/16 blur-[150px] rounded-full" />
+        <div className="absolute bottom-10 right-1/4 w-[550px] h-[550px] bg-[#8A9CB7]/28 blur-[140px] rounded-full" />
+        <div className="absolute inset-0 bg-[radial-gradient(rgba(27,49,84,0.10)_1px,transparent_1px)] [background-size:28px_28px] opacity-35" />
+      </div>
       {/* ── LEFT NAVIGATION SIDEBAR ── */}
       <HRSidebar />
 
-      <div className="flex-1 ml-0 lg:ml-64 pt-20 lg:pt-0 overflow-auto">
+      <div className="flex-1 ml-0 lg:ml-64 pt-20 lg:pt-8 p-4 md:p-8 w-full relative z-10 space-y-8">
         {/* ── HEADER / TOP NAV ── */}
-        <header className="bg-white border-b border-slate-200 px-8 py-3.5 flex items-center justify-between sticky top-0 z-20">
+        <header className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl p-6 rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-wrap items-center justify-between gap-4 sticky top-4 z-20">
           <div className="flex items-center gap-2 text-sm font-semibold text-slate-400">
             <span>HR Manager</span>
             <span className="text-slate-300">›</span>
@@ -442,7 +451,7 @@ const SuccessionPipeline = () => {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search talent pool..."
-                className="pl-9 pr-4 py-2 rounded-full bg-slate-100 text-sm text-slate-700 outline-none w-56 border border-transparent focus:border-indigo-500 focus:bg-white transition-all"
+                className="pl-9 pr-4 py-2 rounded-full bg-white/80 backdrop-blur-md border border-white/85 text-xs text-[#17233E] outline-none w-56 border border-transparent focus:border-indigo-500 focus:bg-white transition-all"
               />
             </div>
             <button className="p-2 rounded-full hover:bg-slate-100 transition-colors">
@@ -453,9 +462,8 @@ const SuccessionPipeline = () => {
 
         {/* ── MAIN CONTENT WORKSPACE ── */}
         {loading ? (
-          <div className="flex flex-col items-center justify-center py-32 gap-4">
-            <Loader2 size={36} className="animate-spin text-indigo-500" />
-            <p className="text-slate-400 text-sm font-semibold">Loading succession pipeline...</p>
+          <div className="my-8">
+            <SkillPulseLoader message="Synchronizing Enterprise Workforce Telemetry..." fullScreen={false} />
           </div>
         ) : (
         <div className="px-8 py-6 space-y-6">
@@ -496,7 +504,7 @@ const SuccessionPipeline = () => {
               <button 
                 onClick={handleExport}
                 disabled={isExporting}
-                className="inline-flex items-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition-all shadow-md active:scale-95 disabled:opacity-50"
+                className="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-[#1988A3] to-[#11C6DE] hover:from-[#157289] hover:to-[#0EB3C9] text-white shadow-lg shadow-[#1988A3]/25 rounded-xl text-xs font-bold transition-all shadow-md active:scale-95 disabled:opacity-50"
               >
                 {isExporting ? <RefreshCw size={14} className="animate-spin" /> : <Download size={14} />}
                 Export Audit Report
@@ -595,7 +603,7 @@ const SuccessionPipeline = () => {
           <div className="grid grid-cols-3 gap-5">
 
             {/* LEFT 2 COLUMNS: DEPTH CHART */}
-            <div className="col-span-2 bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6">
+            <div className="col-span-2 bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 p-6">
               <div className="flex justify-between items-center mb-5">
                 <div>
                   <h3 className="text-base font-black text-slate-900">Succession Depth Chart</h3>
@@ -738,7 +746,7 @@ const SuccessionPipeline = () => {
             {/* RIGHT COLUMN: RADAR + TOP SKILL GAPS */}
             <div className="space-y-5">
               {/* Radar Chart Block */}
-              <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5">
+              <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 p-5">
                 <div className="flex justify-between items-center mb-1">
                   <h3 className="text-sm font-black text-slate-900">AI Competency Radar</h3>
                   <span className="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded">
@@ -766,7 +774,7 @@ const SuccessionPipeline = () => {
               </div>
 
               {/* Skill Gaps Block */}
-              <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5">
+              <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 p-5">
                 <div className="flex justify-between items-center mb-3">
                   <h3 className="text-sm font-black text-slate-900">Top Pipeline Skill Deficits</h3>
                   <span className="text-[10px] font-bold text-slate-400">{skillGaps.length} Verified Gaps</span>
@@ -798,7 +806,7 @@ const SuccessionPipeline = () => {
           </div>
 
           {/* ── BOTTOM PANEL: INDIVIDUAL CAREER TRAJECTORY ── */}
-          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6">
+          <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 p-6">
             <div className="flex justify-between items-center mb-6">
               <div>
                 <h3 className="text-base font-black text-slate-900">Target Career Development Trajectory</h3>

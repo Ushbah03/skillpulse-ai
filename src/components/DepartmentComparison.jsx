@@ -7,6 +7,7 @@ import {
   Code2, Palette, Megaphone, Cpu, BarChart3, Briefcase, Building2
 } from 'lucide-react';
 import HRSidebar from './HRSidebar';
+import SkillPulseLoader from './SkillPulseLoader';
 import { hrAPI } from '../services/api';
 
 const getDepartmentTheme = (name = '') => {
@@ -321,13 +322,21 @@ const DepartmentComparison = () => {
   };
 
   return (
-    <div style={{ fontFamily: "'Inter', 'Segoe UI', system-ui, sans-serif" }} className="flex min-h-screen bg-[#f8fafc] text-slate-800 antialiased">
+    <div className="flex min-h-screen bg-[#E9EAF7] font-sans text-[#17233E] relative overflow-x-hidden selection:bg-[#1988A3] selection:text-white">
+      {/* Ambient Gradient Depth - Glowing mesh orbs behind frosted glass panels */}
+      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+        <div className="absolute top-10 left-1/4 w-[550px] h-[550px] bg-[#1988A3]/20 blur-[130px] rounded-full animate-pulse" />
+        <div className="absolute top-1/3 -right-20 w-[500px] h-[500px] bg-[#11C6DE]/16 blur-[140px] rounded-full" />
+        <div className="absolute top-2/3 left-10 w-[600px] h-[600px] bg-[#1B3154]/16 blur-[150px] rounded-full" />
+        <div className="absolute bottom-10 right-1/4 w-[550px] h-[550px] bg-[#8A9CB7]/28 blur-[140px] rounded-full" />
+        <div className="absolute inset-0 bg-[radial-gradient(rgba(27,49,84,0.10)_1px,transparent_1px)] [background-size:28px_28px] opacity-35" />
+      </div>
       <HRSidebar />
 
-      <div className="flex-1 ml-0 lg:ml-64 pt-20 lg:pt-0 overflow-auto">
+      <div className="flex-1 ml-0 lg:ml-64 pt-20 lg:pt-8 p-4 md:p-8 w-full relative z-10 space-y-8">
         
         {/* HEADER NAVIGATION BAR */}
-        <header className="bg-white border-b border-slate-200 px-6 py-3.5 flex items-center justify-between sticky top-0 z-20 shadow-xs">
+        <header className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl p-6 rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-wrap items-center justify-between gap-4 sticky top-4 z-20">
           <div>
             <h1 className="text-lg font-black text-slate-900 tracking-tight">Department Comparison</h1>
             <p className="text-xs text-slate-500 font-medium mt-0.5">Cross-departmental performance, skill maturity & readiness matrix</p>
@@ -347,7 +356,7 @@ const DepartmentComparison = () => {
             </div>
             <button 
               onClick={handleExportCSV}
-              className="px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-xs transition-all active:scale-95 flex items-center gap-1.5 cursor-pointer"
+              className="px-3.5 py-1.5 bg-gradient-to-r from-[#1988A3] to-[#11C6DE] hover:from-[#157289] hover:to-[#0EB3C9] text-white shadow-lg shadow-[#1988A3]/25 font-bold text-xs rounded-xl shadow-xs transition-all active:scale-95 flex items-center gap-1.5 cursor-pointer"
             >
               <Download size={13} />
               Export Report
@@ -363,9 +372,8 @@ const DepartmentComparison = () => {
         </header>
 
         {loading ? (
-          <div className="flex flex-col items-center justify-center min-h-[400px] space-y-3">
-            <Loader2 className="w-9 h-9 animate-spin text-indigo-600" />
-            <p className="text-xs font-bold text-slate-500">Loading department comparison analytics...</p>
+          <div className="my-8">
+            <SkillPulseLoader message="Analyzing Organization Skill Matrices..." fullScreen={false} />
           </div>
         ) : (
           <div className="px-6 py-5 space-y-5">

@@ -15,7 +15,8 @@ import {
   X,
   Loader2
 } from 'lucide-react';
-import HRSidebar from './HRSidebar'; 
+import HRSidebar from './HRSidebar';
+import SkillPulseLoader from './SkillPulseLoader'; 
 import { motion, AnimatePresence } from 'framer-motion';
 import { hrAPI } from '../services/api';
 
@@ -166,11 +167,19 @@ const OrganizationSkillAnalytics = () => {
   const noGapPct = Math.max(0, 100 - criticalGapPct - moderateGapPct);
 
   return (
-    <div className="flex min-h-screen bg-[#F8F9FE] font-sans">
+    <div className="flex min-h-screen bg-[#E9EAF7] font-sans text-[#17233E] relative overflow-x-hidden selection:bg-[#1988A3] selection:text-white">
+      {/* Ambient Gradient Depth - Glowing mesh orbs behind frosted glass panels */}
+      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+        <div className="absolute top-10 left-1/4 w-[550px] h-[550px] bg-[#1988A3]/20 blur-[130px] rounded-full animate-pulse" />
+        <div className="absolute top-1/3 -right-20 w-[500px] h-[500px] bg-[#11C6DE]/16 blur-[140px] rounded-full" />
+        <div className="absolute top-2/3 left-10 w-[600px] h-[600px] bg-[#1B3154]/16 blur-[150px] rounded-full" />
+        <div className="absolute bottom-10 right-1/4 w-[550px] h-[550px] bg-[#8A9CB7]/28 blur-[140px] rounded-full" />
+        <div className="absolute inset-0 bg-[radial-gradient(rgba(27,49,84,0.10)_1px,transparent_1px)] [background-size:28px_28px] opacity-35" />
+      </div>
       {/* 1. Sidebar with Tenant prop */}
       <HRSidebar currentTenant={currentTenant} currentScreen="Skill Analytics" />
 
-      <main className="flex-1 ml-80 p-10 w-full space-y-8 relative">
+      <main className="flex-1 ml-0 lg:ml-64 pt-20 lg:pt-8 p-4 md:p-8 w-full relative z-10 space-y-8">
         
         {/* Toast Notification Layer */}
         <AnimatePresence>
@@ -188,7 +197,7 @@ const OrganizationSkillAnalytics = () => {
         </AnimatePresence>
 
         {/* --- SECTION 1: HEADER --- */}
-        <header className="flex justify-between items-center bg-white p-4 -mt-2 -mx-4 rounded-2xl border border-slate-100 shadow-sm mb-4">
+        <header className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl p-6 rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-wrap justify-between items-center gap-4 mb-4">
           <div>
             <h1 className="text-2xl font-black text-[#0b1221] tracking-tight flex items-center gap-3">
               Organization Skill Analytics
@@ -218,9 +227,8 @@ const OrganizationSkillAnalytics = () => {
         </header>
 
         {loading ? (
-          <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
-            <Loader2 className="w-10 h-10 animate-spin text-indigo-600" />
-            <p className="text-sm font-semibold text-slate-400">Loading skill analytics details...</p>
+          <div className="my-8">
+            <SkillPulseLoader message="Analyzing Organization Skill Matrices..." fullScreen={false} />
           </div>
         ) : (
           <>
@@ -349,7 +357,7 @@ const OrganizationSkillAnalytics = () => {
         )}
 
         {/* --- SECTION 5: EMPLOYEE GAPS TABLE --- */}
-        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+        <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 overflow-hidden">
           <div className="p-8 border-b border-slate-50 flex justify-between items-center">
             <h3 className="text-xl font-black text-slate-900">Employee Skill Gap Details</h3>
             <div className="flex gap-3">
@@ -476,7 +484,7 @@ const OrganizationSkillAnalytics = () => {
           ) : (
             <button 
               onClick={() => setIsAIModalOpen(true)}
-              className="px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-black text-sm rounded-xl transition-all shadow-lg shadow-blue-600/20 active:scale-95 relative z-10"
+              className="px-8 py-4 bg-gradient-to-r from-[#1988A3] to-[#11C6DE] hover:from-[#157289] hover:to-[#0EB3C9] text-white shadow-lg shadow-[#1988A3]/25 font-black text-sm rounded-xl transition-all shadow-lg shadow-blue-600/20 active:scale-95 relative z-10"
             >
               Assign Training
             </button>

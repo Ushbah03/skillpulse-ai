@@ -47,29 +47,33 @@ const HRSidebar = ({ currentTenant = "Enterprise Corp" }) => {
   return (
     <>
       {/* Mobile Top Navbar (Visible only on < lg screens) */}
-      <header className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-[#071229] border-b border-[#0f1c38] px-4 flex items-center justify-between z-40 select-none">
-        <div className="flex items-center gap-2.5 cursor-pointer" onClick={() => navigate('/hr-dashboard')}>
-          <img src={logo} alt="SkillPulse Logo" className="w-8 h-8 object-contain" />
+      <header className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-gradient-to-r from-[#17233E]/95 via-[#1B3154]/95 to-[#121E33]/95 backdrop-blur-2xl border-b border-white/10 px-4 flex items-center justify-between z-40 select-none">
+        <div className="flex items-center gap-2.5 cursor-pointer group" onClick={() => navigate('/hr-dashboard')}>
+          <div className="w-8 h-8 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center shadow-sm">
+            <svg className="w-4.5 h-4.5 text-[#11C6DE]" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+            </svg>
+          </div>
           <div>
-            <h1 className="text-white text-sm font-bold leading-none">SkillPulse AI</h1>
-            <span className="text-[9px] font-mono text-indigo-400 font-semibold uppercase">HR Management</span>
+            <h1 className="text-white text-sm font-extrabold leading-none tracking-tight">
+              SkillPulse <span className="text-[#11C6DE]">-AI</span>
+            </h1>
+            <span className="text-[9px] font-mono text-[#8A9CB7] font-semibold uppercase">HR Workspace</span>
           </div>
         </div>
 
         <div className="flex items-center gap-2">
-          {/* Quick Mobile Logout Button */}
           <button
             onClick={handleLogout}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-rose-500/10 text-rose-400 border border-rose-500/20 text-xs font-medium cursor-pointer"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/5 text-[#8A9CB7] hover:text-white border border-white/10 text-xs font-semibold cursor-pointer transition-colors"
           >
             <LogOut className="w-3.5 h-3.5" />
             <span>Logout</span>
           </button>
 
-          {/* Menu Drawer Toggle */}
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
-            className="p-2 rounded-lg bg-[#0f1c38] text-slate-200 border border-slate-700 cursor-pointer"
+            className="p-2 rounded-xl bg-white/5 text-[#8A9CB7] hover:text-white border border-white/10 cursor-pointer transition-colors"
             aria-label="Toggle menu"
           >
             {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -91,7 +95,7 @@ const HRSidebar = ({ currentTenant = "Enterprise Corp" }) => {
       </AnimatePresence>
 
       {/* Sidebar Drawer Container */}
-      <aside className={`h-screen bg-[#071229] text-slate-400 flex flex-col fixed left-0 top-0 w-64 border-r border-[#0f1c38] z-50 select-none transition-transform duration-300 ${
+      <aside className={`h-screen bg-gradient-to-b from-[#17233E] via-[#1B3154] to-[#121E33] text-[#8A9CB7] p-4 flex flex-col fixed left-0 top-0 w-64 border-r border-white/10 z-50 select-none shadow-2xl transition-transform duration-300 ${
         mobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
       }`}>
         
@@ -102,51 +106,45 @@ const HRSidebar = ({ currentTenant = "Enterprise Corp" }) => {
         `}</style>
 
         {/* Header & Tenant Identity Branding Section */}
-        <div className="border-b border-[#0f1c38]">
+        <div className="mb-6 px-1 relative z-10 border-b border-white/10 pb-4">
           <motion.div
             whileTap={{ scale: 0.98 }}
-            className="px-5 pt-5 pb-3 flex items-center justify-between cursor-pointer group relative z-10"
+            className="flex items-center justify-between cursor-pointer group mb-3"
             onClick={() => navigate('/hr-dashboard')}
           >
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl flex items-center justify-center overflow-hidden flex-shrink-0 bg-transparent">
-                <motion.img
-                  src={logo}
-                  alt="SkillPulse Logo"
-                  whileHover={{ rotate: -10, scale: 1.08 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 14 }}
-                  className="w-8 h-8 object-contain"
-                />
+            <div className="flex items-center gap-2.5">
+              <div className="w-9 h-9 rounded-xl bg-white/10 border border-white/20 backdrop-blur-md flex items-center justify-center shadow-md group-hover:border-[#1988A3]/60 transition-all">
+                <svg className="w-5 h-5 text-[#11C6DE]" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                </svg>
               </div>
               <div>
-                <h1 className="text-white text-base font-bold tracking-tight group-hover:text-indigo-400 transition-colors duration-300 leading-none">
-                  SkillPulse AI
+                <h1 className="text-white text-base font-extrabold tracking-tight">
+                  SkillPulse <span className="text-[#11C6DE]">-AI</span>
                 </h1>
-                <span className="text-[10px] font-mono text-indigo-400 font-semibold uppercase tracking-widest block mt-0.5">
-                  HR Management
+                <span className="text-[10px] font-mono text-[#8A9CB7] font-bold uppercase tracking-wider block">
+                  HR Workspace
                 </span>
               </div>
             </div>
 
             <button
               onClick={(e) => { e.stopPropagation(); setMobileOpen(false); }}
-              className="lg:hidden p-1 text-slate-400 hover:text-white"
+              className="lg:hidden p-1 text-[#8A9CB7] hover:text-white"
             >
               <X className="w-5 h-5" />
             </button>
           </motion.div>
 
-          <div className="px-5 pb-4">
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#0d1832] border border-[#16274e] text-xs text-slate-300">
-              <Building className="w-3.5 h-3.5 text-indigo-400 flex-shrink-0" />
-              <span className="truncate font-medium">{currentTenant}</span>
-              <span className="ml-auto w-2 h-2 rounded-full bg-emerald-400 animate-pulse" title="Tenant Active" />
-            </div>
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-xs text-[#8A9CB7]">
+            <Building className="w-3.5 h-3.5 text-[#11C6DE] flex-shrink-0" />
+            <span className="truncate font-semibold text-white/90">{currentTenant}</span>
+            <span className="ml-auto w-2 h-2 rounded-full bg-[#11C6DE] animate-pulse shadow-[0_0_6px_#11C6DE]" title="Tenant Active" />
           </div>
         </div>
 
       {/* Navigation List */}
-      <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto custom-hr-scrollbar border-b border-[#0f1c38] relative">
+      <nav className="flex-1 space-y-1.5 overflow-y-auto custom-hr-scrollbar border-b border-white/10 pb-4 relative">
         {menuItems.map((item) => {
           const isItemActive = item.path === '/hr-dashboard'
             ? location.pathname === item.path
@@ -171,7 +169,7 @@ const HRSidebar = ({ currentTenant = "Enterprise Corp" }) => {
                     <motion.div
                       layoutId="hrActiveIndicator"
                       transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                      className="absolute inset-0 bg-[#101D3A] rounded-2xl z-0"
+                      className="absolute inset-0 bg-white/10 border border-white/15 rounded-xl z-0 shadow-sm"
                     />
                   )}
 
@@ -184,7 +182,7 @@ const HRSidebar = ({ currentTenant = "Enterprise Corp" }) => {
                     }`}
                   />
 
-                  <span className="text-[13.5px] leading-[20px] font-medium tracking-wide z-10 transition-transform duration-200 group-hover:translate-x-0.5">
+                  <span className="font-semibold text-xs tracking-wide z-10 truncate">
                     {item.name}
                   </span>
                 </>
@@ -195,27 +193,24 @@ const HRSidebar = ({ currentTenant = "Enterprise Corp" }) => {
       </nav>
 
       {/* Persistent HR Profile & Logout Tray */}
-      <div className="p-3 bg-[#071229] space-y-2">
-        <div className="flex items-center gap-3 px-3 py-2 rounded-xl bg-[#0b162e] border border-[#102142]">
-          <div className="w-8 h-8 rounded-lg bg-indigo-600/30 text-indigo-400 border border-indigo-500/30 flex items-center justify-center font-bold text-xs flex-shrink-0">
+      <div className="pt-3 space-y-2 z-10">
+        <div className="flex items-center gap-3 px-3 py-2 rounded-xl bg-white/5 border border-white/10">
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#17233E] to-[#1B3154] text-[#11C6DE] border border-white/20 flex items-center justify-center font-bold text-xs flex-shrink-0 shadow-sm">
             HR
           </div>
           <div className="flex flex-col min-w-0 flex-1">
-            <span className="text-xs font-medium text-slate-200 truncate">HR Director</span>
-            <span className="text-[10px] text-slate-500 truncate">hr@enterprise.com</span>
+            <span className="text-xs font-semibold text-white truncate">HR Director</span>
+            <span className="text-[10px] text-[#8A9CB7] truncate">hr@enterprise.com</span>
           </div>
         </div>
 
-        <motion.button
+        <button
           onClick={handleLogout}
-          whileTap={{ scale: 0.98 }}
-          className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition-all duration-300 group border-0 outline-none relative"
+          className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-[#8A9CB7] hover:text-rose-400 hover:bg-rose-500/10 border border-transparent hover:border-rose-500/20 transition-all font-semibold text-xs tracking-wide cursor-pointer"
         >
-          <LogOut className="w-[17px] h-[17px] flex-shrink-0 text-slate-500 group-hover:text-red-400 transition-transform duration-300 group-hover:-translate-x-0.5" />
-          <span className="text-[13.5px] leading-[20px] font-medium tracking-wide transition-transform duration-300 group-hover:translate-x-0.5">
-            Logout
-          </span>
-        </motion.button>
+          <LogOut className="w-4.5 h-4.5 flex-shrink-0" />
+          <span>Logout</span>
+        </button>
       </div>
 
       </aside>

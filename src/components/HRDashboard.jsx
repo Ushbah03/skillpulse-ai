@@ -19,6 +19,7 @@ import {
   Target
 } from 'lucide-react';
 import HRSidebar from './HRSidebar';
+import SkillPulseLoader from './SkillPulseLoader';
 import { motion, AnimatePresence } from 'framer-motion';
 import { hrAPI } from '../services/api';
 import { useNavigate } from 'react-router-dom';
@@ -94,12 +95,20 @@ const HRDashboard = () => {
   }, [analyticsData]);
 
   return (
-    <div className="flex min-h-screen bg-[#F8F9FE] font-sans text-slate-800 antialiased">
+    <div className="flex min-h-screen bg-[#E9EAF7] font-sans text-[#17233E] relative overflow-x-hidden selection:bg-[#1988A3] selection:text-white">
+      {/* Ambient Gradient Depth - Glowing mesh orbs behind frosted glass panels */}
+      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+        <div className="absolute top-10 left-1/4 w-[550px] h-[550px] bg-[#1988A3]/20 blur-[130px] rounded-full animate-pulse" />
+        <div className="absolute top-1/3 -right-20 w-[500px] h-[500px] bg-[#11C6DE]/16 blur-[140px] rounded-full" />
+        <div className="absolute top-2/3 left-10 w-[600px] h-[600px] bg-[#1B3154]/16 blur-[150px] rounded-full" />
+        <div className="absolute bottom-10 right-1/4 w-[550px] h-[550px] bg-[#8A9CB7]/28 blur-[140px] rounded-full" />
+        <div className="absolute inset-0 bg-[radial-gradient(rgba(27,49,84,0.10)_1px,transparent_1px)] [background-size:28px_28px] opacity-35" />
+      </div>
       {/* 1. Multi-Tenant Sidebar */}
       <HRSidebar currentTenant={displayTenantName} currentScreen="Dashboard" />
 
       {/* 2. Main Dashboard Panel */}
-      <main className="flex-1 ml-0 lg:ml-64 pt-20 lg:pt-6 p-4 md:p-6 w-full space-y-5 relative">
+      <main className="flex-1 ml-0 lg:ml-64 pt-20 lg:pt-8 p-4 md:p-8 w-full relative z-10 space-y-8">
         
         {/* Toast Notification Layer */}
         <AnimatePresence>
@@ -117,16 +126,16 @@ const HRDashboard = () => {
         </AnimatePresence>
 
         {/* Global Header */}
-        <header className="flex flex-wrap justify-between items-center bg-white p-4 rounded-xl border border-slate-200/80 shadow-sm gap-4">
+        <header className="flex flex-wrap justify-between items-center bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl p-6 rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 gap-4">
           <div>
-            <h1 className="text-xl font-black text-slate-900 tracking-tight flex items-center gap-2.5">
-              HR Dashboard
-              <span className="flex items-center gap-1 px-2 py-0.5 bg-indigo-50 border border-indigo-100 rounded-md text-[11px] font-bold text-indigo-700">
+            <h1 className="text-2xl md:text-3xl font-extrabold text-[#17233E] tracking-tight flex items-center gap-2.5">
+              HR <span className="bg-gradient-to-r from-[#1988A3] to-[#11C6DE] bg-clip-text text-transparent">Dashboard</span>
+              <span className="flex items-center gap-1 px-2.5 py-1 bg-[#1988A3]/10 border border-[#1988A3]/25 rounded-xl text-[11px] font-bold text-[#1988A3]">
                 <Building size={12} className="text-indigo-500" />
                 {displayTenantName}
               </span>
             </h1>
-            <p className="text-slate-500 text-xs font-semibold mt-0.5">Workforce intelligence overview & real-time analytics</p>
+            <p className="text-[#8A9CB7] text-xs md:text-sm font-medium mt-1">Workforce intelligence overview & real-time analytics</p>
           </div>
           
           <div className="flex items-center gap-3">
@@ -137,16 +146,15 @@ const HRDashboard = () => {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search departments, skills..." 
-                className="w-64 pl-9 pr-3 py-1.5 bg-slate-100/70 rounded-lg text-xs font-semibold text-slate-700 outline-none border border-transparent focus:border-indigo-500 focus:bg-white transition-all"
+                className="w-64 pl-9 pr-3 py-2 bg-white/80 backdrop-blur-md rounded-xl text-xs font-semibold text-[#17233E] outline-none border border-white/85 focus:border-[#1988A3] shadow-sm transition-all placeholder:text-[#8A9CB7]"
               />
             </div>
           </div>
         </header>
 
         {loading ? (
-          <div className="flex flex-col items-center justify-center py-32 space-y-3">
-            <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
-            <p className="text-xs font-bold text-slate-500">Fetching live HR analytics...</p>
+          <div className="my-8">
+            <SkillPulseLoader message="Synthesizing Enterprise Workforce Telemetry..." fullScreen={false} />
           </div>
         ) : (
           <>
@@ -179,7 +187,7 @@ const HRDashboard = () => {
                 subtext={analyticsData?.criticalGapsCount > 0 ? `${analyticsData.criticalGapsCount} Critical Skill Gaps` : "No Critical Gaps"}
                 subtextStyle={analyticsData?.criticalGapsCount > 0 ? "text-amber-700 font-bold" : "text-emerald-600 font-bold"}
               />
-              <div className="bg-white p-4 rounded-xl border border-slate-200/80 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
+              <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl p-6 rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-col justify-between hover:border-[#1988A3]/40 transition-all duration-300">
                 <div className="flex justify-between items-start">
                   <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">Compliance Rate</span>
                   <div className="w-8 h-8 bg-indigo-50 text-indigo-600 rounded-lg flex items-center justify-center"><GraduationCap size={16} /></div>
@@ -551,11 +559,11 @@ const HRDashboard = () => {
 const MetricCard = ({ title, value, icon, iconColor = "", iconBg = "", subtext, subtextColor = "", subtextStyle = "" }) => (
   <div className="bg-white p-4 rounded-xl border border-slate-200/80 shadow-sm flex flex-col justify-between min-h-[125px] hover:shadow-md transition-shadow">
     <div className="flex justify-between items-start">
-      <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">{title}</span>
+      <span className="text-xs font-bold uppercase tracking-wider text-[#8A9CB7]">{title}</span>
       <div className={`w-8 h-8 ${iconBg} ${iconColor} rounded-lg flex items-center justify-center`}>{icon}</div>
     </div>
     <div className="mt-1.5">
-      <h3 className="text-2xl font-black text-slate-900 tracking-tight">{value}</h3>
+      <h3 className="text-2xl md:text-3xl font-extrabold text-[#17233E] tracking-tight">{value}</h3>
       {subtext && (
         <div className={subtextColor ? `inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-bold mt-1.5 border ${subtextColor}` : `text-[11px] font-bold mt-1.5 ${subtextStyle}`}>
           {subtext}
@@ -610,7 +618,7 @@ const DepartmentBenchmarkWidget = ({ data = [], benchmark = 90, onSelectDepartme
   ];
 
   return (
-    <div className="bg-white p-5 rounded-xl border border-slate-200/80 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
+    <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl p-6 md:p-8 rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-col justify-between hover:shadow-md transition-shadow">
       <div className="flex justify-between items-start mb-3">
         <div>
           <h4 className="text-xs font-black text-slate-900 flex items-center gap-2">
@@ -715,7 +723,7 @@ const CompetencyReadinessWidget = ({ pillars = [], categories = [], benchmark = 
       ]);
 
   return (
-    <div className="bg-white p-5 rounded-xl border border-slate-200/80 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
+    <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl p-6 md:p-8 rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-col justify-between hover:shadow-md transition-shadow">
       <div className="flex justify-between items-start mb-2">
         <div>
           <h4 className="text-xs font-black text-slate-900 flex items-center gap-2">

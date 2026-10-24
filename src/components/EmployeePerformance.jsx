@@ -5,6 +5,7 @@ import {
   UserCheck, Settings, FileText, Check, ArrowUpDown, Loader2
 } from 'lucide-react';
 import HRSidebar from './HRSidebar';
+import SkillPulseLoader from './SkillPulseLoader';
 import { hrAPI } from '../services/api';
 
 // ── PERFORMANCE DISTRIBUTION HISTOGRAM ───────────────────────────────────────
@@ -411,10 +412,18 @@ const EmployeePerformance = () => {
   };
 
   return (
-    <div style={{ fontFamily: "'Segoe UI', system-ui, sans-serif" }} className="flex min-h-screen bg-[#f8fafc] relative">
+    <div className="flex min-h-screen bg-[#E9EAF7] font-sans text-[#17233E] relative overflow-x-hidden selection:bg-[#1988A3] selection:text-white">
+      {/* Ambient Gradient Depth - Glowing mesh orbs behind frosted glass panels */}
+      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+        <div className="absolute top-10 left-1/4 w-[550px] h-[550px] bg-[#1988A3]/20 blur-[130px] rounded-full animate-pulse" />
+        <div className="absolute top-1/3 -right-20 w-[500px] h-[500px] bg-[#11C6DE]/16 blur-[140px] rounded-full" />
+        <div className="absolute top-2/3 left-10 w-[600px] h-[600px] bg-[#1B3154]/16 blur-[150px] rounded-full" />
+        <div className="absolute bottom-10 right-1/4 w-[550px] h-[550px] bg-[#8A9CB7]/28 blur-[140px] rounded-full" />
+        <div className="absolute inset-0 bg-[radial-gradient(rgba(27,49,84,0.10)_1px,transparent_1px)] [background-size:28px_28px] opacity-35" />
+      </div>
       <HRSidebar />
 
-      <div className="flex-1 ml-0 lg:ml-64 pt-20 lg:pt-0 overflow-auto">
+      <div className="flex-1 ml-0 lg:ml-64 pt-20 lg:pt-8 p-4 md:p-8 w-full relative z-10 space-y-8">
         
         {activeNotification && (
           <div className="fixed top-5 right-8 z-50 bg-slate-900 text-white text-xs font-bold px-4 py-3 rounded-xl shadow-lg flex items-center gap-2 transition-all">
@@ -424,7 +433,7 @@ const EmployeePerformance = () => {
         )}
 
         {/* HEADER BAR */}
-        <header className="bg-white border-b border-slate-100 px-8 py-4 flex items-center justify-between sticky top-0 z-20">
+        <header className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl p-6 rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-wrap items-center justify-between gap-4 sticky top-4 z-20">
           <div>
             <h1 className="text-xl font-black text-slate-900 tracking-tight">Employee Performance Reports</h1>
             <p className="text-xs text-slate-400 font-medium mt-0.5">Monitor workforce performance, identify risks, and improve productivity</p>
@@ -437,16 +446,15 @@ const EmployeePerformance = () => {
                 value={searchQuery}
                 onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
                 placeholder="Search employees, skills..."
-                className="pl-9 pr-4 py-2 rounded-xl bg-slate-50 text-sm text-slate-600 outline-none w-64 border border-slate-100 focus:border-slate-200 focus:bg-white transition-all"
+                className="pl-9 pr-4 py-2 rounded-xl bg-white/80 backdrop-blur-md border border-white/85 text-xs text-[#17233E] outline-none w-64 border border-slate-100 focus:border-slate-200 focus:bg-white transition-all"
               />
             </div>
           </div>
         </header>
 
         {loading ? (
-          <div className="flex flex-col items-center justify-center py-32 gap-4">
-            <Loader2 size={36} className="animate-spin text-indigo-500" />
-            <p className="text-slate-400 text-sm font-semibold">Loading live performance data from database...</p>
+          <div className="my-8">
+            <SkillPulseLoader message="Synchronizing Enterprise Workforce Telemetry..." fullScreen={false} />
           </div>
         ) : (
           <>
@@ -494,7 +502,7 @@ const EmployeePerformance = () => {
           </div>
 
           {/* HISTOGRAM CARD */}
-          <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6">
+          <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 p-6">
             <div className="flex justify-between items-center">
               <div>
                 <h3 className="text-base font-black text-slate-900">Performance Distribution</h3>
@@ -505,7 +513,7 @@ const EmployeePerformance = () => {
           </div>
 
           {/* PERFORMANCE TABLE */}
-          <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+          <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 overflow-hidden">
             <div className="px-6 py-5 flex justify-between items-center border-b border-slate-100">
               <h3 className="text-base font-black text-slate-900">Performance Details</h3>
               <div className="flex items-center gap-3">
