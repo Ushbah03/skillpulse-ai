@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Users, 
@@ -21,7 +21,9 @@ import {
   Briefcase,
   Layers,
   Sparkles,
-  Lock
+  Lock,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 import SuperadminSidebar from './SuperadminSidebar';
 import SkillPulseLoader from './SkillPulseLoader';
@@ -46,6 +48,10 @@ const UserManagement = () => {
   const [selectedStatus, setSelectedStatus] = useState('ALL');
   const [toastMsg, setToastMsg] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Pagination State
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(8);
 
   // Edit User State
   const [editingUser, setEditingUser] = useState(null);
@@ -309,6 +315,26 @@ const UserManagement = () => {
     return matchesSearch && matchesRole && matchesTenant && matchesStatus;
   });
 
+  // Reset to first page on search or filter change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, selectedRole, selectedTenant, selectedStatus, itemsPerPage]);
+
+  const totalItems = filteredUsers.length;
+  const totalPages = Math.max(1, Math.ceil(totalItems / itemsPerPage));
+
+  // Ensure currentPage is within bounds
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+  }, [totalPages, currentPage]);
+
+  const paginatedUsers = useMemo(() => {
+    const start = (currentPage - 1) * itemsPerPage;
+    return filteredUsers.slice(start, start + itemsPerPage);
+  }, [filteredUsers, currentPage, itemsPerPage]);
+
   const selectedTenantObj = tenants.find(t => t.id === newUser.tenantId);
   const provisionTargetPlan = selectedTenantObj?.plan || 'PRO';
 
@@ -542,8 +568,8 @@ const UserManagement = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-white/60">
-                  {filteredUsers.length > 0 ? (
-                    filteredUsers.map((u) => (
+                  {paginatedUsers.length > 0 ? (
+                    paginatedUsers.map((u) => (
                       <tr key={u.id} className="hover:bg-white/50 transition-colors group">
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-3">
@@ -688,6 +714,83 @@ const UserManagement = () => {
                   )}
                 </tbody>
               </table>
+            </div>
+
+            {/* Pagination Controls */}
+            <div className="bg-[#17233E]/5 border-t border-white/60 px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-semibold text-[#17233E]">
+              <div className="flex items-center gap-3 flex-wrap">
+                <span className="text-[#8A9CB7]">
+                  Showing <span className="font-extrabold text-[#17233E]">{totalItems > 0 ? (currentPage - 1) * itemsPerPage + 1 : 0}</span> to{' '}
+                  <span className="font-extrabold text-[#17233E]">{Math.min(currentPage * itemsPerPage, totalItems)}</span> of{' '}
+                  <span className="font-extrabold text-[#17233E]">{totalItems}</span> {totalItems === 1 ? 'user' : 'users'}
+                  {totalItems !== users.length && ` (filtered from ${users.length} total)`}
+                </span>
+
+                <div className="flex items-center gap-1.5 ml-0 sm:ml-2">
+                  <span className="text-[#8A9CB7] text-[11px]">Rows per page:</span>
+                  <select
+                    value={itemsPerPage}
+                    onChange={(e) => {
+                      setItemsPerPage(Number(e.target.value));
+                      setCurrentPage(1);
+                    }}
+                    className="bg-white/80 border border-white/90 rounded-xl px-2.5 py-1 text-xs font-bold text-[#17233E] outline-none cursor-pointer shadow-xs focus:border-[#1988A3]"
+                  >
+                    <option value={8}>8</option>
+                    <option value={15}>15</option>
+                    <option value={25}>25</option>
+                    <option value={50}>50</option>
+                  </select>
+                </div>
+              </div>
+
+              {totalPages > 1 && (
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  <button
+                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                    disabled={currentPage === 1}
+                    className="px-3 py-1.5 text-xs font-bold rounded-xl border border-white/85 bg-white/80 text-[#17233E] hover:bg-white hover:text-[#1988A3] disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center gap-1 shadow-xs cursor-pointer active:scale-95"
+                    title="Previous Page"
+                  >
+                    <ChevronLeft className="w-3.5 h-3.5" />
+                    <span className="hidden sm:inline">Previous</span>
+                  </button>
+
+                  <div className="flex items-center gap-1">
+                    {Array.from({ length: totalPages }, (_, i) => i + 1)
+                      .filter(p => p === 1 || p === totalPages || Math.abs(p - currentPage) <= 1)
+                      .map((pageNum, idx, arr) => {
+                        const prevPageNum = arr[idx - 1];
+                        const showEllipsis = prevPageNum && pageNum - prevPageNum > 1;
+                        return (
+                          <React.Fragment key={pageNum}>
+                            {showEllipsis && <span className="text-[#8A9CB7] text-xs px-1 font-bold">...</span>}
+                            <button
+                              onClick={() => setCurrentPage(pageNum)}
+                              className={`w-7 h-7 text-xs font-black rounded-xl transition-all cursor-pointer shadow-xs ${
+                                currentPage === pageNum
+                                  ? 'bg-gradient-to-r from-[#1988A3] to-[#11C6DE] text-white shadow-md shadow-[#1988A3]/25 scale-105'
+                                  : 'border border-white/85 bg-white/70 text-[#17233E] hover:bg-white hover:text-[#1988A3]'
+                              }`}
+                            >
+                              {pageNum}
+                            </button>
+                          </React.Fragment>
+                        );
+                      })}
+                  </div>
+
+                  <button
+                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                    disabled={currentPage === totalPages}
+                    className="px-3 py-1.5 text-xs font-bold rounded-xl border border-white/85 bg-white/80 text-[#17233E] hover:bg-white hover:text-[#1988A3] disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center gap-1 shadow-xs cursor-pointer active:scale-95"
+                    title="Next Page"
+                  >
+                    <span className="hidden sm:inline">Next</span>
+                    <ChevronRight className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         )}
