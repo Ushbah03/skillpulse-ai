@@ -440,7 +440,7 @@ const MySkillProfile = () => {
               {filterCategory !== 'All' && <span className="bg-[#1988A3] text-white text-[9px] font-black px-1.5 py-0.5 rounded-md">{filterCategory}</span>}
             </button>
             {showFilterPanel && (
-              <div className="absolute top-12 left-0 z-30 bg-[#F5F9FD]/95 backdrop-blur-xl border border-[#8A9CB7]/30 rounded-2xl shadow-xl p-4 min-w-[180px]">
+              <div className="absolute top-12 left-0 z-30 bg-[#D8EBF9]/95 backdrop-blur-xl border border-[#8A9CB7]/30 rounded-2xl shadow-xl p-4 min-w-[180px]">
                 <p className="text-[10px] font-black text-[#5A6D89] uppercase tracking-widest mb-3">Filter by Category</p>
                 {categories.map(cat => (
                   <button
@@ -516,7 +516,7 @@ const MySkillProfile = () => {
                           
                           {/* Action Menu Dropdown */}
                           {activeMenuId === us.id && (
-                            <div className="absolute right-0 top-10 z-40 bg-[#F5F9FD]/95 backdrop-blur-xl border border-[#8A9CB7]/30 rounded-xl shadow-xl p-2 w-36 text-left">
+                            <div className="absolute right-0 top-10 z-40 bg-[#D8EBF9]/95 backdrop-blur-xl border border-[#8A9CB7]/30 rounded-xl shadow-xl p-2 w-36 text-left">
                               <button
                                 onClick={() => handleOpenEdit(us)}
                                 className="w-full flex items-center gap-2 px-3 py-2 text-xs font-bold text-[#17233E] hover:bg-[#1988A3]/10 rounded-lg"
@@ -627,7 +627,7 @@ const MySkillProfile = () => {
       {/* Add / Edit Skill Modal */}
       {showAddSkill && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#17233E]/50 backdrop-blur-md p-4">
-          <div className="bg-[#F5F9FD]/95 backdrop-blur-2xl border border-white/80 rounded-[2rem] shadow-2xl w-full max-w-md p-8">
+          <div className="bg-[#D8EBF9]/95 backdrop-blur-2xl border border-white/80 rounded-[2rem] shadow-2xl w-full max-w-md p-8">
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-xl font-black text-[#17233E]">
                 {editingSkill ? 'Edit Skill Level' : 'Add New Skill'}
@@ -701,7 +701,7 @@ const MySkillProfile = () => {
       {/* AI SKILL EXTRACTOR MODAL */}
       {showAiExtractor && (
         <div className="fixed inset-0 z-50 bg-[#17233E]/50 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-[#F5F9FD]/95 backdrop-blur-2xl rounded-3xl max-w-2xl w-full p-8 shadow-2xl border border-white/80 relative">
+          <div className="bg-[#D8EBF9]/95 backdrop-blur-2xl rounded-3xl max-w-2xl w-full p-8 shadow-2xl border border-white/80 relative">
             <button
               onClick={() => { setShowAiExtractor(false); setAiExtractErrorMsg(''); setAiExtractSuccessMsg(''); }}
               className="absolute top-6 right-6 text-[#8A9CB7] hover:text-[#17233E] p-2 rounded-full hover:bg-slate-100"

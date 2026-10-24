@@ -405,7 +405,7 @@ const AssignLearning = () => {
             <div className="grid grid-cols-12 gap-8 items-start">
               
               {/* LEFT: Available Training Programs Section */}
-              <div className="col-span-12 lg:col-span-8 bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/85 shadow-xl shadow-[#1B3154]/6 space-y-6">
+              <div className="col-span-12 lg:col-span-8 bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/85 shadow-xl shadow-[#1B3154]/6 space-y-6">
                 <div className="flex justify-between items-center">
                   <h3 className="text-xl font-bold text-slate-900 tracking-tight">Available Training Programs</h3>
                   <span className="text-xs font-bold text-slate-400">{filteredPrograms.length} Programs</span>

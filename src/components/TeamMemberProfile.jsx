@@ -447,7 +447,7 @@ const TeamMemberProfile = () => {
         ) : (
           <>
             {/* 1. Main Profile Banner Card */}
-            <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/85 shadow-xl shadow-[#1B3154]/6 flex justify-between items-center">
+            <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/85 shadow-xl shadow-[#1B3154]/6 flex justify-between items-center">
               <div className="flex items-center gap-6">
                 <div className="relative w-28 h-28">
                   <img 
@@ -527,7 +527,7 @@ const TeamMemberProfile = () => {
             </div>
 
             {/* 3. Member Skill Matrix Table */}
-            <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/85 shadow-xl shadow-[#1B3154]/6">
+            <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/85 shadow-xl shadow-[#1B3154]/6">
               <h3 className="text-xl font-bold text-slate-900 mb-6 tracking-tight">Member Skill Matrix</h3>
               <div className="overflow-hidden border border-slate-100 rounded-2xl">
                 <table className="w-full text-left border-collapse">
@@ -578,7 +578,7 @@ const TeamMemberProfile = () => {
             {/* 4. Charts Twin Grid (Radar + Growth) - Interactive & Responsive on Click */}
             <div className="grid grid-cols-12 gap-8">
               {/* Skill Proficiency Radar */}
-              <div className="col-span-6 bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-col justify-between transition-all">
+              <div className="col-span-6 bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-col justify-between transition-all">
                 <div className="flex justify-between items-center mb-4">
                   <div>
                     <h3 className="text-xl font-bold text-slate-900 tracking-tight">Skill Proficiency Radar</h3>
@@ -742,7 +742,7 @@ const TeamMemberProfile = () => {
               </div>
 
               {/* Skill Growth Trend - 100% Real Progression Data & Responsive on Click */}
-              <div className="col-span-6 bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-col justify-between transition-all">
+              <div className="col-span-6 bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-col justify-between transition-all">
                 <div className="flex justify-between items-center mb-4">
                   <div>
                     <h3 className="text-xl font-bold text-slate-900 tracking-tight">Skill Growth Trend</h3>
@@ -876,7 +876,7 @@ const TeamMemberProfile = () => {
             </div>
 
             {/* 5. Training History Section */}
-            <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/85 shadow-xl shadow-[#1B3154]/6">
+            <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/85 shadow-xl shadow-[#1B3154]/6">
               <h3 className="text-xl font-bold text-slate-900 mb-6 tracking-tight">Training History</h3>
               <div className="space-y-4">
                 {memberEnrollments.length > 0 ? (
@@ -899,7 +899,7 @@ const TeamMemberProfile = () => {
             </div>
 
             {/* 6. Skill Gaps Identified */}
-            <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/85 shadow-xl shadow-[#1B3154]/6">
+            <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/85 shadow-xl shadow-[#1B3154]/6">
               <h3 className="text-xl font-bold text-slate-900 mb-6 tracking-tight">Skill Gaps Identified</h3>
               {memberGaps.length > 0 ? (
                 memberGaps.map((gap) => (

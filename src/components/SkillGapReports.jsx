@@ -120,7 +120,7 @@ const ToastNotification = ({ toast, onClose }) => {
   const isSuccess = toast.type === 'success';
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 flex items-center gap-3 bg-gradient-to-br from-[#F5F9FD] to-[#DDEBF8] backdrop-blur-2xl border border-white/90 shadow-2xl rounded-2xl px-5 py-4 min-w-[320px] max-w-md animate-in slide-in-from-bottom-4 duration-200">
+    <div className="fixed bottom-6 right-6 z-50 flex items-center gap-3 bg-gradient-to-br from-[#D8EBF9] to-[#BEDDF5] backdrop-blur-2xl border border-white/90 shadow-2xl rounded-2xl px-5 py-4 min-w-[320px] max-w-md animate-in slide-in-from-bottom-4 duration-200">
       <div className={`p-2 rounded-xl flex-shrink-0 ${isSuccess ? 'bg-emerald-50 text-emerald-600' : 'bg-indigo-50 text-indigo-600'}`}>
         {isSuccess ? <CheckCircle size={20} /> : <Sparkles size={20} />}
       </div>
@@ -141,7 +141,7 @@ const ActionModal = ({ isOpen, title, description, confirmText, onConfirm, onClo
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-gradient-to-br from-[#F5F9FD] to-[#DDEBF8] backdrop-blur-2xl rounded-3xl border border-white/90 shadow-2xl max-w-md w-full p-6 space-y-4">
+      <div className="bg-gradient-to-br from-[#D8EBF9] to-[#BEDDF5] backdrop-blur-2xl rounded-3xl border border-white/90 shadow-2xl max-w-md w-full p-6 space-y-4">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3">
             <div className={`p-3 rounded-2xl ${isDanger ? 'bg-rose-50 text-rose-600' : 'bg-indigo-50 text-indigo-600'}`}>
@@ -429,7 +429,7 @@ const SkillGapReports = () => {
 
       <div className="flex-1 ml-0 lg:ml-64 pt-20 lg:pt-8 p-4 md:p-8 w-full relative z-10 space-y-8">
         {/* ── TOP NAV / HEADER ── */}
-        <header className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl p-6 rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-wrap items-center justify-between gap-4 sticky top-4 z-20">
+        <header className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl p-6 rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-wrap items-center justify-between gap-4 sticky top-4 z-20">
           <div className="flex items-center gap-2 text-sm font-semibold text-slate-400">
             <span>HR Manager</span>
             <span className="text-slate-300">›</span>
@@ -457,7 +457,7 @@ const SkillGapReports = () => {
 
         <div className="px-8 py-6 space-y-6">
           {loading ? (
-            <div className="flex flex-col items-center justify-center min-h-[450px] bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 p-12 my-4">
+            <div className="flex flex-col items-center justify-center min-h-[450px] bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 p-12 my-4">
               <div className="p-4 bg-indigo-50 rounded-2xl mb-4 animate-bounce">
                 <Loader2 className="animate-spin text-indigo-600" size={36} />
               </div>
@@ -491,7 +491,7 @@ const SkillGapReports = () => {
           </div>
 
           {/* ── COMPETENCY HEATMAP ── */}
-          <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 overflow-hidden">
+          <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 overflow-hidden">
             <div className="px-6 pt-5 pb-4 flex justify-between items-start border-b border-slate-100">
               <div>
                 <h3 className="text-base font-black text-slate-900">Competency Heatmap</h3>
@@ -556,7 +556,7 @@ const SkillGapReports = () => {
 
           {/* ── DEFICIENCY INDEX + HIGH PRIORITY MISSING SKILLS ── */}
           <div className="grid grid-cols-2 gap-5">
-            <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 p-6">
+            <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 p-6">
               <div className="flex justify-between items-center mb-2">
                 <h3 className="text-base font-black text-slate-900">Dept Skill Deficiency Index</h3>
                 <span className="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded">
@@ -569,7 +569,7 @@ const SkillGapReports = () => {
               </p>
             </div>
 
-            <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 p-6">
+            <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 p-6">
               <div className="flex justify-between items-center mb-5">
                 <h3 className="text-base font-black text-slate-900">High-Priority Missing Skills</h3>
               </div>
@@ -597,7 +597,7 @@ const SkillGapReports = () => {
           </div>
 
           {/* ── CRITICAL SKILL GAPS BY EMPLOYEE ── */}
-          <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 overflow-hidden">
+          <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 overflow-hidden">
             <div className="px-6 py-4 flex justify-between items-center border-b border-slate-100">
               <div>
                 <h3 className="text-base font-black text-slate-900">Critical Skill Gaps by Individual Employee</h3>
@@ -678,7 +678,7 @@ const SkillGapReports = () => {
           </div>
 
           {/* ── UNASSIGNED & DIRECT EMPLOYEE COURSE ENROLLMENT REQUESTS (AUTHORITY APPROVAL) ── */}
-          <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 overflow-hidden mt-6">
+          <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 overflow-hidden mt-6">
             <div className="px-6 py-4 flex justify-between items-center border-b border-slate-100 bg-slate-50/50">
               <div className="flex items-center gap-3">
                 <div className="p-2.5 rounded-xl bg-amber-50 text-amber-600 border border-amber-200/60">

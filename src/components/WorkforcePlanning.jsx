@@ -654,7 +654,7 @@ const WorkforcePlanning = () => {
         </AnimatePresence>
 
         {/* --- SECTION 1: HEADER --- */}
-        <header className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl p-6 rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-wrap justify-between items-center gap-4 mb-4">
+        <header className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl p-6 rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-wrap justify-between items-center gap-4 mb-4">
           <div>
             <h1 className="text-2xl font-black text-[#0b1221] tracking-tight flex items-center gap-3">
               Workforce Planning
@@ -698,7 +698,7 @@ const WorkforcePlanning = () => {
             </div>
 
         {/* --- SECTION 3: FORECAST LINE CHART --- */}
-        <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 p-8 space-y-6">
+        <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 p-8 space-y-6">
           <div className="flex justify-between items-center">
             <div>
               <h3 className="text-xl font-bold text-slate-900">Workforce Forecast Trend (12 Months)</h3>
@@ -722,7 +722,7 @@ const WorkforcePlanning = () => {
         {/* --- SECTION 4: HIRING DEMAND & DONUT DISTRIBUTION --- */}
         <div className="grid grid-cols-2 gap-8">
           {/* Hiring Demand */}
-          <div className="bg-white rounded-2xl p-8 border border-slate-100 shadow-sm space-y-6">
+          <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 p-8 space-y-6">
             <h3 className="text-xl font-bold text-slate-900">Hiring Demand by Department</h3>
             <div className="space-y-4">
               {hiringDemand.length > 0 ? (
@@ -744,7 +744,7 @@ const WorkforcePlanning = () => {
           </div>
 
           {/* Workforce Allocation */}
-          <div className="bg-white rounded-2xl p-8 border border-slate-100 shadow-sm space-y-6">
+          <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 p-8 space-y-6">
             <h3 className="text-xl font-bold text-slate-900">Workforce Allocation Distribution</h3>
             {allocationLegend.length > 0 ? (
               <div className="flex items-center gap-8">
@@ -765,7 +765,7 @@ const WorkforcePlanning = () => {
         </div>
 
         {/* --- SECTION 5: ROLE-BASED DEMAND TABLE --- */}
-        <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 overflow-hidden">
+        <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 overflow-hidden">
           <div className="p-8 border-b border-slate-50 flex justify-between items-center">
             <h3 className="text-xl font-black text-slate-900">Role-Based Workforce Demand</h3>
             <div className="flex gap-3 relative">
@@ -946,7 +946,7 @@ const WorkforcePlanning = () => {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-gradient-to-br from-[#F5F9FD] to-[#DDEBF8] backdrop-blur-2xl rounded-3xl p-8 max-w-lg w-full shadow-2xl relative border border-white/90"
+              className="bg-gradient-to-br from-[#D8EBF9] to-[#BEDDF5] backdrop-blur-2xl rounded-3xl p-8 max-w-lg w-full shadow-2xl relative border border-white/90"
             >
               <button 
                 onClick={() => setIsAIModalOpen(false)}
@@ -1133,7 +1133,7 @@ const WorkforcePlanning = () => {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-gradient-to-br from-[#F5F9FD] to-[#DDEBF8] backdrop-blur-2xl rounded-3xl p-8 max-w-lg w-full shadow-2xl relative border border-white/90"
+              className="bg-gradient-to-br from-[#D8EBF9] to-[#BEDDF5] backdrop-blur-2xl rounded-3xl p-8 max-w-lg w-full shadow-2xl relative border border-white/90"
             >
               <button 
                 onClick={() => setIsReallocateModalOpen(false)}
@@ -1203,7 +1203,7 @@ const WorkforcePlanning = () => {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-gradient-to-br from-[#F5F9FD] to-[#DDEBF8] backdrop-blur-2xl rounded-3xl p-8 max-w-lg w-full shadow-2xl relative border border-white/90"
+              className="bg-gradient-to-br from-[#D8EBF9] to-[#BEDDF5] backdrop-blur-2xl rounded-3xl p-8 max-w-lg w-full shadow-2xl relative border border-white/90"
             >
               <button 
                 onClick={() => setIsRecruitmentModalOpen(false)}
@@ -1253,7 +1253,7 @@ const WorkforcePlanning = () => {
 
 // --- MINI COMPONENTS ---
 const MetricCard = ({ title, value, trend, trendColor, valueColor = "text-slate-900", icon, iconBg }) => (
-  <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 p-6 flex flex-col justify-between min-h-[140px] relative hover:border-[#1988A3]/40 transition-all duration-300">
+  <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 p-6 flex flex-col justify-between min-h-[140px] relative hover:border-[#1988A3]/40 transition-all duration-300">
     <div className="flex justify-between items-start">
       <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{title}</p>
       <div className={`w-9 h-9 rounded-xl ${iconBg} flex items-center justify-center`}>
@@ -1268,7 +1268,7 @@ const MetricCard = ({ title, value, trend, trendColor, valueColor = "text-slate-
 );
 
 const QuickAction = ({ icon, label, onClick }) => (
-  <button onClick={onClick} className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl hover:bg-[#E4EEF8]/80 border border-white/85 p-8 rounded-3xl flex flex-col items-center justify-center gap-4 shadow-xl shadow-[#1B3154]/6 transition-all group active:scale-95 outline-none hover:border-[#1988A3]/50 cursor-pointer">
+  <button onClick={onClick} className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl hover:bg-[#E4EEF8]/80 border border-white/85 p-8 rounded-3xl flex flex-col items-center justify-center gap-4 shadow-xl shadow-[#1B3154]/6 transition-all group active:scale-95 outline-none hover:border-[#1988A3]/50 cursor-pointer">
     <div className="w-14 h-14 bg-slate-50 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
       {React.cloneElement(icon, { size: 28 })}
     </div>

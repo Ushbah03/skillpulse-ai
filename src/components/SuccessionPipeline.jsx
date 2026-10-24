@@ -434,7 +434,7 @@ const SuccessionPipeline = () => {
 
       <div className="flex-1 ml-0 lg:ml-64 pt-20 lg:pt-8 p-4 md:p-8 w-full relative z-10 space-y-8">
         {/* ── HEADER / TOP NAV ── */}
-        <header className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl p-6 rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-wrap items-center justify-between gap-4 sticky top-4 z-20">
+        <header className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl p-6 rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-wrap items-center justify-between gap-4 sticky top-4 z-20">
           <div className="flex items-center gap-2 text-sm font-semibold text-slate-400">
             <span>HR Manager</span>
             <span className="text-slate-300">›</span>
@@ -521,7 +521,7 @@ const SuccessionPipeline = () => {
 
           {/* ── METRIC CARDS ── */}
           <div className="grid grid-cols-4 gap-5">
-            <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 rounded-2xl p-5 hover:border-[#1988A3]/40 transition-all duration-300">
+            <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 rounded-2xl p-5 hover:border-[#1988A3]/40 transition-all duration-300">
               <div className="flex justify-between items-start">
                 <p className="text-xs font-bold uppercase tracking-wider text-slate-400">Overall Readiness</p>
                 <div className="w-8 h-8 rounded-xl bg-emerald-50 flex items-center justify-center">
@@ -538,7 +538,7 @@ const SuccessionPipeline = () => {
               </div>
             </div>
 
-            <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 rounded-2xl p-5 hover:border-[#1988A3]/40 transition-all duration-300">
+            <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 rounded-2xl p-5 hover:border-[#1988A3]/40 transition-all duration-300">
               <div className="flex justify-between items-start">
                 <p className="text-xs font-bold uppercase tracking-wider text-slate-400">Critical Skill Gaps</p>
                 <div className="w-8 h-8 rounded-xl bg-rose-50 flex items-center justify-center">
@@ -555,7 +555,7 @@ const SuccessionPipeline = () => {
               </div>
             </div>
 
-            <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 rounded-2xl p-5 hover:border-[#1988A3]/40 transition-all duration-300">
+            <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 rounded-2xl p-5 hover:border-[#1988A3]/40 transition-all duration-300">
               <div className="flex justify-between items-start">
                 <p className="text-xs font-bold uppercase tracking-wider text-slate-400">HiPo Talent Pool</p>
                 <div className="w-8 h-8 rounded-xl bg-indigo-50 flex items-center justify-center">
@@ -581,7 +581,7 @@ const SuccessionPipeline = () => {
               </div>
             </div>
 
-            <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 rounded-2xl p-5 hover:border-[#1988A3]/40 transition-all duration-300">
+            <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 rounded-2xl p-5 hover:border-[#1988A3]/40 transition-all duration-300">
               <div className="flex justify-between items-start">
                 <p className="text-xs font-bold uppercase tracking-wider text-slate-400">Avg. Time to Ready</p>
                 <div className="w-8 h-8 rounded-xl bg-purple-50 flex items-center justify-center">
@@ -603,7 +603,7 @@ const SuccessionPipeline = () => {
           <div className="grid grid-cols-3 gap-5">
 
             {/* LEFT 2 COLUMNS: DEPTH CHART */}
-            <div className="col-span-2 bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 p-6">
+            <div className="col-span-2 bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 p-6">
               <div className="flex justify-between items-center mb-5">
                 <div>
                   <h3 className="text-base font-black text-slate-900">Succession Depth Chart</h3>
@@ -746,7 +746,7 @@ const SuccessionPipeline = () => {
             {/* RIGHT COLUMN: RADAR + TOP SKILL GAPS */}
             <div className="space-y-5">
               {/* Radar Chart Block */}
-              <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 p-5">
+              <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 p-5">
                 <div className="flex justify-between items-center mb-1">
                   <h3 className="text-sm font-black text-slate-900">AI Competency Radar</h3>
                   <span className="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded">
@@ -774,7 +774,7 @@ const SuccessionPipeline = () => {
               </div>
 
               {/* Skill Gaps Block */}
-              <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 p-5">
+              <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 p-5">
                 <div className="flex justify-between items-center mb-3">
                   <h3 className="text-sm font-black text-slate-900">Top Pipeline Skill Deficits</h3>
                   <span className="text-[10px] font-bold text-slate-400">{skillGaps.length} Verified Gaps</span>
@@ -806,7 +806,7 @@ const SuccessionPipeline = () => {
           </div>
 
           {/* ── BOTTOM PANEL: INDIVIDUAL CAREER TRAJECTORY ── */}
-          <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 p-6">
+          <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 p-6">
             <div className="flex justify-between items-center mb-6">
               <div>
                 <h3 className="text-base font-black text-slate-900">Target Career Development Trajectory</h3>

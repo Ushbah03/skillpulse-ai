@@ -578,7 +578,7 @@ const SkillAssessment = () => {
       {/* AI Question Generation Loader Modal Overlay */}
       {generatingAsm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#17233E]/60 backdrop-blur-md p-6 animate-in fade-in duration-200">
-          <div className="bg-[#F5F9FD]/95 backdrop-blur-2xl rounded-[2.5rem] p-10 max-w-md w-full text-center shadow-2xl border border-white/80 relative overflow-hidden">
+          <div className="bg-[#D8EBF9]/95 backdrop-blur-2xl rounded-[2.5rem] p-10 max-w-md w-full text-center shadow-2xl border border-white/80 relative overflow-hidden">
             <div className="absolute top-0 right-0 w-32 h-32 bg-[#1988A3]/15 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none" />
             <div className="w-20 h-20 bg-[#1988A3]/10 text-[#1988A3] rounded-3xl flex items-center justify-center mx-auto mb-6 border border-[#1988A3]/20 shadow-lg shadow-[#1988A3]/15">
               <Sparkles className="w-10 h-10 text-[#1988A3] animate-pulse" />
@@ -605,7 +605,7 @@ const SkillAssessment = () => {
       {/* Real Interactive Assessment Modal */}
       {activeTest && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#17233E]/70 backdrop-blur-md p-6 overflow-y-auto">
-          <div className="bg-[#F5F9FD]/95 backdrop-blur-2xl rounded-[2.5rem] shadow-2xl w-full max-w-3xl overflow-hidden border border-white/80">
+          <div className="bg-[#D8EBF9]/95 backdrop-blur-2xl rounded-[2.5rem] shadow-2xl w-full max-w-3xl overflow-hidden border border-white/80">
             
             {/* Modal Header */}
             <div className="bg-gradient-to-r from-[#17233E] via-[#1B3154] to-[#121E33] p-8 text-white flex justify-between items-center relative">

@@ -303,7 +303,7 @@ const TeamLeaderDashboard = () => {
         <div className="space-y-8">
           
           {/* Team Skill Strength Overview */}
-          <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/85 shadow-xl shadow-[#1B3154]/6">
+          <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/85 shadow-xl shadow-[#1B3154]/6">
             <div className="flex justify-between items-center mb-8">
               <h3 className="text-xl md:text-2xl font-extrabold text-[#17233E] tracking-tight">Team Skill Strength Overview</h3>
               <button 
@@ -330,7 +330,7 @@ const TeamLeaderDashboard = () => {
           {/* Row 2: Members & Progress blocks - 50/50 split layout */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Top Performing Members */}
-            <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/85 shadow-xl shadow-[#1B3154]/6">
+            <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/85 shadow-xl shadow-[#1B3154]/6">
               <div className="flex justify-between items-center mb-6">
                 <h3 className="text-lg md:text-xl font-extrabold text-[#17233E] tracking-tight">Top Performing Members</h3>
                 <button 
@@ -352,7 +352,7 @@ const TeamLeaderDashboard = () => {
             </div>
 
             {/* Team Training Progress */}
-            <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/85 shadow-xl shadow-[#1B3154]/6">
+            <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/85 shadow-xl shadow-[#1B3154]/6">
               <div className="flex justify-between items-center mb-6">
                 <h3 className="text-lg md:text-xl font-extrabold text-[#17233E] tracking-tight">Team Training Progress</h3>
                 <button 
@@ -447,7 +447,7 @@ const StatCard = ({ title, value, sub, icon, color, trend, isRisk=false }) => {
   };
   
   return (
-    <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl p-6 rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 relative overflow-hidden group hover:border-[#1988A3]/40 transition-all duration-300">
+    <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl p-6 rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 relative overflow-hidden group hover:border-[#1988A3]/40 transition-all duration-300">
       <div className="flex justify-between items-start mb-4">
         <div>
           <p className="text-[#8A9CB7] text-xs font-bold mb-1 uppercase tracking-wider">{title}</p>
@@ -502,7 +502,7 @@ const ProgressBar = ({ label, percent, color }) => (
       <span className="text-[#17233E] font-semibold">{label}</span>
       <span className="text-[#1988A3] font-extrabold">{percent}</span>
     </div>
-    <div className="h-2.5 w-full bg-[#DDEBF8] rounded-full overflow-hidden p-0.5 border border-white/80">
+    <div className="h-2.5 w-full bg-[#BEDDF5] rounded-full overflow-hidden p-0.5 border border-white/80">
       <div className="h-full bg-gradient-to-r from-[#1988A3] to-[#11C6DE] rounded-full transition-all duration-500 shadow-sm" style={{ width: percent }} />
     </div>
   </div>

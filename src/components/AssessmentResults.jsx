@@ -440,7 +440,7 @@ const AssessmentResults = () => {
       {/* Detailed Result Inspection Modal */}
       {selectedResult && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#17233E]/60 backdrop-blur-md p-6 overflow-y-auto">
-          <div className="bg-[#F5F9FD]/95 backdrop-blur-2xl rounded-[2.5rem] shadow-2xl w-full max-w-2xl overflow-hidden border border-white/80">
+          <div className="bg-[#D8EBF9]/95 backdrop-blur-2xl rounded-[2.5rem] shadow-2xl w-full max-w-2xl overflow-hidden border border-white/80">
             
             {/* Modal Header */}
             <div className="bg-gradient-to-r from-[#17233E] via-[#1B3154] to-[#121E33] p-8 text-white flex justify-between items-center relative">

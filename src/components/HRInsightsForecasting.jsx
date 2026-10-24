@@ -303,7 +303,7 @@ const HRInsightsForecasting = () => {
         ) : (
         <>
         {/* HEADER BAR */}
-        <header className="flex flex-wrap justify-between items-center bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl p-6 rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 gap-4 sticky top-4 z-20">
+        <header className="flex flex-wrap justify-between items-center bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl p-6 rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 gap-4 sticky top-4 z-20">
           <div>
             <h1 className="text-xl font-black text-slate-900 tracking-tight flex items-center gap-2.5">
               HR Insights & Forecasting
@@ -359,7 +359,7 @@ const HRInsightsForecasting = () => {
         {/* --- SECTION 1: TOP COMPACT FORECAST METRIC CARDS --- */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {forecastMetrics.map((card) => (
-            <div key={card.id} className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 rounded-2xl p-5 flex flex-col justify-between hover:border-[#1988A3]/40 transition-all duration-300">
+            <div key={card.id} className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 rounded-2xl p-5 flex flex-col justify-between hover:border-[#1988A3]/40 transition-all duration-300">
               <div>
                 <div className="flex justify-between items-center">
                   <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">{card.title}</span>
@@ -398,7 +398,7 @@ const HRInsightsForecasting = () => {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
           
           {/* FUTURE SKILL GAP FORECAST CHART (7 COLS) */}
-          <div className="lg:col-span-7 bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 rounded-3xl p-6 space-y-4 flex flex-col justify-between">
+          <div className="lg:col-span-7 bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 rounded-3xl p-6 space-y-4 flex flex-col justify-between">
             <div className="flex flex-wrap justify-between items-center gap-2">
               <div>
                 <h3 className="text-base font-bold text-slate-900 tracking-tight flex items-center gap-2">
@@ -607,7 +607,7 @@ const HRInsightsForecasting = () => {
           </div>
 
           {/* HIGH ATTRITION RISK PANEL (5 COLS) */}
-          <div className="lg:col-span-5 bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 rounded-3xl shadow-sm flex flex-col justify-between overflow-hidden p-6">
+          <div className="lg:col-span-5 bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 rounded-3xl shadow-sm flex flex-col justify-between overflow-hidden p-6">
             <div>
               <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
                 <h3 className="text-base font-bold text-slate-900 tracking-tight flex items-center gap-2">
@@ -711,7 +711,7 @@ const HRInsightsForecasting = () => {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-gradient-to-br from-[#F5F9FD] to-[#DDEBF8] backdrop-blur-2xl rounded-3xl p-6 max-w-md w-full shadow-2xl relative border border-white/90"
+              className="bg-gradient-to-br from-[#D8EBF9] to-[#BEDDF5] backdrop-blur-2xl rounded-3xl p-6 max-w-md w-full shadow-2xl relative border border-white/90"
             >
               <button 
                 onClick={() => setActiveModalAction(null)}

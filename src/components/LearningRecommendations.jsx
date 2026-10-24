@@ -522,7 +522,7 @@ const LearningRecommendations = () => {
       {/* Plan Upgrade Modal for STARTER Tier */}
       {showUpgradeModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#17233E]/70 backdrop-blur-md p-6">
-          <div className="bg-[#F5F9FD]/95 backdrop-blur-2xl rounded-[2.5rem] p-8 max-w-lg w-full text-center shadow-2xl border border-white/80 relative overflow-hidden">
+          <div className="bg-[#D8EBF9]/95 backdrop-blur-2xl rounded-[2.5rem] p-8 max-w-lg w-full text-center shadow-2xl border border-white/80 relative overflow-hidden">
             <div className="relative w-16 h-16 mx-auto mb-5 flex items-center justify-center bg-amber-500/10 text-amber-600 rounded-2xl border border-amber-500/20">
               <Lock className="w-8 h-8 text-amber-600" />
             </div>

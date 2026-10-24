@@ -279,7 +279,7 @@ export default function TeamReadinessScore() {
         <div className="grid grid-cols-12 gap-8">
           
           {/* Vector Map Chart */}
-          <div className="col-span-5 bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-col justify-between">
+          <div className="col-span-5 bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-col justify-between">
             <div>
               <h3 className="text-xl font-bold text-slate-900 tracking-tight">Capability Vector Mapping</h3>
               <p className="text-xs text-slate-400 font-semibold mt-1">Required vs Current core competency vectors</p>
@@ -298,7 +298,7 @@ export default function TeamReadinessScore() {
           </div>
 
           {/* Timeline Line Chart */}
-          <div className="col-span-7 bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-col justify-between">
+          <div className="col-span-7 bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-col justify-between">
             <div className="flex justify-between items-start">
               <div>
                 <h3 className="text-xl font-bold text-slate-900 tracking-tight">Readiness Index Velocity</h3>

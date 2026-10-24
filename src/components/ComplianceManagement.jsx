@@ -368,7 +368,7 @@ const ComplianceManagement = () => {
         <>
 
         {/* ── HEADER ── */}
-        <header className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl p-6 rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-wrap justify-between items-center gap-4 mb-4">
+        <header className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl p-6 rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-wrap justify-between items-center gap-4 mb-4">
           <div>
             <h1 className="text-2xl font-black text-[#0b1221] tracking-tight flex items-center gap-3">
               Compliance Management
@@ -403,7 +403,7 @@ const ComplianceManagement = () => {
         {/* ── STAT CARDS ── */}
         <div className="grid grid-cols-4 gap-6">
           {/* Overall Compliance Rate */}
-          <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 p-6 flex justify-between items-start hover:border-[#1988A3]/40 transition-all duration-300">
+          <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 p-6 flex justify-between items-start hover:border-[#1988A3]/40 transition-all duration-300">
             <div>
               <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Overall Compliance Rate</p>
               <p className="text-3xl font-black text-slate-900">{totalRecords > 0 ? `${overallComplianceRate}%` : '0%'}</p>
@@ -417,7 +417,7 @@ const ComplianceManagement = () => {
           </div>
 
           {/* Expiring */}
-          <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 p-6 flex justify-between items-start hover:border-[#1988A3]/40 transition-all duration-300">
+          <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 p-6 flex justify-between items-start hover:border-[#1988A3]/40 transition-all duration-300">
             <div>
               <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Expiring (30 days)</p>
               <p className="text-3xl font-black text-slate-900">{expiringCount}</p>
@@ -429,7 +429,7 @@ const ComplianceManagement = () => {
           </div>
 
           {/* Non-Compliant */}
-          <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 p-6 flex justify-between items-start hover:border-[#1988A3]/40 transition-all duration-300">
+          <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 p-6 flex justify-between items-start hover:border-[#1988A3]/40 transition-all duration-300">
             <div>
               <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Non-Compliant</p>
               <p className="text-3xl font-black text-red-500">{nonCompliantCount}</p>
@@ -441,7 +441,7 @@ const ComplianceManagement = () => {
           </div>
 
           {/* Compliance Trend */}
-          <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 p-6 flex justify-between items-start hover:border-[#1988A3]/40 transition-all duration-300">
+          <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 p-6 flex justify-between items-start hover:border-[#1988A3]/40 transition-all duration-300">
             <div>
               <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Compliance Trend</p>
               <p className="text-3xl font-black text-slate-900">{totalRecords > 0 ? `${overallComplianceRate}%` : '0%'}</p>
@@ -458,7 +458,7 @@ const ComplianceManagement = () => {
         {/* ── STATUS DISTRIBUTION + TREND CHART ── */}
         <div className="grid grid-cols-2 gap-8">
           {/* Compliance Status Distribution */}
-          <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 p-8 space-y-6">
+          <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 p-8 space-y-6">
             <h3 className="text-xl font-bold text-slate-900">Compliance Status Distribution</h3>
             <div className="flex items-center gap-8">
               <StatusDonut 
@@ -494,7 +494,7 @@ const ComplianceManagement = () => {
           </div>
 
           {/* Compliance Trend Chart */}
-          <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 p-8 space-y-6">
+          <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 p-8 space-y-6">
             <div className="flex justify-between items-center">
               <h3 className="text-xl font-bold text-slate-900">Compliance Trend (12 Months)</h3>
               <span className="text-[10px] font-black px-3 py-1 rounded-lg bg-slate-100 text-slate-500 uppercase tracking-wider">Overall Rate</span>
@@ -504,7 +504,7 @@ const ComplianceManagement = () => {
         </div>
 
         {/* ── CERTIFICATION EXPIRY TIMELINE ── */}
-        <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 p-8 space-y-6">
+        <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 p-8 space-y-6">
           <div className="flex justify-between items-center">
             <h3 className="text-xl font-bold text-slate-900">Certification Expiry Timeline</h3>
             <div className="flex items-center gap-6 text-[10px] font-black text-slate-400 uppercase tracking-widest">
@@ -542,7 +542,7 @@ const ComplianceManagement = () => {
         </div>
 
         {/* ── EMPLOYEE CERTIFICATION COMPLIANCE TABLE ── */}
-        <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 overflow-hidden">
+        <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 overflow-hidden">
           <div className="p-8 border-b border-slate-100 flex justify-between items-center">
             <h3 className="text-xl font-bold text-slate-900">Employee Certification Compliance</h3>
             <div className="flex items-center gap-3 relative">
@@ -710,7 +710,7 @@ const ComplianceManagement = () => {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-gradient-to-br from-[#F5F9FD] to-[#DDEBF8] backdrop-blur-2xl rounded-3xl p-8 max-w-lg w-full shadow-2xl relative border border-white/90"
+              className="bg-gradient-to-br from-[#D8EBF9] to-[#BEDDF5] backdrop-blur-2xl rounded-3xl p-8 max-w-lg w-full shadow-2xl relative border border-white/90"
             >
               <button 
                 onClick={() => setIsRiskModalOpen(false)}

@@ -132,7 +132,7 @@ const ActionModal = ({ isOpen, title, description, confirmText, onConfirm, onClo
   if (!isOpen) return null;
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-gradient-to-br from-[#F5F9FD] to-[#DDEBF8] backdrop-blur-2xl rounded-3xl border border-white/90 shadow-2xl max-w-md w-full p-6 space-y-4">
+      <div className="bg-gradient-to-br from-[#D8EBF9] to-[#BEDDF5] backdrop-blur-2xl rounded-3xl border border-white/90 shadow-2xl max-w-md w-full p-6 space-y-4">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3">
             <div className="p-3 bg-indigo-50 text-indigo-600 rounded-2xl">
@@ -168,7 +168,7 @@ const ProgramDetailsModal = ({ isOpen, program, onClose, onEnroll }) => {
   if (!isOpen || !program) return null;
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-gradient-to-br from-[#F5F9FD] to-[#DDEBF8] backdrop-blur-2xl rounded-3xl border border-white/90 shadow-2xl max-w-lg w-full p-6 space-y-4">
+      <div className="bg-gradient-to-br from-[#D8EBF9] to-[#BEDDF5] backdrop-blur-2xl rounded-3xl border border-white/90 shadow-2xl max-w-lg w-full p-6 space-y-4">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3">
             <div className="p-3 bg-indigo-50 text-indigo-600 rounded-2xl">
@@ -235,7 +235,7 @@ const EnrollmentsListModal = ({ isOpen, enrollments = [], onClose }) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-gradient-to-br from-[#F5F9FD] to-[#DDEBF8] backdrop-blur-2xl rounded-3xl border border-white/90 shadow-2xl max-w-2xl w-full p-6 space-y-4 max-h-[85vh] flex flex-col">
+      <div className="bg-gradient-to-br from-[#D8EBF9] to-[#BEDDF5] backdrop-blur-2xl rounded-3xl border border-white/90 shadow-2xl max-w-2xl w-full p-6 space-y-4 max-h-[85vh] flex flex-col">
         <div className="flex items-start justify-between border-b border-slate-100 pb-4">
           <div className="flex items-center gap-3">
             <div className="p-2.5 bg-indigo-50 text-indigo-600 rounded-xl">
@@ -590,7 +590,7 @@ const TrainingProgramManagement = () => {
 
       <div className="flex-1 ml-0 lg:ml-64 pt-20 lg:pt-8 p-4 md:p-8 w-full relative z-10 space-y-8">
         {/* HEADER */}
-        <header className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl p-6 rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-wrap items-center justify-between gap-4 sticky top-4 z-20">
+        <header className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl p-6 rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-wrap items-center justify-between gap-4 sticky top-4 z-20">
           <div className="flex items-center gap-2 text-base text-slate-500 font-medium">
             <span>Planning</span>
             <span className="text-slate-300">/</span>
@@ -677,7 +677,7 @@ const TrainingProgramManagement = () => {
           </div>
 
           {paginatedPrograms.length === 0 ? (
-            <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 rounded-3xl p-12 text-center">
+            <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 rounded-3xl p-12 text-center">
               <BookOpen size={36} className="text-slate-300 mx-auto mb-2" />
               <p className="text-sm font-bold text-slate-700">No training programs match your filter</p>
               <p className="text-xs text-slate-400 mt-1">Try searching for a different keyword or category.</p>
@@ -687,7 +687,7 @@ const TrainingProgramManagement = () => {
               {paginatedPrograms.map((prog) => (
                 <div
                   key={prog.id}
-                  className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 rounded-2xl hover:border-[#1988A3]/50 transition-all duration-300 overflow-hidden flex flex-col justify-between group"
+                  className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 rounded-2xl hover:border-[#1988A3]/50 transition-all duration-300 overflow-hidden flex flex-col justify-between group"
                 >
                   {/* Minimized Thumbnail Header (h-28) */}
                   <div className="relative h-28 bg-gradient-to-br from-slate-100 to-slate-200 overflow-hidden">
@@ -814,7 +814,7 @@ const TrainingProgramManagement = () => {
 
         {/* MID ANALYTICS SECTION */}
         <div className="px-8 mt-8 grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 rounded-3xl p-6 lg:col-span-2 flex flex-col justify-between">
+          <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 rounded-3xl p-6 lg:col-span-2 flex flex-col justify-between">
             <div className="flex justify-between items-center">
               <div>
                 <h3 className="text-xl font-black text-slate-900">
@@ -831,7 +831,7 @@ const TrainingProgramManagement = () => {
             <CompletionTrendsChart monthlyCompletions={trainingData?.monthlyCompletions} />
           </div>
 
-          <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 rounded-3xl p-6 flex flex-col justify-between">
+          <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 rounded-3xl p-6 flex flex-col justify-between">
             <div>
               <h3 className="text-xl font-black text-slate-900">
                 Program Popularity
@@ -851,7 +851,7 @@ const TrainingProgramManagement = () => {
         {/* BOTTOM SECTION */}
         <div className="px-8 mt-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Funnel */}
-          <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 rounded-3xl p-6 flex flex-col justify-between">
+          <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 rounded-3xl p-6 flex flex-col justify-between">
             <div>
               <h3 className="text-xl font-black text-slate-900 mb-4">
                 Learning Funnel
@@ -884,7 +884,7 @@ const TrainingProgramManagement = () => {
           </div>
 
           {/* Top Performers */}
-          <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 rounded-3xl p-6 flex flex-col justify-between">
+          <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 rounded-3xl p-6 flex flex-col justify-between">
             <div>
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-xl font-black text-slate-900">Top Performers</h3>
@@ -933,7 +933,7 @@ const TrainingProgramManagement = () => {
           </div>
 
           {/* Recent Enrollments (Replaced fake mock sessions) */}
-          <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 rounded-3xl p-6 flex flex-col justify-between">
+          <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 rounded-3xl p-6 flex flex-col justify-between">
             <div>
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-xl font-black text-slate-900">

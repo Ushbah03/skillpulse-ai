@@ -126,7 +126,7 @@ const HRDashboard = () => {
         </AnimatePresence>
 
         {/* Global Header */}
-        <header className="flex flex-wrap justify-between items-center bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl p-6 rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 gap-4">
+        <header className="flex flex-wrap justify-between items-center bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl p-6 rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 gap-4">
           <div>
             <h1 className="text-2xl md:text-3xl font-extrabold text-[#17233E] tracking-tight flex items-center gap-2.5">
               HR <span className="bg-gradient-to-r from-[#1988A3] to-[#11C6DE] bg-clip-text text-transparent">Dashboard</span>
@@ -187,7 +187,7 @@ const HRDashboard = () => {
                 subtext={analyticsData?.criticalGapsCount > 0 ? `${analyticsData.criticalGapsCount} Critical Skill Gaps` : "No Critical Gaps"}
                 subtextStyle={analyticsData?.criticalGapsCount > 0 ? "text-amber-700 font-bold" : "text-emerald-600 font-bold"}
               />
-              <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl p-6 rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-col justify-between hover:border-[#1988A3]/40 transition-all duration-300">
+              <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl p-6 rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-col justify-between hover:border-[#1988A3]/40 transition-all duration-300">
                 <div className="flex justify-between items-start">
                   <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">Compliance Rate</span>
                   <div className="w-8 h-8 bg-indigo-50 text-indigo-600 rounded-lg flex items-center justify-center"><GraduationCap size={16} /></div>
@@ -248,7 +248,7 @@ const HRDashboard = () => {
             </AnimatePresence>
 
             {/* 5. Chart Block: Workforce Skill Distribution */}
-            <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/85 shadow-xl shadow-[#1B3154]/6 space-y-4">
+            <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/85 shadow-xl shadow-[#1B3154]/6 space-y-4">
               <div className="flex justify-between items-center">
                 <div>
                   <h3 className="text-base font-bold text-slate-900 tracking-tight flex items-center gap-2">
@@ -356,7 +356,7 @@ const HRDashboard = () => {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-gradient-to-br from-[#F5F9FD] to-[#DDEBF8] backdrop-blur-2xl rounded-3xl p-6 max-w-lg w-full shadow-2xl relative border border-white/90"
+              className="bg-gradient-to-br from-[#D8EBF9] to-[#BEDDF5] backdrop-blur-2xl rounded-3xl p-6 max-w-lg w-full shadow-2xl relative border border-white/90"
             >
               <button 
                 onClick={() => setIsAIModalOpen(false)}
@@ -436,7 +436,7 @@ const HRDashboard = () => {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-gradient-to-br from-[#F5F9FD] to-[#DDEBF8] backdrop-blur-2xl rounded-3xl p-6 max-w-lg w-full shadow-2xl relative border border-white/90 max-h-[85vh] flex flex-col"
+              className="bg-gradient-to-br from-[#D8EBF9] to-[#BEDDF5] backdrop-blur-2xl rounded-3xl p-6 max-w-lg w-full shadow-2xl relative border border-white/90 max-h-[85vh] flex flex-col"
             >
               <button 
                 onClick={() => setSelectedDepartment(null)}
@@ -557,7 +557,7 @@ const HRDashboard = () => {
 
 /* Sub-components for cleaner rendering */
 const MetricCard = ({ title, value, icon, iconColor = "", iconBg = "", subtext, subtextColor = "", subtextStyle = "" }) => (
-  <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl p-6 rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-col justify-between hover:border-[#1988A3]/40 transition-all duration-300">
+  <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl p-6 rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-col justify-between hover:border-[#1988A3]/40 transition-all duration-300">
     <div className="flex justify-between items-start">
       <span className="text-xs font-bold uppercase tracking-wider text-[#8A9CB7]">{title}</span>
       <div className={`w-8 h-8 ${iconBg} ${iconColor} rounded-lg flex items-center justify-center`}>{icon}</div>
@@ -618,7 +618,7 @@ const DepartmentBenchmarkWidget = ({ data = [], benchmark = 90, onSelectDepartme
   ];
 
   return (
-    <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl p-6 md:p-8 rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-col justify-between hover:shadow-md transition-shadow">
+    <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl p-6 md:p-8 rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-col justify-between hover:shadow-md transition-shadow">
       <div className="flex justify-between items-start mb-3">
         <div>
           <h4 className="text-xs font-black text-slate-900 flex items-center gap-2">
@@ -723,7 +723,7 @@ const CompetencyReadinessWidget = ({ pillars = [], categories = [], benchmark = 
       ]);
 
   return (
-    <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl p-6 md:p-8 rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-col justify-between hover:shadow-md transition-shadow">
+    <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl p-6 md:p-8 rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-col justify-between hover:shadow-md transition-shadow">
       <div className="flex justify-between items-start mb-2">
         <div>
           <h4 className="text-xs font-black text-slate-900 flex items-center gap-2">
@@ -810,7 +810,7 @@ const CompetencyReadinessWidget = ({ pillars = [], categories = [], benchmark = 
 const QuickActionButton = ({ label, colorBg, onClick }) => (
   <button 
     onClick={onClick}
-    className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl hover:bg-[#E4EEF8]/80 border border-white/85 p-5 rounded-2xl flex items-center justify-between shadow-sm hover:shadow-md transition-all text-left group active:scale-95 cursor-pointer outline-none"
+    className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl hover:bg-[#E4EEF8]/80 border border-white/85 p-5 rounded-2xl flex items-center justify-between shadow-sm hover:shadow-md transition-all text-left group active:scale-95 cursor-pointer outline-none"
   >
     <div className="flex items-center gap-3">
       <div className={`w-9 h-9 ${colorBg} rounded-lg flex items-center justify-center font-bold text-sm`}>

@@ -337,7 +337,7 @@ const DepartmentComparison = () => {
       <div className="flex-1 ml-0 lg:ml-64 pt-20 lg:pt-8 p-4 md:p-8 w-full relative z-10 space-y-8">
         
         {/* HEADER NAVIGATION BAR */}
-        <header className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl p-6 rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-wrap items-center justify-between gap-4 sticky top-4 z-20">
+        <header className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl p-6 rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-wrap items-center justify-between gap-4 sticky top-4 z-20">
           <div>
             <h1 className="text-lg font-black text-slate-900 tracking-tight">Department Comparison</h1>
             <p className="text-xs text-slate-500 font-medium mt-0.5">Cross-departmental performance, skill maturity & readiness matrix</p>
@@ -447,7 +447,7 @@ const DepartmentComparison = () => {
                         style={{ width: cardWidthCalc }}
                         whileHover={{ y: -4, scale: 1.01 }}
                         transition={{ duration: 0.2 }}
-                        className="relative overflow-hidden shrink-0 bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl border border-white/85 hover:border-[#1988A3]/50 rounded-3xl p-5 shadow-xl shadow-[#1B3154]/6 transition-all duration-300 flex flex-col justify-between group cursor-default"
+                        className="relative overflow-hidden shrink-0 bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 hover:border-[#1988A3]/50 rounded-3xl p-5 shadow-xl shadow-[#1B3154]/6 transition-all duration-300 flex flex-col justify-between group cursor-default"
                       >
                         {/* Top Accent Gradient Bar */}
                         <div className={`absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r ${theme.gradient}`} />
@@ -524,7 +524,7 @@ const DepartmentComparison = () => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
               
               {/* TREND LINES CARD */}
-              <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 rounded-3xl p-6 flex flex-col justify-between">
+              <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 rounded-3xl p-6 flex flex-col justify-between">
                 <div>
                   <div className="flex justify-between items-center mb-3">
                     <div>
@@ -604,7 +604,7 @@ const DepartmentComparison = () => {
               </div>
 
               {/* SKILL MATURITY HEATMAP */}
-              <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 rounded-3xl p-6 flex flex-col justify-between">
+              <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 rounded-3xl p-6 flex flex-col justify-between">
                 <div>
                   <div className="flex justify-between items-center mb-3">
                     <div>
@@ -657,7 +657,7 @@ const DepartmentComparison = () => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
               
               {/* TRAINING COMPLETION RATE CARD */}
-              <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 rounded-3xl p-6">
+              <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 rounded-3xl p-6">
                 <div className="flex items-center justify-between mb-3">
                   <div>
                     <h3 className="text-xs font-black text-slate-900 uppercase tracking-wider">Training Completion Rate</h3>
@@ -719,7 +719,7 @@ const DepartmentComparison = () => {
             </div>
 
             {/* COMPACT DEPARTMENT PERFORMANCE RANKING TABLE */}
-            <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 rounded-3xl overflow-hidden p-6">
+            <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 rounded-3xl overflow-hidden p-6">
               <div className="px-5 py-3.5 border-b border-slate-100 flex justify-between items-center">
                 <div>
                   <h3 className="text-xs font-black text-slate-900 uppercase tracking-wider">Department Performance Ranking</h3>

@@ -433,7 +433,7 @@ const EmployeePerformance = () => {
         )}
 
         {/* HEADER BAR */}
-        <header className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl p-6 rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-wrap items-center justify-between gap-4 sticky top-4 z-20">
+        <header className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl p-6 rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-wrap items-center justify-between gap-4 sticky top-4 z-20">
           <div>
             <h1 className="text-xl font-black text-slate-900 tracking-tight">Employee Performance Reports</h1>
             <p className="text-xs text-slate-400 font-medium mt-0.5">Monitor workforce performance, identify risks, and improve productivity</p>
@@ -463,7 +463,7 @@ const EmployeePerformance = () => {
           {/* TOP METRIC CARDS */}
           <div className="grid grid-cols-4 gap-5">
             {statMetrics.map((card, i) => (
-              <div key={i} className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 rounded-2xl p-5 flex flex-col justify-between relative overflow-hidden hover:border-[#1988A3]/40 transition-all duration-300">
+              <div key={i} className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 rounded-2xl p-5 flex flex-col justify-between relative overflow-hidden hover:border-[#1988A3]/40 transition-all duration-300">
                 <div className="flex justify-between items-start">
                   <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">{card.label}</span>
                   {card.type === 'spark' && <TrendingUp size={16} className="text-indigo-500" />}
@@ -502,7 +502,7 @@ const EmployeePerformance = () => {
           </div>
 
           {/* HISTOGRAM CARD */}
-          <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 p-6">
+          <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 p-6">
             <div className="flex justify-between items-center">
               <div>
                 <h3 className="text-base font-black text-slate-900">Performance Distribution</h3>
@@ -513,7 +513,7 @@ const EmployeePerformance = () => {
           </div>
 
           {/* PERFORMANCE TABLE */}
-          <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 overflow-hidden">
+          <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 overflow-hidden">
             <div className="px-6 py-5 flex justify-between items-center border-b border-slate-100">
               <h3 className="text-base font-black text-slate-900">Performance Details</h3>
               <div className="flex items-center gap-3">

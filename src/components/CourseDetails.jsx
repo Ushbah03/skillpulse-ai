@@ -301,7 +301,7 @@ const CourseDetails = () => {
           </div>
 
           {showSearchDropdown && (
-            <div className="absolute left-0 right-0 top-full mt-2 bg-[#F5F9FD]/95 backdrop-blur-2xl rounded-2xl border border-[#8A9CB7]/30 shadow-2xl z-30 max-h-72 overflow-y-auto p-2">
+            <div className="absolute left-0 right-0 top-full mt-2 bg-[#D8EBF9]/95 backdrop-blur-2xl rounded-2xl border border-[#8A9CB7]/30 shadow-2xl z-30 max-h-72 overflow-y-auto p-2">
               <div className="px-3 py-1.5 text-[10px] font-black uppercase tracking-wider text-[#5A6D89] border-b border-[#8A9CB7]/15 mb-1 flex justify-between">
                 <span>Matching Courses ({filteredSearchCourses.length})</span>
                 <span>Click to Select</span>

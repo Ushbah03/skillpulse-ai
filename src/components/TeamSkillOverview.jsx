@@ -243,7 +243,7 @@ const TeamSkillOverview = () => {
         )}
 
         {/* Filters Panel */}
-        <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl rounded-3xl p-4 md:p-5 border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-wrap items-center justify-between gap-4">
+        <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-3xl p-4 md:p-5 border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-2 text-slate-500 text-sm font-bold px-2">
               <SlidersHorizontal size={16} />
@@ -269,7 +269,7 @@ const TeamSkillOverview = () => {
         </div>
 
         {/* Skill Proficiency Distribution Matrix */}
-        <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/85 shadow-xl shadow-[#1B3154]/6">
+        <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/85 shadow-xl shadow-[#1B3154]/6">
           <div className="flex justify-between items-center mb-6">
             <div>
               <h3 className="text-xl font-bold text-slate-900 tracking-tight">Live Squad Skill Matrix</h3>
@@ -351,7 +351,7 @@ const OverviewStatCard = ({ title, value, sub, color, isLink, onLinkClick }) => 
   };
 
   return (
-    <div className={`bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl rounded-3xl p-6 border border-white/85 border-l-4 ${colorMap[color]} shadow-xl shadow-[#1B3154]/5 hover:border-[#1988A3]/40 transition-all duration-300`}>
+    <div className={`bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-3xl p-6 border border-white/85 border-l-4 ${colorMap[color]} shadow-xl shadow-[#1B3154]/5 hover:border-[#1988A3]/40 transition-all duration-300`}>
       <p className="text-[#8A9CB7] text-xs font-bold uppercase tracking-wider mb-2">{title}</p>
       <h3 className="text-2xl md:text-3xl font-extrabold text-[#17233E] mb-2">{value}</h3>
       {sub && (
