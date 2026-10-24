@@ -12,7 +12,8 @@ import {
   LogOut,
   Lock,
   Menu,
-  X
+  X,
+  ShieldAlert
 } from 'lucide-react';
 
 import logo from '../assets/images/logo.png';
@@ -39,10 +40,12 @@ const CompanyAdminSidebar = () => {
   }, []);
 
   let userPlan = 'STARTER';
+  let companyName = 'Workspace';
   if (userState) {
     try {
       const u = JSON.parse(userState);
       userPlan = u?.tenant?.plan || u?.plan || 'STARTER';
+      companyName = u?.tenant?.name || u?.companyName || 'Enterprise Corp';
     } catch(e) {}
   }
 
@@ -59,12 +62,16 @@ const CompanyAdminSidebar = () => {
   return (
     <>
       {/* Mobile Top Navbar (Visible only on < lg screens) */}
-      <header className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-[#0F172A] border-b border-slate-800/80 px-4 flex items-center justify-between z-40 select-none">
+      <header className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-gradient-to-r from-[#17233E]/95 via-[#1B3154]/95 to-[#121E33]/95 backdrop-blur-2xl border-b border-white/10 px-4 flex items-center justify-between z-40 select-none">
         <div className="flex items-center gap-2.5 cursor-pointer" onClick={() => navigate('/company-admin')}>
-          <img src={logo} alt="SkillPulse Logo" className="w-8 h-8 object-contain" />
+          <div className="w-8 h-8 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center shadow-sm">
+            <img src={logo} alt="SkillPulse Logo" className="w-6 h-6 object-contain" />
+          </div>
           <div>
-            <h1 className="text-white text-sm font-bold leading-none">SkillPulse AI</h1>
-            <span className="text-[9px] font-mono text-indigo-400 font-semibold uppercase">Company Admin</span>
+            <h1 className="text-white text-sm font-extrabold leading-none tracking-tight">
+              SkillPulse <span className="text-[#11C6DE]">-AI</span>
+            </h1>
+            <span className="text-[9px] font-mono text-[#11C6DE] font-semibold uppercase tracking-wider">Company Admin</span>
           </div>
         </div>
 
@@ -72,7 +79,7 @@ const CompanyAdminSidebar = () => {
           {/* Quick Mobile Logout Button */}
           <button
             onClick={handleLogout}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-rose-500/10 text-rose-400 border border-rose-500/20 text-xs font-medium"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-rose-500/10 text-rose-300 border border-rose-500/20 text-xs font-semibold cursor-pointer transition-colors"
           >
             <LogOut className="w-3.5 h-3.5" />
             <span>Logout</span>
@@ -81,7 +88,7 @@ const CompanyAdminSidebar = () => {
           {/* Menu Drawer Toggle */}
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
-            className="p-2 rounded-lg bg-slate-800 text-slate-200 border border-slate-700"
+            className="p-2 rounded-xl bg-white/5 text-[#8A9CB7] hover:text-white border border-white/10 cursor-pointer transition-colors"
             aria-label="Toggle menu"
           >
             {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -102,111 +109,133 @@ const CompanyAdminSidebar = () => {
         )}
       </AnimatePresence>
 
-      <aside className={`h-screen bg-[#0F172A] text-slate-400 flex flex-col shadow-2xl fixed left-0 top-0 w-72 border-r border-slate-800/40 select-none z-50 transition-transform duration-300 ${
+      <aside className={`h-screen bg-gradient-to-b from-[#17233E] via-[#1B3154] to-[#121E33] text-[#8A9CB7] p-4 flex flex-col fixed left-0 top-0 w-64 border-r border-white/10 select-none z-50 shadow-2xl transition-transform duration-300 ${
         mobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
       }`}>
 
-      {/* Scrollbar styling */}
-      <style>{`
-        .custom-sidebar-nav::-webkit-scrollbar { width: 0px; display: none; }
-        .custom-sidebar-nav { -ms-overflow-style: none; scrollbar-width: none; }
-      `}</style>
+        {/* Scrollbar styling */}
+        <style>{`
+          .custom-sidebar-nav::-webkit-scrollbar { width: 0px; display: none; }
+          .custom-sidebar-nav { -ms-overflow-style: none; scrollbar-width: none; }
+        `}</style>
 
-      {/* Brand & Badge Header */}
-      <motion.div
-        whileTap={{ scale: 0.98 }}
-        className="p-6 mb-2 flex items-center gap-3 cursor-pointer group relative z-10"
-        onClick={() => navigate('/company-admin')}
-      >
-        <div className="w-10 h-10 rounded-xl flex items-center justify-center overflow-hidden bg-transparent">
-          <motion.img
-            src={logo}
-            alt="SkillPulse Logo"
-            whileHover={{ rotate: -10, scale: 1.08 }}
-            transition={{ type: "spring", stiffness: 400, damping: 14 }}
-            className="w-9 h-9 object-contain"
-          />
-        </div>
-
-        <div>
-          <h1 className="text-white text-lg font-bold tracking-tight group-hover:text-indigo-400 transition-colors duration-300 leading-tight">
-            SkillPulse AI
-          </h1>
-          <span className="text-[10px] font-black uppercase tracking-widest text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded border border-indigo-500/20">
-            Company Admin
-          </span>
-        </div>
-      </motion.div>
-
-      {/* Navigation Routes */}
-      <nav className="flex-1 px-4 py-2 space-y-1 overflow-y-auto custom-sidebar-nav pb-6 relative border-b border-slate-800/60">
-        {menuItems.map((item) => {
-          const isItemActive = item.path === '/company-admin'
-            ? location.pathname === '/company-admin'
-            : location.pathname.startsWith(item.path);
-
-          const IconComponent = item.icon;
-          const locked = isLocked(item.minPlan);
-
-          return (
-            <NavLink
-              key={item.name}
-              to={locked ? '/company-admin/settings' : item.path}
-              state={locked ? { planRestricted: true } : undefined}
-              className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-colors duration-200 group relative border-0 outline-none ${
-                isItemActive ? 'text-white font-semibold' : 'text-slate-400 hover:text-slate-200'
-              } ${locked ? 'opacity-60 cursor-not-allowed hover:bg-slate-800/50' : ''}`}
-              onClick={(e) => {
-                setMobileOpen(false);
-                if (locked) {
-                  e.preventDefault();
-                  navigate('/company-admin/settings', { state: { planRestricted: true } });
-                }
-              }}
-            >
-              {/* Active Item Sliding Indicator */}
-              {isItemActive && !locked && (
-                <motion.div
-                  layoutId="companyAdminActiveIndicator"
-                  transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                  className="absolute inset-0 bg-[#1E293B] rounded-xl z-0 shadow-sm border border-slate-700/50"
+        {/* Brand & Badge Header */}
+        <div className="mb-4 px-1 relative z-10 border-b border-white/10 pb-4">
+          <motion.div
+            whileTap={{ scale: 0.98 }}
+            className="flex items-center justify-between cursor-pointer group mb-2.5"
+            onClick={() => navigate('/company-admin')}
+          >
+            <div className="flex items-center gap-2.5">
+              <div className="w-9 h-9 rounded-xl bg-white/10 border border-white/20 backdrop-blur-md flex items-center justify-center shadow-md group-hover:border-[#1988A3]/60 transition-all">
+                <img
+                  src={logo}
+                  alt="SkillPulse Logo"
+                  className="w-7 h-7 object-contain"
                 />
-              )}
+              </div>
+              <div>
+                <h1 className="text-white text-base font-extrabold tracking-tight">
+                  SkillPulse <span className="text-[#11C6DE]">-AI</span>
+                </h1>
+                <span className="text-[10px] font-mono text-[#11C6DE] font-bold uppercase tracking-wider block">
+                  Company Admin
+                </span>
+              </div>
+            </div>
 
-              {/* Hover effect overlay */}
-              {!locked && <div className="absolute inset-0 bg-white/0 group-hover:bg-white/[0.02] rounded-xl transition-colors duration-200 pointer-events-none" />}
+            <button
+              onClick={(e) => { e.stopPropagation(); setMobileOpen(false); }}
+              className="lg:hidden p-1 text-[#8A9CB7] hover:text-white"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </motion.div>
 
-              <IconComponent className={`w-5 h-5 z-10 transition-all duration-200 group-hover:scale-105 shrink-0 ${
-                isItemActive && !locked ? 'text-blue-500 scale-105 opacity-100' : 'text-slate-500 group-hover:text-slate-300'
-              }`} />
-              
-              <span className="text-sm font-medium tracking-wide z-10 transition-transform duration-200 group-hover:translate-x-0.5 truncate flex-1">
-                {item.name}
-              </span>
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-xs text-[#8A9CB7]">
+            <Building2 className="w-3.5 h-3.5 text-[#11C6DE] shrink-0" />
+            <span className="truncate font-semibold text-white/90">{companyName}</span>
+            <span className="ml-auto w-2 h-2 rounded-full bg-[#11C6DE] animate-pulse shadow-[0_0_6px_#11C6DE]" title="Tenant Active" />
+          </div>
+        </div>
 
-              {locked && (
-                <Lock className="w-4 h-4 text-amber-500/70 z-10" />
-              )}
-            </NavLink>
-          );
-        })}
-      </nav>
+        {/* Navigation Routes */}
+        <nav className="flex-1 space-y-1.5 overflow-y-auto custom-sidebar-nav pb-4 relative border-b border-white/10">
+          {menuItems.map((item) => {
+            const isItemActive = item.path === '/company-admin'
+              ? location.pathname === '/company-admin'
+              : location.pathname.startsWith(item.path);
 
-      {/* Bottom Tray: Logout */}
-      <div className="p-4 bg-[#0F172A]">
-        <motion.button
-          onClick={handleLogout}
-          whileTap={{ scale: 0.98 }}
-          className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition-all duration-300 group border-0 outline-none relative cursor-pointer"
-        >
-          <LogOut className="w-5 h-5 text-slate-500 group-hover:text-red-400 transition-transform duration-300 group-hover:-translate-x-0.5 shrink-0" />
-          <span className="text-sm font-medium tracking-wide transition-transform duration-300 group-hover:translate-x-0.5">
-            Logout
-          </span>
-        </motion.button>
-      </div>
-    </aside>
-  </>
+            const IconComponent = item.icon;
+            const locked = isLocked(item.minPlan);
+
+            return (
+              <NavLink
+                key={item.name}
+                to={locked ? '/company-admin/settings' : item.path}
+                state={locked ? { planRestricted: true } : undefined}
+                className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition-all duration-200 group relative border-0 outline-none ${
+                  isItemActive ? 'text-white font-semibold shadow-inner' : 'text-[#8A9CB7] hover:text-white'
+                } ${locked ? 'opacity-55 cursor-not-allowed hover:bg-white/5' : ''}`}
+                onClick={(e) => {
+                  setMobileOpen(false);
+                  if (locked) {
+                    e.preventDefault();
+                    navigate('/company-admin/settings', { state: { planRestricted: true } });
+                  }
+                }}
+              >
+                {/* Active Item Sliding Indicator */}
+                {isItemActive && !locked && (
+                  <motion.div
+                    layoutId="companyAdminActiveIndicator"
+                    transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                    className="absolute inset-0 bg-white/10 border border-white/15 rounded-xl z-0 shadow-sm"
+                  />
+                )}
+
+                {/* Hover effect overlay */}
+                {!locked && <div className="absolute inset-0 bg-white/0 group-hover:bg-[#0d1832]/40 rounded-xl transition-colors duration-200 pointer-events-none" />}
+
+                <IconComponent className={`w-[17px] h-[17px] flex-shrink-0 z-10 transition-all duration-200 group-hover:scale-105 ${
+                  isItemActive && !locked ? 'text-[#11C6DE] scale-105 opacity-100' : 'text-[#8A9CB7] group-hover:text-slate-200'
+                }`} />
+                
+                <span className="text-xs font-semibold tracking-wide z-10 transition-transform duration-200 group-hover:translate-x-0.5 truncate flex-1">
+                  {item.name}
+                </span>
+
+                {locked && (
+                  <Lock className="w-3.5 h-3.5 text-amber-400/80 z-10" />
+                )}
+              </NavLink>
+            );
+          })}
+        </nav>
+
+        {/* Persistent Admin Profile & Logout Tray */}
+        <div className="pt-3 space-y-2 z-10">
+          <div className="flex items-center gap-3 px-3 py-2 rounded-xl bg-white/5 border border-white/10">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#1988A3] to-[#11C6DE] text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-sm">
+              CA
+            </div>
+            <div className="flex flex-col min-w-0 flex-1">
+              <span className="text-xs font-semibold text-white truncate">Admin Tower</span>
+              <span className="text-[10px] text-[#11C6DE] font-mono uppercase tracking-wider">{userPlan} Plan</span>
+            </div>
+          </div>
+
+          <motion.button
+            onClick={handleLogout}
+            whileTap={{ scale: 0.98 }}
+            className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-[#8A9CB7] hover:text-rose-300 hover:bg-rose-500/10 border border-transparent hover:border-rose-500/20 transition-all font-semibold text-xs tracking-wide cursor-pointer"
+          >
+            <LogOut className="w-4 h-4 shrink-0 transition-transform duration-300 group-hover:-translate-x-0.5" />
+            <span>Logout</span>
+          </motion.button>
+        </div>
+      </aside>
+    </>
   );
 };
 
