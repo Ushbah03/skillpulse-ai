@@ -16,8 +16,6 @@ import {
   ShieldAlert
 } from 'lucide-react';
 
-import logo from '../assets/images/logo.png';
-
 const menuItems = [
   { name: 'Overview', path: '/company-admin', icon: LayoutDashboard },
   { name: 'User & Role Governance', path: '/company-admin/users', icon: Users },
@@ -65,7 +63,9 @@ const CompanyAdminSidebar = () => {
       <header className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-gradient-to-r from-[#17233E]/95 via-[#1B3154]/95 to-[#121E33]/95 backdrop-blur-2xl border-b border-white/10 px-4 flex items-center justify-between z-40 select-none">
         <div className="flex items-center gap-2.5 cursor-pointer" onClick={() => navigate('/company-admin')}>
           <div className="w-8 h-8 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center shadow-sm">
-            <img src={logo} alt="SkillPulse Logo" className="w-6 h-6 object-contain" />
+            <svg className="w-4.5 h-4.5 text-[#11C6DE]" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+            </svg>
           </div>
           <div>
             <h1 className="text-white text-sm font-extrabold leading-none tracking-tight">
@@ -128,11 +128,9 @@ const CompanyAdminSidebar = () => {
           >
             <div className="flex items-center gap-2.5">
               <div className="w-9 h-9 rounded-xl bg-white/10 border border-white/20 backdrop-blur-md flex items-center justify-center shadow-md group-hover:border-[#1988A3]/60 transition-all">
-                <img
-                  src={logo}
-                  alt="SkillPulse Logo"
-                  className="w-7 h-7 object-contain"
-                />
+                <svg className="w-5 h-5 text-[#11C6DE]" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                </svg>
               </div>
               <div>
                 <h1 className="text-white text-base font-extrabold tracking-tight">

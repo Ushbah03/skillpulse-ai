@@ -18,7 +18,6 @@ import {
   X
 } from 'lucide-react';
 
-import logo from '../assets/images/logo.png';
 
 const menuItems = [
   { name: 'Dashboard', path: '/team-leader', icon: LayoutDashboard },
