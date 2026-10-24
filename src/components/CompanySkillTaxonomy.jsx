@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Layers, 
@@ -14,7 +14,9 @@ import {
   CheckCircle2, 
   Award, 
   BookOpen,
-  Loader2
+  Loader2,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 
 import CompanyAdminSidebar from './CompanyAdminSidebar';
@@ -44,6 +46,10 @@ const CompanySkillTaxonomy = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
+  
+  // Pagination State
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(8);
   
   // Modal States
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -114,11 +120,33 @@ const CompanySkillTaxonomy = () => {
   }, []);
 
   // Filter skills
-  const filteredSkills = skills.filter(skill => {
-    const matchesSearch = skill.name.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory === 'All' || skill.category === selectedCategory;
-    return matchesSearch && matchesCategory;
-  });
+  const filteredSkills = useMemo(() => {
+    return skills.filter(skill => {
+      const matchesSearch = skill.name.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesCategory = selectedCategory === 'All' || skill.category === selectedCategory;
+      return matchesSearch && matchesCategory;
+    });
+  }, [skills, searchTerm, selectedCategory]);
+
+  // Reset to first page on search or category filter change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, selectedCategory, itemsPerPage]);
+
+  const totalItems = filteredSkills.length;
+  const totalPages = Math.max(1, Math.ceil(totalItems / itemsPerPage));
+
+  // Ensure currentPage is within bounds
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+  }, [totalPages, currentPage]);
+
+  const paginatedSkills = useMemo(() => {
+    const start = (currentPage - 1) * itemsPerPage;
+    return filteredSkills.slice(start, start + itemsPerPage);
+  }, [filteredSkills, currentPage, itemsPerPage]);
 
   // Handle Delete Skill Click (Open Custom Dialog)
   const handleDeleteClick = (skill) => {
@@ -251,7 +279,7 @@ const CompanySkillTaxonomy = () => {
 
       <CompanyAdminSidebar />
 
-      <main className="flex-1 ml-0 lg:ml-64 pt-20 lg:pt-8 p-4 md:p-8 w-full relative z-10 space-y-8">
+      <main className="flex-1 min-w-0 ml-0 lg:ml-64 pt-20 lg:pt-8 p-4 md:p-8 relative z-10 space-y-8">
         
         {/* Page Header */}
         <header className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl p-6 md:p-8 rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -439,8 +467,8 @@ const CompanySkillTaxonomy = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/60">
-                {filteredSkills.length > 0 ? (
-                  filteredSkills.map((skill, idx) => (
+                {paginatedSkills.length > 0 ? (
+                  paginatedSkills.map((skill, idx) => (
                     <motion.tr 
                       key={skill.id} 
                       initial={{ opacity: 0, y: 6 }}
@@ -545,6 +573,83 @@ const CompanySkillTaxonomy = () => {
                 )}
               </tbody>
             </table>
+          </div>
+
+          {/* Pagination Controls */}
+          <div className="bg-[#17233E]/5 border-t border-white/60 px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-semibold text-[#17233E]">
+            <div className="flex items-center gap-3 flex-wrap">
+              <span className="text-[#8A9CB7]">
+                Showing <span className="font-extrabold text-[#17233E]">{totalItems > 0 ? (currentPage - 1) * itemsPerPage + 1 : 0}</span> to{' '}
+                <span className="font-extrabold text-[#17233E]">{Math.min(currentPage * itemsPerPage, totalItems)}</span> of{' '}
+                <span className="font-extrabold text-[#17233E]">{totalItems}</span> {totalItems === 1 ? 'skill' : 'skills'}
+                {totalItems !== skills.length && ` (filtered from ${skills.length} total)`}
+              </span>
+
+              <div className="flex items-center gap-1.5 ml-0 sm:ml-2">
+                <span className="text-[11px] text-[#8A9CB7] font-bold">Per page:</span>
+                <select
+                  value={itemsPerPage}
+                  onChange={(e) => {
+                    setItemsPerPage(Number(e.target.value));
+                    setCurrentPage(1);
+                  }}
+                  className="bg-white/80 border border-white/90 rounded-xl px-2.5 py-1 text-xs font-bold text-[#17233E] outline-none cursor-pointer shadow-xs focus:border-[#1988A3]"
+                >
+                  <option value={8}>8</option>
+                  <option value={15}>15</option>
+                  <option value={25}>25</option>
+                  <option value={50}>50</option>
+                </select>
+              </div>
+            </div>
+
+            {totalPages > 1 && (
+              <div className="flex items-center gap-1.5 flex-wrap">
+                <button
+                  onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                  disabled={currentPage === 1}
+                  className="px-3 py-1.5 text-xs font-bold rounded-xl border border-white/85 bg-white/80 text-[#17233E] hover:bg-white hover:text-[#1988A3] disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center gap-1 shadow-xs cursor-pointer active:scale-95"
+                  title="Previous Page"
+                >
+                  <ChevronLeft className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">Previous</span>
+                </button>
+
+                <div className="flex items-center gap-1">
+                  {Array.from({ length: totalPages }, (_, i) => i + 1)
+                    .filter(p => p === 1 || p === totalPages || Math.abs(p - currentPage) <= 1)
+                    .map((pageNum, idx, arr) => {
+                      const prevPageNum = arr[idx - 1];
+                      const showEllipsis = prevPageNum && pageNum - prevPageNum > 1;
+                      return (
+                        <React.Fragment key={pageNum}>
+                          {showEllipsis && <span className="text-[#8A9CB7] text-xs px-1 font-bold">...</span>}
+                          <button
+                            onClick={() => setCurrentPage(pageNum)}
+                            className={`w-7 h-7 text-xs font-black rounded-xl transition-all cursor-pointer shadow-xs ${
+                              currentPage === pageNum
+                                ? 'bg-gradient-to-r from-[#1988A3] to-[#11C6DE] text-white shadow-md shadow-[#1988A3]/25 scale-105'
+                                : 'border border-white/85 bg-white/70 text-[#17233E] hover:bg-white hover:text-[#1988A3]'
+                            }`}
+                          >
+                            {pageNum}
+                          </button>
+                        </React.Fragment>
+                      );
+                    })}
+                </div>
+
+                <button
+                  onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                  disabled={currentPage === totalPages}
+                  className="px-3 py-1.5 text-xs font-bold rounded-xl border border-white/85 bg-white/80 text-[#17233E] hover:bg-white hover:text-[#1988A3] disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center gap-1 shadow-xs cursor-pointer active:scale-95"
+                  title="Next Page"
+                >
+                  <span className="hidden sm:inline">Next</span>
+                  <ChevronRight className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            )}
           </div>
         </motion.div>
         )}
