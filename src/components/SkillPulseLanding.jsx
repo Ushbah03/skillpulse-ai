@@ -23,13 +23,14 @@ const SkillPulseLanding = () => {
 
   return (
     <div className="bg-[#E9EAF7] font-sans text-[#17233E] overflow-x-hidden selection:bg-[#1988A3] selection:text-white relative min-h-screen">
-      {/* Ambient Gradient Depth - Vibrant lights behind frosted glass */}
+      {/* Ambient Gradient Depth - Vibrant glowing mesh lights behind frosted glass */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-        <div className="absolute top-10 left-1/4 w-[600px] h-[600px] bg-[#1988A3]/18 blur-[160px] rounded-full" />
-        <div className="absolute top-1/3 right-10 w-[550px] h-[550px] bg-[#8A9CB7]/35 blur-[160px] rounded-full" />
-        <div className="absolute top-2/3 left-10 w-[650px] h-[650px] bg-[#1988A3]/15 blur-[170px] rounded-full" />
-        <div className="absolute bottom-10 right-1/4 w-[600px] h-[600px] bg-[#1B3154]/12 blur-[170px] rounded-full" />
-        <div className="absolute inset-0 bg-[radial-gradient(rgba(90,109,137,0.15)_1px,transparent_1px)] [background-size:32px_32px] opacity-30" />
+        <div className="absolute -top-20 left-1/4 w-[550px] h-[550px] bg-[#1988A3]/28 blur-[90px] rounded-full" />
+        <div className="absolute top-1/4 -right-20 w-[500px] h-[500px] bg-[#11C6DE]/22 blur-[100px] rounded-full" />
+        <div className="absolute top-1/2 -left-20 w-[600px] h-[600px] bg-[#1B3154]/18 blur-[100px] rounded-full" />
+        <div className="absolute top-3/4 right-1/4 w-[550px] h-[550px] bg-[#8A9CB7]/40 blur-[90px] rounded-full" />
+        <div className="absolute bottom-10 left-1/3 w-[500px] h-[500px] bg-[#1988A3]/22 blur-[90px] rounded-full" />
+        <div className="absolute inset-0 bg-[radial-gradient(rgba(27,49,84,0.12)_1px,transparent_1px)] [background-size:28px_28px] opacity-40" />
       </div>
 
       {/* 1. HERO SECTION WITH EXECUTIVE FROSTED CONTAINER */}
