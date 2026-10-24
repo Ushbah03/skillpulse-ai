@@ -1,7 +1,24 @@
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://skillpulse-backend-delta.vercel.app/api';
+const CLOUD_API_URL = 'https://skillpulse-backend-delta.vercel.app/api';
+
+const resolveApiBaseUrl = () => {
+  if (typeof window !== 'undefined') {
+    const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    // If running on production domain (e.g. *.vercel.app) or via HTTPS, NEVER use localhost
+    if (!isLocalhost || window.location.protocol === 'https:') {
+      const configuredUrl = import.meta.env.VITE_API_URL;
+      if (!configuredUrl || configuredUrl.includes('localhost') || configuredUrl.includes('127.0.0.1')) {
+        return CLOUD_API_URL;
+      }
+    }
+  }
+  return import.meta.env.VITE_API_URL || CLOUD_API_URL;
+};
+
+const API_BASE_URL = resolveApiBaseUrl();
 
 /**
- * Custom Fetch Wrapper with automatic JWT Auth token injection & error handling
+ * Custom Fetch Wrapper with automatic JWT Auth token injection, error handling,
+ * and resilient cloud failover
  */
 export async function apiRequest(endpoint, options = {}) {
   const token = localStorage.getItem('token');
@@ -17,8 +34,10 @@ export async function apiRequest(endpoint, options = {}) {
     headers,
   };
 
+  const activeBaseUrl = resolveApiBaseUrl();
+
   try {
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
+    const response = await fetch(`${activeBaseUrl}${endpoint}`, config);
     const data = await response.json();
 
     if (!response.ok) {
@@ -33,6 +52,29 @@ export async function apiRequest(endpoint, options = {}) {
 
     return data;
   } catch (error) {
+    // Resilient Cloud Failover: If local backend is unreachable (ERR_CONNECTION_REFUSED),
+    // automatically attempt the request against the live cloud backend
+    if (activeBaseUrl !== CLOUD_API_URL && error instanceof TypeError) {
+      try {
+        const fallbackResponse = await fetch(`${CLOUD_API_URL}${endpoint}`, config);
+        const fallbackData = await fallbackResponse.json();
+
+        if (!fallbackResponse.ok) {
+          if (fallbackResponse.status === 401 && !endpoint.includes('/auth/login')) {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = '/login';
+          }
+          throw new Error(fallbackData.message || 'Something went wrong with the request.');
+        }
+
+        return fallbackData;
+      } catch (fallbackError) {
+        console.error(`API Error [${endpoint}]:`, fallbackError);
+        throw fallbackError;
+      }
+    }
+
     console.error(`API Error [${endpoint}]:`, error);
     throw error;
   }
