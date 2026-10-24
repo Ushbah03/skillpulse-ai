@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import TeamLeaderSidebar from './TeamLeaderSidebar';
+import SkillPulseLoader from './SkillPulseLoader';
 import { teamLeaderAPI } from '../services/api';
 import {
   SlidersHorizontal,
@@ -172,7 +174,15 @@ export default function TeamTrainingRequests() {
   };
 
   return (
-    <div className="flex min-h-screen bg-[#F8F9FE]">
+    <div className="flex min-h-screen bg-[#E9EAF7] font-sans text-[#17233E] relative overflow-x-hidden selection:bg-[#1988A3] selection:text-white">
+      {/* Ambient Gradient Depth - Glowing mesh orbs behind frosted glass panels */}
+      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+        <div className="absolute top-10 left-1/4 w-[550px] h-[550px] bg-[#1988A3]/20 blur-[130px] rounded-full animate-pulse" />
+        <div className="absolute top-1/3 -right-20 w-[500px] h-[500px] bg-[#11C6DE]/16 blur-[140px] rounded-full" />
+        <div className="absolute top-2/3 left-10 w-[600px] h-[600px] bg-[#1B3154]/16 blur-[150px] rounded-full" />
+        <div className="absolute bottom-10 right-1/4 w-[550px] h-[550px] bg-[#8A9CB7]/28 blur-[140px] rounded-full" />
+        <div className="absolute inset-0 bg-[radial-gradient(rgba(27,49,84,0.10)_1px,transparent_1px)] [background-size:28px_28px] opacity-35" />
+      </div>
       {/* Sidebar Container */}
       <TeamLeaderSidebar activeTab={activeTab} setActiveTab={setActiveTab} />
 
@@ -185,12 +195,12 @@ export default function TeamTrainingRequests() {
       )}
 
       {/* Main Dashboard Area - Fluid Full Width */}
-      <main className="flex-1 ml-0 lg:ml-64 pt-20 lg:pt-8 p-4 md:p-8 w-full space-y-8">
+      <main className="flex-1 ml-0 lg:ml-64 pt-20 lg:pt-8 p-4 md:p-8 w-full relative z-10 space-y-8">
         
         {/* Top Header Section */}
         <header className="flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-black text-[#0b1221] tracking-tight">Team Training Requests</h1>
+            <h1 className="text-3xl md:text-4xl font-extrabold text-[#17233E] tracking-tight">Team Training <span className="bg-gradient-to-r from-[#1988A3] to-[#11C6DE] bg-clip-text text-transparent">Requests</span></h1>
             <p className="text-slate-500 text-sm font-semibold mt-1">Review, approve, and manage team professional development pathways</p>
           </div>
 

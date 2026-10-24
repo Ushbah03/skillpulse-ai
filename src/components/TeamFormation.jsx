@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import TeamLeaderSidebar from './TeamLeaderSidebar'; 
+import { motion } from 'framer-motion';
+import TeamLeaderSidebar from './TeamLeaderSidebar';
+import SkillPulseLoader from './SkillPulseLoader'; 
 import { 
   BrainCircuit,
   Check,
@@ -182,12 +184,20 @@ const TeamFormation = () => {
   const leaderName = storedUser.firstName ? `${storedUser.firstName} ${storedUser.lastName}` : 'Team Leader';
 
   return (
-    <div className="flex min-h-screen bg-[#F8F9FE]">
+    <div className="flex min-h-screen bg-[#E9EAF7] font-sans text-[#17233E] relative overflow-x-hidden selection:bg-[#1988A3] selection:text-white">
+      {/* Ambient Gradient Depth - Glowing mesh orbs behind frosted glass panels */}
+      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+        <div className="absolute top-10 left-1/4 w-[550px] h-[550px] bg-[#1988A3]/20 blur-[130px] rounded-full animate-pulse" />
+        <div className="absolute top-1/3 -right-20 w-[500px] h-[500px] bg-[#11C6DE]/16 blur-[140px] rounded-full" />
+        <div className="absolute top-2/3 left-10 w-[600px] h-[600px] bg-[#1B3154]/16 blur-[150px] rounded-full" />
+        <div className="absolute bottom-10 right-1/4 w-[550px] h-[550px] bg-[#8A9CB7]/28 blur-[140px] rounded-full" />
+        <div className="absolute inset-0 bg-[radial-gradient(rgba(27,49,84,0.10)_1px,transparent_1px)] [background-size:28px_28px] opacity-35" />
+      </div>
       {/* Constant Sidebar */}
       <TeamLeaderSidebar activeTab={activeTab} setActiveTab={setActiveTab} />
 
       {/* Main Form & Squad Studio Area - Fluid Full Width Container */}
-      <main className="flex-1 ml-0 lg:ml-64 pt-20 lg:pt-8 p-4 md:p-8 w-full space-y-8">
+      <main className="flex-1 ml-0 lg:ml-64 pt-20 lg:pt-8 p-4 md:p-8 w-full relative z-10 space-y-8">
         
         {/* Toast Notification */}
         {toastMessage && (
@@ -223,8 +233,8 @@ const TeamFormation = () => {
                 <BrainCircuit className="w-3 h-3" /> AI Optimization Engine
               </span>
             </div>
-            <h1 className="text-3xl font-black text-[#0b1221] tracking-tight">Project Squad Formation</h1>
-            <p className="text-slate-500 text-sm font-medium mt-1">
+            <h1 className="text-3xl md:text-4xl font-extrabold text-[#17233E] tracking-tight">Project Squad <span className="bg-gradient-to-r from-[#1988A3] to-[#11C6DE] bg-clip-text text-transparent">Formation</span></h1>
+            <p className="text-[#8A9CB7] text-sm md:text-base font-medium mt-1">
               Assemble high-performance cross-functional project teams matched against live skill taxonomies
             </p>
           </div>
@@ -233,7 +243,7 @@ const TeamFormation = () => {
             <button 
               onClick={handleGenerate}
               disabled={isGenerating}
-              className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-6 py-3 rounded-2xl shadow-lg shadow-blue-500/20 flex items-center gap-2 transition-all cursor-pointer"
+              className="bg-gradient-to-r from-[#1988A3] to-[#11C6DE] hover:from-[#157289] hover:to-[#0EB3C9] text-white font-bold px-6 py-3 rounded-2xl shadow-lg shadow-[#1988A3]/25 flex items-center gap-2 transition-all cursor-pointer"
             >
               {isGenerating ? <Loader2 className="w-5 h-5 animate-spin" /> : <Sparkles className="w-5 h-5" />}
               <span>{isGenerating ? 'Running Matchmaker...' : 'Generate AI Squad'}</span>
@@ -242,7 +252,7 @@ const TeamFormation = () => {
             <button 
               onClick={handleSaveSquad}
               disabled={isSaving || selectedCandidates.length === 0}
-              className="bg-[#0b1221] hover:bg-[#151f33] text-white font-bold px-6 py-3 rounded-2xl shadow-md flex items-center gap-2 transition-all cursor-pointer disabled:bg-slate-300"
+              className="bg-[#17233E] hover:bg-[#1B3154] text-white font-bold px-6 py-3 rounded-2xl shadow-md flex items-center gap-2 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isSaving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
               <span>Save Squad</span>
@@ -254,10 +264,10 @@ const TeamFormation = () => {
         <div className="grid grid-cols-12 gap-8 items-start">
           
           {/* LEFT 8 COLUMNS: Requirements & Candidates Grid */}
-          <div className="col-span-8 space-y-8">
+          <div className="col-span-12 lg:col-span-8 space-y-8">
             
             {/* Project Parameters Card */}
-            <div className="bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm space-y-6">
+            <div className="bg-white/80 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/60 shadow-xl shadow-[#1B3154]/5 space-y-6">
               <h3 className="text-lg font-bold text-slate-900">Project Requirements & Target Skills</h3>
               
               <div className="grid grid-cols-3 gap-6">
@@ -267,7 +277,7 @@ const TeamFormation = () => {
                     type="text" 
                     value={projectName}
                     onChange={(e) => setProjectName(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-bold text-slate-800 focus:outline-none focus:border-blue-500"
+                    className="w-full bg-white/80 backdrop-blur-md border border-white/80 rounded-xl px-4 py-2.5 text-xs md:text-sm font-semibold text-[#17233E] focus:outline-none focus:border-[#1988A3] shadow-sm"
                   />
                 </div>
                 <div>
@@ -275,7 +285,7 @@ const TeamFormation = () => {
                   <select 
                     value={proficiency}
                     onChange={(e) => setProficiency(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-bold text-slate-800 focus:outline-none cursor-pointer"
+                    className="w-full bg-white/80 backdrop-blur-md border border-white/80 rounded-xl px-4 py-2.5 text-xs md:text-sm font-semibold text-[#17233E] focus:outline-none focus:border-[#1988A3] cursor-pointer shadow-sm"
                   >
                     <option>Mid-Senior</option>
                     <option>Senior-Lead</option>
@@ -287,7 +297,7 @@ const TeamFormation = () => {
                   <select 
                     value={complexity}
                     onChange={(e) => setComplexity(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-bold text-slate-800 focus:outline-none cursor-pointer"
+                    className="w-full bg-white/80 backdrop-blur-md border border-white/80 rounded-xl px-4 py-2.5 text-xs md:text-sm font-semibold text-[#17233E] focus:outline-none focus:border-[#1988A3] cursor-pointer shadow-sm"
                   >
                     <option>High</option>
                     <option>Critical</option>
@@ -298,9 +308,9 @@ const TeamFormation = () => {
 
               <div>
                 <label className="text-xs font-black uppercase tracking-wider text-slate-400 block mb-2">Target Skills (Press Enter to Add)</label>
-                <div className="flex flex-wrap gap-2 items-center p-3 bg-slate-50 border border-slate-200 rounded-2xl">
+                <div className="flex flex-wrap gap-2 items-center p-3 bg-white/60 backdrop-blur-md border border-white/80 rounded-2xl shadow-sm">
                   {skills.map(s => (
-                    <span key={s} className="bg-blue-600 text-white text-xs font-bold px-3 py-1.5 rounded-xl flex items-center gap-2">
+                    <span key={s} className="bg-gradient-to-r from-[#1988A3] to-[#11C6DE] text-white text-xs font-bold px-3 py-1.5 rounded-xl flex items-center gap-2 shadow-sm">
                       {s}
                       <X size={14} className="cursor-pointer hover:text-red-200" onClick={() => removeSkill(s)} />
                     </span>
@@ -359,7 +369,7 @@ const TeamFormation = () => {
             )}
 
             {/* AI Matched Squad Results */}
-            <div className="bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm space-y-6">
+            <div className="bg-white/80 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/60 shadow-xl shadow-[#1B3154]/5 space-y-6">
               <div className="flex justify-between items-center">
                 <div>
                   <h3 className="text-xl font-bold text-slate-900 tracking-tight">AI Recommended Project Squad</h3>
@@ -374,9 +384,8 @@ const TeamFormation = () => {
               </div>
 
               {loading ? (
-                <div className="flex items-center justify-center py-16">
-                  <Loader2 className="animate-spin text-blue-600 mr-3" size={24} />
-                  <span className="text-sm font-bold text-slate-600">Matching candidates against skills...</span>
+                <div className="my-8">
+                  <SkillPulseLoader message="Running Neural Squad Matchmaker..." fullScreen={false} />
                 </div>
               ) : candidates.length > 0 ? (
                 <div className="grid grid-cols-2 gap-6">

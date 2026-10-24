@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import TeamLeaderSidebar from './TeamLeaderSidebar'; 
+import { motion } from 'framer-motion';
+import TeamLeaderSidebar from './TeamLeaderSidebar';
+import SkillPulseLoader from './SkillPulseLoader'; 
 import { teamLeaderAPI } from '../services/api';
 import { 
   Search, 
@@ -291,12 +293,20 @@ const AssignLearning = () => {
   }, [availablePrograms, searchQuery, dynamicRecommendations]);
 
   return (
-    <div className="flex min-h-screen bg-[#F8F9FE]">
+    <div className="flex min-h-screen bg-[#E9EAF7] font-sans text-[#17233E] relative overflow-x-hidden selection:bg-[#1988A3] selection:text-white">
+      {/* Ambient Gradient Depth - Glowing mesh orbs behind frosted glass panels */}
+      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+        <div className="absolute top-10 left-1/4 w-[550px] h-[550px] bg-[#1988A3]/20 blur-[130px] rounded-full animate-pulse" />
+        <div className="absolute top-1/3 -right-20 w-[500px] h-[500px] bg-[#11C6DE]/16 blur-[140px] rounded-full" />
+        <div className="absolute top-2/3 left-10 w-[600px] h-[600px] bg-[#1B3154]/16 blur-[150px] rounded-full" />
+        <div className="absolute bottom-10 right-1/4 w-[550px] h-[550px] bg-[#8A9CB7]/28 blur-[140px] rounded-full" />
+        <div className="absolute inset-0 bg-[radial-gradient(rgba(27,49,84,0.10)_1px,transparent_1px)] [background-size:28px_28px] opacity-35" />
+      </div>
       {/* Sidebar Component Integration */}
       <TeamLeaderSidebar activeTab={activeTab} setActiveTab={setActiveTab} />
       
       {/* Main Container Area */}
-      <main className="flex-1 ml-0 lg:ml-64 pt-20 lg:pt-8 p-4 md:p-8 w-full space-y-8">
+      <main className="flex-1 ml-0 lg:ml-64 pt-20 lg:pt-8 p-4 md:p-8 w-full relative z-10 space-y-8">
         
         {/* Toast Notifications */}
         {toastMessage && (
@@ -326,8 +336,8 @@ const AssignLearning = () => {
         {/* Top Header Section */}
         <header className="flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-black text-[#0b1221] tracking-tight">Assign Learning to Team</h1>
-            <p className="text-slate-500 text-sm font-medium mt-1">Assign training programs based on skill gaps and development goals</p>
+            <h1 className="text-3xl md:text-4xl font-extrabold text-[#17233E] tracking-tight">Assign Learning to <span className="bg-gradient-to-r from-[#1988A3] to-[#11C6DE] bg-clip-text text-transparent">Team</span></h1>
+            <p className="text-[#8A9CB7] text-sm md:text-base font-medium mt-1">Assign curated training programs based on critical skill gaps and growth goals</p>
           </div>
           
           {/* Header Controls */}
@@ -341,7 +351,7 @@ const AssignLearning = () => {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search training program..." 
-                className="w-full bg-white text-slate-900 border border-slate-200/80 pl-10 pr-9 py-2.5 rounded-xl text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-slate-400"
+                className="w-full bg-white/80 backdrop-blur-md text-[#17233E] border border-white/80 pl-10 pr-9 py-2.5 rounded-xl text-xs md:text-sm font-semibold focus:outline-none focus:border-[#1988A3] transition-all placeholder:text-[#8A9CB7] shadow-sm"
               />
               {searchQuery && (
                 <button
@@ -359,7 +369,7 @@ const AssignLearning = () => {
                 <p className="text-sm font-bold text-slate-900 leading-tight">{leaderName}</p>
                 <span className="text-[10px] font-black uppercase text-blue-600 tracking-wider">Team Leader</span>
               </div>
-              <div className="w-10 h-10 rounded-full border border-slate-200 bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-xs font-black text-white shrink-0">
+              <div className="w-10 h-10 rounded-2xl border border-white/60 bg-gradient-to-br from-[#17233E] via-[#1B3154] to-[#1988A3] flex items-center justify-center text-xs font-black text-white shrink-0 shadow-sm">
                 TL
               </div>
             </div>
@@ -367,14 +377,13 @@ const AssignLearning = () => {
         </header>
 
         {loading ? (
-          <div className="flex items-center justify-center py-20 bg-white rounded-3xl border border-slate-100 shadow-sm">
-            <Loader2 className="animate-spin text-blue-600 mr-3" size={24} />
-            <span className="text-sm font-bold text-slate-600">Loading learning programs and team data...</span>
+          <div className="my-8">
+            <SkillPulseLoader message="Querying Training Curriculums & Gaps..." fullScreen={false} />
           </div>
         ) : (
           <>
             {/* 1. Metrics Grid Row */}
-            <div className="grid grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
               <TopMetricCard title="Available Programs" value={String(stats.availableProgramsCount)} extra="Global Catalog" color="bg-blue-50 text-blue-600">
                 <BookOpenCheck size={20} />
               </TopMetricCard>
@@ -396,7 +405,7 @@ const AssignLearning = () => {
             <div className="grid grid-cols-12 gap-8 items-start">
               
               {/* LEFT: Available Training Programs Section */}
-              <div className="col-span-8 bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm space-y-6">
+              <div className="col-span-12 lg:col-span-8 bg-white/80 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/60 shadow-xl shadow-[#1B3154]/5 space-y-6">
                 <div className="flex justify-between items-center">
                   <h3 className="text-xl font-bold text-slate-900 tracking-tight">Available Training Programs</h3>
                   <span className="text-xs font-bold text-slate-400">{filteredPrograms.length} Programs</span>

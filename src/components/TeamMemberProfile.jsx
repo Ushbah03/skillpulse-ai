@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import TeamLeaderSidebar from './TeamLeaderSidebar'; 
+import { motion } from 'framer-motion';
+import TeamLeaderSidebar from './TeamLeaderSidebar';
+import SkillPulseLoader from './SkillPulseLoader'; 
 import { teamLeaderAPI } from '../services/api';
 import { 
   Bell, 
@@ -365,18 +367,26 @@ const TeamMemberProfile = () => {
   const leaderName = storedUser.firstName ? `${storedUser.firstName} ${storedUser.lastName}` : 'Team Leader';
 
   return (
-    <div className="flex min-h-screen bg-[#F8F9FE]">
+    <div className="flex min-h-screen bg-[#E9EAF7] font-sans text-[#17233E] relative overflow-x-hidden selection:bg-[#1988A3] selection:text-white">
+      {/* Ambient Gradient Depth - Glowing mesh orbs behind frosted glass panels */}
+      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+        <div className="absolute top-10 left-1/4 w-[550px] h-[550px] bg-[#1988A3]/20 blur-[130px] rounded-full animate-pulse" />
+        <div className="absolute top-1/3 -right-20 w-[500px] h-[500px] bg-[#11C6DE]/16 blur-[140px] rounded-full" />
+        <div className="absolute top-2/3 left-10 w-[600px] h-[600px] bg-[#1B3154]/16 blur-[150px] rounded-full" />
+        <div className="absolute bottom-10 right-1/4 w-[550px] h-[550px] bg-[#8A9CB7]/28 blur-[140px] rounded-full" />
+        <div className="absolute inset-0 bg-[radial-gradient(rgba(27,49,84,0.10)_1px,transparent_1px)] [background-size:28px_28px] opacity-35" />
+      </div>
       {/* Sidebar Integration */}
       <TeamLeaderSidebar activeTab={activeTab} setActiveTab={setActiveTab} />
       
       {/* Main Content Area */}
-      <main className="flex-1 ml-0 lg:ml-64 pt-20 lg:pt-8 p-4 md:p-8 w-full space-y-8">
+      <main className="flex-1 ml-0 lg:ml-64 pt-20 lg:pt-8 p-4 md:p-8 w-full relative z-10 space-y-8">
         
         {/* Top Header Section */}
         <header className="flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-black text-[#0b1221] tracking-tight">Team Member Profile</h1>
-            <p className="text-slate-500 text-sm font-medium mt-1">View complete skill, performance, and readiness intelligence</p>
+            <h1 className="text-3xl md:text-4xl font-extrabold text-[#17233E] tracking-tight">Team Member <span className="bg-gradient-to-r from-[#1988A3] to-[#11C6DE] bg-clip-text text-transparent">Profile</span></h1>
+            <p className="text-[#8A9CB7] text-sm md:text-base font-medium mt-1">View comprehensive capability, telemetry, and readiness intelligence</p>
           </div>
           
           {/* Right Controls Dropdown & User */}
@@ -384,14 +394,14 @@ const TeamMemberProfile = () => {
             <div className="relative">
               <button 
                 onClick={() => setIsMemberDropdownOpen(!isMemberDropdownOpen)}
-                className="flex items-center gap-2 bg-white border border-slate-200 px-4 py-2.5 rounded-xl text-sm font-bold text-slate-700 shadow-sm hover:bg-slate-50 transition-all cursor-pointer"
+                className="flex items-center gap-2 bg-white/80 backdrop-blur-md border border-white/80 px-4 py-2.5 rounded-xl text-xs md:text-sm font-bold text-[#17233E] shadow-sm hover:bg-white transition-all cursor-pointer"
               >
                 <span>{selectedName}</span>
                 <ChevronDown size={16} className="text-slate-400" />
               </button>
 
               {isMemberDropdownOpen && (
-                <div className="absolute right-0 mt-2 w-64 max-h-60 overflow-y-auto bg-white border border-slate-100 rounded-xl shadow-lg py-2 z-20">
+                <div className="absolute right-0 mt-2 w-64 max-h-60 overflow-y-auto bg-white/95 backdrop-blur-2xl border border-white/60 rounded-2xl shadow-2xl py-2 z-30 custom-scrollbar">
                   {liveMembers.length > 0 ? (
                     liveMembers.map((member) => (
                       <button
@@ -418,7 +428,7 @@ const TeamMemberProfile = () => {
                 <p className="text-sm font-bold text-slate-900">{leaderName}</p>
                 <span className="text-[10px] font-black uppercase text-blue-600 tracking-wider">Team Leader</span>
               </div>
-              <div className="w-10 h-10 rounded-full border border-slate-200 bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-xs font-black text-white">
+              <div className="w-10 h-10 rounded-2xl border border-white/60 bg-gradient-to-br from-[#17233E] via-[#1B3154] to-[#1988A3] flex items-center justify-center text-xs font-black text-white shadow-sm">
                 TL
               </div>
             </div>
@@ -426,9 +436,8 @@ const TeamMemberProfile = () => {
         </header>
 
         {loading ? (
-          <div className="flex items-center justify-center py-20 bg-white rounded-3xl border border-slate-100 shadow-sm">
-            <Loader2 className="animate-spin text-blue-600 mr-3" size={24} />
-            <span className="text-sm font-bold text-slate-600">Loading team member profile...</span>
+          <div className="my-8">
+            <SkillPulseLoader message="Analyzing Member Competency Profile..." fullScreen={false} />
           </div>
         ) : !activeMember ? (
           <div className="flex flex-col items-center justify-center py-16 bg-white rounded-3xl border border-slate-100 shadow-sm space-y-4">
@@ -438,7 +447,7 @@ const TeamMemberProfile = () => {
         ) : (
           <>
             {/* 1. Main Profile Banner Card */}
-            <div className="bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm flex justify-between items-center">
+            <div className="bg-white/80 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/60 shadow-xl shadow-[#1B3154]/5 flex justify-between items-center">
               <div className="flex items-center gap-6">
                 <div className="relative w-28 h-28">
                   <img 
@@ -518,7 +527,7 @@ const TeamMemberProfile = () => {
             </div>
 
             {/* 3. Member Skill Matrix Table */}
-            <div className="bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm">
+            <div className="bg-white/80 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/60 shadow-xl shadow-[#1B3154]/5">
               <h3 className="text-xl font-bold text-slate-900 mb-6 tracking-tight">Member Skill Matrix</h3>
               <div className="overflow-hidden border border-slate-100 rounded-2xl">
                 <table className="w-full text-left border-collapse">
@@ -867,7 +876,7 @@ const TeamMemberProfile = () => {
             </div>
 
             {/* 5. Training History Section */}
-            <div className="bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm">
+            <div className="bg-white/80 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/60 shadow-xl shadow-[#1B3154]/5">
               <h3 className="text-xl font-bold text-slate-900 mb-6 tracking-tight">Training History</h3>
               <div className="space-y-4">
                 {memberEnrollments.length > 0 ? (
@@ -890,7 +899,7 @@ const TeamMemberProfile = () => {
             </div>
 
             {/* 6. Skill Gaps Identified */}
-            <div className="bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm">
+            <div className="bg-white/80 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/60 shadow-xl shadow-[#1B3154]/5">
               <h3 className="text-xl font-bold text-slate-900 mb-6 tracking-tight">Skill Gaps Identified</h3>
               {memberGaps.length > 0 ? (
                 memberGaps.map((gap) => (

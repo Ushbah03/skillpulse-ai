@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import TeamLeaderSidebar from './TeamLeaderSidebar';
+import SkillPulseLoader from './SkillPulseLoader';
 import { 
   Search, 
   SlidersHorizontal,
@@ -109,31 +111,36 @@ const TeamSkillOverview = () => {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen bg-[#F8F9FE]">
+      <div className="flex min-h-screen bg-[#E9EAF7] font-sans text-[#17233E] relative overflow-x-hidden selection:bg-[#1988A3] selection:text-white">
         <TeamLeaderSidebar activeTab={activeTab} setActiveTab={setActiveTab} />
-        <main className="flex-1 ml-0 lg:ml-64 pt-20 lg:pt-8 p-4 md:p-8 flex items-center justify-center">
-          <div className="flex flex-col items-center gap-3 text-blue-600">
-            <Loader2 className="w-10 h-10 animate-spin" />
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Querying Team Skill Intelligence...</span>
-          </div>
+        <main className="flex-1 ml-0 lg:ml-64 pt-20 lg:pt-8 p-4 md:p-8 flex items-center justify-center relative z-10">
+          <SkillPulseLoader message="Querying Squad Skill Intelligence..." fullScreen={false} />
         </main>
       </div>
     );
   }
 
   return (
-    <div className="flex min-h-screen bg-[#F8F9FE]">
+    <div className="flex min-h-screen bg-[#E9EAF7] font-sans text-[#17233E] relative overflow-x-hidden selection:bg-[#1988A3] selection:text-white">
+      {/* Ambient Gradient Depth - Glowing mesh orbs behind frosted glass panels */}
+      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+        <div className="absolute top-10 left-1/4 w-[550px] h-[550px] bg-[#1988A3]/20 blur-[130px] rounded-full animate-pulse" />
+        <div className="absolute top-1/3 -right-20 w-[500px] h-[500px] bg-[#11C6DE]/16 blur-[140px] rounded-full" />
+        <div className="absolute top-2/3 left-10 w-[600px] h-[600px] bg-[#1B3154]/16 blur-[150px] rounded-full" />
+        <div className="absolute bottom-10 right-1/4 w-[550px] h-[550px] bg-[#8A9CB7]/28 blur-[140px] rounded-full" />
+        <div className="absolute inset-0 bg-[radial-gradient(rgba(27,49,84,0.10)_1px,transparent_1px)] [background-size:28px_28px] opacity-35" />
+      </div>
       {/* Sidebar */}
       <TeamLeaderSidebar activeTab={activeTab} setActiveTab={setActiveTab} />
       
       {/* Main Content Area */}
-      <main className="flex-1 ml-0 lg:ml-64 pt-20 lg:pt-8 p-4 md:p-8 w-full space-y-8">
+      <main className="flex-1 ml-0 lg:ml-64 pt-20 lg:pt-8 p-4 md:p-8 w-full relative z-10 space-y-8">
         
         {/* Top Header Section */}
         <header className="flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-black text-[#0b1221] tracking-tight">Team Skill Overview</h1>
-            <p className="text-slate-500 text-sm font-medium mt-1">
+            <h1 className="text-3xl md:text-4xl font-extrabold text-[#17233E] tracking-tight">Team Skill <span className="bg-gradient-to-r from-[#1988A3] to-[#11C6DE] bg-clip-text text-transparent">Overview</span></h1>
+            <p className="text-[#8A9CB7] text-sm md:text-base font-medium mt-1">
               Analyze live skill distribution, proficiency levels, and capability across your team
             </p>
           </div>
@@ -147,7 +154,7 @@ const TeamSkillOverview = () => {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search team member or skill..." 
-                className="w-full bg-white border border-slate-200 rounded-xl pl-11 pr-4 py-2.5 text-sm font-medium text-slate-700 shadow-sm focus:outline-none focus:border-blue-500 transition-all"
+                className="w-full bg-white/80 backdrop-blur-md border border-white/80 rounded-xl pl-11 pr-4 py-2.5 text-xs md:text-sm font-medium text-[#17233E] shadow-sm focus:outline-none focus:border-[#1988A3] transition-all placeholder:text-[#8A9CB7]"
               />
             </div>
             
@@ -156,7 +163,7 @@ const TeamSkillOverview = () => {
                 <p className="text-sm font-bold text-slate-900">{leaderName}</p>
                 <span className="text-[10px] font-black uppercase text-blue-600 tracking-wider">Engineering Lead</span>
               </div>
-              <div className="w-10 h-10 rounded-full border border-slate-200 bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-xs font-black text-white">
+              <div className="w-10 h-10 rounded-2xl border border-white/60 bg-gradient-to-br from-[#17233E] via-[#1B3154] to-[#1988A3] flex items-center justify-center text-xs font-black text-white shadow-sm">
                 TL
               </div>
             </div>
@@ -191,7 +198,7 @@ const TeamSkillOverview = () => {
 
         {/* AI Squad Capability & Risk Alert Banner */}
         {overviewData?.aiInsights && (
-          <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 p-6 md:p-8 rounded-[2.5rem] text-white shadow-xl border border-indigo-500/20 relative overflow-hidden">
+          <div className="bg-gradient-to-br from-[#17233E]/95 via-[#1B3154]/95 to-[#121E33]/95 backdrop-blur-2xl p-6 md:p-8 rounded-3xl text-white shadow-2xl border border-white/15 relative overflow-hidden">
             <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
             
             <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
@@ -236,7 +243,7 @@ const TeamSkillOverview = () => {
         )}
 
         {/* Filters Panel */}
-        <div className="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm flex items-center justify-between">
+        <div className="bg-white/80 backdrop-blur-xl rounded-3xl p-4 md:p-5 border border-white/60 shadow-xl shadow-[#1B3154]/5 flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-2 text-slate-500 text-sm font-bold px-2">
               <SlidersHorizontal size={16} />
@@ -255,14 +262,14 @@ const TeamSkillOverview = () => {
           </div>
           <button 
             onClick={() => navigate('/team-leader/team-formation')}
-            className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold px-6 py-2.5 rounded-xl transition-all shadow-md shadow-blue-500/20 flex items-center gap-2"
+            className="bg-gradient-to-r from-[#1988A3] to-[#11C6DE] hover:from-[#157289] hover:to-[#0EB3C9] text-white text-xs md:text-sm font-bold px-6 py-2.5 rounded-xl transition-all shadow-lg shadow-[#1988A3]/25 flex items-center gap-2 cursor-pointer"
           >
             <Sparkles className="w-4 h-4" /> AI Squad Matchmaker
           </button>
         </div>
 
         {/* Skill Proficiency Distribution Matrix */}
-        <div className="bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm">
+        <div className="bg-white/80 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/60 shadow-xl shadow-[#1B3154]/5">
           <div className="flex justify-between items-center mb-6">
             <div>
               <h3 className="text-xl font-bold text-slate-900 tracking-tight">Live Squad Skill Matrix</h3>
@@ -337,25 +344,25 @@ const TeamSkillOverview = () => {
 
 const OverviewStatCard = ({ title, value, sub, color, isLink, onLinkClick }) => {
   const colorMap = {
-    blue: 'border-l-blue-600',
+    blue: 'border-l-[#1988A3]',
     emerald: 'border-l-emerald-500',
-    purple: 'border-l-purple-500',
+    purple: 'border-l-indigo-500',
     rose: 'border-l-rose-500'
   };
 
   return (
-    <div className={`bg-white rounded-2xl p-6 border border-slate-100 border-l-4 ${colorMap[color]} shadow-sm`}>
-      <p className="text-slate-400 text-xs font-bold uppercase tracking-wider mb-2">{title}</p>
-      <h3 className="text-2xl font-black text-slate-900 mb-2">{value}</h3>
+    <div className={`bg-white/80 backdrop-blur-xl rounded-3xl p-6 border border-white/60 border-l-4 ${colorMap[color]} shadow-xl shadow-[#1B3154]/5 hover:border-[#1988A3]/40 transition-all duration-300`}>
+      <p className="text-[#8A9CB7] text-xs font-bold uppercase tracking-wider mb-2">{title}</p>
+      <h3 className="text-2xl md:text-3xl font-extrabold text-[#17233E] mb-2">{value}</h3>
       {sub && (
-        <span className="text-xs font-bold text-slate-500 bg-slate-50 px-2 py-1 rounded-md">
+        <span className="text-xs font-bold text-[#1988A3] bg-[#1988A3]/10 px-2 py-1 rounded-lg border border-[#1988A3]/20">
           {sub}
         </span>
       )}
       {isLink && (
         <button 
           onClick={onLinkClick} 
-          className="text-xs font-bold text-rose-600 hover:underline block mt-2"
+          className="text-xs font-bold text-rose-500 hover:text-rose-600 hover:underline block mt-2 cursor-pointer"
         >
           View Gaps →
         </button>
@@ -368,7 +375,7 @@ const FilterSelect = ({ value, onChange, options }) => (
   <select 
     value={value} 
     onChange={(e) => onChange(e.target.value)}
-    className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-700 focus:outline-none cursor-pointer"
+    className="bg-white/80 backdrop-blur-md border border-white/80 rounded-xl px-3.5 py-2 text-xs font-semibold text-[#17233E] focus:outline-none focus:border-[#1988A3] cursor-pointer shadow-sm"
   >
     {options.map((opt) => (
       <option key={opt} value={opt}>{opt}</option>
@@ -379,7 +386,7 @@ const FilterSelect = ({ value, onChange, options }) => (
 const MatrixRow = ({ name, role, initials, skills, onClick }) => (
   <tr className="hover:bg-slate-50/50 transition-colors cursor-pointer" onClick={onClick}>
     <td className="py-4 px-6 flex items-center gap-3">
-      <div className="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center text-xs font-black shrink-0">
+      <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#17233E] to-[#1B3154] text-[#11C6DE] border border-white/20 flex items-center justify-center text-xs font-bold shrink-0 shadow-sm">
         {initials}
       </div>
       <div>

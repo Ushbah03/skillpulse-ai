@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import TeamLeaderSidebar from './TeamLeaderSidebar'; 
+import { motion } from 'framer-motion';
+import TeamLeaderSidebar from './TeamLeaderSidebar';
+import SkillPulseLoader from './SkillPulseLoader'; 
 import { 
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   BarChart, Bar,
@@ -155,12 +157,20 @@ export default function PerformanceMonitor() {
   };
 
   return (
-    <div className="flex min-h-screen bg-[#F8F9FE]">
+    <div className="flex min-h-screen bg-[#E9EAF7] font-sans text-[#17233E] relative overflow-x-hidden selection:bg-[#1988A3] selection:text-white">
+      {/* Ambient Gradient Depth - Glowing mesh orbs behind frosted glass panels */}
+      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+        <div className="absolute top-10 left-1/4 w-[550px] h-[550px] bg-[#1988A3]/20 blur-[130px] rounded-full animate-pulse" />
+        <div className="absolute top-1/3 -right-20 w-[500px] h-[500px] bg-[#11C6DE]/16 blur-[140px] rounded-full" />
+        <div className="absolute top-2/3 left-10 w-[600px] h-[600px] bg-[#1B3154]/16 blur-[150px] rounded-full" />
+        <div className="absolute bottom-10 right-1/4 w-[550px] h-[550px] bg-[#8A9CB7]/28 blur-[140px] rounded-full" />
+        <div className="absolute inset-0 bg-[radial-gradient(rgba(27,49,84,0.10)_1px,transparent_1px)] [background-size:28px_28px] opacity-35" />
+      </div>
       {/* 1. Constant Sidebar */}
       <TeamLeaderSidebar activeTab={activeTab} setActiveTab={setActiveTab} />
       
       {/* 2. Main Content Area - Fluid Full Width */}
-      <main className="flex-1 ml-0 lg:ml-64 pt-20 lg:pt-8 p-4 md:p-8 w-full space-y-8">
+      <main className="flex-1 ml-0 lg:ml-64 pt-20 lg:pt-8 p-4 md:p-8 w-full relative z-10 space-y-8">
         
         {/* Toast Notification */}
         {toastMessage && (
@@ -188,7 +198,7 @@ export default function PerformanceMonitor() {
               <select 
                 value={timeRange} 
                 onChange={(e) => setTimeRange(e.target.value)}
-                className="appearance-none bg-white border border-slate-200 pl-10 pr-8 py-3 rounded-xl text-sm font-bold text-slate-700 shadow-sm hover:bg-slate-50 transition-all cursor-pointer focus:outline-none"
+                className="appearance-none bg-white/80 backdrop-blur-md border border-white/80 text-[#17233E] pl-10 pr-8 py-3 rounded-xl text-sm font-bold text-slate-700 shadow-sm hover:bg-slate-50 transition-all cursor-pointer focus:outline-none"
               >
                 <option value="Last 30 Days">Last 30 Days</option>
                 <option value="Last Quarter (Q2)">Last Quarter (Q2)</option>
@@ -202,7 +212,7 @@ export default function PerformanceMonitor() {
               <select 
                 value={metricFilter} 
                 onChange={(e) => setMetricFilter(e.target.value)}
-                className="appearance-none bg-white border border-slate-200 pl-10 pr-8 py-3 rounded-xl text-sm font-bold text-slate-700 shadow-sm hover:bg-slate-50 transition-all cursor-pointer focus:outline-none"
+                className="appearance-none bg-white/80 backdrop-blur-md border border-white/80 text-[#17233E] pl-10 pr-8 py-3 rounded-xl text-sm font-bold text-slate-700 shadow-sm hover:bg-slate-50 transition-all cursor-pointer focus:outline-none"
               >
                 <option value="All Metrics">All Metrics</option>
                 <option value="High Performers">High Performers (Excellent)</option>
@@ -230,7 +240,7 @@ export default function PerformanceMonitor() {
 
         {/* 3. Performance Metrics Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div className="bg-white p-7 rounded-[2rem] border border-slate-100 shadow-sm flex justify-between items-center min-h-[160px] relative overflow-hidden">
+          <div className="bg-white/80 backdrop-blur-xl p-6 md:p-7 rounded-3xl border border-white/60 shadow-xl shadow-[#1B3154]/5 flex justify-between items-center min-h-[160px] relative overflow-hidden">
             <div>
               <p className="text-xs font-black text-slate-400 uppercase tracking-widest">Overall Team Score</p>
               <h3 className="text-2xl font-black text-slate-900 mt-3 tracking-tight">{summary.overallTier || 'Capability Score'}</h3>
@@ -240,7 +250,7 @@ export default function PerformanceMonitor() {
             </div>
           </div>
 
-          <div className="bg-white p-7 rounded-[2rem] border border-slate-100 shadow-sm flex flex-col justify-between min-h-[160px]">
+          <div className="bg-white/80 backdrop-blur-xl p-6 md:p-7 rounded-3xl border border-white/60 shadow-xl shadow-[#1B3154]/5 flex flex-col justify-between min-h-[160px]">
             <p className="text-xs font-black text-slate-400 uppercase tracking-widest">Avg Member Perf.</p>
             <div className="mt-2">
               <div className="flex items-baseline gap-1.5">
@@ -254,7 +264,7 @@ export default function PerformanceMonitor() {
             </div>
           </div>
 
-          <div className="bg-white p-7 rounded-[2rem] border border-slate-100 shadow-sm flex flex-col justify-between min-h-[160px]">
+          <div className="bg-white/80 backdrop-blur-xl p-6 md:p-7 rounded-3xl border border-white/60 shadow-xl shadow-[#1B3154]/5 flex flex-col justify-between min-h-[160px]">
             <p className="text-xs font-black text-slate-400 uppercase tracking-widest">High Performers</p>
             <div className="mt-2">
               <h3 className="text-4xl font-black text-slate-900 tracking-tight">{summary.highPerformersCount}</h3>
@@ -264,7 +274,7 @@ export default function PerformanceMonitor() {
             </div>
           </div>
 
-          <div className="bg-white p-7 rounded-[2rem] border border-slate-100 shadow-sm flex flex-col justify-between min-h-[160px]">
+          <div className="bg-white/80 backdrop-blur-xl p-6 md:p-7 rounded-3xl border border-white/60 shadow-xl shadow-[#1B3154]/5 flex flex-col justify-between min-h-[160px]">
             <p className="text-xs font-black text-slate-400 uppercase tracking-widest">Risk Alerts</p>
             <div className="mt-2">
               <h3 className="text-4xl font-black text-slate-900 tracking-tight">{summary.riskAlertsCount}</h3>
@@ -279,10 +289,10 @@ export default function PerformanceMonitor() {
         <div className="grid grid-cols-12 gap-8">
           
           {/* Left Column: Charts and Table */}
-          <div className="col-span-8 space-y-8">
+          <div className="col-span-12 lg:col-span-8 space-y-8">
             
             {/* Performance Trend Chart */}
-            <div className="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm p-8">
+            <div className="bg-white/80 backdrop-blur-xl rounded-3xl border border-white/60 shadow-xl shadow-[#1B3154]/5 p-6 md:p-8">
               <div className="flex justify-between items-center mb-6">
                 <div>
                   <h3 className="text-2xl font-bold text-slate-900 tracking-tight">Team Performance Trend</h3>
@@ -421,7 +431,7 @@ export default function PerformanceMonitor() {
             <div className="grid grid-cols-2 gap-6">
               
               {/* Performance Distribution */}
-              <div className="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm p-8">
+              <div className="bg-white/80 backdrop-blur-xl rounded-3xl border border-white/60 shadow-xl shadow-[#1B3154]/5 p-6 md:p-8">
                 <h4 className="text-base font-black text-slate-400 uppercase tracking-widest mb-6">Performance Distribution</h4>
                 <div className="h-48 w-full">
                   <ResponsiveContainer width="100%" height="100%">
@@ -473,7 +483,7 @@ export default function PerformanceMonitor() {
           </div>
 
           {/* Right Column: Risk & AI Sidebars */}
-          <div className="col-span-4 space-y-8">
+          <div className="col-span-12 lg:col-span-4 space-y-8">
             
             {/* Performance Risks Breakdown Block */}
             <div className="bg-white rounded-[2.5rem] border border-slate-100 p-8 shadow-sm">
