@@ -407,9 +407,6 @@ const Login = () => {
             <p className="text-sm text-[#5A6D89] font-medium">
               Don't have an account? <Link to="/signup" className="text-[#1988A3] font-bold hover:text-[#157289] hover:underline transition-colors ml-1">Sign Up</Link>
             </p>
-            <div className="flex items-center justify-center gap-2 text-[10px] text-[#5A6D89] font-medium bg-[#1988A3]/5 py-2 rounded-xl inline-flex mx-auto px-4 border border-[#1988A3]/15 cursor-default">
-              <Icons.Shield /> Protected with enterprise multi-tenant isolation
-            </div>
           </div>
         </motion.div>
       </div>

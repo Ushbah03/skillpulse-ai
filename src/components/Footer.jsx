@@ -1,6 +1,5 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import logo from '../assets/images/logo.png';
 import { ShieldCheck, Cpu, ArrowUpRight } from 'lucide-react';
 
 export function Footer() {
@@ -39,9 +38,11 @@ export function Footer() {
           
           {/* Brand & Mission Column (5 cols) */}
           <div className="lg:col-span-5 text-left">
-            <Link to="/" className="inline-flex items-center gap-3 mb-4 group">
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center overflow-hidden bg-white/10 border border-white/20 backdrop-blur-md group-hover:border-[#1988A3]/60 transition-all shadow-sm">
-                <img src={logo} alt="SkillPulse Logo" className="w-8 h-8 object-contain" />
+            <Link to="/" className="inline-flex items-center gap-2.5 mb-4 group">
+              <div className="w-9 h-9 rounded-xl flex items-center justify-center bg-white/10 border border-white/20 backdrop-blur-md group-hover:border-[#1988A3]/60 transition-all shadow-sm">
+                <svg className="w-5 h-5 text-[#11C6DE]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                </svg>
               </div>
               <span className="text-xl font-extrabold text-white tracking-tight">
                 SkillPulse <span className="text-[#11C6DE]">-AI</span>
