@@ -170,22 +170,41 @@ const FeaturePage = () => {
       {/* 4. WORKFORCE READINESS SCORE */}
       <section className="py-16 md:py-20 px-6 md:px-20 relative z-10">
         <div className="container mx-auto max-w-7xl grid md:grid-cols-2 items-center gap-14">
-          <div className="flex flex-col items-center justify-center glass-panel rounded-[2.5rem] py-14">
-            <div className="relative w-44 h-44">
-              <svg className="w-full h-full transform -rotate-90">
-                <circle cx="88" cy="88" r="80" stroke="currentColor" strokeWidth="12" fill="transparent" className="text-[#8A9CB7]/20" />
+          <div className="flex flex-col items-center justify-center glass-panel rounded-[2.5rem] py-14 px-8 text-center">
+            <div className="relative w-48 h-48 flex items-center justify-center">
+              <svg className="w-full h-full transform -rotate-90" viewBox="0 0 176 176">
                 <circle 
-                  cx="88" cy="88" r="80" stroke="currentColor" strokeWidth="12" fill="transparent" strokeDasharray="502.6" strokeDashoffset="90" className="text-[#1988A3]" 
+                  cx="88" 
+                  cy="88" 
+                  r="74" 
+                  stroke="currentColor" 
+                  strokeWidth="14" 
+                  fill="transparent" 
+                  className="text-[#8A9CB7]/25" 
+                />
+                <circle 
+                  cx="88" 
+                  cy="88" 
+                  r="74" 
+                  stroke="currentColor" 
+                  strokeWidth="14" 
+                  fill="transparent" 
+                  strokeDasharray="465" 
+                  strokeDashoffset={465 * (1 - (tenant.readinessScore / 100))} 
+                  strokeLinecap="round"
+                  className="text-[#1988A3] transition-all duration-1000 ease-out" 
                 />
               </svg>
-              <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className="text-4xl font-black text-[#17233E] tracking-tight">
+              <div className="absolute inset-0 flex flex-col items-center justify-center text-center pointer-events-none select-none">
+                <span className="text-5xl font-black text-[#17233E] tracking-tight leading-none mb-1">
                   {tenant.readinessScore}
                 </span>
-                <span className="text-xs font-mono font-bold text-[#5A6D89] uppercase tracking-widest mt-1">Score / 100</span>
+                <span className="text-[11px] font-mono font-bold text-[#5A6D89] uppercase tracking-wider">
+                  SCORE / 100
+                </span>
               </div>
             </div>
-            <p className="mt-6 font-mono font-bold text-[#1988A3] uppercase tracking-widest text-xs flex items-center gap-2">
+            <p className="mt-6 font-mono font-bold text-[#1988A3] uppercase tracking-widest text-xs flex items-center justify-center gap-2">
               <Activity className="w-4 h-4 animate-pulse" />
               <span>Org Workforce Readiness</span>
             </p>

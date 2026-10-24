@@ -45,12 +45,14 @@ const AboutPage = () => {
           </div>
           
           <div className="flex justify-center relative group">
-             <div className="absolute inset-0 bg-[#1988A3]/15 rounded-full blur-3xl opacity-50 pointer-events-none" />
-             <img 
-               src={aboutImg} 
-               alt="Intelligence Radar Visual" 
-               className="relative z-10 w-full max-w-md filter drop-shadow-[0_20px_40px_rgba(23,35,62,0.15)]" 
-             />
+             <div className="absolute -inset-4 bg-[#1988A3]/25 rounded-[2.5rem] blur-2xl opacity-60 pointer-events-none" />
+             <div className="relative z-10 bg-gradient-to-br from-[#17233E]/95 via-[#1B3154]/90 to-[#121E33]/95 backdrop-blur-2xl border border-white/20 rounded-[2.5rem] p-4 sm:p-5 shadow-[0_25px_60px_-15px_rgba(23,35,62,0.35)] overflow-hidden">
+               <img 
+                 src={aboutImg} 
+                 alt="Intelligence Radar Visual" 
+                 className="relative z-10 w-full max-w-md rounded-2xl object-cover shadow-inner" 
+               />
+             </div>
           </div>
         </div>
       </section>
