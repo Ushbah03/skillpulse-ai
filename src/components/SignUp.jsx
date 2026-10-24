@@ -58,14 +58,14 @@ const Icons = {
   )
 };
 
-// Reusable Controlled Input
+// Reusable Controlled Input with Authentic Frosted Glass Styling
 const AuthInput = ({ label, name, type = 'text', placeholder, value, onChange, icon, required = true, suffix }) => (
   <div className="flex flex-col gap-1.5 w-full text-left group">
-    <label className="text-slate-400 text-[11px] font-semibold ml-1 uppercase tracking-wider group-focus-within:text-indigo-400 transition-colors duration-300">
+    <label className="text-[#5A6D89] text-[11px] font-bold ml-1 uppercase tracking-wider group-focus-within:text-[#1988A3] transition-colors duration-200">
       {label}
     </label>
-    <div className="relative transform transition-transform duration-300 group-focus-within:translate-x-1 flex items-center">
-      <span className="absolute left-4 text-slate-400/60 group-focus-within:text-indigo-400 transition-colors duration-300 transform group-focus-within:scale-110 z-10">
+    <div className="relative flex items-center">
+      <span className="absolute left-4 text-[#8A9CB7] group-focus-within:text-[#1988A3] transition-colors duration-200 z-10 pointer-events-none">
         {icon}
       </span>
       <input
@@ -75,9 +75,9 @@ const AuthInput = ({ label, name, type = 'text', placeholder, value, onChange, i
         value={value}
         onChange={onChange}
         required={required}
-        className="w-full bg-slate-900/40 border border-slate-700/50 text-sm text-slate-200 px-11 py-3.5 rounded-2xl focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/50 transition-all duration-300 placeholder:text-slate-600 shadow-inner"
+        className="w-full bg-white/60 border border-[#8A9CB7]/30 text-sm text-[#17233E] px-11 py-3.5 rounded-2xl focus:outline-none focus:border-[#1988A3] focus:ring-2 focus:ring-[#1988A3]/25 transition-all placeholder:text-[#8A9CB7] shadow-inner hover:border-[#8A9CB7]/50"
       />
-      {suffix && <span className="absolute right-4 text-slate-500 text-sm font-medium z-10">{suffix}</span>}
+      {suffix && <span className="absolute right-4 text-[#8A9CB7] text-xs font-semibold z-10 pointer-events-none">{suffix}</span>}
     </div>
   </div>
 );
@@ -149,13 +149,12 @@ const SignUp = () => {
           localStorage.setItem('user', JSON.stringify(userData));
 
           if (signupType === 'create') {
-            // Initiate Stripe Checkout for Selected Plan
             try {
               const seats = formData.selectedPlan === 'Enterprise AI' ? 1000 : formData.selectedPlan === 'Professional' ? 250 : 30;
               const checkoutRes = await import('../services/api').then(m => m.paymentAPI.createCheckoutSession(userData.tenant.id, formData.selectedPlan, seats));
               if (checkoutRes?.success && checkoutRes.url) {
                 window.location.href = checkoutRes.url;
-                return; // Stop execution here, we are redirecting
+                return;
               }
             } catch (paymentErr) {
               console.error('Failed to initiate checkout:', paymentErr);
@@ -164,7 +163,6 @@ const SignUp = () => {
               return;
             }
           } else {
-            // Route based on status for normal join
             const userRole = userData?.role;
             const { getRoleDefaultPath } = await import('./ProtectedRoute');
             window.location.href = getRoleDefaultPath(userRole);
@@ -249,51 +247,45 @@ const SignUp = () => {
         lastName,
         isNewWorkspace: signupType === 'create',
         organizationName: signupType === 'create' ? formData.organizationName : undefined,
-        tenantSlug: signupType === 'create' ? formData.workspaceSubdomain : formData.inviteCode,
-        role: roleMap[formData.requestedRole] || 'EMPLOYEE'
+        workspaceSubdomain: signupType === 'create' ? formData.workspaceSubdomain : undefined,
+        inviteCode: signupType === 'join' ? formData.inviteCode : undefined,
+        requestedRole: signupType === 'create' ? 'COMPANY_ADMIN' : (roleMap[formData.requestedRole] || 'EMPLOYEE'),
+        plan: signupType === 'create' ? formData.selectedPlan : undefined,
       };
 
       const res = await authAPI.register(payload);
-      
-      if (res?.success) {
-        if (signupType === 'create') {
-          // Immediately log them in so they can access the post-payment page
-          localStorage.setItem('token', res.token);
-          localStorage.setItem('user', JSON.stringify(res.data));
 
-          // Initiate Stripe Checkout for Selected Plan
+      if (res?.success) {
+        setShowPopup(true);
+        if (signupType === 'create') {
           try {
             const seats = formData.selectedPlan === 'Enterprise AI' ? 1000 : formData.selectedPlan === 'Professional' ? 250 : 30;
-            const checkoutRes = await import('../services/api').then(m => m.paymentAPI.createCheckoutSession(res.data.tenant.id, formData.selectedPlan, seats));
+            const checkoutRes = await import('../services/api').then(m => m.paymentAPI.createCheckoutSession(res.user?.tenant?.id || res.tenant?.id, formData.selectedPlan, seats));
             if (checkoutRes?.success && checkoutRes.url) {
               window.location.href = checkoutRes.url;
-              return; // Stop execution here, we are redirecting
+              return;
             }
           } catch (paymentErr) {
-            console.error('Failed to initiate checkout:', paymentErr);
-            setErrorMessage(paymentErr?.response?.data?.message || paymentErr?.message || 'Stripe Checkout failed to initialize. Please try again.');
-            setIsSubmitting(false);
-            return;
+            console.error('Failed to initiate checkout after signup:', paymentErr);
           }
-        } else {
-          // Join Existing Workspace — save user & token, ProtectedRoute will show ApprovalPendingWall
-          localStorage.setItem('token', res.token);
-          localStorage.setItem('user', JSON.stringify(res.data));
-          navigate('/company-admin'); // ProtectedRoute intercepts and shows the approval wall
         }
+
+        setTimeout(() => {
+          navigate('/login');
+        }, 2500);
       } else {
-        setErrorMessage(res?.message || 'Registration failed. Please check your details.');
+        setErrorMessage(res?.message || 'Registration failed. Please check your data.');
       }
     } catch (err) {
-      setErrorMessage(err?.response?.data?.message || err?.message || 'An error occurred during registration.');
+      setErrorMessage(err?.response?.data?.message || err?.message || 'Connection error. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const fadeInUp = {
-    hidden: { opacity: 0, y: 40, scale: 0.96 },
-    visible: { opacity: 1, y: 0, scale: 1, transition: { type: 'spring', stiffness: 120, damping: 14 } },
+    hidden: { opacity: 0, y: 30 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] } },
   };
 
   const staggerContainer = {
@@ -302,19 +294,15 @@ const SignUp = () => {
   };
 
   return (
-    <div
-      className="min-h-screen flex items-center justify-center p-3 sm:p-6 md:p-10 font-sans text-white relative overflow-hidden selection:bg-indigo-600"
-      style={{ background: `linear-gradient(135deg, #0F172A 0%, #1E293B 50%, #312E81 100%)` }}
-    >
-      <style>{`
-        @keyframes drift-light { 0%, 100% { transform: translate(0px, 0px) scale(1); } 50% { transform: translate(40px, -30px) scale(1.15); } }
-        @keyframes drift-light-rev { 0%, 100% { transform: translate(0px, 0px) scale(1); } 50% { transform: translate(-50px, 40px) scale(1.2); } }
-        .bg-glow-1 { animation: drift-light 10s ease-in-out infinite; }
-        .bg-glow-2 { animation: drift-light-rev 14s ease-in-out infinite; }
-      `}</style>
-
-      <div className="absolute top-[-10%] left-[-10%] w-[600px] h-[600px] bg-indigo-600/15 blur-[140px] rounded-full pointer-events-none bg-glow-1" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[700px] h-[700px] bg-purple-600/10 blur-[150px] rounded-full pointer-events-none bg-glow-2" />
+    <div className="min-h-screen flex items-center justify-center p-3 sm:p-6 md:p-10 font-sans text-[#17233E] bg-[#E9EAF7] relative overflow-hidden selection:bg-[#1988A3] selection:text-white">
+      {/* Ambient Gradient Depth - Vibrant glowing mesh lights behind frosted glass */}
+      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+        <div className="absolute -top-20 left-1/4 w-[550px] h-[550px] bg-[#1988A3]/25 blur-[100px] rounded-full" />
+        <div className="absolute top-1/3 -right-20 w-[500px] h-[500px] bg-[#11C6DE]/20 blur-[110px] rounded-full" />
+        <div className="absolute -bottom-20 -left-20 w-[600px] h-[600px] bg-[#1B3154]/20 blur-[110px] rounded-full" />
+        <div className="absolute bottom-10 right-1/4 w-[550px] h-[550px] bg-[#8A9CB7]/35 blur-[100px] rounded-full" />
+        <div className="absolute inset-0 bg-[radial-gradient(rgba(27,49,84,0.10)_1px,transparent_1px)] [background-size:28px_28px] opacity-40" />
+      </div>
 
       {/* POPUP NOTIFICATION */}
       <AnimatePresence>
@@ -323,75 +311,97 @@ const SignUp = () => {
             initial={{ opacity: 0, y: -40, scale: 0.85 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -20, scale: 0.9 }}
-            className="fixed top-6 right-6 bg-indigo-600/95 backdrop-blur-xl text-white px-6 py-4 rounded-2xl shadow-[0_20px_50px_rgba(99,102,241,0.3)] border border-white/20 z-50 max-w-sm"
+            className="fixed top-6 right-6 bg-[#17233E]/95 backdrop-blur-xl text-white px-6 py-4 rounded-2xl shadow-[0_20px_50px_rgba(23,35,62,0.4)] border border-white/20 z-50 max-w-sm"
           >
             <p className="text-sm font-bold flex items-center gap-2">
-              <span className="inline-block w-2 h-2 rounded-full bg-green-400 animate-ping" />
+              <span className="inline-block w-2 h-2 rounded-full bg-[#11C6DE] animate-ping" />
               Registration Submitted!
             </p>
-            <p className="text-xs text-slate-200 mt-1 font-medium">
+            <p className="text-xs text-[#E9EAF7] mt-1 font-medium">
               {signupType === 'create'
-                ? `Workspace '${formData.workspaceSubdomain}.skillpulse-ai.com' is pending System Admin approval.`
+                ? `Workspace '${formData.workspaceSubdomain}.skillpulse.ai' is initialized. Redirecting...`
                 : `Account created for role ${formData.requestedRole}. Redirecting to login...`}
             </p>
           </motion.div>
         )}
       </AnimatePresence>
 
-      <div className="container mx-auto max-w-6xl grid lg:grid-cols-2 gap-8 items-center relative z-10 py-3 sm:py-6">
+      <div className="container mx-auto max-w-6xl grid lg:grid-cols-2 gap-10 items-center relative z-10 py-6 sm:py-10">
         
         {/* LEFT BRANDING */}
         <motion.div initial="hidden" animate="visible" variants={staggerContainer} className="hidden lg:block space-y-6 text-left">
           <motion.div variants={fadeInUp}>
             <Link to="/" className="inline-flex items-center gap-2.5 mb-6 group">
-              <div className="w-9 h-9 bg-indigo-600 rounded-xl flex items-center justify-center group-hover:bg-indigo-500 shadow-lg shadow-indigo-600/30 group-hover:scale-105 transform transition-all duration-300">
-                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="w-10 h-10 bg-[#17233E] rounded-xl flex items-center justify-center shadow-lg shadow-[#17233E]/30 group-hover:scale-105 transition-all duration-300 border border-white/40">
+                <svg className="w-5 h-5 text-[#11C6DE]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                 </svg>
               </div>
-              <span className="text-2xl font-bold tracking-tight bg-clip-text bg-gradient-to-r from-white to-slate-200 group-hover:text-indigo-300 transition-colors">
-                SkillPulse-AI
+              <span className="text-2xl font-extrabold tracking-tight text-[#17233E]">
+                SkillPulse <span className="text-[#1988A3]">-AI</span>
               </span>
             </Link>
           </motion.div>
 
-          <motion.h1 variants={fadeInUp} className="text-3xl lg:text-4xl font-bold leading-tight tracking-tight bg-clip-text bg-gradient-to-r from-white via-white to-slate-400">
+          <motion.h1 variants={fadeInUp} className="text-3xl lg:text-4xl font-extrabold leading-tight tracking-tight text-[#17233E]">
             Enterprise Skill <br />
-            <span className="bg-clip-text bg-gradient-to-r from-indigo-400 via-purple-400 to-blue-400 text-transparent">Intelligence SaaS</span>
+            <span className="bg-gradient-to-r from-[#17233E] via-[#1B3154] to-[#1988A3] bg-clip-text text-transparent">
+              Intelligence SaaS
+            </span>
           </motion.h1>
 
-          <motion.p variants={fadeInUp} className="text-slate-400 text-sm max-w-md opacity-90 leading-relaxed">
-            Provision isolated multi-tenant organization workspaces, bridge skill gaps with AI analytics, and construct optimized career paths.
+          <motion.p variants={fadeInUp} className="text-[#5A6D89] text-sm max-w-md leading-relaxed font-normal">
+            Provision isolated multi-tenant organization workspaces, bridge skill gaps with AI models, and construct optimized career pathways.
           </motion.p>
+
+          <motion.div variants={fadeInUp} className="p-6 rounded-3xl max-w-sm glass-panel space-y-3">
+            <div className="flex items-center gap-3 text-xs font-bold text-[#17233E]">
+              <span className="w-2 h-2 rounded-full bg-[#1988A3]" /> Multi-Tenant Row-Level Security
+            </div>
+            <div className="flex items-center gap-3 text-xs font-bold text-[#17233E]">
+              <span className="w-2 h-2 rounded-full bg-[#11C6DE]" /> Live AI Skill Readiness Scoring
+            </div>
+            <div className="flex items-center gap-3 text-xs font-bold text-[#17233E]">
+              <span className="w-2 h-2 rounded-full bg-[#5A6D89]" /> Seamless Stripe Enterprise Invoicing
+            </div>
+          </motion.div>
         </motion.div>
 
         {/* RIGHT FORM */}
         <motion.div
-          initial={{ opacity: 0, y: 60, scale: 0.95 }}
+          initial={{ opacity: 0, y: 50, scale: 0.97 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-          className="bg-[#111827]/80 backdrop-blur-2xl border border-white/10 rounded-3xl md:rounded-[2.5rem] p-5 sm:p-8 md:p-10 shadow-xl w-full max-w-lg mx-auto hover:border-white/20 transition-all duration-500"
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          className="bg-white/70 backdrop-blur-3xl border border-white/90 rounded-3xl md:rounded-[2.5rem] p-5 sm:p-8 md:p-10 shadow-[0_30px_70px_rgba(23,35,62,0.12),inset_0_1.5px_2px_rgba(255,255,255,1)] w-full max-w-lg mx-auto transition-all duration-300"
         >
           <div className="mb-5 text-left">
-            <h2 className="text-2xl font-bold mb-1 tracking-tight bg-clip-text bg-gradient-to-r from-white to-slate-200">
+            <h2 className="text-2xl font-extrabold mb-1 tracking-tight text-[#17233E]">
               Create your account
             </h2>
-            <p className="text-slate-400 text-xs font-medium">Join or setup your SkillPulse-AI enterprise workspace</p>
+            <p className="text-[#5A6D89] text-xs font-medium">Join or setup your SkillPulse-AI enterprise workspace</p>
           </div>
 
           {/* TOGGLE WORKSPACE MODE */}
-          <div className="grid grid-cols-2 gap-2 p-1 bg-[#1E2536]/60 rounded-2xl mb-6 border border-white/5">
+          <div className="grid grid-cols-2 gap-2 p-1.5 bg-[#E9EAF7] rounded-2xl mb-6 border border-[#8A9CB7]/30">
             <button
               type="button"
               onClick={() => handleModeSwitch('create')}
-              className={`py-2 text-xs font-bold rounded-xl transition-all ${signupType === 'create' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/30' : 'text-slate-400 hover:text-white'}`}
+              className={`py-2 text-xs font-bold rounded-xl transition-all ${
+                signupType === 'create' 
+                  ? 'bg-[#17233E] text-white shadow-md' 
+                  : 'text-[#5A6D89] hover:text-[#17233E]'
+              }`}
             >
                Create New Workspace
             </button>
             <button
               type="button"
               onClick={() => handleModeSwitch('join')}
-              className={`py-2 text-xs font-bold rounded-xl transition-all ${signupType === 'join' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/30' : 'text-slate-400 hover:text-white'}`}
+              className={`py-2 text-xs font-bold rounded-xl transition-all ${
+                signupType === 'join' 
+                  ? 'bg-[#17233E] text-white shadow-md' 
+                  : 'text-[#5A6D89] hover:text-[#17233E]'
+              }`}
             >
                Join Existing Workspace
             </button>
@@ -404,7 +414,7 @@ const SignUp = () => {
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
                 exit={{ opacity: 0, height: 0 }}
-                className="mb-5 bg-red-500/10 border border-red-500/30 text-red-400 text-xs py-3 px-4 rounded-xl text-left font-medium"
+                className="mb-5 bg-red-50 border border-red-200 text-red-600 text-xs py-3 px-4 rounded-xl text-left font-medium"
               >
                 ⚠️ {errorMessage}
               </motion.div>
@@ -415,7 +425,7 @@ const SignUp = () => {
             <AuthInput
               label="Full Name"
               name="fullName"
-              placeholder="e.g. Alex Johnson"
+              placeholder="Alex Johnson"
               value={formData.fullName}
               onChange={handleChange}
               icon={<Icons.User />}
@@ -444,7 +454,7 @@ const SignUp = () => {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="text-slate-500 hover:text-white transition-colors focus:outline-none"
+                    className="text-[#8A9CB7] hover:text-[#17233E] transition-colors focus:outline-none"
                     title={showPassword ? "Hide password" : "Show password"}
                   >
                     {showPassword ? <Icons.EyeOff /> : <Icons.Eye />}
@@ -463,7 +473,7 @@ const SignUp = () => {
                   <button
                     type="button"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="text-slate-500 hover:text-white transition-colors focus:outline-none"
+                    className="text-[#8A9CB7] hover:text-[#17233E] transition-colors focus:outline-none"
                     title={showConfirmPassword ? "Hide password" : "Show password"}
                   >
                     {showConfirmPassword ? <Icons.EyeOff /> : <Icons.Eye />}
@@ -516,27 +526,27 @@ const SignUp = () => {
 
             {/* ROLE SELECTOR */}
             <div className="flex flex-col gap-1.5 text-left group">
-              <label className="text-slate-400 text-[11px] font-semibold ml-1 uppercase tracking-wider group-focus-within:text-indigo-400 transition-colors duration-300">
+              <label className="text-[#5A6D89] text-[11px] font-bold ml-1 uppercase tracking-wider group-focus-within:text-[#1988A3] transition-colors">
                 {signupType === 'create' ? 'Primary Workspace Role' : 'Requested Role'}
               </label>
-              <div className="relative transform transition-transform duration-300 group-focus-within:translate-x-1">
+              <div className="relative">
                 <select
                   name="requestedRole"
                   value={formData.requestedRole}
                   onChange={handleChange}
-                  className="w-full bg-[#1E2536]/40 border border-white/5 rounded-2xl py-3.5 px-4 text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/60 focus:border-indigo-500/40 transition-all backdrop-blur-md appearance-none cursor-pointer hover:border-white/10"
+                  className="w-full bg-white/60 border border-[#8A9CB7]/30 rounded-2xl py-3.5 px-4 text-sm text-[#17233E] focus:outline-none focus:ring-2 focus:ring-[#1988A3]/25 focus:border-[#1988A3] transition-all appearance-none cursor-pointer hover:border-[#8A9CB7]/50"
                 >
                   {signupType === 'create' ? (
-                    <option className="bg-[#111827] text-white" value="Company Admin">Company Admin (Tenant Owner)</option>
+                    <option value="Company Admin">Company Admin (Tenant Owner)</option>
                   ) : (
                     <>
-                      <option className="bg-[#111827] text-white" value="Employee">Employee</option>
-                      <option className="bg-[#111827] text-white" value="Team Leader">Team Leader</option>
-                      <option className="bg-[#111827] text-white" value="HR Manager">HR Manager</option>
+                      <option value="Employee">Employee</option>
+                      <option value="Team Leader">Team Leader</option>
+                      <option value="HR Manager">HR Manager</option>
                     </>
                   )}
                 </select>
-                <div className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-slate-400 group-focus-within:text-indigo-400 transition-colors">
+                <div className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-[#8A9CB7] group-focus-within:text-[#1988A3] transition-colors">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
                   </svg>
@@ -544,22 +554,22 @@ const SignUp = () => {
               </div>
 
               {signupType === 'create' && (
-                <div className="flex flex-col gap-1.5 text-left group mt-4">
-                  <label className="text-slate-400 text-[11px] font-semibold ml-1 uppercase tracking-wider group-focus-within:text-indigo-400 transition-colors duration-300">
+                <div className="flex flex-col gap-1.5 text-left group mt-3">
+                  <label className="text-[#5A6D89] text-[11px] font-bold ml-1 uppercase tracking-wider group-focus-within:text-[#1988A3] transition-colors">
                     Subscription Plan
                   </label>
-                  <div className="relative transform transition-transform duration-300 group-focus-within:translate-x-1">
+                  <div className="relative">
                     <select
                       name="selectedPlan"
                       value={formData.selectedPlan}
                       onChange={handleChange}
-                      className="w-full bg-[#1E2536]/40 border border-white/5 rounded-2xl py-3.5 px-4 text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/60 focus:border-indigo-500/40 transition-all backdrop-blur-md appearance-none cursor-pointer hover:border-white/10"
+                      className="w-full bg-white/60 border border-[#8A9CB7]/30 rounded-2xl py-3.5 px-4 text-sm text-[#17233E] focus:outline-none focus:ring-2 focus:ring-[#1988A3]/25 focus:border-[#1988A3] transition-all appearance-none cursor-pointer hover:border-[#8A9CB7]/50"
                     >
-                      <option className="bg-[#111827] text-white" value="Starter">Starter ($600/mo - 30 Seats)</option>
-                      <option className="bg-[#111827] text-white" value="Professional">Professional ($1200/mo - 250 Seats)</option>
-                      <option className="bg-[#111827] text-white" value="Enterprise AI">Enterprise AI ($2500/mo - 1000 Seats)</option>
+                      <option value="Starter">Starter ($600/mo - 30 Seats)</option>
+                      <option value="Professional">Professional ($1200/mo - 250 Seats)</option>
+                      <option value="Enterprise AI">Enterprise AI ($2500/mo - 1000 Seats)</option>
                     </select>
-                    <div className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-slate-400 group-focus-within:text-indigo-400 transition-colors">
+                    <div className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-[#8A9CB7] group-focus-within:text-[#1988A3] transition-colors">
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
                       </svg>
@@ -567,19 +577,19 @@ const SignUp = () => {
                   </div>
                 </div>
               )}
-              <p className="text-[10px] text-slate-500 mt-1 pl-1 font-medium">
+              <p className="text-[10px] text-[#8A9CB7] mt-1 pl-1 font-medium">
                 {signupType === 'create'
-                  ? 'Creating a new organization tenant requires approval from System Admin'
+                  ? 'Creating a new organization tenant provisions row-level database partitioning.'
                   : 'Role assignment subject to approval by Company Admin'}
               </p>
             </div>
 
             <motion.button
-              whileHover={{ scale: 1.02, y: -2, boxShadow: '0 15px 30px rgba(99,102,241,0.4)' }}
-              whileTap={{ scale: 0.98 }}
+              whileHover={{ scale: isSubmitting ? 1 : 1.01, y: isSubmitting ? 0 : -1 }}
+              whileTap={{ scale: isSubmitting ? 1 : 0.99 }}
               disabled={isSubmitting}
               type="submit"
-              className="w-full bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 disabled:opacity-50 py-4 rounded-full font-bold transition-all duration-300 text-base mt-2 shadow-lg shadow-indigo-600/20 flex items-center justify-center gap-2"
+              className="w-full bg-[#17233E] hover:bg-[#1988A3] active:bg-[#157289] disabled:opacity-50 py-3.5 sm:py-4 rounded-full font-extrabold transition-all duration-300 text-sm mt-2 shadow-xl shadow-[#17233E]/20 hover:shadow-[#1988A3]/30 text-white flex items-center justify-center gap-2"
             >
               {isSubmitting ? (
                 <>
@@ -594,22 +604,22 @@ const SignUp = () => {
 
           {/* Divider */}
           <div className="flex items-center gap-3 mt-5">
-            <div className="flex-1 h-px bg-slate-700/60"></div>
-            <span className="text-xs text-slate-500 font-medium">or continue with</span>
-            <div className="flex-1 h-px bg-slate-700/60"></div>
+            <div className="flex-1 h-px bg-[#8A9CB7]/30"></div>
+            <span className="text-[10px] uppercase font-bold text-[#8A9CB7] tracking-widest">or continue with</span>
+            <div className="flex-1 h-px bg-[#8A9CB7]/30"></div>
           </div>
 
           {/* Google SSO Button */}
           <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
+            whileHover={{ scale: 1.01, y: -1 }}
+            whileTap={{ scale: 0.99 }}
             type="button"
             onClick={() => handleGoogleSSO()}
             disabled={googleLoading}
-            className="w-full flex items-center justify-center gap-3 mt-4 py-3.5 bg-white/5 hover:bg-white/10 border border-slate-700/60 hover:border-slate-500 rounded-full text-sm font-semibold text-white transition-all duration-200 disabled:opacity-50"
+            className="w-full flex items-center justify-center gap-2.5 mt-4 py-3 bg-white/80 hover:bg-white border border-[#8A9CB7]/30 rounded-2xl text-xs sm:text-sm font-bold text-[#17233E] transition-all shadow-sm disabled:opacity-50"
           >
             {googleLoading ? (
-              <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              <span className="w-4 h-4 border-2 border-[#1988A3] border-t-transparent rounded-full animate-spin" />
             ) : (
               <svg className="w-5 h-5" viewBox="0 0 24 24">
                 <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -621,9 +631,9 @@ const SignUp = () => {
             {googleLoading ? 'Signing in with Google...' : 'Continue with Google'}
           </motion.button>
 
-          <p className="text-center text-sm text-slate-500 mt-6 font-medium">
+          <p className="text-center text-xs sm:text-sm text-[#5A6D89] mt-6 font-medium">
             Already registered?{' '}
-            <Link to="/login" className="text-white font-bold underline hover:text-indigo-400 transition-colors">
+            <Link to="/login" className="text-[#1988A3] font-bold hover:text-[#157289] hover:underline transition-colors ml-1">
               Sign In
             </Link>
           </p>
