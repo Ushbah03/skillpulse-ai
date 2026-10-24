@@ -267,7 +267,7 @@ const TeamFormation = () => {
           <div className="col-span-12 lg:col-span-8 space-y-8">
             
             {/* Project Parameters Card */}
-            <div className="bg-white/80 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/60 shadow-xl shadow-[#1B3154]/5 space-y-6">
+            <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/85 shadow-xl shadow-[#1B3154]/6 space-y-6">
               <h3 className="text-lg font-bold text-slate-900">Project Requirements & Target Skills</h3>
               
               <div className="grid grid-cols-3 gap-6">
@@ -277,7 +277,7 @@ const TeamFormation = () => {
                     type="text" 
                     value={projectName}
                     onChange={(e) => setProjectName(e.target.value)}
-                    className="w-full bg-white/80 backdrop-blur-md border border-white/80 rounded-xl px-4 py-2.5 text-xs md:text-sm font-semibold text-[#17233E] focus:outline-none focus:border-[#1988A3] shadow-sm"
+                    className="w-full bg-[#F0F5FB]/90 backdrop-blur-md border border-white/85 rounded-xl px-4 py-2.5 text-xs md:text-sm font-semibold text-[#17233E] focus:outline-none focus:border-[#1988A3] shadow-sm"
                   />
                 </div>
                 <div>
@@ -285,7 +285,7 @@ const TeamFormation = () => {
                   <select 
                     value={proficiency}
                     onChange={(e) => setProficiency(e.target.value)}
-                    className="w-full bg-white/80 backdrop-blur-md border border-white/80 rounded-xl px-4 py-2.5 text-xs md:text-sm font-semibold text-[#17233E] focus:outline-none focus:border-[#1988A3] cursor-pointer shadow-sm"
+                    className="w-full bg-[#F0F5FB]/90 backdrop-blur-md border border-white/85 rounded-xl px-4 py-2.5 text-xs md:text-sm font-semibold text-[#17233E] focus:outline-none focus:border-[#1988A3] cursor-pointer shadow-sm"
                   >
                     <option>Mid-Senior</option>
                     <option>Senior-Lead</option>
@@ -297,7 +297,7 @@ const TeamFormation = () => {
                   <select 
                     value={complexity}
                     onChange={(e) => setComplexity(e.target.value)}
-                    className="w-full bg-white/80 backdrop-blur-md border border-white/80 rounded-xl px-4 py-2.5 text-xs md:text-sm font-semibold text-[#17233E] focus:outline-none focus:border-[#1988A3] cursor-pointer shadow-sm"
+                    className="w-full bg-[#F0F5FB]/90 backdrop-blur-md border border-white/85 rounded-xl px-4 py-2.5 text-xs md:text-sm font-semibold text-[#17233E] focus:outline-none focus:border-[#1988A3] cursor-pointer shadow-sm"
                   >
                     <option>High</option>
                     <option>Critical</option>
@@ -308,7 +308,7 @@ const TeamFormation = () => {
 
               <div>
                 <label className="text-xs font-black uppercase tracking-wider text-slate-400 block mb-2">Target Skills (Press Enter to Add)</label>
-                <div className="flex flex-wrap gap-2 items-center p-3 bg-white/60 backdrop-blur-md border border-white/80 rounded-2xl shadow-sm">
+                <div className="flex flex-wrap gap-2 items-center p-3 bg-[#E4EEF8]/60 backdrop-blur-md border border-white/85 rounded-2xl shadow-sm">
                   {skills.map(s => (
                     <span key={s} className="bg-gradient-to-r from-[#1988A3] to-[#11C6DE] text-white text-xs font-bold px-3 py-1.5 rounded-xl flex items-center gap-2 shadow-sm">
                       {s}
@@ -369,7 +369,7 @@ const TeamFormation = () => {
             )}
 
             {/* AI Matched Squad Results */}
-            <div className="bg-white/80 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/60 shadow-xl shadow-[#1B3154]/5 space-y-6">
+            <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/85 shadow-xl shadow-[#1B3154]/6 space-y-6">
               <div className="flex justify-between items-center">
                 <div>
                   <h3 className="text-xl font-bold text-slate-900 tracking-tight">AI Recommended Project Squad</h3>

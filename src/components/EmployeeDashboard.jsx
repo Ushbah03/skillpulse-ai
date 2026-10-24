@@ -64,10 +64,10 @@ const EmployeeDashboard = () => {
   const workspaceName = user.tenant?.name || storedUser.tenant?.name || 'Enterprise Workspace';
   const userInitials = `${displayName.charAt(0) || 'E'}`;
 
-  const skillsList = user.userSkills || user.skills || [];
+  const skillsList = Array.isArray(user.userSkills) ? user.userSkills : (Array.isArray(user.skills) ? user.skills : []);
   const totalSkillsCount = skillsList.length;
   const validatedSkillsCount = skillsList.filter(s => s.verified || s.isVerified).length;
-  const activeGapsList = gaps;
+  const activeGapsList = Array.isArray(gaps) ? gaps : (Array.isArray(gaps?.gaps) ? gaps.gaps : (Array.isArray(gaps?.data) ? gaps.data : []));
 
   // Calculate Real Radar Data from actual PostgreSQL skills
   const radarMap = {};
@@ -121,12 +121,12 @@ const EmployeeDashboard = () => {
   );
 
   // Top Critical Gap for AI Card
-  const topGap = activeGapsList[0] || null;
+  const topGap = safeGaps[0] || null;
   const estimatedImpact = topGap ? `+${Math.round(((topGap.requiredLevel - topGap.currentLevel) / 5.0) * 100)}%` : '+100%';
 
   // Real DB System Notifications
   const dbNotifications = [
-    ...(activeGapsList.map(g => ({
+    ...(safeGaps.map(g => ({
       id: `gap-${g.id}`,
       title: `Active Skill Gap: ${g.skill?.name}`,
       desc: `Required level ${g.requiredLevel} vs current ${g.currentLevel} (${g.severity || 'HIGH'} severity)`,
@@ -182,7 +182,7 @@ const EmployeeDashboard = () => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search skills, gaps, courses..." 
-              className="pl-11 pr-9 py-2.5 bg-white/70 border border-[#8A9CB7]/30 rounded-2xl w-full md:w-72 text-sm font-medium text-[#17233E] placeholder:text-[#8A9CB7] focus:outline-none focus:ring-2 focus:ring-[#1988A3]/25 focus:border-[#1988A3] shadow-sm transition-all" 
+              className="pl-11 pr-9 py-2.5 bg-[#F0F5FB]/85 border border-[#8A9CB7]/30 rounded-2xl w-full md:w-72 text-sm font-medium text-[#17233E] placeholder:text-[#8A9CB7] focus:outline-none focus:ring-2 focus:ring-[#1988A3]/25 focus:border-[#1988A3] shadow-sm transition-all" 
             />
             {searchQuery && (
               <button 
@@ -205,7 +205,7 @@ const EmployeeDashboard = () => {
                       <div 
                         key={c.id}
                         onClick={() => { navigate('/dashboard/courses'); setSearchQuery(''); }}
-                        className="p-2 hover:bg-white/60 rounded-xl cursor-pointer flex items-center justify-between transition-colors"
+                        className="p-2 hover:bg-[#E4EEF8]/60 rounded-xl cursor-pointer flex items-center justify-between transition-colors"
                       >
                         <span className="text-xs font-bold text-[#17233E]">{c.title}</span>
                         <ChevronRight className="w-3.5 h-3.5 text-[#8A9CB7]" />
@@ -221,7 +221,7 @@ const EmployeeDashboard = () => {
                       <div 
                         key={s.id}
                         onClick={() => { navigate('/dashboard/profile'); setSearchQuery(''); }}
-                        className="p-2 hover:bg-white/60 rounded-xl cursor-pointer flex items-center justify-between transition-colors"
+                        className="p-2 hover:bg-[#E4EEF8]/60 rounded-xl cursor-pointer flex items-center justify-between transition-colors"
                       >
                         <span className="text-xs font-bold text-[#17233E]">{s.skill?.name} (Lvl {s.proficiencyLevel})</span>
                         <ChevronRight className="w-3.5 h-3.5 text-[#8A9CB7]" />
@@ -237,7 +237,7 @@ const EmployeeDashboard = () => {
                       <div 
                         key={g.id}
                         onClick={() => { navigate('/dashboard/results'); setSearchQuery(''); }}
-                        className="p-2 hover:bg-white/60 rounded-xl cursor-pointer flex items-center justify-between transition-colors"
+                        className="p-2 hover:bg-[#E4EEF8]/60 rounded-xl cursor-pointer flex items-center justify-between transition-colors"
                       >
                         <span className="text-xs font-bold text-[#17233E]">{g.skill?.name} ({g.severity})</span>
                         <ChevronRight className="w-3.5 h-3.5 text-[#8A9CB7]" />
@@ -281,7 +281,7 @@ const EmployeeDashboard = () => {
                     <div 
                       key={n.id}
                       onClick={() => { navigate(n.path); setShowNotifications(false); }}
-                      className="p-2.5 rounded-xl bg-white/40 hover:bg-white/80 cursor-pointer border border-[#8A9CB7]/20 transition-all flex items-start gap-2.5"
+                      className="p-2.5 rounded-xl bg-white/40 hover:bg-[#E4EEF8]/80 cursor-pointer border border-[#8A9CB7]/20 transition-all flex items-start gap-2.5"
                     >
                       {n.type === 'warning' ? (
                         <AlertCircle className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
@@ -561,7 +561,7 @@ const GapItem = ({ title, status, color, progress, target, current }) => (
 const CourseCard = ({ title, skill, time, progress, onClick }) => (
   <div 
     onClick={onClick} 
-    className="bg-white/50 border border-[#8A9CB7]/25 hover:border-[#1988A3]/50 hover:bg-white/80 p-5 rounded-2xl transition-all cursor-pointer group"
+    className="bg-[#E4EEF8]/60 border border-white/85 hover:border-[#1988A3]/50 hover:bg-[#E4EEF8]/80 p-5 rounded-2xl transition-all cursor-pointer group"
   >
     <div className="flex gap-3.5 items-center mb-3">
       <div className="w-10 h-10 rounded-xl bg-[#1988A3]/10 text-[#1988A3] font-mono font-extrabold text-xs flex items-center justify-center shrink-0 border border-[#1988A3]/20">

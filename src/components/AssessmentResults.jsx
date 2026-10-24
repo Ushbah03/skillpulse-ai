@@ -295,7 +295,7 @@ const AssessmentResults = () => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search results..." 
-              className="pl-11 pr-4 py-2.5 bg-white/70 backdrop-blur-md border border-[#8A9CB7]/30 rounded-2xl w-60 md:w-72 text-sm text-[#17233E] placeholder:text-[#8A9CB7] focus:outline-none focus:border-[#1988A3] shadow-sm transition-all" 
+              className="pl-11 pr-4 py-2.5 bg-[#F0F5FB]/85 backdrop-blur-md border border-[#8A9CB7]/30 rounded-2xl w-60 md:w-72 text-sm text-[#17233E] placeholder:text-[#8A9CB7] focus:outline-none focus:border-[#1988A3] shadow-sm transition-all" 
             />
           </div>
           <button 
@@ -339,7 +339,7 @@ const AssessmentResults = () => {
                   <div 
                     key={t.id} 
                     onClick={() => setSelectedResult(t)}
-                    className="p-5 bg-white/70 backdrop-blur-md border border-[#8A9CB7]/25 rounded-2xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 hover:border-[#1988A3]/40 hover:shadow-md transition-all cursor-pointer group"
+                    className="p-5 bg-[#F0F5FB]/85 backdrop-blur-md border border-[#8A9CB7]/25 rounded-2xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 hover:border-[#1988A3]/40 hover:shadow-md transition-all cursor-pointer group"
                   >
                     <div className="flex items-center gap-4">
                       <div className={`w-12 h-12 rounded-2xl flex items-center justify-center font-black text-sm shrink-0 border ${
@@ -440,7 +440,7 @@ const AssessmentResults = () => {
       {/* Detailed Result Inspection Modal */}
       {selectedResult && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#17233E]/60 backdrop-blur-md p-6 overflow-y-auto">
-          <div className="bg-white/95 backdrop-blur-2xl rounded-[2.5rem] shadow-2xl w-full max-w-2xl overflow-hidden border border-white/80">
+          <div className="bg-[#F5F9FD]/95 backdrop-blur-2xl rounded-[2.5rem] shadow-2xl w-full max-w-2xl overflow-hidden border border-white/80">
             
             {/* Modal Header */}
             <div className="bg-gradient-to-r from-[#17233E] via-[#1B3154] to-[#121E33] p-8 text-white flex justify-between items-center relative">

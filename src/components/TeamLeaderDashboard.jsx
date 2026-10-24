@@ -152,12 +152,12 @@ const TeamLeaderDashboard = () => {
     });
 
     const colors = [
-      { main: 'bg-blue-500', shaded: 'bg-blue-100/70' },
-      { main: 'bg-cyan-400', shaded: 'bg-cyan-100/70' },
-      { main: 'bg-emerald-500', shaded: 'bg-emerald-100/70' },
-      { main: 'bg-purple-500', shaded: 'bg-purple-100/70' },
-      { main: 'bg-amber-500', shaded: 'bg-amber-100/70' },
-      { main: 'bg-indigo-500', shaded: 'bg-indigo-100/70' },
+      { main: 'bg-gradient-to-t from-[#1988A3] to-[#11C6DE]', shaded: 'bg-[#11C6DE]/20' },
+      { main: 'bg-gradient-to-t from-[#17233E] to-[#1B3154]', shaded: 'bg-[#1B3154]/20' },
+      { main: 'bg-gradient-to-t from-[#157289] to-[#1988A3]', shaded: 'bg-[#1988A3]/20' },
+      { main: 'bg-gradient-to-t from-[#5A6D89] to-[#8A9CB7]', shaded: 'bg-[#8A9CB7]/20' },
+      { main: 'bg-gradient-to-t from-[#0EB3C9] to-[#11C6DE]', shaded: 'bg-[#11C6DE]/20' },
+      { main: 'bg-gradient-to-t from-[#17233E] to-[#1988A3]', shaded: 'bg-[#1988A3]/20' },
     ];
 
     const entries = Object.entries(skillMap).slice(0, 6);
@@ -202,7 +202,7 @@ const TeamLeaderDashboard = () => {
   const trainingProgress = React.useMemo(() => {
     const allEnrollments = filteredMembers.flatMap(m => m.enrollments || []);
     if (allEnrollments.length > 0) {
-      const colors = ['bg-blue-600', 'bg-amber-500', 'bg-emerald-500', 'bg-purple-600', 'bg-cyan-500'];
+      const colors = ['bg-[#1988A3]', 'bg-[#11C6DE]', 'bg-[#1B3154]', 'bg-[#0EB3C9]', 'bg-[#5A6D89]'];
       return allEnrollments.slice(0, 4).map((e, idx) => {
         const title = e.course?.title || e.courseTitle || 'Technical Training Course';
         const pct = Math.min(100, Math.max(0, Math.round(e.progressPct ?? (e.status === 'COMPLETED' ? 100 : (e.status === 'IN_PROGRESS' ? 50 : 0)))));
@@ -256,7 +256,7 @@ const TeamLeaderDashboard = () => {
               <select 
                 value={selectedTeam} 
                 onChange={(e) => setSelectedTeam(e.target.value)}
-                className="bg-white/80 backdrop-blur-md border border-white/80 rounded-xl px-4 py-2.5 text-xs md:text-sm font-semibold text-[#17233E] shadow-sm focus:outline-none focus:border-[#1988A3] cursor-pointer transition-colors"
+                className="bg-[#F0F5FB]/90 backdrop-blur-md border border-white/85 rounded-xl px-4 py-2.5 text-xs md:text-sm font-semibold text-[#17233E] shadow-sm focus:outline-none focus:border-[#1988A3] cursor-pointer transition-colors"
               >
                 <option value="ALL">All My Teams (Combined)</option>
                 {leaderTeams.map((t) => (
@@ -269,7 +269,7 @@ const TeamLeaderDashboard = () => {
               <select 
                 value={selectedTimeframe} 
                 onChange={(e) => setSelectedTimeframe(e.target.value)}
-                className="bg-white/80 backdrop-blur-md border border-white/80 rounded-xl px-4 py-2.5 text-xs md:text-sm font-semibold text-[#17233E] shadow-sm focus:outline-none focus:border-[#1988A3] cursor-pointer transition-colors"
+                className="bg-[#F0F5FB]/90 backdrop-blur-md border border-white/85 rounded-xl px-4 py-2.5 text-xs md:text-sm font-semibold text-[#17233E] shadow-sm focus:outline-none focus:border-[#1988A3] cursor-pointer transition-colors"
               >
                 <option value="This Quarter">This Quarter</option>
                 <option value="Last Month">Last Month</option>
@@ -303,7 +303,7 @@ const TeamLeaderDashboard = () => {
         <div className="space-y-8">
           
           {/* Team Skill Strength Overview */}
-          <div className="bg-white/80 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/60 shadow-xl shadow-[#1B3154]/5">
+          <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/85 shadow-xl shadow-[#1B3154]/6">
             <div className="flex justify-between items-center mb-8">
               <h3 className="text-xl md:text-2xl font-extrabold text-[#17233E] tracking-tight">Team Skill Strength Overview</h3>
               <button 
@@ -330,7 +330,7 @@ const TeamLeaderDashboard = () => {
           {/* Row 2: Members & Progress blocks - 50/50 split layout */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Top Performing Members */}
-            <div className="bg-white/80 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/60 shadow-xl shadow-[#1B3154]/5">
+            <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/85 shadow-xl shadow-[#1B3154]/6">
               <div className="flex justify-between items-center mb-6">
                 <h3 className="text-lg md:text-xl font-extrabold text-[#17233E] tracking-tight">Top Performing Members</h3>
                 <button 
@@ -352,7 +352,7 @@ const TeamLeaderDashboard = () => {
             </div>
 
             {/* Team Training Progress */}
-            <div className="bg-white/80 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/60 shadow-xl shadow-[#1B3154]/5">
+            <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/85 shadow-xl shadow-[#1B3154]/6">
               <div className="flex justify-between items-center mb-6">
                 <h3 className="text-lg md:text-xl font-extrabold text-[#17233E] tracking-tight">Team Training Progress</h3>
                 <button 
@@ -447,7 +447,7 @@ const StatCard = ({ title, value, sub, icon, color, trend, isRisk=false }) => {
   };
   
   return (
-    <div className="bg-white/80 backdrop-blur-xl p-6 rounded-3xl border border-white/60 shadow-xl shadow-[#1B3154]/5 relative overflow-hidden group hover:border-[#1988A3]/40 transition-all duration-300">
+    <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl p-6 rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 relative overflow-hidden group hover:border-[#1988A3]/40 transition-all duration-300">
       <div className="flex justify-between items-start mb-4">
         <div>
           <p className="text-[#8A9CB7] text-xs font-bold mb-1 uppercase tracking-wider">{title}</p>
@@ -474,12 +474,12 @@ const ChartBar = ({ label, h, shadedH, shadedColor, mainColor }) => (
       <div className={`w-full rounded-t-xl ${shadedColor}`} style={{ height: shadedH }}></div>
       <div className={`w-full flex-1 ${mainColor}`}></div>
     </div>
-    <span className="text-xs font-bold text-slate-400 tracking-tight mt-1">{label}</span>
+    <span className="text-xs font-semibold text-[#8A9CB7] tracking-tight mt-1 text-center truncate max-w-full">{label}</span>
   </div>
 );
 
 const TeamMemberRow = ({ initials, name, role, score, status, onClick }) => (
-  <div onClick={onClick} className="flex justify-between items-center p-3.5 bg-white/60 backdrop-blur-md rounded-2xl border border-white/80 hover:border-[#1988A3]/40 hover:bg-white/95 transition-all group cursor-pointer shadow-sm">
+  <div onClick={onClick} className="flex justify-between items-center p-3.5 bg-[#E4EEF8]/60 backdrop-blur-md rounded-2xl border border-white/85 hover:border-[#1988A3]/50 hover:bg-[#E4EEF8]/90 transition-all group cursor-pointer shadow-sm">
     <div className="flex items-center gap-3">
       <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-[#17233E] to-[#1B3154] text-[#11C6DE] border border-white/20 font-bold text-xs flex items-center justify-center tracking-tight transition-colors shadow-sm">
         {initials}
@@ -502,7 +502,7 @@ const ProgressBar = ({ label, percent, color }) => (
       <span className="text-[#17233E] font-semibold">{label}</span>
       <span className="text-[#1988A3] font-extrabold">{percent}</span>
     </div>
-    <div className="h-2.5 w-full bg-[#E9EAF7] rounded-full overflow-hidden p-0.5 border border-white/60">
+    <div className="h-2.5 w-full bg-[#DDEBF8] rounded-full overflow-hidden p-0.5 border border-white/80">
       <div className="h-full bg-gradient-to-r from-[#1988A3] to-[#11C6DE] rounded-full transition-all duration-500 shadow-sm" style={{ width: percent }} />
     </div>
   </div>

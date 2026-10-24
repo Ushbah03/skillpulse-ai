@@ -292,7 +292,7 @@ export default function SkillGapAnalysis() {
         </div>
 
         {/* 2. Team Skill Gap Analysis Block */}
-        <div className="bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm space-y-6">
+        <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/85 shadow-xl shadow-[#1B3154]/6 space-y-6">
           <div className="flex justify-between items-center">
             <h3 className="text-xl font-bold text-slate-900 tracking-tight">Team Skill Gap Analysis</h3>
             <div className="flex items-center gap-3">
@@ -348,7 +348,7 @@ export default function SkillGapAnalysis() {
         </div>
 
         {/* 3. Team Skill Gap Heatmap Section */}
-        <div className="bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm space-y-8">
+        <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/85 shadow-xl shadow-[#1B3154]/6 space-y-8">
           <div className="flex justify-between items-start">
             <div>
               <h3 className="text-xl font-bold text-slate-900 tracking-tight">Team Skill Gap Heatmap</h3>
@@ -675,7 +675,7 @@ export default function SkillGapAnalysis() {
 /* --- Helpers --- */
 
 const OverviewMetricCard = ({ title, value, badgeText, subValue, subValueColor, icon, isTrendUp }) => (
-  <div className="bg-white/80 backdrop-blur-xl p-6 md:p-7 rounded-3xl border border-white/60 shadow-xl shadow-[#1B3154]/5 flex flex-col justify-between min-h-[160px] relative overflow-hidden">
+  <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl p-6 md:p-7 rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-col justify-between min-h-[160px] relative overflow-hidden">
     <div className="flex justify-between items-start">
       <p className="text-xs font-black text-slate-400 uppercase tracking-widest">{title}</p>
       {icon}

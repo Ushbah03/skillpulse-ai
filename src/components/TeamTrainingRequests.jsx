@@ -267,7 +267,7 @@ export default function TeamTrainingRequests() {
         </div>
 
         {/* 2. Management Table Data Wrapper Block */}
-        <div className="bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm space-y-6">
+        <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/85 shadow-xl shadow-[#1B3154]/6 space-y-6">
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-4">
               <h3 className="text-xl font-bold text-slate-900 tracking-tight">Manage Training Requests</h3>
@@ -339,7 +339,7 @@ export default function TeamTrainingRequests() {
         <div className="grid grid-cols-12 gap-8">
           
           {/* Left Block: Demands Breakdown */}
-          <div className="col-span-6 bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm space-y-6">
+          <div className="col-span-6 bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/85 shadow-xl shadow-[#1B3154]/6 space-y-6">
             <h3 className="text-xl font-bold text-slate-900 tracking-tight">Training Demand by Skill</h3>
             <div className="space-y-6 pt-2">
               {trainingDemand.map((track, idx) => (

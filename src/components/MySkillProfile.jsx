@@ -341,7 +341,7 @@ const MySkillProfile = () => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search skills..." 
-              className="pl-11 pr-4 py-2.5 bg-white/70 backdrop-blur-md border border-[#8A9CB7]/30 rounded-2xl w-60 md:w-72 text-sm text-[#17233E] placeholder:text-[#8A9CB7] focus:outline-none focus:border-[#1988A3] shadow-sm transition-all" 
+              className="pl-11 pr-4 py-2.5 bg-[#F0F5FB]/85 backdrop-blur-md border border-[#8A9CB7]/30 rounded-2xl w-60 md:w-72 text-sm text-[#17233E] placeholder:text-[#8A9CB7] focus:outline-none focus:border-[#1988A3] shadow-sm transition-all" 
             />
           </div>
           <button 
@@ -434,13 +434,13 @@ const MySkillProfile = () => {
           <div className="flex gap-3 relative">
             <button 
               onClick={() => setShowFilterPanel(p => !p)}
-              className="flex items-center gap-2 px-4 py-2 bg-white/70 border border-[#8A9CB7]/30 rounded-xl text-xs font-bold text-[#17233E] hover:bg-[#1988A3]/10 transition-colors"
+              className="flex items-center gap-2 px-4 py-2 bg-[#F0F5FB]/85 border border-[#8A9CB7]/30 rounded-xl text-xs font-bold text-[#17233E] hover:bg-[#1988A3]/10 transition-colors"
             >
               <Filter className="w-3.5 h-3.5 text-[#1988A3]" /> Filter
               {filterCategory !== 'All' && <span className="bg-[#1988A3] text-white text-[9px] font-black px-1.5 py-0.5 rounded-md">{filterCategory}</span>}
             </button>
             {showFilterPanel && (
-              <div className="absolute top-12 left-0 z-30 bg-white/95 backdrop-blur-xl border border-[#8A9CB7]/30 rounded-2xl shadow-xl p-4 min-w-[180px]">
+              <div className="absolute top-12 left-0 z-30 bg-[#F5F9FD]/95 backdrop-blur-xl border border-[#8A9CB7]/30 rounded-2xl shadow-xl p-4 min-w-[180px]">
                 <p className="text-[10px] font-black text-[#5A6D89] uppercase tracking-widest mb-3">Filter by Category</p>
                 {categories.map(cat => (
                   <button
@@ -457,7 +457,7 @@ const MySkillProfile = () => {
             )}
             <button 
               onClick={handleExport}
-              className="flex items-center gap-2 px-4 py-2 bg-white/70 border border-[#8A9CB7]/30 rounded-xl text-xs font-bold text-[#17233E] hover:bg-[#1988A3]/10 transition-colors"
+              className="flex items-center gap-2 px-4 py-2 bg-[#F0F5FB]/85 border border-[#8A9CB7]/30 rounded-xl text-xs font-bold text-[#17233E] hover:bg-[#1988A3]/10 transition-colors"
             >
               <Download className="w-3.5 h-3.5 text-[#1988A3]" /> Export CSV
             </button>
@@ -487,7 +487,7 @@ const MySkillProfile = () => {
                   const statusLabel = us.verified ? 'Validated' : 'Pending';
 
                   return (
-                    <tr key={us.id || idx} className="hover:bg-white/60 transition-colors text-sm relative">
+                    <tr key={us.id || idx} className="hover:bg-[#E4EEF8]/60 transition-colors text-sm relative">
                       <td className="px-8 py-5 flex items-center gap-3">
                         <div className={`w-2.5 h-2.5 rounded-full ${prof >= 4.0 ? 'bg-[#1988A3]' : prof >= 2.5 ? 'bg-[#11C6DE]' : 'bg-amber-400'}`}></div>
                         <span className="font-bold text-[#17233E]">{skillName}</span>
@@ -516,7 +516,7 @@ const MySkillProfile = () => {
                           
                           {/* Action Menu Dropdown */}
                           {activeMenuId === us.id && (
-                            <div className="absolute right-0 top-10 z-40 bg-white/95 backdrop-blur-xl border border-[#8A9CB7]/30 rounded-xl shadow-xl p-2 w-36 text-left">
+                            <div className="absolute right-0 top-10 z-40 bg-[#F5F9FD]/95 backdrop-blur-xl border border-[#8A9CB7]/30 rounded-xl shadow-xl p-2 w-36 text-left">
                               <button
                                 onClick={() => handleOpenEdit(us)}
                                 className="w-full flex items-center gap-2 px-3 py-2 text-xs font-bold text-[#17233E] hover:bg-[#1988A3]/10 rounded-lg"
@@ -627,7 +627,7 @@ const MySkillProfile = () => {
       {/* Add / Edit Skill Modal */}
       {showAddSkill && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#17233E]/50 backdrop-blur-md p-4">
-          <div className="bg-white/95 backdrop-blur-2xl border border-white/80 rounded-[2rem] shadow-2xl w-full max-w-md p-8">
+          <div className="bg-[#F5F9FD]/95 backdrop-blur-2xl border border-white/80 rounded-[2rem] shadow-2xl w-full max-w-md p-8">
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-xl font-black text-[#17233E]">
                 {editingSkill ? 'Edit Skill Level' : 'Add New Skill'}
@@ -701,7 +701,7 @@ const MySkillProfile = () => {
       {/* AI SKILL EXTRACTOR MODAL */}
       {showAiExtractor && (
         <div className="fixed inset-0 z-50 bg-[#17233E]/50 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-white/95 backdrop-blur-2xl rounded-3xl max-w-2xl w-full p-8 shadow-2xl border border-white/80 relative">
+          <div className="bg-[#F5F9FD]/95 backdrop-blur-2xl rounded-3xl max-w-2xl w-full p-8 shadow-2xl border border-white/80 relative">
             <button
               onClick={() => { setShowAiExtractor(false); setAiExtractErrorMsg(''); setAiExtractSuccessMsg(''); }}
               className="absolute top-6 right-6 text-[#8A9CB7] hover:text-[#17233E] p-2 rounded-full hover:bg-slate-100"

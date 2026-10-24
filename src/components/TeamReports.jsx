@@ -317,7 +317,7 @@ export default function TeamReports() {
         </div>
 
         {/* 2. Longitudinal Tracking Analysis Block */}
-        <div className="bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm space-y-6">
+        <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/85 shadow-xl shadow-[#1B3154]/6 space-y-6">
           <div className="flex justify-between items-center">
             <div>
               <h3 className="text-2xl font-bold text-slate-900 tracking-tight">Team Performance Trend Analysis</h3>
@@ -393,7 +393,7 @@ export default function TeamReports() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           
           {/* Skill Distribution Segment */}
-          <div className="lg:col-span-6 bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm space-y-6">
+          <div className="lg:col-span-6 bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/85 shadow-xl shadow-[#1B3154]/6 space-y-6">
             <h3 className="text-2xl font-bold text-slate-900 tracking-tight">Skill Distribution by Category</h3>
             <div className="space-y-5 pt-2">
               {categoriesDistribution.map((cat, idx) => (
@@ -411,7 +411,7 @@ export default function TeamReports() {
           </div>
 
           {/* Proficiency Donut Breakdown */}
-          <div className="lg:col-span-6 bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm flex flex-col justify-between">
+          <div className="lg:col-span-6 bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-col justify-between">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-2xl font-bold text-slate-900 tracking-tight">Skill Proficiency Distribution</h3>
               <span className="text-xs font-bold text-slate-400 bg-slate-50 px-3 py-1 rounded-full border border-slate-100">Live Breakdown</span>
@@ -538,7 +538,7 @@ export default function TeamReports() {
         </div>
 
         {/* 4. Intervention Effectiveness Comparison Analytics */}
-        <div className="bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm space-y-6">
+        <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/85 shadow-xl shadow-[#1B3154]/6 space-y-6">
           <div>
             <h3 className="text-2xl font-bold text-slate-900 tracking-tight">Training Effectiveness Analysis</h3>
             <p className="text-slate-400 text-sm font-semibold mt-1">Comparison of skill proficiency levels before and after professional training interventions</p>
@@ -598,7 +598,7 @@ export default function TeamReports() {
         </div>
 
         {/* 5. Detailed Team Workforce Spreadsheet */}
-        <div className="bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm space-y-6">
+        <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/85 shadow-xl shadow-[#1B3154]/6 space-y-6">
           <div className="flex justify-between items-center">
             <h3 className="text-2xl font-bold text-slate-900 tracking-tight">Detailed Team Workforce Report</h3>
             <div className="relative">

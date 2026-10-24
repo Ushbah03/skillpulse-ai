@@ -233,7 +233,7 @@ const MyProgress = () => {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search enrolled courses..." 
-            className="w-full pl-11 pr-9 py-2.5 rounded-2xl border border-[#8A9CB7]/30 text-xs font-bold text-[#17233E] placeholder:text-[#8A9CB7] focus:outline-none focus:border-[#1988A3] bg-white/70 backdrop-blur-md shadow-sm transition-all"
+            className="w-full pl-11 pr-9 py-2.5 rounded-2xl border border-[#8A9CB7]/30 text-xs font-bold text-[#17233E] placeholder:text-[#8A9CB7] focus:outline-none focus:border-[#1988A3] bg-[#F0F5FB]/85 backdrop-blur-md shadow-sm transition-all"
           />
           {searchQuery && (
             <button 

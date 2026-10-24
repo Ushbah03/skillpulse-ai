@@ -198,7 +198,7 @@ export default function PerformanceMonitor() {
               <select 
                 value={timeRange} 
                 onChange={(e) => setTimeRange(e.target.value)}
-                className="appearance-none bg-white/80 backdrop-blur-md border border-white/80 text-[#17233E] pl-10 pr-8 py-3 rounded-xl text-sm font-bold text-slate-700 shadow-sm hover:bg-slate-50 transition-all cursor-pointer focus:outline-none"
+                className="appearance-none bg-[#F0F5FB]/90 backdrop-blur-md border border-white/85 text-[#17233E] pl-10 pr-8 py-3 rounded-xl text-sm font-bold text-slate-700 shadow-sm hover:bg-slate-50 transition-all cursor-pointer focus:outline-none"
               >
                 <option value="Last 30 Days">Last 30 Days</option>
                 <option value="Last Quarter (Q2)">Last Quarter (Q2)</option>
@@ -212,7 +212,7 @@ export default function PerformanceMonitor() {
               <select 
                 value={metricFilter} 
                 onChange={(e) => setMetricFilter(e.target.value)}
-                className="appearance-none bg-white/80 backdrop-blur-md border border-white/80 text-[#17233E] pl-10 pr-8 py-3 rounded-xl text-sm font-bold text-slate-700 shadow-sm hover:bg-slate-50 transition-all cursor-pointer focus:outline-none"
+                className="appearance-none bg-[#F0F5FB]/90 backdrop-blur-md border border-white/85 text-[#17233E] pl-10 pr-8 py-3 rounded-xl text-sm font-bold text-slate-700 shadow-sm hover:bg-slate-50 transition-all cursor-pointer focus:outline-none"
               >
                 <option value="All Metrics">All Metrics</option>
                 <option value="High Performers">High Performers (Excellent)</option>
@@ -240,7 +240,7 @@ export default function PerformanceMonitor() {
 
         {/* 3. Performance Metrics Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div className="bg-white/80 backdrop-blur-xl p-6 md:p-7 rounded-3xl border border-white/60 shadow-xl shadow-[#1B3154]/5 flex justify-between items-center min-h-[160px] relative overflow-hidden">
+          <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl p-6 md:p-7 rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex justify-between items-center min-h-[160px] relative overflow-hidden">
             <div>
               <p className="text-xs font-black text-slate-400 uppercase tracking-widest">Overall Team Score</p>
               <h3 className="text-2xl font-black text-slate-900 mt-3 tracking-tight">{summary.overallTier || 'Capability Score'}</h3>
@@ -250,7 +250,7 @@ export default function PerformanceMonitor() {
             </div>
           </div>
 
-          <div className="bg-white/80 backdrop-blur-xl p-6 md:p-7 rounded-3xl border border-white/60 shadow-xl shadow-[#1B3154]/5 flex flex-col justify-between min-h-[160px]">
+          <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl p-6 md:p-7 rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-col justify-between min-h-[160px]">
             <p className="text-xs font-black text-slate-400 uppercase tracking-widest">Avg Member Perf.</p>
             <div className="mt-2">
               <div className="flex items-baseline gap-1.5">
@@ -264,7 +264,7 @@ export default function PerformanceMonitor() {
             </div>
           </div>
 
-          <div className="bg-white/80 backdrop-blur-xl p-6 md:p-7 rounded-3xl border border-white/60 shadow-xl shadow-[#1B3154]/5 flex flex-col justify-between min-h-[160px]">
+          <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl p-6 md:p-7 rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-col justify-between min-h-[160px]">
             <p className="text-xs font-black text-slate-400 uppercase tracking-widest">High Performers</p>
             <div className="mt-2">
               <h3 className="text-4xl font-black text-slate-900 tracking-tight">{summary.highPerformersCount}</h3>
@@ -274,7 +274,7 @@ export default function PerformanceMonitor() {
             </div>
           </div>
 
-          <div className="bg-white/80 backdrop-blur-xl p-6 md:p-7 rounded-3xl border border-white/60 shadow-xl shadow-[#1B3154]/5 flex flex-col justify-between min-h-[160px]">
+          <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl p-6 md:p-7 rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-col justify-between min-h-[160px]">
             <p className="text-xs font-black text-slate-400 uppercase tracking-widest">Risk Alerts</p>
             <div className="mt-2">
               <h3 className="text-4xl font-black text-slate-900 tracking-tight">{summary.riskAlertsCount}</h3>
@@ -292,7 +292,7 @@ export default function PerformanceMonitor() {
           <div className="col-span-12 lg:col-span-8 space-y-8">
             
             {/* Performance Trend Chart */}
-            <div className="bg-white/80 backdrop-blur-xl rounded-3xl border border-white/60 shadow-xl shadow-[#1B3154]/5 p-6 md:p-8">
+            <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 p-6 md:p-8">
               <div className="flex justify-between items-center mb-6">
                 <div>
                   <h3 className="text-2xl font-bold text-slate-900 tracking-tight">Team Performance Trend</h3>
@@ -431,7 +431,7 @@ export default function PerformanceMonitor() {
             <div className="grid grid-cols-2 gap-6">
               
               {/* Performance Distribution */}
-              <div className="bg-white/80 backdrop-blur-xl rounded-3xl border border-white/60 shadow-xl shadow-[#1B3154]/5 p-6 md:p-8">
+              <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 p-6 md:p-8">
                 <h4 className="text-base font-black text-slate-400 uppercase tracking-widest mb-6">Performance Distribution</h4>
                 <div className="h-48 w-full">
                   <ResponsiveContainer width="100%" height="100%">

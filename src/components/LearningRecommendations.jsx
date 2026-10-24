@@ -296,7 +296,7 @@ const LearningRecommendations = () => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder={`Search ${courses.length || 45}+ courses or skills...`} 
-              className="pl-11 pr-10 py-2.5 bg-white/70 backdrop-blur-md border border-[#8A9CB7]/30 rounded-2xl w-60 md:w-72 text-sm text-[#17233E] placeholder:text-[#8A9CB7] focus:outline-none focus:border-[#1988A3] shadow-sm transition-all" 
+              className="pl-11 pr-10 py-2.5 bg-[#F0F5FB]/85 backdrop-blur-md border border-[#8A9CB7]/30 rounded-2xl w-60 md:w-72 text-sm text-[#17233E] placeholder:text-[#8A9CB7] focus:outline-none focus:border-[#1988A3] shadow-sm transition-all" 
             />
             {searchQuery && (
               <button 
@@ -312,7 +312,7 @@ const LearningRecommendations = () => {
             <select
               value={selectedLevel}
               onChange={(e) => setSelectedLevel(e.target.value)}
-              className="px-4 py-2.5 bg-white/70 backdrop-blur-md border border-[#8A9CB7]/30 rounded-2xl text-xs font-bold text-[#17233E] focus:outline-none focus:border-[#1988A3] shadow-sm cursor-pointer"
+              className="px-4 py-2.5 bg-[#F0F5FB]/85 backdrop-blur-md border border-[#8A9CB7]/30 rounded-2xl text-xs font-bold text-[#17233E] focus:outline-none focus:border-[#1988A3] shadow-sm cursor-pointer"
             >
               <option value="All">All Skill Levels</option>
               <option value="Beginner">Beginner</option>
@@ -340,7 +340,7 @@ const LearningRecommendations = () => {
             className={`px-4 py-2 rounded-2xl text-xs font-black tracking-wide transition-all whitespace-nowrap border ${
               selectedCategory === cat
                 ? 'bg-[#17233E] text-white border-[#17233E] shadow-md shadow-[#17233E]/20 scale-105'
-                : 'bg-white/70 backdrop-blur-md text-[#5A6D89] hover:text-[#17233E] border-[#8A9CB7]/30 hover:border-[#1988A3]/40 shadow-sm'
+                : 'bg-[#F0F5FB]/85 backdrop-blur-md text-[#5A6D89] hover:text-[#17233E] border-[#8A9CB7]/30 hover:border-[#1988A3]/40 shadow-sm'
             }`}
           >
             {cat === 'All' ? `⚡ All ${courses.length || 45} Courses` : cat}
@@ -482,7 +482,7 @@ const LearningRecommendations = () => {
                   <button
                     onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                     disabled={currentPage === 1}
-                    className="p-2.5 rounded-xl border border-[#8A9CB7]/30 text-[#5A6D89] hover:text-[#17233E] hover:border-[#1988A3] disabled:opacity-40 disabled:cursor-not-allowed bg-white/70 backdrop-blur-md shadow-sm transition-all"
+                    className="p-2.5 rounded-xl border border-[#8A9CB7]/30 text-[#5A6D89] hover:text-[#17233E] hover:border-[#1988A3] disabled:opacity-40 disabled:cursor-not-allowed bg-[#F0F5FB]/85 backdrop-blur-md shadow-sm transition-all"
                   >
                     <ChevronLeft className="w-4 h-4" />
                   </button>
@@ -494,7 +494,7 @@ const LearningRecommendations = () => {
                       className={`w-9 h-9 rounded-xl text-xs font-black transition-all border ${
                         currentPage === pageNum
                           ? 'bg-[#17233E] text-white border-[#17233E] shadow-md shadow-[#17233E]/20 scale-105'
-                          : 'bg-white/70 backdrop-blur-md text-[#5A6D89] hover:text-[#17233E] border-[#8A9CB7]/30 hover:border-[#1988A3]/40 shadow-sm'
+                          : 'bg-[#F0F5FB]/85 backdrop-blur-md text-[#5A6D89] hover:text-[#17233E] border-[#8A9CB7]/30 hover:border-[#1988A3]/40 shadow-sm'
                       }`}
                     >
                       {pageNum}
@@ -504,7 +504,7 @@ const LearningRecommendations = () => {
                   <button
                     onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalCatalogPages))}
                     disabled={currentPage === totalCatalogPages}
-                    className="p-2.5 rounded-xl border border-[#8A9CB7]/30 text-[#5A6D89] hover:text-[#17233E] hover:border-[#1988A3] disabled:opacity-40 disabled:cursor-not-allowed bg-white/70 backdrop-blur-md shadow-sm transition-all"
+                    className="p-2.5 rounded-xl border border-[#8A9CB7]/30 text-[#5A6D89] hover:text-[#17233E] hover:border-[#1988A3] disabled:opacity-40 disabled:cursor-not-allowed bg-[#F0F5FB]/85 backdrop-blur-md shadow-sm transition-all"
                   >
                     <ChevronRight className="w-4 h-4" />
                   </button>
@@ -522,7 +522,7 @@ const LearningRecommendations = () => {
       {/* Plan Upgrade Modal for STARTER Tier */}
       {showUpgradeModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#17233E]/70 backdrop-blur-md p-6">
-          <div className="bg-white/95 backdrop-blur-2xl rounded-[2.5rem] p-8 max-w-lg w-full text-center shadow-2xl border border-white/80 relative overflow-hidden">
+          <div className="bg-[#F5F9FD]/95 backdrop-blur-2xl rounded-[2.5rem] p-8 max-w-lg w-full text-center shadow-2xl border border-white/80 relative overflow-hidden">
             <div className="relative w-16 h-16 mx-auto mb-5 flex items-center justify-center bg-amber-500/10 text-amber-600 rounded-2xl border border-amber-500/20">
               <Lock className="w-8 h-8 text-amber-600" />
             </div>

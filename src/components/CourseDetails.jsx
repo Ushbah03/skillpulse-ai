@@ -288,7 +288,7 @@ const CourseDetails = () => {
               }}
               onFocus={() => setShowSearchDropdown(true)}
               placeholder="Search courses (e.g. React, Figma, Node, AWS)..."
-              className="w-full pl-10 pr-9 py-2.5 bg-white/70 backdrop-blur-md rounded-2xl border border-[#8A9CB7]/30 focus:border-[#1988A3] text-xs font-bold text-[#17233E] focus:outline-none shadow-sm transition-all placeholder:text-[#8A9CB7]"
+              className="w-full pl-10 pr-9 py-2.5 bg-[#F0F5FB]/85 backdrop-blur-md rounded-2xl border border-[#8A9CB7]/30 focus:border-[#1988A3] text-xs font-bold text-[#17233E] focus:outline-none shadow-sm transition-all placeholder:text-[#8A9CB7]"
             />
             {searchQuery && (
               <button 
@@ -301,7 +301,7 @@ const CourseDetails = () => {
           </div>
 
           {showSearchDropdown && (
-            <div className="absolute left-0 right-0 top-full mt-2 bg-white/95 backdrop-blur-2xl rounded-2xl border border-[#8A9CB7]/30 shadow-2xl z-30 max-h-72 overflow-y-auto p-2">
+            <div className="absolute left-0 right-0 top-full mt-2 bg-[#F5F9FD]/95 backdrop-blur-2xl rounded-2xl border border-[#8A9CB7]/30 shadow-2xl z-30 max-h-72 overflow-y-auto p-2">
               <div className="px-3 py-1.5 text-[10px] font-black uppercase tracking-wider text-[#5A6D89] border-b border-[#8A9CB7]/15 mb-1 flex justify-between">
                 <span>Matching Courses ({filteredSearchCourses.length})</span>
                 <span>Click to Select</span>
@@ -420,7 +420,7 @@ const CourseDetails = () => {
                     className={`p-4 rounded-2xl border flex items-center justify-between transition-all ${
                       isModDone 
                         ? 'bg-emerald-500/10 border-emerald-500/25 text-[#17233E]'
-                        : 'bg-white/70 border-[#8A9CB7]/25 text-[#5A6D89]'
+                        : 'bg-[#F0F5FB]/85 border-[#8A9CB7]/25 text-[#5A6D89]'
                     }`}
                   >
                     <div className="flex items-center gap-3">
@@ -643,7 +643,7 @@ const CourseDetails = () => {
 };
 
 const ObjectiveCard = ({ text }) => (
-  <div className="flex items-start gap-3 p-4 bg-white/70 backdrop-blur-md rounded-2xl border border-[#8A9CB7]/25">
+  <div className="flex items-start gap-3 p-4 bg-[#F0F5FB]/85 backdrop-blur-md rounded-2xl border border-[#8A9CB7]/25">
     <CheckCircle2 className="w-5 h-5 text-[#1988A3] shrink-0 mt-0.5" />
     <span className="text-xs text-[#17233E] font-medium leading-relaxed">{text}</span>
   </div>
