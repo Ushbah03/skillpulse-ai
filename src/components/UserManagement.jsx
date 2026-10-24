@@ -101,18 +101,31 @@ const UserManagement = () => {
           const tenantObj = loadedTenants.find(t => t.id === u.tenantId);
           const tenantPlan = u.tenant?.plan || tenantObj?.plan || 'PRO';
 
+          // Safe extraction of nested objects or strings
+          const deptStr = typeof u.department === 'object' && u.department !== null
+            ? (u.department.name || 'General')
+            : (typeof u.department === 'string' && u.department ? u.department : 'General');
+
+          const tenantStr = typeof u.tenant === 'object' && u.tenant !== null
+            ? (u.tenant.name || tenantObj?.name || 'Platform Core')
+            : (typeof u.tenant === 'string' && u.tenant ? u.tenant : (tenantObj?.name || 'Platform Core'));
+
+          const roleStr = typeof u.role === 'object' && u.role !== null
+            ? (u.role.name || 'EMPLOYEE')
+            : (typeof u.role === 'string' && u.role ? u.role : 'EMPLOYEE');
+
           return {
             id: u.id,
-            name: `${u.firstName || ''} ${u.lastName || ''}`.trim() || u.email.split('@')[0],
+            name: `${u.firstName || ''} ${u.lastName || ''}`.trim() || (typeof u.email === 'string' ? u.email.split('@')[0] : 'User'),
             firstName: u.firstName || '',
             lastName: u.lastName || '',
-            email: u.email,
-            role: u.role,
+            email: u.email || '',
+            role: roleStr,
             status: u.status || 'ACTIVE',
-            tenant: u.tenant?.name || tenantObj?.name || 'Platform Core',
+            tenant: tenantStr,
             tenantId: u.tenantId,
             tenantPlan: tenantPlan,
-            department: u.department || 'General',
+            department: deptStr,
             jobTitle: u.jobTitle || '',
             skillsCount: u._count?.skills || u.userSkills?.length || 0,
             createdAt: u.createdAt
@@ -195,12 +208,12 @@ const UserManagement = () => {
   const openEditModal = (user) => {
     setEditingUser(user);
     setEditForm({
-      firstName: user.firstName,
-      lastName: user.lastName,
-      jobTitle: user.jobTitle,
-      dept: user.department,
-      role: user.role,
-      status: user.status
+      firstName: user.firstName || '',
+      lastName: user.lastName || '',
+      jobTitle: user.jobTitle || '',
+      dept: typeof user.department === 'object' && user.department !== null ? (user.department.name || 'General') : (user.department || 'General'),
+      role: typeof user.role === 'object' && user.role !== null ? (user.role.name || 'EMPLOYEE') : (user.role || 'EMPLOYEE'),
+      status: user.status || 'ACTIVE'
     });
   };
 
@@ -278,11 +291,16 @@ const UserManagement = () => {
   };
 
   const filteredUsers = users.filter(u => {
+    const nameStr = String(u.name || '');
+    const emailStr = String(u.email || '');
+    const deptStr = String(typeof u.department === 'object' && u.department !== null ? (u.department.name || '') : (u.department || ''));
+    const tenantStr = String(typeof u.tenant === 'object' && u.tenant !== null ? (u.tenant.name || '') : (u.tenant || ''));
+
     const matchesSearch = 
-      u.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      u.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      u.department.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      u.tenant.toLowerCase().includes(searchTerm.toLowerCase());
+      nameStr.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      emailStr.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      deptStr.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      tenantStr.toLowerCase().includes(searchTerm.toLowerCase());
     
     const matchesRole = selectedRole === 'ALL' || u.role === selectedRole;
     const matchesTenant = selectedTenant === 'ALL' || u.tenantId === selectedTenant;
@@ -554,11 +572,11 @@ const UserManagement = () => {
                           <div className="flex flex-col gap-1">
                             <span className="inline-flex items-center gap-1.5 text-xs font-bold text-[#17233E]">
                               <Building2 className="w-3.5 h-3.5 text-[#1988A3]" />
-                              {u.tenant}
+                              {typeof u.tenant === 'object' && u.tenant !== null ? (u.tenant.name || 'Platform Core') : (u.tenant || 'Platform Core')}
                             </span>
                             <span className="text-[11px] text-[#8A9CB7] flex items-center gap-1 font-medium">
                               <Briefcase className="w-3 h-3 text-[#8A9CB7]" />
-                              {u.department}
+                              {typeof u.department === 'object' && u.department !== null ? (u.department.name || 'General') : (u.department || 'General')}
                               {u.skillsCount > 0 && (
                                 <span className="ml-1 text-[10px] text-[#1988A3] font-mono font-bold">({u.skillsCount} skills)</span>
                               )}
