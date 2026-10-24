@@ -132,7 +132,7 @@ const ActionModal = ({ isOpen, title, description, confirmText, onConfirm, onClo
   if (!isOpen) return null;
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-2xl max-w-md w-full p-6 space-y-4">
+      <div className="bg-gradient-to-br from-[#F5F9FD] to-[#DDEBF8] backdrop-blur-2xl rounded-3xl border border-white/90 shadow-2xl max-w-md w-full p-6 space-y-4">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3">
             <div className="p-3 bg-indigo-50 text-indigo-600 rounded-2xl">
@@ -168,7 +168,7 @@ const ProgramDetailsModal = ({ isOpen, program, onClose, onEnroll }) => {
   if (!isOpen || !program) return null;
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-2xl max-w-lg w-full p-6 space-y-4">
+      <div className="bg-gradient-to-br from-[#F5F9FD] to-[#DDEBF8] backdrop-blur-2xl rounded-3xl border border-white/90 shadow-2xl max-w-lg w-full p-6 space-y-4">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3">
             <div className="p-3 bg-indigo-50 text-indigo-600 rounded-2xl">
@@ -235,7 +235,7 @@ const EnrollmentsListModal = ({ isOpen, enrollments = [], onClose }) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-2xl max-w-2xl w-full p-6 space-y-4 max-h-[85vh] flex flex-col">
+      <div className="bg-gradient-to-br from-[#F5F9FD] to-[#DDEBF8] backdrop-blur-2xl rounded-3xl border border-white/90 shadow-2xl max-w-2xl w-full p-6 space-y-4 max-h-[85vh] flex flex-col">
         <div className="flex items-start justify-between border-b border-slate-100 pb-4">
           <div className="flex items-center gap-3">
             <div className="p-2.5 bg-indigo-50 text-indigo-600 rounded-xl">
@@ -670,14 +670,14 @@ const TrainingProgramManagement = () => {
 
             <button 
               onClick={handleSeeAllPrograms}
-              className="text-xs font-bold text-slate-500 hover:text-indigo-600 flex items-center gap-1 transition-colors active:scale-95 bg-white border border-slate-200/80 px-3 py-1.5 rounded-lg shadow-2xs"
+              className="text-xs font-bold text-slate-500 hover:text-indigo-600 flex items-center gap-1 transition-colors active:scale-95 bg-white/70 border border-white/80 px-3 py-1.5 rounded-xl shadow-2xs text-[#17233E]"
             >
               See all programs <ArrowRight size={13} />
             </button>
           </div>
 
           {paginatedPrograms.length === 0 ? (
-            <div className="bg-white rounded-2xl border border-slate-100 p-12 text-center">
+            <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 rounded-3xl p-12 text-center">
               <BookOpen size={36} className="text-slate-300 mx-auto mb-2" />
               <p className="text-sm font-bold text-slate-700">No training programs match your filter</p>
               <p className="text-xs text-slate-400 mt-1">Try searching for a different keyword or category.</p>
@@ -687,7 +687,7 @@ const TrainingProgramManagement = () => {
               {paginatedPrograms.map((prog) => (
                 <div
                   key={prog.id}
-                  className="bg-white rounded-xl border border-slate-200/80 shadow-xs hover:shadow-md hover:border-slate-300 transition-all duration-200 overflow-hidden flex flex-col justify-between group"
+                  className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 rounded-2xl hover:border-[#1988A3]/50 transition-all duration-300 overflow-hidden flex flex-col justify-between group"
                 >
                   {/* Minimized Thumbnail Header (h-28) */}
                   <div className="relative h-28 bg-gradient-to-br from-slate-100 to-slate-200 overflow-hidden">
@@ -771,7 +771,7 @@ const TrainingProgramManagement = () => {
                 <button
                   onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                   disabled={currentPage === 1}
-                  className="px-3 py-1.5 text-xs font-bold rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center gap-1"
+                  className="px-3 py-1.5 text-xs font-bold rounded-lg border border-white/80 bg-white/70 text-[#17233E] hover:bg-[#E4EEF8] disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center gap-1"
                 >
                   <ChevronLeft size={13} /> Previous
                 </button>
@@ -790,7 +790,7 @@ const TrainingProgramManagement = () => {
                             className={`w-7 h-7 text-xs font-bold rounded-lg transition-all ${
                               currentPage === pageNum
                                 ? 'bg-indigo-600 text-white shadow-xs'
-                                : 'border border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
+                                : 'border border-white/80 bg-white/70 text-[#17233E] hover:bg-[#E4EEF8]'
                             }`}
                           >
                             {pageNum}
@@ -803,7 +803,7 @@ const TrainingProgramManagement = () => {
                 <button
                   onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                   disabled={currentPage === totalPages}
-                  className="px-3 py-1.5 text-xs font-bold rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center gap-1"
+                  className="px-3 py-1.5 text-xs font-bold rounded-lg border border-white/80 bg-white/70 text-[#17233E] hover:bg-[#E4EEF8] disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center gap-1"
                 >
                   Next <ChevronRight size={13} />
                 </button>
@@ -814,7 +814,7 @@ const TrainingProgramManagement = () => {
 
         {/* MID ANALYTICS SECTION */}
         <div className="px-8 mt-8 grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="bg-white border border-slate-100 shadow-sm rounded-2xl p-6 lg:col-span-2 flex flex-col justify-between">
+          <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 rounded-3xl p-6 lg:col-span-2 flex flex-col justify-between">
             <div className="flex justify-between items-center">
               <div>
                 <h3 className="text-xl font-black text-slate-900">
@@ -831,7 +831,7 @@ const TrainingProgramManagement = () => {
             <CompletionTrendsChart monthlyCompletions={trainingData?.monthlyCompletions} />
           </div>
 
-          <div className="bg-white border border-slate-100 shadow-sm rounded-2xl p-6 flex flex-col justify-between">
+          <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 rounded-3xl p-6 flex flex-col justify-between">
             <div>
               <h3 className="text-xl font-black text-slate-900">
                 Program Popularity
@@ -851,7 +851,7 @@ const TrainingProgramManagement = () => {
         {/* BOTTOM SECTION */}
         <div className="px-8 mt-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Funnel */}
-          <div className="bg-white border border-slate-100 shadow-sm rounded-2xl p-6 flex flex-col justify-between">
+          <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 rounded-3xl p-6 flex flex-col justify-between">
             <div>
               <h3 className="text-xl font-black text-slate-900 mb-4">
                 Learning Funnel
@@ -884,7 +884,7 @@ const TrainingProgramManagement = () => {
           </div>
 
           {/* Top Performers */}
-          <div className="bg-white border border-slate-100 shadow-sm rounded-2xl p-6 flex flex-col justify-between">
+          <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 rounded-3xl p-6 flex flex-col justify-between">
             <div>
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-xl font-black text-slate-900">Top Performers</h3>
@@ -898,7 +898,7 @@ const TrainingProgramManagement = () => {
               ) : (
                 <div className="space-y-3">
                   {topPerformers.map((user) => (
-                    <div key={user.rank} className="flex items-center justify-between p-2 rounded-xl bg-slate-50/50 border border-slate-100">
+                    <div key={user.rank} className="flex items-center justify-between p-2.5 rounded-xl bg-white/60 hover:bg-[#E4EEF8]/80 border border-white/80 transition-colors shadow-2xs">
                       <div className="flex items-center gap-3">
                         <div className="relative">
                           {user.img ? (
@@ -933,7 +933,7 @@ const TrainingProgramManagement = () => {
           </div>
 
           {/* Recent Enrollments (Replaced fake mock sessions) */}
-          <div className="bg-white border border-slate-100 shadow-sm rounded-2xl p-6 flex flex-col justify-between">
+          <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 rounded-3xl p-6 flex flex-col justify-between">
             <div>
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-xl font-black text-slate-900">
@@ -949,7 +949,7 @@ const TrainingProgramManagement = () => {
               ) : (
                 <div className="space-y-3">
                   {recentEnrollments.map((session, idx) => (
-                    <div key={idx} className="flex items-center gap-3 p-2 rounded-xl bg-slate-50/50 border border-slate-100">
+                    <div key={idx} className="flex items-center gap-3 p-2.5 rounded-xl bg-white/60 hover:bg-[#E4EEF8]/80 border border-white/80 transition-colors shadow-2xs">
                       <div className="bg-white border border-slate-200/80 rounded-lg p-1.5 text-center min-w-[42px] shadow-2xs">
                         <p className="text-[9px] font-black text-slate-400 uppercase">
                           {session.month}

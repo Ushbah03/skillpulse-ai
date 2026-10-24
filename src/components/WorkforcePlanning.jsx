@@ -778,7 +778,7 @@ const WorkforcePlanning = () => {
                   <Filter size={14}/> {departmentFilter === "ALL" ? "Filter" : departmentFilter}
                 </button>
                 {isFilterOpen && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-slate-100 p-2 z-30">
+                  <div className="absolute right-0 mt-2 w-48 bg-white/90 backdrop-blur-xl rounded-2xl shadow-xl border border-white/85 p-2 z-30">
                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-3 py-1">Department</p>
                     <button 
                       onClick={() => { setDepartmentFilter("ALL"); setIsFilterOpen(false); setCurrentPage(1); }}
@@ -808,7 +808,7 @@ const WorkforcePlanning = () => {
                   <SlidersHorizontal size={14}/> Sort
                 </button>
                 {isSortOpen && (
-                  <div className="absolute right-0 mt-2 w-52 bg-white rounded-xl shadow-xl border border-slate-100 p-2 z-30">
+                  <div className="absolute right-0 mt-2 w-52 bg-white/90 backdrop-blur-xl rounded-2xl shadow-xl border border-white/85 p-2 z-30">
                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-3 py-1">Sort By</p>
                     {[
                       { key: "DEFAULT", label: "Default Order" },
@@ -874,7 +874,7 @@ const WorkforcePlanning = () => {
               <button 
                 onClick={() => setCurrentPage(p => Math.max(1, p - 1))} 
                 disabled={currentPage === 1}
-                className="px-3 py-2 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                className="px-3 py-2 bg-white/70 border border-white/80 rounded-xl hover:bg-[#E4EEF8] disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-2xs text-[#17233E]"
               >
                 <ChevronLeft size={14} />
               </button>
@@ -892,7 +892,7 @@ const WorkforcePlanning = () => {
               <button 
                 onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} 
                 disabled={currentPage === totalPages || totalPages === 0}
-                className="px-3 py-2 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                className="px-3 py-2 bg-white/70 border border-white/80 rounded-xl hover:bg-[#E4EEF8] disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-2xs text-[#17233E]"
               >
                 <ChevronRight size={14} />
               </button>
@@ -946,7 +946,7 @@ const WorkforcePlanning = () => {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-white rounded-3xl p-8 max-w-lg w-full shadow-2xl relative"
+              className="bg-gradient-to-br from-[#F5F9FD] to-[#DDEBF8] backdrop-blur-2xl rounded-3xl p-8 max-w-lg w-full shadow-2xl relative border border-white/90"
             >
               <button 
                 onClick={() => setIsAIModalOpen(false)}
@@ -1133,7 +1133,7 @@ const WorkforcePlanning = () => {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-white rounded-3xl p-8 max-w-lg w-full shadow-2xl relative"
+              className="bg-gradient-to-br from-[#F5F9FD] to-[#DDEBF8] backdrop-blur-2xl rounded-3xl p-8 max-w-lg w-full shadow-2xl relative border border-white/90"
             >
               <button 
                 onClick={() => setIsReallocateModalOpen(false)}
@@ -1203,7 +1203,7 @@ const WorkforcePlanning = () => {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-white rounded-3xl p-8 max-w-lg w-full shadow-2xl relative"
+              className="bg-gradient-to-br from-[#F5F9FD] to-[#DDEBF8] backdrop-blur-2xl rounded-3xl p-8 max-w-lg w-full shadow-2xl relative border border-white/90"
             >
               <button 
                 onClick={() => setIsRecruitmentModalOpen(false)}
@@ -1253,7 +1253,7 @@ const WorkforcePlanning = () => {
 
 // --- MINI COMPONENTS ---
 const MetricCard = ({ title, value, trend, trendColor, valueColor = "text-slate-900", icon, iconBg }) => (
-  <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex flex-col justify-between min-h-[140px] relative hover:shadow-md transition-shadow">
+  <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 p-6 flex flex-col justify-between min-h-[140px] relative hover:border-[#1988A3]/40 transition-all duration-300">
     <div className="flex justify-between items-start">
       <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{title}</p>
       <div className={`w-9 h-9 rounded-xl ${iconBg} flex items-center justify-center`}>
@@ -1268,7 +1268,7 @@ const MetricCard = ({ title, value, trend, trendColor, valueColor = "text-slate-
 );
 
 const QuickAction = ({ icon, label, onClick }) => (
-  <button onClick={onClick} className="bg-white hover:bg-slate-50 border border-slate-100 p-8 rounded-3xl flex flex-col items-center justify-center gap-4 shadow-sm transition-all group active:scale-95 outline-none focus:border-blue-200">
+  <button onClick={onClick} className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl hover:bg-[#E4EEF8]/80 border border-white/85 p-8 rounded-3xl flex flex-col items-center justify-center gap-4 shadow-xl shadow-[#1B3154]/6 transition-all group active:scale-95 outline-none hover:border-[#1988A3]/50 cursor-pointer">
     <div className="w-14 h-14 bg-slate-50 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
       {React.cloneElement(icon, { size: 28 })}
     </div>

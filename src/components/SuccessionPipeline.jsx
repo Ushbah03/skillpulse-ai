@@ -483,12 +483,12 @@ const SuccessionPipeline = () => {
               <div className="relative">
                 <button 
                   onClick={() => setIsFilterOpen(!isFilterOpen)}
-                  className="inline-flex items-center gap-2 px-4 py-2 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 bg-white hover:bg-slate-50 transition-all shadow-sm"
+                  className="inline-flex items-center gap-2 px-4 py-2 border border-white/85 rounded-xl text-xs font-bold text-[#17233E] bg-white/70 backdrop-blur-md hover:bg-[#E4EEF8] transition-all shadow-sm"
                 >
                   <Filter size={14} /> Filter: {readinessFilter}
                 </button>
                 {isFilterOpen && (
-                  <div className="absolute right-0 mt-2 w-44 bg-white border border-slate-200 shadow-xl rounded-xl p-1 z-30">
+                  <div className="absolute right-0 mt-2 w-44 bg-white/90 backdrop-blur-xl border border-white/85 shadow-xl rounded-xl p-1 z-30">
                     {['ALL', 'READY_NOW', 'WITHIN_1_YEAR', 'WITHIN_2_YEARS'].map(rf => (
                       <button
                         key={rf}
@@ -521,7 +521,7 @@ const SuccessionPipeline = () => {
 
           {/* ── METRIC CARDS ── */}
           <div className="grid grid-cols-4 gap-5">
-            <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm">
+            <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 rounded-2xl p-5 hover:border-[#1988A3]/40 transition-all duration-300">
               <div className="flex justify-between items-start">
                 <p className="text-xs font-bold uppercase tracking-wider text-slate-400">Overall Readiness</p>
                 <div className="w-8 h-8 rounded-xl bg-emerald-50 flex items-center justify-center">
@@ -538,7 +538,7 @@ const SuccessionPipeline = () => {
               </div>
             </div>
 
-            <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm">
+            <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 rounded-2xl p-5 hover:border-[#1988A3]/40 transition-all duration-300">
               <div className="flex justify-between items-start">
                 <p className="text-xs font-bold uppercase tracking-wider text-slate-400">Critical Skill Gaps</p>
                 <div className="w-8 h-8 rounded-xl bg-rose-50 flex items-center justify-center">
@@ -555,7 +555,7 @@ const SuccessionPipeline = () => {
               </div>
             </div>
 
-            <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm">
+            <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 rounded-2xl p-5 hover:border-[#1988A3]/40 transition-all duration-300">
               <div className="flex justify-between items-start">
                 <p className="text-xs font-bold uppercase tracking-wider text-slate-400">HiPo Talent Pool</p>
                 <div className="w-8 h-8 rounded-xl bg-indigo-50 flex items-center justify-center">
@@ -581,7 +581,7 @@ const SuccessionPipeline = () => {
               </div>
             </div>
 
-            <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm">
+            <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 rounded-2xl p-5 hover:border-[#1988A3]/40 transition-all duration-300">
               <div className="flex justify-between items-start">
                 <p className="text-xs font-bold uppercase tracking-wider text-slate-400">Avg. Time to Ready</p>
                 <div className="w-8 h-8 rounded-xl bg-purple-50 flex items-center justify-center">
@@ -619,7 +619,7 @@ const SuccessionPipeline = () => {
 
               {/* CEO Incumbent Card */}
               <div className="border border-slate-200 rounded-xl overflow-hidden mb-5 bg-slate-50/50">
-                <div className="flex items-start p-5 border-l-4 border-indigo-600 bg-white">
+                <div className="flex items-start p-5 border-l-4 border-[#1988A3] bg-white/70 backdrop-blur-md rounded-xl">
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-1">
                       <span className="text-[10px] font-black text-indigo-600 uppercase tracking-widest bg-indigo-50 px-2 py-0.5 rounded">
@@ -650,7 +650,7 @@ const SuccessionPipeline = () => {
               {/* Successor Pools Grid */}
               <div className="grid grid-cols-2 gap-4">
                 {/* Tech & Engineering Bench Pool */}
-                <div className="border border-slate-200 rounded-xl p-4 bg-white hover:border-slate-300 transition-all">
+                <div className="border border-white/80 rounded-2xl p-4 bg-white/60 hover:bg-[#E4EEF8]/80 backdrop-blur-md shadow-sm transition-all">
                   <div className="flex justify-between items-center mb-3">
                     <p className="text-xs font-black text-slate-900 uppercase tracking-wider">Technology & Engineering Bench</p>
                     <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">
@@ -696,7 +696,7 @@ const SuccessionPipeline = () => {
                 </div>
 
                 {/* Product, Commercial & Operations Bench */}
-                <div className="border border-slate-200 rounded-xl p-4 bg-white hover:border-slate-300 transition-all">
+                <div className="border border-white/80 rounded-2xl p-4 bg-white/60 hover:bg-[#E4EEF8]/80 backdrop-blur-md shadow-sm transition-all">
                   <div className="flex justify-between items-center mb-3">
                     <p className="text-xs font-black text-slate-900 uppercase tracking-wider">Product & Operations Bench</p>
                     <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-indigo-50 text-indigo-700 border border-indigo-200">

@@ -103,8 +103,9 @@ const DepartmentComparison = () => {
 
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth < 640) setVisibleCount(1);
-      else if (window.innerWidth < 1024) setVisibleCount(2);
+      if (window.innerWidth < 768) setVisibleCount(1);
+      else if (window.innerWidth < 1280) setVisibleCount(2);
+      else if (window.innerWidth < 1600) setVisibleCount(3);
       else setVisibleCount(4);
     };
     handleResize();
@@ -411,7 +412,7 @@ const DepartmentComparison = () => {
                       whileTap={{ scale: 0.9 }}
                       onClick={handlePrev} 
                       disabled={startIndex === 0} 
-                      className="p-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 disabled:opacity-30 disabled:cursor-not-allowed transition-all shadow-2xs cursor-pointer text-slate-700"
+                      className="p-2 rounded-xl border border-white/80 bg-white/70 hover:bg-[#E4EEF8] disabled:opacity-30 disabled:cursor-not-allowed transition-all shadow-sm cursor-pointer text-[#17233E]"
                       title="Previous department"
                     >
                       <ChevronLeft size={16} />
@@ -420,7 +421,7 @@ const DepartmentComparison = () => {
                       whileTap={{ scale: 0.9 }}
                       onClick={handleNext} 
                       disabled={startIndex >= maxIndex} 
-                      className="p-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 disabled:opacity-30 disabled:cursor-not-allowed transition-all shadow-2xs cursor-pointer text-slate-700"
+                      className="p-2 rounded-xl border border-white/80 bg-white/70 hover:bg-[#E4EEF8] disabled:opacity-30 disabled:cursor-not-allowed transition-all shadow-sm cursor-pointer text-[#17233E]"
                       title="Next department"
                     >
                       <ChevronRight size={16} />
@@ -446,7 +447,7 @@ const DepartmentComparison = () => {
                         style={{ width: cardWidthCalc }}
                         whileHover={{ y: -4, scale: 1.01 }}
                         transition={{ duration: 0.2 }}
-                        className="relative overflow-hidden shrink-0 bg-white border border-slate-200/90 hover:border-indigo-300 rounded-2xl p-4 shadow-2xs hover:shadow-lg transition-all duration-300 flex flex-col justify-between group cursor-default"
+                        className="relative overflow-hidden shrink-0 bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl border border-white/85 hover:border-[#1988A3]/50 rounded-3xl p-5 shadow-xl shadow-[#1B3154]/6 transition-all duration-300 flex flex-col justify-between group cursor-default"
                       >
                         {/* Top Accent Gradient Bar */}
                         <div className={`absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r ${theme.gradient}`} />
@@ -501,11 +502,11 @@ const DepartmentComparison = () => {
 
                         {/* Bottom Metric Pills: Skill Rating & Workforce Readiness */}
                         <div className="grid grid-cols-2 gap-2 pt-2.5 border-t border-slate-100 relative z-10">
-                          <div className="bg-slate-50/90 group-hover:bg-slate-100/70 transition-colors border border-slate-100 rounded-xl px-2.5 py-1.5 flex flex-col">
+                          <div className="bg-white/60 group-hover:bg-[#E4EEF8]/80 transition-colors border border-white/80 rounded-xl px-2.5 py-1.5 flex flex-col">
                             <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Skill Rating</span>
                             <span className="text-xs font-black text-slate-800 mt-0.5">{dm.skill}</span>
                           </div>
-                          <div className="bg-slate-50/90 group-hover:bg-slate-100/70 transition-colors border border-slate-100 rounded-xl px-2.5 py-1.5 flex flex-col">
+                          <div className="bg-white/60 group-hover:bg-[#E4EEF8]/80 transition-colors border border-white/80 rounded-xl px-2.5 py-1.5 flex flex-col">
                             <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Readiness</span>
                             <span className={`text-xs font-black mt-0.5 ${dm.hasSkills ? 'text-indigo-600' : 'text-slate-400'}`}>
                               {dm.read}
@@ -523,7 +524,7 @@ const DepartmentComparison = () => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
               
               {/* TREND LINES CARD */}
-              <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs flex flex-col justify-between">
+              <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 rounded-3xl p-6 flex flex-col justify-between">
                 <div>
                   <div className="flex justify-between items-center mb-3">
                     <div>
@@ -603,7 +604,7 @@ const DepartmentComparison = () => {
               </div>
 
               {/* SKILL MATURITY HEATMAP */}
-              <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs flex flex-col justify-between">
+              <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 rounded-3xl p-6 flex flex-col justify-between">
                 <div>
                   <div className="flex justify-between items-center mb-3">
                     <div>
@@ -621,7 +622,7 @@ const DepartmentComparison = () => {
                   </div>
 
                   <div className="space-y-2 pt-1">
-                    <div className="grid grid-cols-6 gap-2 text-center text-[10px] font-black text-slate-400 uppercase tracking-wider pb-1">
+                    <div className="overflow-x-auto pb-2"><div className="min-w-[480px]"><div className="grid grid-cols-6 gap-2 text-center text-[10px] font-black text-slate-400 uppercase tracking-wider pb-1">
                       <span className="text-left font-bold truncate">Dept</span>
                       {heatmapDomains.map((dom, idx) => (
                         <span key={idx} className="truncate" title={dom}>{dom}</span>
@@ -647,6 +648,8 @@ const DepartmentComparison = () => {
                   </div>
                 </div>
               </div>
+            </div>
+          </div>
 
             </div>
 
@@ -654,7 +657,7 @@ const DepartmentComparison = () => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
               
               {/* TRAINING COMPLETION RATE CARD */}
-              <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs">
+              <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 rounded-3xl p-6">
                 <div className="flex items-center justify-between mb-3">
                   <div>
                     <h3 className="text-xs font-black text-slate-900 uppercase tracking-wider">Training Completion Rate</h3>
@@ -716,7 +719,7 @@ const DepartmentComparison = () => {
             </div>
 
             {/* COMPACT DEPARTMENT PERFORMANCE RANKING TABLE */}
-            <div className="bg-white border border-slate-200 rounded-2xl shadow-xs overflow-hidden">
+            <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 rounded-3xl overflow-hidden p-6">
               <div className="px-5 py-3.5 border-b border-slate-100 flex justify-between items-center">
                 <div>
                   <h3 className="text-xs font-black text-slate-900 uppercase tracking-wider">Department Performance Ranking</h3>
@@ -771,7 +774,7 @@ const DepartmentComparison = () => {
                   <button 
                     onClick={() => setActivePage(p => Math.max(1, p - 1))} 
                     disabled={activePage === 1} 
-                    className="p-1 rounded-md border border-slate-200 bg-white disabled:opacity-40 cursor-pointer"
+                    className="p-1.5 rounded-lg border border-white/80 bg-white/70 hover:bg-[#E4EEF8] disabled:opacity-40 cursor-pointer shadow-2xs transition-colors"
                   >
                     <ChevronLeft size={14} />
                   </button>
@@ -779,7 +782,7 @@ const DepartmentComparison = () => {
                   <button 
                     onClick={() => setActivePage(p => Math.min(totalPages, p + 1))} 
                     disabled={activePage >= totalPages} 
-                    className="p-1 rounded-md border border-slate-200 bg-white disabled:opacity-40 cursor-pointer"
+                    className="p-1.5 rounded-lg border border-white/80 bg-white/70 hover:bg-[#E4EEF8] disabled:opacity-40 cursor-pointer shadow-2xs transition-colors"
                   >
                     <ChevronRight size={14} />
                   </button>

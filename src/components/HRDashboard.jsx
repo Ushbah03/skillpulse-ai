@@ -232,7 +232,7 @@ const HRDashboard = () => {
                   <div className="flex items-center gap-2">
                     <button 
                       onClick={() => navigate('/hr-dashboard/skill-gap-reports')}
-                      className="px-3 py-1.5 bg-white hover:bg-slate-50 text-amber-800 rounded-lg text-xs font-bold border border-amber-300 shadow-sm transition-all active:scale-95 cursor-pointer"
+                      className="px-3.5 py-1.5 bg-white/90 hover:bg-white text-amber-900 rounded-xl text-xs font-bold border border-amber-300/80 shadow-sm transition-all active:scale-95 cursor-pointer"
                     >
                       View Details
                     </button>
@@ -248,7 +248,7 @@ const HRDashboard = () => {
             </AnimatePresence>
 
             {/* 5. Chart Block: Workforce Skill Distribution */}
-            <div className="bg-white rounded-xl p-5 border border-slate-200/80 shadow-sm space-y-4">
+            <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/85 shadow-xl shadow-[#1B3154]/6 space-y-4">
               <div className="flex justify-between items-center">
                 <div>
                   <h3 className="text-base font-bold text-slate-900 tracking-tight flex items-center gap-2">
@@ -356,7 +356,7 @@ const HRDashboard = () => {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-white rounded-2xl p-6 max-w-lg w-full shadow-2xl relative border border-slate-100"
+              className="bg-gradient-to-br from-[#F5F9FD] to-[#DDEBF8] backdrop-blur-2xl rounded-3xl p-6 max-w-lg w-full shadow-2xl relative border border-white/90"
             >
               <button 
                 onClick={() => setIsAIModalOpen(false)}
@@ -436,7 +436,7 @@ const HRDashboard = () => {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-white rounded-2xl p-6 max-w-lg w-full shadow-2xl relative border border-slate-100 max-h-[85vh] flex flex-col"
+              className="bg-gradient-to-br from-[#F5F9FD] to-[#DDEBF8] backdrop-blur-2xl rounded-3xl p-6 max-w-lg w-full shadow-2xl relative border border-white/90 max-h-[85vh] flex flex-col"
             >
               <button 
                 onClick={() => setSelectedDepartment(null)}
@@ -557,7 +557,7 @@ const HRDashboard = () => {
 
 /* Sub-components for cleaner rendering */
 const MetricCard = ({ title, value, icon, iconColor = "", iconBg = "", subtext, subtextColor = "", subtextStyle = "" }) => (
-  <div className="bg-white p-4 rounded-xl border border-slate-200/80 shadow-sm flex flex-col justify-between min-h-[125px] hover:shadow-md transition-shadow">
+  <div className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl p-6 rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-col justify-between hover:border-[#1988A3]/40 transition-all duration-300">
     <div className="flex justify-between items-start">
       <span className="text-xs font-bold uppercase tracking-wider text-[#8A9CB7]">{title}</span>
       <div className={`w-8 h-8 ${iconBg} ${iconColor} rounded-lg flex items-center justify-center`}>{icon}</div>
@@ -810,7 +810,7 @@ const CompetencyReadinessWidget = ({ pillars = [], categories = [], benchmark = 
 const QuickActionButton = ({ label, colorBg, onClick }) => (
   <button 
     onClick={onClick}
-    className="bg-white hover:bg-slate-50 border border-slate-200/80 p-3.5 rounded-xl flex items-center justify-between shadow-sm hover:shadow-md transition-all text-left group active:scale-95 cursor-pointer outline-none"
+    className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl hover:bg-[#E4EEF8]/80 border border-white/85 p-5 rounded-2xl flex items-center justify-between shadow-sm hover:shadow-md transition-all text-left group active:scale-95 cursor-pointer outline-none"
   >
     <div className="flex items-center gap-3">
       <div className={`w-9 h-9 ${colorBg} rounded-lg flex items-center justify-center font-bold text-sm`}>

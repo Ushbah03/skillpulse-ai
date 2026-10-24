@@ -120,7 +120,7 @@ const ToastNotification = ({ toast, onClose }) => {
   const isSuccess = toast.type === 'success';
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 flex items-center gap-3 bg-white border border-slate-200 shadow-xl rounded-2xl px-5 py-4 min-w-[320px] max-w-md animate-in slide-in-from-bottom-4 duration-200">
+    <div className="fixed bottom-6 right-6 z-50 flex items-center gap-3 bg-gradient-to-br from-[#F5F9FD] to-[#DDEBF8] backdrop-blur-2xl border border-white/90 shadow-2xl rounded-2xl px-5 py-4 min-w-[320px] max-w-md animate-in slide-in-from-bottom-4 duration-200">
       <div className={`p-2 rounded-xl flex-shrink-0 ${isSuccess ? 'bg-emerald-50 text-emerald-600' : 'bg-indigo-50 text-indigo-600'}`}>
         {isSuccess ? <CheckCircle size={20} /> : <Sparkles size={20} />}
       </div>
@@ -141,7 +141,7 @@ const ActionModal = ({ isOpen, title, description, confirmText, onConfirm, onClo
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-2xl max-w-md w-full p-6 space-y-4">
+      <div className="bg-gradient-to-br from-[#F5F9FD] to-[#DDEBF8] backdrop-blur-2xl rounded-3xl border border-white/90 shadow-2xl max-w-md w-full p-6 space-y-4">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3">
             <div className={`p-3 rounded-2xl ${isDanger ? 'bg-rose-50 text-rose-600' : 'bg-indigo-50 text-indigo-600'}`}>
@@ -656,7 +656,7 @@ const SkillGapReports = () => {
                           ) : (
                             <button 
                               onClick={() => handleAssignTraining(emp.id, emp.name, emp.gap, emp.skillId)}
-                              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 bg-white hover:bg-slate-50 transition-all shadow-sm active:scale-95"
+                              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 border border-white/80 rounded-xl text-xs font-bold text-[#17233E] bg-white/70 hover:bg-[#E4EEF8] transition-all shadow-sm active:scale-95"
                             >
                               <BookOpen size={13} className="text-indigo-600" />
                               Assign Training

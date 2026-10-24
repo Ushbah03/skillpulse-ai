@@ -463,7 +463,7 @@ const EmployeePerformance = () => {
           {/* TOP METRIC CARDS */}
           <div className="grid grid-cols-4 gap-5">
             {statMetrics.map((card, i) => (
-              <div key={i} className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm flex flex-col justify-between relative overflow-hidden">
+              <div key={i} className="bg-gradient-to-br from-[#F5F9FD]/95 via-[#EAF2FB]/90 to-[#DDEBF8]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 rounded-2xl p-5 flex flex-col justify-between relative overflow-hidden hover:border-[#1988A3]/40 transition-all duration-300">
                 <div className="flex justify-between items-start">
                   <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">{card.label}</span>
                   {card.type === 'spark' && <TrendingUp size={16} className="text-indigo-500" />}
@@ -533,7 +533,7 @@ const EmployeePerformance = () => {
                     <Filter size={13} /> Dept: {selectedDept}
                   </button>
                   {isFilterMenuOpen && (
-                    <div className="absolute right-0 mt-2 w-40 bg-white border border-slate-100 shadow-xl rounded-xl py-1 z-30">
+                    <div className="absolute right-0 mt-2 w-40 bg-white/90 backdrop-blur-xl border border-white/85 shadow-xl rounded-xl py-1 z-30">
                       {availableDepts.map((dept) => (
                         <button
                           key={dept}
@@ -658,14 +658,14 @@ const EmployeePerformance = () => {
                 <button 
                   onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                   disabled={currentPage === 1}
-                  className="p-1.5 rounded-lg border border-slate-200 text-slate-400 hover:bg-white disabled:opacity-40 disabled:hover:bg-transparent transition-all"
+                  className="p-1.5 rounded-lg border border-white/80 bg-white/70 text-[#17233E] hover:bg-[#E4EEF8] disabled:opacity-40 transition-all cursor-pointer shadow-2xs"
                 >
                   <ChevronLeft size={16} />
                 </button>
                 <button 
                   onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                   disabled={currentPage === totalPages}
-                  className="p-1.5 rounded-lg border border-slate-200 text-slate-400 hover:bg-white disabled:opacity-40 disabled:hover:bg-transparent transition-all"
+                  className="p-1.5 rounded-lg border border-white/80 bg-white/70 text-[#17233E] hover:bg-[#E4EEF8] disabled:opacity-40 transition-all cursor-pointer shadow-2xs"
                 >
                   <ChevronRight size={16} />
                 </button>
