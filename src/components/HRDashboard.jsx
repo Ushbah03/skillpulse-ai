@@ -314,20 +314,20 @@ const HRDashboard = () => {
             </div>
 
             {/* 7. AI Insight Stateful Card */}
-            <div className="bg-gradient-to-r from-[#0b1221] to-[#141e36] rounded-xl p-6 text-white relative overflow-hidden shadow-xl border border-slate-800 group">
-              <div className="absolute right-0 top-0 opacity-10 transform translate-x-10 -translate-y-10 group-hover:rotate-12 transition-transform duration-700 pointer-events-none">
+            <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-3xl p-8 text-[#17233E] relative overflow-hidden border border-white/85 shadow-xl shadow-[#1B3154]/6 group">
+              <div className="absolute right-0 top-0 opacity-15 transform translate-x-10 -translate-y-10 group-hover:rotate-12 transition-transform duration-700 pointer-events-none text-[#1988A3]">
                 <Sparkles size={260} />
               </div>
               
               <div className="relative z-10 space-y-3 max-w-2xl">
-                <span className="text-[10px] font-black tracking-widest text-indigo-400 uppercase block">AI Workforce Insight</span>
-                <h3 className="text-xl font-bold tracking-tight">{aiInsightDetails.title}</h3>
-                <p className="text-slate-400 text-xs font-medium leading-relaxed">
+                <span className="text-[10px] font-mono font-bold tracking-widest text-[#1988A3] uppercase block">AI Workforce Insight</span>
+                <h3 className="text-xl md:text-2xl font-extrabold tracking-tight text-[#17233E]">{aiInsightDetails.title}</h3>
+                <p className="text-[#5A6D89] text-xs font-medium leading-relaxed">
                   {aiInsightDetails.desc}
                 </p>
                 <button 
                   onClick={() => setIsAIModalOpen(true)}
-                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-bold shadow-md transition-all active:scale-95 cursor-pointer border border-indigo-500"
+                  className="px-5 py-2.5 bg-gradient-to-r from-[#1988A3] to-[#11C6DE] hover:from-[#157289] hover:to-[#0EB3C9] text-white rounded-xl text-xs font-bold shadow-lg shadow-[#1988A3]/25 transition-all active:scale-95 cursor-pointer border-0"
                 >
                   View AI Recommendations
                 </button>
@@ -587,9 +587,9 @@ const StackedBar = ({ label, segments = [0, 0, 0], hasSkills = false, totalSkill
       <div className="w-full flex flex-col justify-end h-32 gap-0.5 group-hover:-translate-y-1 transition-transform">
         {hasSkills ? (
           <>
-            <div className="bg-emerald-500 rounded-t-md transition-all shadow-sm" style={{ height: `${segments[0]}%` }}></div>
-            <div className="bg-indigo-600 transition-all shadow-sm" style={{ height: `${segments[1]}%` }}></div>
-            <div className="bg-slate-300 rounded-b-md transition-all" style={{ height: `${segments[2]}%` }}></div>
+            <div className="bg-[#11C6DE] rounded-t-md transition-all shadow-sm" style={{ height: `${segments[0]}%` }}></div>
+            <div className="bg-[#1988A3] transition-all shadow-sm" style={{ height: `${segments[1]}%` }}></div>
+            <div className="bg-[#BAC7D5] rounded-b-md transition-all" style={{ height: `${segments[2]}%` }}></div>
           </>
         ) : (
           <div className="h-full w-full border-2 border-dashed border-slate-200 rounded-lg flex flex-col items-center justify-center bg-slate-50/70 p-1">
@@ -622,13 +622,13 @@ const DepartmentBenchmarkWidget = ({ data = [], benchmark = 90, onSelectDepartme
       <div className="flex justify-between items-start mb-3">
         <div>
           <h4 className="text-xs font-black text-slate-900 flex items-center gap-2">
-            <Target size={15} className="text-indigo-600" />
+            <Target size={15} className="text-[#1988A3]" />
             Department Capability Benchmark
           </h4>
           <p className="text-[10px] text-slate-400 font-medium mt-0.5">Live department readiness vs {benchmark}% operational target</p>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-[10px] font-bold px-2 py-0.5 bg-indigo-50 text-indigo-700 border border-indigo-200 rounded-md">
+          <span className="text-[10px] font-bold px-2 py-0.5 bg-[#1988A3]/10 text-[#1988A3] border border-[#1988A3]/25 rounded-md">
             Benchmark: {benchmark}%
           </span>
         </div>
@@ -639,10 +639,10 @@ const DepartmentBenchmarkWidget = ({ data = [], benchmark = 90, onSelectDepartme
           const isAboveTarget = d.value >= benchmark;
           const isClose = d.value >= 80;
           const barColor = isAboveTarget 
-            ? 'bg-emerald-500' 
+            ? 'bg-gradient-to-r from-[#1988A3] to-[#11C6DE]' 
             : isClose 
-            ? 'bg-indigo-600' 
-            : 'bg-amber-500';
+            ? 'bg-gradient-to-r from-[#1B3154] to-[#1988A3]' 
+            : 'bg-gradient-to-r from-[#8A9CB7] to-[#1988A3]/70';
 
           return (
             <div 
@@ -727,7 +727,7 @@ const CompetencyReadinessWidget = ({ pillars = [], categories = [], benchmark = 
       <div className="flex justify-between items-start mb-2">
         <div>
           <h4 className="text-xs font-black text-slate-900 flex items-center gap-2">
-            <Award size={15} className="text-emerald-600" />
+            <Award size={15} className="text-[#1988A3]" />
             Competency & Category Readiness
           </h4>
           <p className="text-[10px] text-slate-400 font-medium mt-0.5">Live capability aggregated from verified employee skills</p>
@@ -735,13 +735,13 @@ const CompetencyReadinessWidget = ({ pillars = [], categories = [], benchmark = 
         <div className="flex items-center gap-1 bg-slate-100 p-0.5 rounded-lg border border-slate-200">
           <button
             onClick={() => setViewMode('pillars')}
-            className={`px-2 py-0.5 text-[10px] font-bold rounded-md transition-all ${viewMode === 'pillars' ? 'bg-white text-indigo-700 shadow-sm' : 'text-slate-500 hover:text-slate-800'}`}
+            className={`px-2 py-0.5 text-[10px] font-bold rounded-md transition-all ${viewMode === 'pillars' ? 'bg-gradient-to-r from-[#1988A3] to-[#11C6DE] text-white shadow-sm' : 'text-slate-500 hover:text-slate-800'}`}
           >
             Pillars (6)
           </button>
           <button
             onClick={() => setViewMode('categories')}
-            className={`px-2 py-0.5 text-[10px] font-bold rounded-md transition-all ${viewMode === 'categories' ? 'bg-white text-indigo-700 shadow-sm' : 'text-slate-500 hover:text-slate-800'}`}
+            className={`px-2 py-0.5 text-[10px] font-bold rounded-md transition-all ${viewMode === 'categories' ? 'bg-gradient-to-r from-[#1988A3] to-[#11C6DE] text-white shadow-sm' : 'text-slate-500 hover:text-slate-800'}`}
           >
             Taxonomy (5)
           </button>
@@ -753,10 +753,10 @@ const CompetencyReadinessWidget = ({ pillars = [], categories = [], benchmark = 
           const isAboveTarget = p.value >= benchmark;
           const isClose = p.value >= 85;
           const barColor = isAboveTarget 
-            ? 'bg-emerald-500' 
+            ? 'bg-gradient-to-r from-[#1988A3] to-[#11C6DE]' 
             : isClose 
-            ? 'bg-indigo-600' 
-            : 'bg-amber-500';
+            ? 'bg-gradient-to-r from-[#1B3154] to-[#1988A3]' 
+            : 'bg-gradient-to-r from-[#8A9CB7] to-[#1988A3]/70';
 
           return (
             <div key={idx} className="group">
@@ -765,7 +765,7 @@ const CompetencyReadinessWidget = ({ pillars = [], categories = [], benchmark = 
                   <span className="font-bold text-slate-800 group-hover:text-indigo-600 transition-colors">
                     {p.fullName || p.category || p.pillar}
                   </span>
-                  <span className="text-[10px] text-indigo-600 font-bold px-1.5 py-0.2 bg-indigo-50 border border-indigo-100 rounded">
+                  <span className="text-[10px] text-[#1988A3] font-bold px-1.5 py-0.5 bg-[#1988A3]/10 border border-[#1988A3]/25 rounded">
                     {p.skillsCount} Skills
                   </span>
                 </div>

@@ -310,8 +310,8 @@ const EmployeePerformance = () => {
       { range: '0-20%', count: counts['0-20%'], color: 'bg-rose-500' },
       { range: '21-40%', count: counts['21-40%'], color: 'bg-orange-500' },
       { range: '41-60%', count: counts['41-60%'], color: 'bg-amber-500' },
-      { range: '61-80%', count: counts['61-80%'], color: 'bg-indigo-500' },
-      { range: '81-100%', count: counts['81-100%'], color: 'bg-emerald-500' },
+      { range: '61-80%', count: counts['61-80%'], color: 'bg-gradient-to-t from-[#1B3154] to-[#1988A3]' },
+      { range: '81-100%', count: counts['81-100%'], color: 'bg-gradient-to-t from-[#1988A3] to-[#11C6DE]' },
     ];
   }, [assessedEmployees]);
 
@@ -427,7 +427,7 @@ const EmployeePerformance = () => {
         
         {activeNotification && (
           <div className="fixed top-5 right-8 z-50 bg-slate-900 text-white text-xs font-bold px-4 py-3 rounded-xl shadow-lg flex items-center gap-2 transition-all">
-            <Sparkles size={14} className="text-indigo-400" />
+            <Sparkles size={14} className="text-[#1988A3]" />
             {activeNotification}
           </div>
         )}
@@ -466,7 +466,7 @@ const EmployeePerformance = () => {
               <div key={i} className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 rounded-2xl p-5 flex flex-col justify-between relative overflow-hidden hover:border-[#1988A3]/40 transition-all duration-300">
                 <div className="flex justify-between items-start">
                   <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">{card.label}</span>
-                  {card.type === 'spark' && <TrendingUp size={16} className="text-indigo-500" />}
+                  {card.type === 'spark' && <TrendingUp size={16} className="text-[#1988A3]" />}
                   {card.type === 'bar' && <Award size={16} className="text-emerald-500" />}
                   {card.type === 'avatars' && <AlertCircle size={16} className="text-rose-400" />}
                 </div>
@@ -520,7 +520,7 @@ const EmployeePerformance = () => {
                 {selectedRows.length > 0 && (
                   <button 
                     onClick={handleBulkTraining}
-                    className="text-xs font-bold bg-indigo-600 text-white px-3 py-1.5 rounded-xl hover:bg-indigo-700 transition-all"
+                    className="text-xs font-bold bg-gradient-to-r from-[#1988A3] to-[#11C6DE] hover:from-[#157289] hover:to-[#0EB3C9] text-white px-3.5 py-1.5 rounded-xl transition-all shadow-sm"
                   >
                     Assign Training ({selectedRows.length})
                   </button>
@@ -604,7 +604,7 @@ const EmployeePerformance = () => {
                           {row.avatar ? (
                             <img src={row.avatar} alt={row.name} className="w-8 h-8 rounded-full object-cover border border-slate-200" />
                           ) : (
-                            <div className="w-8 h-8 rounded-full bg-indigo-100 text-indigo-700 font-extrabold flex items-center justify-center text-xs border border-indigo-200">
+                            <div className="w-8 h-8 rounded-full bg-[#1988A3]/10 text-[#1988A3] font-extrabold flex items-center justify-center text-xs border border-[#1988A3]/20">
                               {(row.name || 'EP').split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()}
                             </div>
                           )}

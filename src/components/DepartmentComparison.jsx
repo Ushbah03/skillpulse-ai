@@ -689,18 +689,18 @@ const DepartmentComparison = () => {
               </div>
 
               {/* AI STRATEGIC INSIGHT BOX */}
-              <div className="bg-gradient-to-br from-indigo-950 via-slate-900 to-indigo-900 text-white rounded-2xl p-5 shadow-sm flex flex-col justify-between relative overflow-hidden">
+              <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl text-[#17233E] rounded-3xl p-6 border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-col justify-between relative overflow-hidden">
                 <div className="space-y-2.5">
                   <div className="flex items-center gap-2">
-                    <span className="inline-flex items-center gap-1.5 text-[10px] font-black px-2.5 py-0.5 bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 rounded-md uppercase tracking-wider">
-                      <Sparkles size={12} className="text-indigo-300" /> AI Strategic Insight
+                    <span className="inline-flex items-center gap-1.5 text-[10px] font-black px-2.5 py-0.5 bg-[#1988A3]/10 text-[#1988A3] border border-[#1988A3]/20 rounded-md uppercase tracking-wider">
+                      <Sparkles size={12} className="text-[#1988A3]" /> AI Strategic Insight
                     </span>
                     <span className="text-[10px] font-semibold text-slate-400">100% Real Dataset</span>
                   </div>
-                  <h4 className="text-sm font-black text-white">
+                  <h4 className="text-sm font-black text-[#17233E]">
                     {liveAnalytics?.deptInsight?.title || "Cross-Departmental Skill Synergy & Readiness"}
                   </h4>
-                  <p className="text-xs text-indigo-100/80 font-medium leading-relaxed">
+                  <p className="text-xs text-[#5A6D89] font-medium leading-relaxed">
                     {liveAnalytics?.deptInsight?.summary || liveAnalytics?.aiInsight || "Live capability profiling is active across all tenant departments. Real-time verified proficiency indices and courseware completions are continuously monitored."}
                   </p>
                 </div>
@@ -708,7 +708,7 @@ const DepartmentComparison = () => {
                 <div className="pt-4 flex justify-end">
                   <button 
                     onClick={() => navigate('/hr-dashboard/skill-gap-reports')}
-                    className="px-3.5 py-2 bg-indigo-500 hover:bg-indigo-600 text-white font-bold text-xs rounded-xl shadow-sm transition-all flex items-center gap-1.5 cursor-pointer active:scale-95"
+                    className="px-4 py-2 bg-gradient-to-r from-[#1988A3] to-[#11C6DE] hover:from-[#157289] hover:to-[#0EB3C9] text-white font-bold text-xs rounded-xl shadow-md shadow-[#1988A3]/25 transition-all flex items-center gap-1.5 cursor-pointer active:scale-95 border-0"
                   >
                     View Skill Gap Analysis
                     <ChevronRight size={14} />

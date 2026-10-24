@@ -349,7 +349,7 @@ const HRInsightsForecasting = () => {
 
             <button 
               onClick={handleExportReport}
-              className="text-xs font-bold bg-indigo-600 text-white px-3.5 py-1.5 rounded-lg hover:bg-indigo-700 transition-all flex items-center gap-1.5 shadow-sm active:scale-95 cursor-pointer"
+              className="text-xs font-bold bg-[#1988A3] text-white px-3.5 py-1.5 rounded-lg hover:bg-[#17233E] transition-all flex items-center gap-1.5 shadow-sm active:scale-95 cursor-pointer"
             >
               <Download size={14} /> Export Report
             </button>
@@ -402,15 +402,15 @@ const HRInsightsForecasting = () => {
             <div className="flex flex-wrap justify-between items-center gap-2">
               <div>
                 <h3 className="text-base font-bold text-slate-900 tracking-tight flex items-center gap-2">
-                  <BarChart3 size={16} className="text-indigo-600" />
+                  <BarChart3 size={16} className="text-[#1988A3]" />
                   Future Skill Gap Forecast
                 </h3>
                 <p className="text-xs text-slate-400 font-medium">Verified capability baseline vs. projected training maturity & benchmark target</p>
               </div>
               <div className="flex flex-wrap items-center gap-3 text-xs font-bold text-slate-600">
-                <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-indigo-500" /> Verified Capability</span>
-                <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-indigo-200 border border-indigo-400 border-dashed" /> Projected Capability</span>
-                <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-indigo-700" /> Target Benchmark</span>
+                <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-[#1988A3]" /> Verified Capability</span>
+                <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-[#11C6DE]/30 border border-[#11C6DE] border-dashed" /> Projected Capability</span>
+                <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-[#17233E]" /> Target Benchmark</span>
               </div>
             </div>
 
@@ -445,7 +445,7 @@ const HRInsightsForecasting = () => {
                               <span className="text-slate-400 mx-0.5">/</span>
                               <span className="text-white font-black">Tgt: {predictedVal}%</span>
                               {data.isForecast && (
-                                <span className="ml-1 text-[8px] px-1 py-0.2 bg-indigo-500/30 text-indigo-200 rounded font-bold">
+                                <span className="ml-1 text-[8px] px-1 py-0.2 bg-[#1988A3]/30 text-indigo-200 rounded font-bold">
                                   Forecast
                                 </span>
                               )}
@@ -465,11 +465,11 @@ const HRInsightsForecasting = () => {
                           className={`w-2.5 sm:w-3.5 rounded-t transition-colors ${
                             data.isForecast
                               ? isSelected 
-                                ? 'bg-indigo-300 border border-indigo-500 border-dashed shadow-sm' 
-                                : 'bg-indigo-200 border border-indigo-400 border-dashed group-hover:bg-indigo-300'
+                                ? 'bg-[#11C6DE]/40 border border-[#11C6DE] border-dashed shadow-sm' 
+                                : 'bg-[#11C6DE]/25 border border-[#11C6DE] border-dashed group-hover:bg-indigo-300'
                               : isSelected 
-                              ? 'bg-indigo-600 shadow-sm' 
-                              : 'bg-indigo-500 group-hover:bg-indigo-600'
+                              ? 'bg-[#1988A3] shadow-sm' 
+                              : 'bg-[#1988A3] group-hover:bg-[#1988A3]'
                           }`} 
                         />
                         <motion.div 
@@ -478,7 +478,7 @@ const HRInsightsForecasting = () => {
                           style={{ height: `${predictedVal}%` }}
                           transition={{ duration: 0.5, delay: idx * 0.03 + 0.05 }}
                           className={`w-2.5 sm:w-3.5 rounded-t transition-colors ${
-                            isSelected ? 'bg-indigo-800 shadow-sm' : 'bg-indigo-700 group-hover:bg-indigo-800'
+                            isSelected ? 'bg-indigo-800 shadow-sm' : 'bg-[#17233E] group-hover:bg-indigo-800'
                           }`} 
                         />
                       </div>
@@ -650,35 +650,35 @@ const HRInsightsForecasting = () => {
         </div>
 
         {/* --- SECTION 3: AI STRATEGIC RECOMMENDATIONS PANEL --- */}
-        <div className="bg-[#0b1221] rounded-xl p-5 text-white shadow-xl flex flex-col justify-between relative overflow-hidden">
+        <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-3xl p-6 text-[#17233E] shadow-xl shadow-[#1B3154]/6 border border-white/85 flex flex-col justify-between relative overflow-hidden">
           <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-indigo-500/15 to-transparent pointer-events-none rounded-full" />
           
           <div className="flex items-center gap-3 mb-4 relative z-10">
-            <div className="w-8 h-8 rounded-lg bg-indigo-500/20 flex items-center justify-center border border-indigo-500/30 text-indigo-400">
+            <div className="w-8 h-8 rounded-lg bg-[#1988A3]/20 flex items-center justify-center border border-indigo-500/30 text-indigo-400">
               <Sparkles size={16} />
             </div>
             <div>
-              <h3 className="text-base font-bold uppercase tracking-wider text-slate-100">AI Strategic Recommendations</h3>
-              <p className="text-xs text-slate-400 font-semibold">Automated interventions derived from PostgreSQL database skill gaps</p>
+              <h3 className="text-base font-extrabold uppercase tracking-wider text-[#17233E]">AI Strategic Recommendations</h3>
+              <p className="text-xs text-[#5A6D89] font-medium">Automated interventions derived from PostgreSQL database skill gaps</p>
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 relative z-10">
             {filteredRecs.length > 0 ? (
               filteredRecs.map((rec) => (
-                <div key={rec.id} className="bg-[#121c33] border border-slate-800 hover:border-indigo-500/50 rounded-xl p-4 flex flex-col justify-between transition-all group">
+                <div key={rec.id} className="bg-white/70 backdrop-blur-md border border-white/85 hover:border-[#1988A3]/50 rounded-2xl p-4 flex flex-col justify-between transition-all group shadow-sm text-[#17233E]">
                   <div>
                     <div className="flex justify-between items-center mb-2">
                       <span className={`text-[9px] px-1.5 py-0.5 rounded border font-black uppercase tracking-wider ${rec.statusColor}`}>
                         {rec.status}
                       </span>
-                      <span className="text-[11px] text-indigo-300 font-bold">{rec.match}</span>
+                      <span className="text-[11px] text-[#1988A3] font-bold">{rec.match}</span>
                     </div>
-                    <h4 className="text-xs font-bold text-slate-100 mb-1 group-hover:text-indigo-300 transition-colors">{rec.title}</h4>
-                    <p className="text-[11px] text-slate-400 font-medium leading-relaxed mb-2.5">{rec.desc}</p>
+                    <h4 className="text-xs font-bold text-[#17233E] mb-1 group-hover:text-[#1988A3] transition-colors">{rec.title}</h4>
+                    <p className="text-[11px] text-[#5A6D89] font-medium leading-relaxed mb-2.5">{rec.desc}</p>
                     
                     {rec.peerMentor && (
-                      <div className="mb-3 px-2 py-1 bg-indigo-500/10 border border-indigo-500/20 rounded-md text-[10px] text-indigo-300 font-semibold flex items-center justify-between">
+                      <div className="mb-3 px-2 py-1 bg-[#1988A3]/10 border border-indigo-500/20 rounded-md text-[10px] text-indigo-300 font-semibold flex items-center justify-between">
                         <span>Peer Mentor Synergy:</span>
                         <span className="font-bold text-indigo-200">{rec.peerMentor}</span>
                       </div>
