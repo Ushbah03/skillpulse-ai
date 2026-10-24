@@ -1,95 +1,135 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import logo from '../assets/images/logo.png';
+import { ShieldCheck, Cpu, ArrowUpRight } from 'lucide-react';
 
 export function Footer() {
-  const productLinks = [
-    { name: 'Features', path: '/features' },
-    { name: 'Assessments', path: '/features' },
-    { name: 'Analytics', path: '/features' },
-    { name: 'Pricing', path: '/pricing' },
+  const solutions = [
+    { name: 'AI Skill Gap Engine', path: '/features' },
+    { name: 'Readiness Scoring', path: '/features' },
+    { name: 'Role Dashboards', path: '/dashboard' },
+    { name: 'Enterprise Partitioning', path: '/features' },
+  ];
+
+  const platformLinks = [
+    { name: 'Platform Features', path: '/features' },
+    { name: 'Pricing & Plans', path: '/pricing' },
+    { name: 'Architecture & FAQ', path: '/faq' },
+    { name: 'Contact Engineering', path: '/contact' },
   ];
 
   const companyLinks = [
-    { name: 'About Us', path: '/about' },
-    { name: 'Careers', path: '/about' },
-    { name: 'Blog', path: '/faq' },
-    { name: 'Contact', path: '/contact' },
-  ];
-
-  const legalLinks = [
+    { name: 'About SkillPulse', path: '/about' },
+    { name: 'Executive Contact', path: '/contact' },
     { name: 'Privacy Policy', path: '/faq' },
     { name: 'Terms of Service', path: '/faq' },
-    { name: 'Security', path: '/features' },
   ];
 
   return (
-    <footer className="relative bg-[#0A101C] text-white py-12 md:py-14 px-6 md:px-12 border-t border-white/10 overflow-hidden">
-      <div className="relative z-10 container mx-auto max-w-5xl grid md:grid-cols-3 gap-10 lg:gap-16 items-start">
-        {/* Brand Section */}
-        <div>
-          <Link to="/" className="flex items-center gap-3 mb-4 group w-fit">
-            <div className="w-10 h-10 rounded-xl flex items-center justify-center overflow-hidden bg-white/5 border border-white/15 group-hover:scale-105 transition-transform">
-              <img src={logo} alt="SkillPulse Logo" className="w-8 h-8 object-contain" />
+    <footer className="relative bg-gradient-to-b from-[#17233E] via-[#1B3154] to-[#121E33] text-white pt-16 pb-12 px-6 md:px-12 border-t border-white/10 overflow-hidden">
+      {/* Top Ambient Glow Edge */}
+      <div className="absolute top-0 left-0 right-0 h-[1.5px] bg-gradient-to-r from-transparent via-[#1988A3] to-transparent opacity-80" />
+      
+      {/* Subtle Background Glow Orbs */}
+      <div className="absolute top-0 left-1/4 w-[500px] h-[250px] bg-[#1988A3]/10 blur-[100px] pointer-events-none rounded-full" />
+      <div className="absolute bottom-0 right-1/4 w-[450px] h-[200px] bg-[#11C6DE]/08 blur-[90px] pointer-events-none rounded-full" />
+
+      <div className="relative z-10 max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 lg:gap-12 items-start pb-12 border-b border-white/10">
+          
+          {/* Brand & Mission Column (5 cols) */}
+          <div className="lg:col-span-5 text-left">
+            <Link to="/" className="inline-flex items-center gap-3 mb-4 group">
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center overflow-hidden bg-white/10 border border-white/20 backdrop-blur-md group-hover:border-[#1988A3]/60 transition-all shadow-sm">
+                <img src={logo} alt="SkillPulse Logo" className="w-8 h-8 object-contain" />
+              </div>
+              <span className="text-xl font-extrabold text-white tracking-tight">
+                SkillPulse <span className="text-[#11C6DE]">-AI</span>
+              </span>
+            </Link>
+            
+            <p className="text-[#8A9CB7] text-sm leading-relaxed mb-6 font-normal max-w-md">
+              Enterprise multi-tenant workforce intelligence platform delivering automated skill gap analysis, predictive career paths, and live organizational readiness benchmarks.
+            </p>
+
+            <div className="flex items-center gap-2.5 flex-wrap">
+              {['Twitter', 'LinkedIn', 'GitHub'].map((social, i) => (
+                <Link 
+                  key={i} 
+                  to="/contact"
+                  className="px-3.5 py-1.5 rounded-xl bg-white/5 hover:bg-[#1988A3]/20 border border-white/10 hover:border-[#1988A3]/50 text-xs text-[#8A9CB7] hover:text-white transition-all font-medium backdrop-blur-sm shadow-sm inline-flex items-center gap-1.5"
+                >
+                  {social}
+                  <ArrowUpRight className="w-3 h-3 text-[#1988A3]" />
+                </Link>
+              ))}
             </div>
-            <h2 className="text-xl font-extrabold text-white tracking-tight">
-              SkillPulse <span className="text-[#1988A3]">-AI</span>
-            </h2>
-          </Link>
-          <p className="text-[#8A9CB7] text-sm leading-relaxed mb-5 font-normal max-w-sm">
-            Enterprise-grade skill intelligence platform powering the future of workforce readiness and talent optimization.
-          </p>
-          <div className="flex gap-3">
-            {['Twitter', 'LinkedIn', 'GitHub'].map((social, i) => (
-              <Link 
-                key={i} 
-                to="/contact"
-                className="px-3.5 py-1.5 rounded-xl bg-white/5 border border-white/10 text-xs text-[#8A9CB7] hover:text-white hover:border-[#1988A3]/50 hover:bg-[#1988A3]/10 transition-all font-medium"
-              >
-                {social}
-              </Link>
-            ))}
+          </div>
+
+          {/* Solutions Column (2.5 cols) */}
+          <div className="lg:col-span-2 text-left">
+            <h4 className="font-bold mb-4 text-white text-xs uppercase tracking-wider font-mono flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#1988A3]" /> Solutions
+            </h4>
+            <ul className="space-y-3 text-[#8A9CB7] text-sm font-normal">
+              {solutions.map((item) => (
+                <li key={item.name}>
+                  <Link to={item.path} className="hover:text-white hover:translate-x-0.5 transition-all inline-block">
+                    {item.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Platform Column (2.5 cols) */}
+          <div className="lg:col-span-2 text-left">
+            <h4 className="font-bold mb-4 text-white text-xs uppercase tracking-wider font-mono flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#11C6DE]" /> Platform
+            </h4>
+            <ul className="space-y-3 text-[#8A9CB7] text-sm font-normal">
+              {platformLinks.map((item) => (
+                <li key={item.name}>
+                  <Link to={item.path} className="hover:text-white hover:translate-x-0.5 transition-all inline-block">
+                    {item.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Company Column (2 cols) */}
+          <div className="lg:col-span-3 text-left">
+            <h4 className="font-bold mb-4 text-white text-xs uppercase tracking-wider font-mono flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#8A9CB7]" /> Company & Trust
+            </h4>
+            <ul className="space-y-3 text-[#8A9CB7] text-sm font-normal mb-5">
+              {companyLinks.map((item) => (
+                <li key={item.name}>
+                  <Link to={item.path} className="hover:text-white hover:translate-x-0.5 transition-all inline-block">
+                    {item.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-[11px] text-[#8A9CB7] font-mono">
+              <ShieldCheck className="w-3.5 h-3.5 text-[#1988A3]" />
+              <span>Multi-Tenant Isolated</span>
+            </div>
           </div>
         </div>
 
-        {/* Product Links */}
-        <div className="md:justify-self-center">
-          <h4 className="font-bold mb-4 text-white text-sm uppercase tracking-wider font-mono">Product</h4>
-          <ul className="space-y-2.5 text-[#8A9CB7] text-sm font-normal">
-            {productLinks.map((l) => (
-              <li key={l.name}>
-                <Link to={l.path} className="hover:text-white transition-colors flex items-center gap-1 w-fit">
-                  {l.name}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        {/* Company Links */}
-        <div className="md:justify-self-end">
-          <h4 className="font-bold mb-4 text-white text-sm uppercase tracking-wider font-mono">Company</h4>
-          <ul className="space-y-2.5 text-[#8A9CB7] text-sm font-normal">
-            {companyLinks.map((l) => (
-              <li key={l.name}>
-                <Link to={l.path} className="hover:text-white transition-colors flex items-center gap-1 w-fit">
-                  {l.name}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
-
-      {/* Copyright Bar */}
-      <div className="relative z-10 container mx-auto max-w-5xl mt-12 pt-6 border-t border-white/10 flex flex-col md:flex-row justify-between items-center text-xs text-[#8A9CB7] font-normal">
-        <p>© 2026 SkillPulse-AI Inc. All rights reserved.</p>
-        <div className="flex gap-6 mt-4 md:mt-0">
-          {legalLinks.map((l) => (
-            <Link key={l.name} to={l.path} className="hover:text-white transition-colors">
-              {l.name}
-            </Link>
-          ))}
+        {/* Bottom Bar: Copyright & Compliance */}
+        <div className="mt-8 flex flex-col md:flex-row justify-between items-center text-xs text-[#8A9CB7] font-normal gap-4">
+          <p>© {new Date().getFullYear()} SkillPulse-AI Enterprise Systems. All rights reserved.</p>
+          <div className="flex items-center gap-6">
+            <Link to="/faq" className="hover:text-white transition-colors">Privacy</Link>
+            <span className="text-white/20">•</span>
+            <Link to="/faq" className="hover:text-white transition-colors">Terms of Service</Link>
+            <span className="text-white/20">•</span>
+            <Link to="/features" className="hover:text-white transition-colors">Security Architecture</Link>
+          </div>
         </div>
       </div>
     </footer>
