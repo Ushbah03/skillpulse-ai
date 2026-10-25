@@ -1,34 +1,34 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Users, 
-  CheckCircle2, 
-  AlertTriangle, 
-  RefreshCw, 
-  ArrowUpRight, 
-  UserPlus, 
-  Layers, 
-  Zap, 
-  Database, 
-  Activity, 
-  ShieldAlert, 
-  Network, 
-  Clock, 
-  ExternalLink, 
+import {
+  Users,
+  CheckCircle2,
+  AlertTriangle,
+  RefreshCw,
+  ArrowUpRight,
+  UserPlus,
+  Layers,
+  Zap,
+  Database,
+  Activity,
+  ShieldAlert,
+  Network,
+  Clock,
+  ExternalLink,
   Sparkles,
   Building2
 } from 'lucide-react';
-import { 
-  AreaChart, 
-  Area, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  ResponsiveContainer, 
-  BarChart, 
-  Bar 
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  BarChart,
+  Bar
 } from 'recharts';
 
 import CompanyAdminSidebar from './CompanyAdminSidebar';
@@ -96,10 +96,10 @@ const CompanyAdminDashboard = () => {
   // Container Animation Variant
   const containerVariants = {
     hidden: { opacity: 0, y: 15 },
-    visible: { 
-      opacity: 1, 
-      y: 0, 
-      transition: { duration: 0.4, staggerChildren: 0.08 } 
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.4, staggerChildren: 0.08 }
     }
   };
 
@@ -123,15 +123,15 @@ const CompanyAdminDashboard = () => {
       <CompanyAdminSidebar />
 
       {/* Main Content Area */}
-      <main className="flex-1 ml-0 lg:ml-64 pt-20 lg:pt-8 p-4 md:p-8 w-full relative z-10 space-y-8">
+      <main className="flex-1 ml-0 lg:ml-64 pt-20 lg:pt-8 px-3.5 sm:px-6 md:px-8 pb-10 w-full max-w-full overflow-x-hidden relative z-10 space-y-6 sm:space-y-8">
         {/* Header Banner */}
-        <header className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl p-6 md:p-8 rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <header className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
           <div>
-            <div className="flex items-center gap-3 mb-1">
-              <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-[#17233E] flex items-center gap-2.5">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-1">
+              <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold tracking-tight text-[#17233E] flex flex-wrap items-center gap-2 sm:gap-2.5">
                 Tenant <span className="bg-gradient-to-r from-[#1988A3] to-[#11C6DE] bg-clip-text text-transparent">Control Tower</span>
               </h1>
-              <motion.span 
+              <motion.span
                 initial={{ scale: 0.9, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 className="px-3 py-1 text-xs font-bold rounded-xl bg-[#1988A3]/10 text-[#1988A3] border border-[#1988A3]/25 flex items-center gap-1.5 shadow-sm"
@@ -146,7 +146,7 @@ const CompanyAdminDashboard = () => {
           </div>
 
           {/* Quick Action Buttons */}
-          <div className="flex items-center gap-3 flex-wrap">
+          <div className="flex items-center gap-2 sm:gap-3 flex-wrap w-full md:w-auto">
             <motion.button
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
@@ -156,7 +156,7 @@ const CompanyAdminDashboard = () => {
               <UserPlus className="w-4 h-4" />
               Provision User
             </motion.button>
-            
+
             <motion.button
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
@@ -191,7 +191,7 @@ const CompanyAdminDashboard = () => {
                 )}
                 <span>{syncNotice.message}</span>
               </div>
-              <button 
+              <button
                 onClick={() => setSyncNotice(null)}
                 className="text-xs uppercase tracking-wider font-bold opacity-60 hover:opacity-100 cursor-pointer"
               >
@@ -211,16 +211,16 @@ const CompanyAdminDashboard = () => {
             className="space-y-8"
           >
             {/* Metric Cards Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-              
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-5">
+
               {/* Card 1: Seats & Licenses */}
-              <motion.div 
-                variants={itemVariants} 
+              <motion.div
+                variants={itemVariants}
                 whileHover={{ y: -4, transition: { duration: 0.2 } }}
-                className="p-6 rounded-3xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 relative overflow-hidden group hover:border-[#1988A3]/40 transition-all"
+                className="p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 relative overflow-hidden group hover:border-[#1988A3]/40 transition-all"
               >
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-xs font-bold uppercase tracking-wider text-[#8A9CB7]">Seat Allocation</span>
+                <div className="flex items-center justify-between mb-2 sm:mb-3 gap-1">
+                  <span className="text-[9px] sm:text-xs font-bold uppercase tracking-wider text-[#8A9CB7] truncate">Seat Allocation</span>
                   <div className="p-2.5 rounded-2xl bg-white/70 border border-white/85 text-[#1988A3] shadow-sm">
                     <Users className="w-5 h-5" />
                   </div>
@@ -231,11 +231,11 @@ const CompanyAdminDashboard = () => {
                 </div>
                 {/* Progress Bar */}
                 <div className="w-full bg-[#1B3154]/10 h-2.5 rounded-full overflow-hidden">
-                  <motion.div 
+                  <motion.div
                     initial={{ width: 0 }}
                     animate={{ width: `${licensePct}%` }}
                     transition={{ duration: 0.8, ease: "easeOut" }}
-                    className="bg-gradient-to-r from-[#1988A3] to-[#11C6DE] h-full rounded-full" 
+                    className="bg-gradient-to-r from-[#1988A3] to-[#11C6DE] h-full rounded-full"
                   />
                 </div>
                 <p className="text-xs text-[#8A9CB7] mt-3 flex items-center justify-between font-semibold">
@@ -245,13 +245,13 @@ const CompanyAdminDashboard = () => {
               </motion.div>
 
               {/* Card 2: Skill Index */}
-              <motion.div 
-                variants={itemVariants} 
+              <motion.div
+                variants={itemVariants}
                 whileHover={{ y: -4, transition: { duration: 0.2 } }}
-                className="p-6 rounded-3xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 relative overflow-hidden group hover:border-[#1988A3]/40 transition-all"
+                className="p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 relative overflow-hidden group hover:border-[#1988A3]/40 transition-all"
               >
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-xs font-bold uppercase tracking-wider text-[#8A9CB7]">Workforce Readiness</span>
+                <div className="flex items-center justify-between mb-2 sm:mb-3 gap-1">
+                  <span className="text-[9px] sm:text-xs font-bold uppercase tracking-wider text-[#8A9CB7] truncate">Workforce Readiness</span>
                   <div className="p-2.5 rounded-2xl bg-white/70 border border-white/85 text-emerald-600 shadow-sm">
                     <Zap className="w-5 h-5" />
                   </div>
@@ -266,13 +266,13 @@ const CompanyAdminDashboard = () => {
               </motion.div>
 
               {/* Card 3: Enterprise Connectors */}
-              <motion.div 
-                variants={itemVariants} 
+              <motion.div
+                variants={itemVariants}
                 whileHover={{ y: -4, transition: { duration: 0.2 } }}
-                className="p-6 rounded-3xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 relative overflow-hidden group hover:border-[#1988A3]/40 transition-all"
+                className="p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 relative overflow-hidden group hover:border-[#1988A3]/40 transition-all"
               >
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-xs font-bold uppercase tracking-wider text-[#8A9CB7]">Enterprise Connectors</span>
+                <div className="flex items-center justify-between mb-2 sm:mb-3 gap-1">
+                  <span className="text-[9px] sm:text-xs font-bold uppercase tracking-wider text-[#8A9CB7] truncate">Enterprise Connectors</span>
                   <div className="p-2.5 rounded-2xl bg-white/70 border border-white/85 text-[#1988A3] shadow-sm">
                     <Network className="w-5 h-5" />
                   </div>
@@ -289,13 +289,13 @@ const CompanyAdminDashboard = () => {
               </motion.div>
 
               {/* Card 4: LMS Catalog */}
-              <motion.div 
-                variants={itemVariants} 
+              <motion.div
+                variants={itemVariants}
                 whileHover={{ y: -4, transition: { duration: 0.2 } }}
-                className="p-6 rounded-3xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 relative overflow-hidden group hover:border-[#1988A3]/40 transition-all"
+                className="p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 relative overflow-hidden group hover:border-[#1988A3]/40 transition-all"
               >
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-xs font-bold uppercase tracking-wider text-[#8A9CB7]">Course Catalog</span>
+                <div className="flex items-center justify-between mb-2 sm:mb-3 gap-1">
+                  <span className="text-[9px] sm:text-xs font-bold uppercase tracking-wider text-[#8A9CB7] truncate">Course Catalog</span>
                   <div className="p-2.5 rounded-2xl bg-white/70 border border-white/85 text-[#11C6DE] shadow-sm">
                     <Layers className="w-5 h-5" />
                   </div>
@@ -311,9 +311,9 @@ const CompanyAdminDashboard = () => {
 
             {/* Analytics Charts Section */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              
+
               {/* Chart 1: Active User Growth (2 Cols) */}
-              <motion.div variants={itemVariants} className="lg:col-span-2 p-6 md:p-8 rounded-3xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6">
+              <motion.div variants={itemVariants} className="lg:col-span-2 p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6">
                 <div className="flex items-center justify-between mb-6">
                   <div>
                     <h3 className="text-base font-extrabold text-[#17233E] flex items-center gap-2">
@@ -339,7 +339,7 @@ const CompanyAdminDashboard = () => {
                       <CartesianGrid strokeDasharray="3 3" stroke="rgba(27,49,84,0.08)" />
                       <XAxis dataKey="month" stroke="#8A9CB7" fontSize={12} tickLine={false} />
                       <YAxis stroke="#8A9CB7" fontSize={12} tickLine={false} />
-                      <Tooltip 
+                      <Tooltip
                         formatter={(value, name) => [value, name === 'active' ? 'Registered Users' : 'Capacity']}
                         contentStyle={{ backgroundColor: '#17233E', borderColor: 'rgba(255,255,255,0.15)', borderRadius: '16px', color: '#FFF' }}
                       />
@@ -350,7 +350,7 @@ const CompanyAdminDashboard = () => {
               </motion.div>
 
               {/* Chart 2: Skill Completion by Department (1 Col) */}
-              <motion.div variants={itemVariants} className="p-6 md:p-8 rounded-3xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-col justify-between">
+              <motion.div variants={itemVariants} className="p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-col justify-between">
                 <div className="mb-4">
                   <h3 className="text-base font-extrabold text-[#17233E] flex items-center gap-2">
                     <Sparkles className="w-4 h-4 text-[#1988A3]" />
@@ -366,9 +366,9 @@ const CompanyAdminDashboard = () => {
                         <CartesianGrid strokeDasharray="3 3" stroke="rgba(27,49,84,0.08)" horizontal={false} />
                         <XAxis type="number" stroke="#8A9CB7" fontSize={10} domain={[0, 100]} tickFormatter={(v) => `${v}%`} />
                         <YAxis dataKey="dept" type="category" stroke="#17233E" fontSize={11} width={85} tickLine={false} />
-                        <Tooltip 
+                        <Tooltip
                           formatter={(val, name, props) => [
-                            `${val}%`, 
+                            `${val}%`,
                             `Competency (${props.payload.memberCount} members, ${props.payload.skillsCount} skills)`
                           ]}
                           contentStyle={{ backgroundColor: '#17233E', borderColor: 'rgba(255,255,255,0.15)', borderRadius: '16px', color: '#FFF' }}
@@ -388,14 +388,14 @@ const CompanyAdminDashboard = () => {
 
             {/* Recent Tenant System Activity & Integration Status */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              
+
               {/* Live Integration Status Panel */}
-              <motion.div variants={itemVariants} className="p-6 md:p-8 rounded-3xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6">
+              <motion.div variants={itemVariants} className="p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-base font-extrabold text-[#17233E] flex items-center gap-2">
                     <Network className="w-4 h-4 text-[#1988A3]" /> Connected Enterprise Hubs
                   </h3>
-                  <button 
+                  <button
                     onClick={() => navigate('/company-admin/integrations')}
                     className="text-xs text-[#1988A3] hover:text-[#157289] font-bold transition-colors flex items-center gap-1 cursor-pointer"
                   >
@@ -455,12 +455,12 @@ const CompanyAdminDashboard = () => {
               </motion.div>
 
               {/* Security & Audit Feed Summary */}
-              <motion.div variants={itemVariants} className="p-6 md:p-8 rounded-3xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6">
+              <motion.div variants={itemVariants} className="p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-base font-extrabold text-[#17233E] flex items-center gap-2">
                     <ShieldAlert className="w-4 h-4 text-[#1988A3]" /> Recent Security & Audit Events
                   </h3>
-                  <button 
+                  <button
                     onClick={() => navigate('/company-admin/settings')}
                     className="text-xs text-[#1988A3] hover:text-[#157289] font-bold transition-colors flex items-center gap-1 cursor-pointer"
                   >

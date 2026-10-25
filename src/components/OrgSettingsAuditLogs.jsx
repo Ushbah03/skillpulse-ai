@@ -231,29 +231,29 @@ const OrgSettingsAuditLogs = () => {
 
       <CompanyAdminSidebar />
 
-      <main className="flex-1 ml-0 lg:ml-64 pt-20 lg:pt-8 p-4 md:p-8 w-full relative z-10 space-y-8">
+      <main className="flex-1 min-w-0 ml-0 lg:ml-64 px-3.5 sm:px-6 md:px-8 pt-20 lg:pt-8 pb-10 w-full max-w-full overflow-x-hidden relative z-10 space-y-6 sm:space-y-8">
         
         {/* Page Header */}
-        <header className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl p-6 md:p-8 rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <header className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <div className="flex items-center gap-3">
-              <div className="p-2.5 rounded-2xl bg-white/70 border border-white/85 text-[#1988A3] shadow-sm">
-                <Building2 className="w-6 h-6" />
+            <div className="flex items-center gap-2.5 sm:gap-3">
+              <div className="p-2 sm:p-2.5 rounded-xl sm:rounded-2xl bg-white/70 border border-white/85 text-[#1988A3] shadow-sm shrink-0">
+                <Building2 className="w-5 h-5 sm:w-6 sm:h-6" />
               </div>
-              <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-[#17233E]">
+              <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold tracking-tight text-[#17233E]">
                 Organization Settings & <span className="bg-gradient-to-r from-[#1988A3] to-[#11C6DE] bg-clip-text text-transparent">Audit Logs</span>
               </h1>
             </div>
-            <p className="text-[#8A9CB7] text-xs md:text-sm font-medium mt-1.5 ml-12">
+            <p className="text-[#8A9CB7] text-xs md:text-sm font-medium mt-1.5 ml-0 sm:ml-12">
               Manage enterprise branding, subscription usage, and monitor tenant audit activity trails.
             </p>
           </div>
 
           {/* Tab Switcher */}
-          <div className="flex items-center gap-1.5 bg-white/70 backdrop-blur-md border border-white/85 p-1.5 rounded-2xl shadow-xs shrink-0">
+          <div className="flex items-center gap-1 sm:gap-1.5 bg-white/70 backdrop-blur-md border border-white/85 p-1 sm:p-1.5 rounded-xl sm:rounded-2xl shadow-xs shrink-0 w-full md:w-auto">
             <button
               onClick={() => setActiveTab('settings')}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+              className={`flex-1 md:flex-none text-center px-3 sm:px-4 py-2 rounded-lg sm:rounded-xl text-xs font-bold transition-all cursor-pointer ${
                 activeTab === 'settings' 
                   ? 'bg-gradient-to-r from-[#1988A3] to-[#11C6DE] text-white shadow-md shadow-[#1988A3]/25' 
                   : 'text-[#17233E] hover:bg-white/80'
@@ -263,7 +263,7 @@ const OrgSettingsAuditLogs = () => {
             </button>
             <button
               onClick={() => setActiveTab('audit')}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+              className={`flex-1 md:flex-none text-center px-3 sm:px-4 py-2 rounded-lg sm:rounded-xl text-xs font-bold transition-all cursor-pointer ${
                 activeTab === 'audit' 
                   ? 'bg-gradient-to-r from-[#1988A3] to-[#11C6DE] text-white shadow-md shadow-[#1988A3]/25' 
                   : 'text-[#17233E] hover:bg-white/80'
@@ -275,13 +275,13 @@ const OrgSettingsAuditLogs = () => {
         </header>
 
         {/* Live Framework KPI Metrics */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-5">
           <motion.div 
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.35, delay: 0.05 }}
             whileHover={{ y: -4 }}
-            className="p-6 rounded-3xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 relative overflow-hidden group hover:border-[#1988A3]/40 transition-all"
+            className="p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 relative overflow-hidden group hover:border-[#1988A3]/40 transition-all"
           >
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-[#8A9CB7] uppercase tracking-wider">Seats Allocated</span>
@@ -289,7 +289,7 @@ const OrgSettingsAuditLogs = () => {
                 <User className="w-4 h-4" />
               </div>
             </div>
-            <p className="text-3xl font-extrabold text-[#17233E] mt-3 tracking-tight">
+            <p className="text-2xl sm:text-3xl font-extrabold text-[#17233E] mt-2 sm:mt-3 tracking-tight">
               {orgData.activeSeats} <span className="text-sm font-bold text-[#8A9CB7]">/ {orgData.maxSeats}</span>
             </p>
             <div className="w-full bg-[#1B3154]/10 rounded-full h-2 mt-2.5 overflow-hidden">
@@ -307,7 +307,7 @@ const OrgSettingsAuditLogs = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.35, delay: 0.1 }}
             whileHover={{ y: -4 }}
-            className="p-6 rounded-3xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 relative overflow-hidden group hover:border-[#1988A3]/40 transition-all"
+            className="p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 relative overflow-hidden group hover:border-[#1988A3]/40 transition-all"
           >
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-[#8A9CB7] uppercase tracking-wider">Active Plan</span>
@@ -315,7 +315,7 @@ const OrgSettingsAuditLogs = () => {
                 <CreditCard className="w-4 h-4" />
               </div>
             </div>
-            <p className="text-3xl font-extrabold text-purple-600 mt-3 tracking-tight">
+            <p className="text-2xl sm:text-3xl font-extrabold text-purple-600 mt-2 sm:mt-3 tracking-tight">
               {orgData.subscriptionTier || 'PRO'}
             </p>
             <p className="text-[11px] text-[#8A9CB7] font-semibold mt-1 flex items-center gap-1.5">
@@ -328,7 +328,7 @@ const OrgSettingsAuditLogs = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.35, delay: 0.15 }}
             whileHover={{ y: -4 }}
-            className="p-6 rounded-3xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 relative overflow-hidden group hover:border-[#1988A3]/40 transition-all"
+            className="p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 relative overflow-hidden group hover:border-[#1988A3]/40 transition-all"
           >
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-[#8A9CB7] uppercase tracking-wider">Audit Records</span>
@@ -336,7 +336,7 @@ const OrgSettingsAuditLogs = () => {
                 <FileText className="w-4 h-4" />
               </div>
             </div>
-            <p className="text-3xl font-extrabold text-emerald-600 mt-3 tracking-tight">
+            <p className="text-2xl sm:text-3xl font-extrabold text-emerald-600 mt-2 sm:mt-3 tracking-tight">
               {auditLogs.length}
             </p>
             <p className="text-[11px] text-[#8A9CB7] font-semibold mt-1 flex items-center gap-1.5">
@@ -349,7 +349,7 @@ const OrgSettingsAuditLogs = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.35, delay: 0.2 }}
             whileHover={{ y: -4 }}
-            className="p-6 rounded-3xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 relative overflow-hidden group hover:border-[#1988A3]/40 transition-all"
+            className="p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 relative overflow-hidden group hover:border-[#1988A3]/40 transition-all"
           >
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-[#8A9CB7] uppercase tracking-wider">Tenant Domain</span>
@@ -357,7 +357,7 @@ const OrgSettingsAuditLogs = () => {
                 <Globe className="w-4 h-4" />
               </div>
             </div>
-            <p className="text-xl font-extrabold text-[#11C6DE] mt-3 tracking-tight truncate">
+            <p className="text-lg sm:text-xl font-extrabold text-[#11C6DE] mt-2 sm:mt-3 tracking-tight truncate">
               {orgData.domain || 'apextech'}
             </p>
             <p className="text-[11px] text-[#8A9CB7] font-semibold mt-1 flex items-center gap-1.5">
@@ -387,7 +387,7 @@ const OrgSettingsAuditLogs = () => {
             {/* License Overview */}
             <motion.div 
               whileHover={{ y: -2 }}
-              className="p-6 md:p-8 rounded-3xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-col md:flex-row items-center justify-between gap-6"
+              className="p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 sm:gap-6"
             >
               <div className="flex items-center gap-4">
                 <div className="p-3.5 rounded-2xl bg-white/70 border border-white/85 text-[#1988A3] shadow-sm">
@@ -399,7 +399,7 @@ const OrgSettingsAuditLogs = () => {
                 </div>
               </div>
 
-              <div className="flex items-center gap-6 border-t md:border-t-0 md:border-l border-white/60 pt-4 md:pt-0 md:pl-6 w-full md:w-auto justify-between md:justify-start">
+              <div className="flex flex-wrap items-center gap-3 sm:gap-6 border-t md:border-t-0 md:border-l border-white/60 pt-4 md:pt-0 md:pl-6 w-full md:w-auto justify-between md:justify-start">
                 <div>
                   <p className="text-xs text-[#8A9CB7] font-semibold">Allocated Seats</p>
                   <p className="text-xl font-extrabold text-[#17233E] mt-0.5">{orgData.activeSeats} / {orgData.maxSeats}</p>
@@ -419,7 +419,7 @@ const OrgSettingsAuditLogs = () => {
             </motion.div>
 
             {/* Organization Form */}
-            <form onSubmit={handleSaveOrgSettings} className="p-6 md:p-8 rounded-3xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 space-y-6">
+            <form onSubmit={handleSaveOrgSettings} className="p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 space-y-5 sm:space-y-6">
               <div className="flex items-center gap-3 pb-4 border-b border-white/60">
                 <div className="p-2.5 rounded-2xl bg-white/70 border border-white/85 text-[#1988A3] shadow-sm">
                   <Building2 className="w-5 h-5" />
@@ -481,7 +481,7 @@ const OrgSettingsAuditLogs = () => {
                   whileTap={{ scale: 0.97 }}
                   disabled={savingOrg || loadingOrg}
                   type="submit"
-                  className="flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-gradient-to-r from-[#1988A3] to-[#11C6DE] hover:from-[#157289] hover:to-[#0EB3C9] text-white text-sm font-bold shadow-lg shadow-[#1988A3]/25 transition-all duration-200 disabled:opacity-50 cursor-pointer"
+                  className="w-full sm:w-auto justify-center flex items-center gap-2 px-5 py-2.5 rounded-xl sm:rounded-2xl bg-gradient-to-r from-[#1988A3] to-[#11C6DE] hover:from-[#157289] hover:to-[#0EB3C9] text-white text-xs sm:text-sm font-bold shadow-lg shadow-[#1988A3]/25 transition-all duration-200 disabled:opacity-50 cursor-pointer"
                 >
                   <Save className="w-4 h-4" />
                   {savingOrg ? 'Saving Settings...' : 'Save Organization Settings'}
@@ -497,7 +497,7 @@ const OrgSettingsAuditLogs = () => {
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
             
             {/* Search and Filters */}
-            <div className="p-4 rounded-3xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-col md:flex-row items-center justify-between gap-4">
+            <div className="p-3.5 sm:p-4 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-col md:flex-row items-center justify-between gap-3 sm:gap-4">
               <div className="relative w-full md:w-96">
                 <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#8A9CB7]" />
                 <input
@@ -541,9 +541,9 @@ const OrgSettingsAuditLogs = () => {
               <SkillPulseLoader message="Loading audit activity trail..." fullScreen={false} />
             ) : (
             /* Audit Trail Table */
-            <div className="rounded-3xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 overflow-hidden">
-              <div className="overflow-x-auto">
-                <table className="w-full text-left text-sm text-[#17233E]">
+            <div className="rounded-2xl sm:rounded-3xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 overflow-hidden">
+              <div className="overflow-x-auto no-scrollbar">
+                <table className="w-full text-left text-sm text-[#17233E] min-w-[700px]">
                   <thead className="bg-[#17233E]/10 text-xs font-bold uppercase tracking-wider text-[#17233E] border-b border-white/60">
                     <tr>
                       <th className="px-6 py-4">Event ID</th>
@@ -612,7 +612,7 @@ const OrgSettingsAuditLogs = () => {
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.95 }}
-                className="bg-gradient-to-b from-[#17233E] to-[#121E33] border border-white/15 rounded-3xl p-6 w-full max-w-sm shadow-2xl relative text-white"
+                className="bg-gradient-to-b from-[#17233E] to-[#121E33] border border-white/15 rounded-2xl sm:rounded-3xl p-4 sm:p-6 w-full max-w-sm max-h-[90vh] overflow-y-auto no-scrollbar shadow-2xl relative text-white"
               >
                 <div className="mb-6">
                   <h3 className="text-lg font-bold text-white flex items-center gap-2">
@@ -644,7 +644,7 @@ const OrgSettingsAuditLogs = () => {
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 30 }}
-                className="bg-gradient-to-b from-[#17233E] to-[#121E33] border border-white/15 rounded-3xl p-8 w-full max-w-5xl shadow-2xl relative my-8 text-white"
+                className="bg-gradient-to-b from-[#17233E] to-[#121E33] border border-white/15 rounded-2xl sm:rounded-3xl p-4 sm:p-8 w-full max-w-5xl max-h-[90vh] overflow-y-auto no-scrollbar shadow-2xl relative my-4 sm:my-8 text-white"
               >
                 <button onClick={() => setIsUpgradeModalOpen(false)} className="absolute top-6 right-6 text-[#8A9CB7] hover:text-white bg-white/10 p-2 rounded-full transition-all cursor-pointer">
                   <X className="w-5 h-5" />

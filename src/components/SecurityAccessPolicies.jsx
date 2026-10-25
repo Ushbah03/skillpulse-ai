@@ -102,20 +102,20 @@ const SecurityAccessPolicies = () => {
 
       <CompanyAdminSidebar />
 
-      <main className="flex-1 ml-0 lg:ml-64 pt-20 lg:pt-8 p-4 md:p-8 w-full relative z-10 space-y-8">
+      <main className="flex-1 min-w-0 ml-0 lg:ml-64 px-3.5 sm:px-6 md:px-8 pt-20 lg:pt-8 pb-10 w-full max-w-full overflow-x-hidden relative z-10 space-y-6 sm:space-y-8">
         
         {/* Page Header */}
-        <header className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl p-6 md:p-8 rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <header className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <div className="flex items-center gap-3">
-              <div className="p-2.5 rounded-2xl bg-white/70 border border-white/85 text-[#1988A3] shadow-sm">
-                <Shield className="w-6 h-6" />
+            <div className="flex items-center gap-2.5 sm:gap-3">
+              <div className="p-2 sm:p-2.5 rounded-xl sm:rounded-2xl bg-white/70 border border-white/85 text-[#1988A3] shadow-sm shrink-0">
+                <Shield className="w-5 h-5 sm:w-6 sm:h-6" />
               </div>
-              <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-[#17233E]">
+              <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold tracking-tight text-[#17233E]">
                 Security & <span className="bg-gradient-to-r from-[#1988A3] to-[#11C6DE] bg-clip-text text-transparent">Access Control</span>
               </h1>
             </div>
-            <p className="text-[#8A9CB7] text-xs md:text-sm font-medium mt-1.5 ml-12">
+            <p className="text-[#8A9CB7] text-xs md:text-sm font-medium mt-1.5 ml-0 sm:ml-12">
               Configure tenant-wide authentication parameters, MFA rules, session parameters, and access controls.
             </p>
           </div>
@@ -125,21 +125,21 @@ const SecurityAccessPolicies = () => {
             whileTap={{ scale: 0.97 }}
             onClick={handleSavePolicies}
             disabled={saving || loading}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-gradient-to-r from-[#1988A3] to-[#11C6DE] hover:from-[#157289] hover:to-[#0EB3C9] disabled:opacity-50 text-white text-sm font-bold shadow-lg shadow-[#1988A3]/25 transition-all duration-200 shrink-0 cursor-pointer"
+            className="w-full md:w-auto justify-center flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-xl sm:rounded-2xl bg-gradient-to-r from-[#1988A3] to-[#11C6DE] hover:from-[#157289] hover:to-[#0EB3C9] disabled:opacity-50 text-white text-xs sm:text-sm font-bold shadow-lg shadow-[#1988A3]/25 transition-all duration-200 shrink-0 cursor-pointer"
           >
             <Save className="w-4 h-4" />
-            {saving ? 'Applying Policies...' : 'Save Security Policies'}
+            <span>{saving ? 'Applying Policies...' : 'Save Security Policies'}</span>
           </motion.button>
         </header>
 
         {/* Live Framework KPI Metrics */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-5">
           <motion.div 
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.35, delay: 0.05 }}
             whileHover={{ y: -4 }}
-            className="p-6 rounded-3xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 relative overflow-hidden group hover:border-[#1988A3]/40 transition-all"
+            className="p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 relative overflow-hidden group hover:border-[#1988A3]/40 transition-all"
           >
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-[#8A9CB7] uppercase tracking-wider">Security Score</span>
@@ -148,7 +148,7 @@ const SecurityAccessPolicies = () => {
               </div>
             </div>
             <div className="flex items-baseline gap-2 mt-3">
-              <p className="text-3xl font-extrabold text-[#17233E] tracking-tight">{complianceScore}%</p>
+              <p className="text-2xl sm:text-3xl font-extrabold text-[#17233E] tracking-tight">{complianceScore}%</p>
               <span className="text-xs font-bold text-emerald-600">Active</span>
             </div>
             <div className="w-full bg-[#1B3154]/10 rounded-full h-2 mt-2.5 overflow-hidden">
@@ -166,7 +166,7 @@ const SecurityAccessPolicies = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.35, delay: 0.1 }}
             whileHover={{ y: -4 }}
-            className="p-6 rounded-3xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 relative overflow-hidden group hover:border-[#1988A3]/40 transition-all"
+            className="p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 relative overflow-hidden group hover:border-[#1988A3]/40 transition-all"
           >
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-[#8A9CB7] uppercase tracking-wider">Password Rule</span>
@@ -174,7 +174,7 @@ const SecurityAccessPolicies = () => {
                 <Lock className="w-4 h-4" />
               </div>
             </div>
-            <p className="text-3xl font-extrabold text-purple-600 mt-3 tracking-tight">
+            <p className="text-2xl sm:text-3xl font-extrabold text-purple-600 mt-2 sm:mt-3 tracking-tight">
               ≥ {passwordMinLength} Chars
             </p>
             <p className="text-[11px] text-[#8A9CB7] font-semibold mt-1 flex items-center gap-1.5">
@@ -188,7 +188,7 @@ const SecurityAccessPolicies = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.35, delay: 0.15 }}
             whileHover={{ y: -4 }}
-            className="p-6 rounded-3xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 relative overflow-hidden group hover:border-[#1988A3]/40 transition-all"
+            className="p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 relative overflow-hidden group hover:border-[#1988A3]/40 transition-all"
           >
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-[#8A9CB7] uppercase tracking-wider">Session Timeout</span>
@@ -196,7 +196,7 @@ const SecurityAccessPolicies = () => {
                 <Clock className="w-4 h-4" />
               </div>
             </div>
-            <p className="text-3xl font-extrabold text-[#11C6DE] mt-3 tracking-tight">
+            <p className="text-2xl sm:text-3xl font-extrabold text-[#11C6DE] mt-2 sm:mt-3 tracking-tight">
               {sessionTimeout} Mins
             </p>
             <p className="text-[11px] text-[#8A9CB7] font-semibold mt-1 flex items-center gap-1.5">
@@ -209,7 +209,7 @@ const SecurityAccessPolicies = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.35, delay: 0.2 }}
             whileHover={{ y: -4 }}
-            className="p-6 rounded-3xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 relative overflow-hidden group hover:border-[#1988A3]/40 transition-all"
+            className="p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 relative overflow-hidden group hover:border-[#1988A3]/40 transition-all"
           >
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-[#8A9CB7] uppercase tracking-wider">Audit Log Trail</span>
@@ -217,7 +217,7 @@ const SecurityAccessPolicies = () => {
                 <Server className="w-4 h-4" />
               </div>
             </div>
-            <p className="text-3xl font-extrabold text-emerald-600 mt-3 tracking-tight">
+            <p className="text-2xl sm:text-3xl font-extrabold text-emerald-600 mt-2 sm:mt-3 tracking-tight">
               {auditLogRetentionDays} Days
             </p>
             <p className="text-[11px] text-[#8A9CB7] font-semibold mt-1 flex items-center gap-1.5">
@@ -251,7 +251,7 @@ const SecurityAccessPolicies = () => {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3, delay: 0.1 }}
-              className="p-6 md:p-8 rounded-3xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 space-y-6"
+              className="p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 space-y-5 sm:space-y-6"
             >
               <div className="flex items-center gap-3 pb-4 border-b border-white/60">
                 <div className="p-2.5 rounded-2xl bg-white/70 border border-white/85 text-[#1988A3] shadow-sm">
@@ -265,7 +265,7 @@ const SecurityAccessPolicies = () => {
 
               <div className="space-y-4">
                 {/* Enforce SSO Toggle */}
-                <div className="flex items-center justify-between p-4 rounded-2xl bg-white/70 backdrop-blur-md border border-white/85 shadow-sm">
+                <div className="flex items-center justify-between p-3.5 sm:p-4 rounded-xl sm:rounded-2xl bg-white/70 backdrop-blur-md border border-white/85 shadow-sm gap-3">
                   <div>
                     <h3 className="text-sm font-bold text-[#17233E]">Mandatory SSO Authentication</h3>
                     <p className="text-xs text-[#8A9CB7] font-medium">Force all workspace users to sign in via configured Identity Provider (SAML 2.0 / OAuth2).</p>
@@ -284,7 +284,7 @@ const SecurityAccessPolicies = () => {
                 </div>
 
                 {/* MFA Requirement */}
-                <div className="p-4 rounded-2xl bg-white/70 backdrop-blur-md border border-white/85 shadow-sm space-y-2">
+                <div className="p-3.5 sm:p-4 rounded-xl sm:rounded-2xl bg-white/70 backdrop-blur-md border border-white/85 shadow-sm space-y-2">
                   <label className="block text-xs font-bold uppercase text-[#17233E]">Multi-Factor Authentication (MFA) Enforcement</label>
                   <select
                     value={mfaRequirement}
@@ -304,7 +304,7 @@ const SecurityAccessPolicies = () => {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3, delay: 0.15 }}
-              className="p-6 md:p-8 rounded-3xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 space-y-6"
+              className="p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 space-y-5 sm:space-y-6"
             >
               <div className="flex items-center gap-3 pb-4 border-b border-white/60">
                 <div className="p-2.5 rounded-2xl bg-white/70 border border-white/85 text-purple-600 shadow-sm">
@@ -344,7 +344,7 @@ const SecurityAccessPolicies = () => {
                 </div>
               </div>
 
-              <div className="flex items-center justify-between p-4 rounded-2xl bg-white/70 backdrop-blur-md border border-white/85 shadow-sm">
+              <div className="flex items-center justify-between p-3.5 sm:p-4 rounded-xl sm:rounded-2xl bg-white/70 backdrop-blur-md border border-white/85 shadow-sm gap-3">
                 <div>
                   <h3 className="text-sm font-bold text-[#17233E]">Require Special Characters & Numbers</h3>
                   <p className="text-xs text-[#8A9CB7] font-medium">Ensure passwords include upper/lowercase letters, special symbols, and numbers.</p>
@@ -368,7 +368,7 @@ const SecurityAccessPolicies = () => {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3, delay: 0.2 }}
-              className="p-6 md:p-8 rounded-3xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 space-y-6"
+              className="p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 space-y-5 sm:space-y-6"
             >
               <div className="flex items-center gap-3 pb-4 border-b border-white/60">
                 <div className="p-2.5 rounded-2xl bg-white/70 border border-white/85 text-emerald-600 shadow-sm">

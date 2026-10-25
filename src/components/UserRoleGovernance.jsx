@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Users, UserPlus, Search, Filter, ShieldCheck, Edit3, 
-  UserX, UserCheck, Mail, Building2, X, Check, 
+import {
+  Users, UserPlus, Search, Filter, ShieldCheck, Edit3,
+  UserX, UserCheck, Mail, Building2, X, Check,
   SlidersHorizontal, Loader2, Lock, Plus
 } from 'lucide-react';
 
@@ -183,47 +183,47 @@ const UserRoleGovernance = () => {
       </div>
 
       <CompanyAdminSidebar />
-      <main className="flex-1 ml-0 lg:ml-64 pt-20 lg:pt-8 p-4 md:p-8 w-full relative z-10 space-y-8">
-        <header className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl p-6 md:p-8 rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <main className="flex-1 ml-0 lg:ml-64 pt-20 lg:pt-8 px-3.5 sm:px-6 md:px-8 pb-10 w-full max-w-full overflow-x-hidden relative z-10 space-y-6 sm:space-y-8">
+        <header className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
           <div>
-            <div className="flex items-center gap-3">
-              <div className="p-2.5 rounded-2xl bg-white/70 border border-white/85 text-[#1988A3] shadow-sm">
-                <Users className="w-6 h-6" />
+            <div className="flex items-center gap-2.5 sm:gap-3">
+              <div className="p-2 sm:p-2.5 rounded-2xl bg-white/70 border border-white/85 text-[#1988A3] shadow-sm shrink-0">
+                <Users className="w-5 h-5 sm:w-6 sm:h-6" />
               </div>
-              <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-[#17233E]">
+              <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold tracking-tight text-[#17233E]">
                 User & Role <span className="bg-gradient-to-r from-[#1988A3] to-[#11C6DE] bg-clip-text text-transparent">Governance</span>
               </h1>
             </div>
-            <p className="text-[#8A9CB7] text-xs md:text-sm font-medium mt-1.5 ml-12">
+            <p className="text-[#8A9CB7] text-xs md:text-sm font-medium mt-1 sm:mt-1.5 ml-0 sm:ml-12">
               Provision employee accounts, assign organizational roles, and manage tenant access permissions.
             </p>
           </div>
-          <motion.button 
+          <motion.button
             whileHover={{ scale: 1.04 }}
             whileTap={{ scale: 0.96 }}
-            onClick={() => { 
-              setIsAddModalOpen(true); 
-              setError(''); 
-              setShowCustomDept(false); 
-              setFormData({ name: '', email: '', role: 'EMPLOYEE', dept: dynamicDepts[0] || '', status: 'ACTIVE' }); 
+            onClick={() => {
+              setIsAddModalOpen(true);
+              setError('');
+              setShowCustomDept(false);
+              setFormData({ name: '', email: '', role: 'EMPLOYEE', dept: dynamicDepts[0] || '', status: 'ACTIVE' });
             }}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-gradient-to-r from-[#1988A3] to-[#11C6DE] hover:from-[#157289] hover:to-[#0EB3C9] text-white text-sm font-bold shadow-lg shadow-[#1988A3]/25 transition-all shrink-0 cursor-pointer"
+            className="w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-2.5 rounded-2xl bg-gradient-to-r from-[#1988A3] to-[#11C6DE] hover:from-[#157289] hover:to-[#0EB3C9] text-white text-sm font-bold shadow-lg shadow-[#1988A3]/25 transition-all shrink-0 cursor-pointer"
           >
             <UserPlus className="w-4 h-4" /> Provision New User
           </motion.button>
         </header>
 
         {/* Live Governance Metrics */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
-          <motion.div 
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-5">
+          <motion.div
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.35, delay: 0.05 }}
             whileHover={{ y: -4 }}
-            className="p-6 rounded-3xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 relative overflow-hidden group hover:border-[#1988A3]/40 transition-all"
+            className="p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 relative overflow-hidden group hover:border-[#1988A3]/40 transition-all"
           >
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-[#8A9CB7] uppercase tracking-wider">Total Users</span>
+            <div className="flex items-center justify-between gap-1">
+              <span className="text-[9px] sm:text-xs font-bold text-[#8A9CB7] uppercase tracking-wider truncate">Total Users</span>
               <div className="p-2 rounded-2xl bg-white/70 border border-white/85 text-[#1988A3] shadow-sm">
                 <Users className="w-4 h-4" />
               </div>
@@ -234,15 +234,15 @@ const UserRoleGovernance = () => {
             </p>
           </motion.div>
 
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.35, delay: 0.1 }}
             whileHover={{ y: -4 }}
-            className="p-6 rounded-3xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 relative overflow-hidden group hover:border-[#1988A3]/40 transition-all"
+            className="p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 relative overflow-hidden group hover:border-[#1988A3]/40 transition-all"
           >
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-[#8A9CB7] uppercase tracking-wider">Active Accounts</span>
+            <div className="flex items-center justify-between gap-1">
+              <span className="text-[9px] sm:text-xs font-bold text-[#8A9CB7] uppercase tracking-wider truncate">Active Accounts</span>
               <div className="p-2 rounded-2xl bg-white/70 border border-white/85 text-emerald-600 shadow-sm">
                 <ShieldCheck className="w-4 h-4" />
               </div>
@@ -256,15 +256,15 @@ const UserRoleGovernance = () => {
             </p>
           </motion.div>
 
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.35, delay: 0.15 }}
             whileHover={{ y: -4 }}
-            className="p-6 rounded-3xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 relative overflow-hidden group hover:border-[#1988A3]/40 transition-all"
+            className="p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 relative overflow-hidden group hover:border-[#1988A3]/40 transition-all"
           >
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-[#8A9CB7] uppercase tracking-wider">Departments</span>
+            <div className="flex items-center justify-between gap-1">
+              <span className="text-[9px] sm:text-xs font-bold text-[#8A9CB7] uppercase tracking-wider truncate">Departments</span>
               <div className="p-2 rounded-2xl bg-white/70 border border-white/85 text-[#11C6DE] shadow-sm">
                 <Building2 className="w-4 h-4" />
               </div>
@@ -275,15 +275,15 @@ const UserRoleGovernance = () => {
             </p>
           </motion.div>
 
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.35, delay: 0.2 }}
             whileHover={{ y: -4 }}
-            className="p-6 rounded-3xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 relative overflow-hidden group hover:border-[#1988A3]/40 transition-all"
+            className="p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 relative overflow-hidden group hover:border-[#1988A3]/40 transition-all"
           >
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-[#8A9CB7] uppercase tracking-wider">Leadership</span>
+            <div className="flex items-center justify-between gap-1">
+              <span className="text-[9px] sm:text-xs font-bold text-[#8A9CB7] uppercase tracking-wider truncate">Leadership</span>
               <div className="p-2 rounded-2xl bg-white/70 border border-white/85 text-purple-600 shadow-sm">
                 <ShieldCheck className="w-4 h-4" />
               </div>
@@ -298,18 +298,18 @@ const UserRoleGovernance = () => {
         </div>
 
         {/* Filter & Search Bar */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, delay: 0.25 }}
-          className="p-4 rounded-3xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-col md:flex-row items-center justify-between gap-4"
+          className="p-3.5 sm:p-4 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-col md:flex-row items-center justify-between gap-3 sm:gap-4"
         >
           <div className="relative w-full md:w-96">
             <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#8A9CB7]" />
-            <input 
-              type="text" 
+            <input
+              type="text"
               placeholder="Search by name or email..."
-              value={searchTerm} 
+              value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-10 pr-4 py-2 bg-white/80 text-[#17233E] border border-white/90 rounded-2xl text-sm focus:outline-none focus:border-[#1988A3] placeholder:text-[#8A9CB7] shadow-sm font-medium"
             />
@@ -340,14 +340,14 @@ const UserRoleGovernance = () => {
         {loading ? (
           <SkillPulseLoader message="Synchronizing Workspace User Governance..." fullScreen={false} />
         ) : (
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.3 }}
-          className="rounded-3xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 overflow-hidden"
+          className="rounded-2xl sm:rounded-3xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 overflow-hidden"
         >
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm text-[#17233E]">
+          <div className="overflow-x-auto no-scrollbar">
+            <table className="w-full text-left text-sm text-[#17233E] min-w-[700px]">
               <thead className="bg-[#17233E]/10 text-xs font-bold uppercase tracking-wider text-[#17233E] border-b border-white/60">
                 <tr>
                   <th className="px-6 py-4">User</th>
@@ -360,8 +360,8 @@ const UserRoleGovernance = () => {
               </thead>
               <tbody className="divide-y divide-white/60">
                 {filteredUsers.length > 0 ? filteredUsers.map((user, idx) => (
-                  <motion.tr 
-                    key={user.id} 
+                  <motion.tr
+                    key={user.id}
                     initial={{ opacity: 0, y: 6 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.2, delay: Math.min(0.25, idx * 0.015) }}
@@ -403,22 +403,22 @@ const UserRoleGovernance = () => {
                     <td className="px-6 py-4 text-xs text-[#8A9CB7] font-mono font-medium">{user.joined}</td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end gap-2">
-                        <motion.button 
+                        <motion.button
                           whileHover={{ scale: 1.12 }}
                           whileTap={{ scale: 0.92 }}
                           onClick={() => handleEditClick(user)}
-                          className="p-2 rounded-xl bg-white/80 hover:bg-white text-[#1988A3] border border-white/85 shadow-sm transition-all cursor-pointer" 
+                          className="p-2 rounded-xl bg-white/80 hover:bg-white text-[#1988A3] border border-white/85 shadow-sm transition-all cursor-pointer"
                           title="Edit User"
                         >
                           <Edit3 className="w-4 h-4" />
                         </motion.button>
-                        <motion.button 
+                        <motion.button
                           whileHover={{ scale: 1.12 }}
                           whileTap={{ scale: 0.92 }}
                           onClick={() => toggleUserStatus(user)}
                           className={`p-2 rounded-xl transition-all shadow-sm cursor-pointer ${
-                            user.status === 'ACTIVE' 
-                              ? 'bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200' 
+                            user.status === 'ACTIVE'
+                              ? 'bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200'
                               : 'bg-emerald-50 hover:bg-emerald-100 text-emerald-600 border border-emerald-200'
                           }`}
                           title={user.status === 'ACTIVE' ? 'Deactivate Account' : 'Activate Account'}
@@ -443,7 +443,7 @@ const UserRoleGovernance = () => {
         {isAddModalOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
             <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }}
-              className="w-full max-w-md bg-gradient-to-b from-[#17233E] to-[#121E33] border border-white/15 rounded-3xl shadow-2xl overflow-hidden p-6 text-white">
+              className="w-full max-w-md bg-gradient-to-b from-[#17233E] to-[#121E33] border border-white/15 rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden p-4 sm:p-6 max-h-[90vh] overflow-y-auto text-white">
               <div className="flex items-center justify-between pb-4 border-b border-white/10">
                 <h2 className="text-lg font-bold text-white">Provision New Tenant User</h2>
                 <button onClick={() => { setIsAddModalOpen(false); setError(''); }} className="text-[#8A9CB7] hover:text-white cursor-pointer"><X className="w-5 h-5" /></button>
@@ -532,7 +532,7 @@ const UserRoleGovernance = () => {
         {isEditModalOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
             <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }}
-              className="w-full max-w-md bg-gradient-to-b from-[#17233E] to-[#121E33] border border-white/15 rounded-3xl shadow-2xl overflow-hidden p-6 text-white">
+              className="w-full max-w-md bg-gradient-to-b from-[#17233E] to-[#121E33] border border-white/15 rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden p-4 sm:p-6 max-h-[90vh] overflow-y-auto text-white">
               <div className="flex items-center justify-between pb-4 border-b border-white/10">
                 <h2 className="text-lg font-bold text-white">Edit User Governance</h2>
                 <button onClick={() => { setIsEditModalOpen(false); setError(''); }} className="text-[#8A9CB7] hover:text-white cursor-pointer"><X className="w-5 h-5" /></button>
