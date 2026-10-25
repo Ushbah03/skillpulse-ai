@@ -161,7 +161,7 @@ const EmployeeDashboard = () => {
     <div className="font-sans text-[#17233E] pb-12">
       
       {/* 1. Header Section */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-10">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 sm:gap-6 mb-6 sm:mb-10">
         <div>
           <div className="flex items-center gap-2 mb-2">
             <span className="text-[10px] font-mono font-bold uppercase tracking-wider bg-[#1988A3]/10 text-[#1988A3] px-3 py-1 rounded-full border border-[#1988A3]/20 flex items-center gap-1.5">
@@ -169,8 +169,8 @@ const EmployeeDashboard = () => {
               {workspaceName}
             </span>
           </div>
-          <h1 className="text-3xl font-extrabold text-[#17233E] tracking-tight">Employee Dashboard</h1>
-          <p className="text-[#5A6D89] text-sm mt-1 font-normal">Monitor your live skills, gaps, and learning progression in real-time</p>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-[#17233E] tracking-tight">Employee Dashboard</h1>
+          <p className="text-[#5A6D89] text-xs sm:text-sm mt-1 font-normal">Monitor your live skills, gaps, and learning progression in real-time</p>
         </div>
         
         <div className="flex items-center gap-4 flex-wrap w-full md:w-auto justify-end">
@@ -324,7 +324,7 @@ const EmployeeDashboard = () => {
       </div>
 
       {/* 2. Top Stats Row - Frosted Glass Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-6 mb-6 sm:mb-8">
         <StatCard 
           title="Skill Readiness" 
           value={`${readinessPct}%`} 
@@ -362,34 +362,34 @@ const EmployeeDashboard = () => {
       </div>
 
       {/* 3. Matrix and Gap Summary Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
-        <div className="lg:col-span-2 glass-panel p-6 sm:p-8 rounded-[2.5rem] relative overflow-hidden">
-          <div className="flex justify-between items-center mb-6">
-            <div className="flex items-center gap-3">
-              <div className="w-2 h-7 bg-[#1988A3] rounded-full"></div>
-              <h3 className="font-extrabold text-[#17233E] text-lg">Skill Proficiency Matrix</h3>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-8 mb-6 sm:mb-8">
+        <div className="lg:col-span-2 glass-panel p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-[2.5rem] relative overflow-hidden">
+          <div className="flex justify-between items-center mb-4 sm:mb-6">
+            <div className="flex items-center gap-2.5 sm:gap-3">
+              <div className="w-2 h-6 sm:h-7 bg-[#1988A3] rounded-full"></div>
+              <h3 className="font-extrabold text-[#17233E] text-base sm:text-lg">Skill Proficiency Matrix</h3>
             </div>
             <button 
               onClick={() => navigate('/dashboard/profile')}
-              className="text-xs font-mono font-bold text-[#5A6D89] glass-pill px-4 py-2 rounded-xl hover:text-[#1988A3] transition-colors cursor-pointer"
+              className="text-xs font-mono font-bold text-[#5A6D89] glass-pill px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl hover:text-[#1988A3] transition-colors cursor-pointer"
             >
               View Profile
             </button>
           </div>
-          <div className="h-[360px]">
+          <div className="h-[260px] sm:h-[360px]">
             <ResponsiveContainer width="100%" height="100%">
               <RadarChart cx="50%" cy="50%" outerRadius="80%" data={radarData}>
                 <PolarGrid stroke="#8A9CB7" strokeOpacity={0.25} />
-                <PolarAngleAxis dataKey="subject" tick={{ fill: '#17233E', fontSize: 13, fontWeight: 700 }} />
+                <PolarAngleAxis dataKey="subject" tick={{ fill: '#17233E', fontSize: 11, fontWeight: 700 }} />
                 <Radar dataKey="A" stroke="#1988A3" strokeWidth={3} fill="#11C6DE" fillOpacity={0.25} />
               </RadarChart>
             </ResponsiveContainer>
           </div>
         </div>
 
-        <div className="glass-panel p-6 sm:p-8 rounded-[2.5rem] flex flex-col justify-between">
+        <div className="glass-panel p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-[2.5rem] flex flex-col justify-between">
           <div>
-            <h3 className="font-extrabold text-[#17233E] text-lg mb-6 flex items-center gap-2.5">
+            <h3 className="font-extrabold text-[#17233E] text-base sm:text-lg mb-4 sm:mb-6 flex items-center gap-2.5">
               <Target className="w-5 h-5 text-[#1988A3]" /> 
               <span>Skill Gap Summary</span>
             </h3>
@@ -431,11 +431,11 @@ const EmployeeDashboard = () => {
       </div>
 
       {/* 4. Progress and Insights Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 glass-panel p-6 sm:p-8 rounded-[2.5rem]">
-          <div className="flex justify-between items-center mb-6">
-            <h3 className="text-sm font-bold text-[#17233E] uppercase tracking-wider font-mono flex items-center gap-2.5">
-              <PlayCircle className="w-5 h-5 text-[#1988A3]" /> 
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-8">
+        <div className="lg:col-span-2 glass-panel p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-[2.5rem]">
+          <div className="flex justify-between items-center mb-4 sm:mb-6">
+            <h3 className="text-xs sm:text-sm font-bold text-[#17233E] uppercase tracking-wider font-mono flex items-center gap-2.5">
+              <PlayCircle className="w-4 h-4 sm:w-5 sm:h-5 text-[#1988A3]" /> 
               <span>Live Courses & Learning Progress</span>
             </h3>
             <button 
@@ -445,7 +445,7 @@ const EmployeeDashboard = () => {
               View All Courses
             </button>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-5">
             {filteredCourses.length > 0 ? (
               filteredCourses.slice(0, 2).map((c, idx) => (
                 <CourseCard 
@@ -466,38 +466,38 @@ const EmployeeDashboard = () => {
         </div>
 
         {/* AI Insight Card - Executive Frosted Navy Glass */}
-        <div className="bg-gradient-to-br from-[#17233E] via-[#1B3154] to-[#121E33] p-6 sm:p-8 rounded-[2.5rem] text-white shadow-xl relative overflow-hidden flex flex-col justify-between border border-white/20">
+        <div className="bg-gradient-to-br from-[#17233E] via-[#1B3154] to-[#121E33] p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-[2.5rem] text-white shadow-xl relative overflow-hidden flex flex-col justify-between border border-white/20">
           <div>
-            <div className="flex items-center gap-2 mb-4">
+            <div className="flex items-center gap-2 mb-3 sm:mb-4">
               <Sparkles className="w-4 h-4 text-[#11C6DE]" />
               <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-[#11C6DE]">
                 AI Recommendation
               </span>
             </div>
-            <h4 className="text-xl font-extrabold mb-3 leading-tight tracking-tight text-white">
+            <h4 className="text-lg sm:text-xl font-extrabold mb-2 sm:mb-3 leading-tight tracking-tight text-white">
               {topGap ? `Target Skill: ${topGap.skill?.name}` : 'Skill Development Track'}
             </h4>
-            <p className="text-[#8A9CB7] text-xs leading-relaxed mb-6">
+            <p className="text-[#8A9CB7] text-xs leading-relaxed mb-4 sm:mb-6">
               {topGap 
                 ? `Focus on bridging your ${topGap.severity} priority gap in ${topGap.skill?.name} to reach target proficiency level ${topGap.requiredLevel}.`
                 : `Your verified skill inventory meets current role requirements. Explore new catalog tracks.`}
             </p>
             
-            <div className="flex gap-3 mb-6">
-               <div className="bg-white/5 p-3.5 rounded-2xl flex-1 border border-white/10 text-center">
-                  <p className="text-[10px] text-[#8A9CB7] uppercase font-mono font-bold mb-0.5">Impact</p>
-                  <p className="font-extrabold text-[#11C6DE] text-lg">{estimatedImpact}</p>
+            <div className="flex gap-2.5 sm:gap-3 mb-4 sm:mb-6">
+               <div className="bg-white/5 p-2.5 sm:p-3.5 rounded-xl sm:rounded-2xl flex-1 border border-white/10 text-center">
+                  <p className="text-[9px] sm:text-[10px] text-[#8A9CB7] uppercase font-mono font-bold mb-0.5">Impact</p>
+                  <p className="font-extrabold text-[#11C6DE] text-base sm:text-lg">{estimatedImpact}</p>
                </div>
-               <div className="bg-white/5 p-3.5 rounded-2xl flex-1 border border-white/10 text-center">
-                  <p className="text-[10px] text-[#8A9CB7] uppercase font-mono font-bold mb-0.5">Priority</p>
-                  <p className="font-extrabold text-white text-lg">{topGap ? topGap.severity : 'Active'}</p>
+               <div className="bg-white/5 p-2.5 sm:p-3.5 rounded-xl sm:rounded-2xl flex-1 border border-white/10 text-center">
+                  <p className="text-[9px] sm:text-[10px] text-[#8A9CB7] uppercase font-mono font-bold mb-0.5">Priority</p>
+                  <p className="font-extrabold text-white text-base sm:text-lg">{topGap ? topGap.severity : 'Active'}</p>
                </div>
             </div>
           </div>
 
           <button 
             onClick={() => navigate('/dashboard/learning')}
-            className="w-full py-3.5 bg-[#1988A3] hover:bg-[#157289] text-white rounded-2xl text-xs font-mono font-bold uppercase tracking-wider transition-all shadow-lg shadow-[#1988A3]/30 cursor-pointer"
+            className="w-full py-3 sm:py-3.5 bg-[#1988A3] hover:bg-[#157289] text-white rounded-xl sm:rounded-2xl text-xs font-mono font-bold uppercase tracking-wider transition-all shadow-lg shadow-[#1988A3]/30 cursor-pointer"
           >
             Enroll in AI Track
           </button>
@@ -510,24 +510,26 @@ const EmployeeDashboard = () => {
 // --- Helper Components with Frosted Glass Styling ---
 
 const StatCard = ({ title, value, trend, sub, icon: Icon, iconBg, iconColor, highlight }) => (
-  <div className="glass-panel p-6 rounded-[2rem] hover:-translate-y-1 transition-all duration-300">
-    <div className="flex justify-between items-start mb-4">
-      <div className={`p-3 rounded-2xl ${iconBg}`}>
-        <Icon className={`w-5 h-5 ${iconColor}`} />
+  <div className="glass-panel p-3.5 sm:p-6 rounded-2xl sm:rounded-[2rem] hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between">
+    <div className="flex justify-between items-start gap-1 mb-2.5 sm:mb-4">
+      <div className={`p-2 sm:p-3 rounded-xl sm:rounded-2xl ${iconBg} shrink-0`}>
+        <Icon className={`w-4 h-4 sm:w-5 sm:h-5 ${iconColor}`} />
       </div>
       {trend && (
-        <span className="text-[11px] font-mono font-bold text-[#1988A3] bg-[#1988A3]/10 px-2.5 py-1 rounded-full border border-[#1988A3]/20">
+        <span className="text-[9px] sm:text-[11px] font-mono font-bold text-[#1988A3] bg-[#1988A3]/10 px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-full border border-[#1988A3]/20 truncate max-w-[100px] sm:max-w-none">
           {trend}
         </span>
       )}
     </div>
-    <p className="text-[#5A6D89] text-xs font-mono font-bold uppercase tracking-wider mb-1">{title}</p>
-    <h3 className="text-3xl font-extrabold text-[#17233E] mb-1">{value}</h3>
-    {sub && (
-      <p className={`text-xs font-medium ${highlight === 'amber' ? 'text-amber-600' : 'text-[#5A6D89]'}`}>
-        {sub}
-      </p>
-    )}
+    <div>
+      <p className="text-[#5A6D89] text-[10px] sm:text-xs font-mono font-bold uppercase tracking-wider mb-0.5 sm:mb-1 truncate">{title}</p>
+      <h3 className="text-xl sm:text-3xl font-extrabold text-[#17233E] mb-0.5 sm:mb-1">{value}</h3>
+      {sub && (
+        <p className={`text-[10px] sm:text-xs font-medium truncate ${highlight === 'amber' ? 'text-amber-600' : 'text-[#5A6D89]'}`}>
+          {sub}
+        </p>
+      )}
+    </div>
   </div>
 );
 

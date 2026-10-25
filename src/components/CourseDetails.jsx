@@ -246,7 +246,7 @@ const CourseDetails = () => {
   const approvalTarget = course.approvalTarget || (course.hasTeam ? 'Leader' : 'HR');
 
   return (
-    <div className="bg-transparent min-h-screen p-6 md:p-8 font-sans">
+    <div className="bg-transparent min-h-screen p-0 pb-12 font-sans">
       
       {/* Toast Notification */}
       {toastMsg && (
@@ -257,7 +257,7 @@ const CourseDetails = () => {
       )}
 
       {/* Top Header Controls & Search */}
-      <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="mb-6 sm:mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <button 
             onClick={() => navigate('/dashboard/learning')}
@@ -266,17 +266,17 @@ const CourseDetails = () => {
             <ArrowLeft className="w-4 h-4" /> Back to Learning Catalog
           </button>
 
-          <div className="flex items-center gap-2 text-[10px] font-black text-[#5A6D89] uppercase tracking-widest">
+          <div className="flex items-center gap-2 text-[10px] font-black text-[#5A6D89] uppercase tracking-widest flex-wrap">
             <span className="bg-[#1988A3]/10 text-[#1988A3] px-2.5 py-0.5 rounded border border-[#1988A3]/25">{workspaceName}</span>
             <ChevronRight className="w-3 h-3 text-[#8A9CB7]" />
             <span>{course.provider || 'YouTube Educational LMS'}</span>
             <ChevronRight className="w-3 h-3 text-[#8A9CB7]" />
-            <span className="text-[#1988A3] font-bold">{course.title}</span>
+            <span className="text-[#1988A3] font-bold truncate max-w-[200px] sm:max-w-none">{course.title}</span>
           </div>
         </div>
 
         {/* High-Contrast Interactive Course Search Bar */}
-        <div className="relative flex-1 max-w-md" ref={searchRef}>
+        <div className="relative flex-1 w-full md:max-w-md" ref={searchRef}>
           <div className="relative flex items-center">
             <Search className="w-4 h-4 text-[#8A9CB7] absolute left-3.5 pointer-events-none" />
             <input
@@ -334,13 +334,13 @@ const CourseDetails = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
 
         {/* LEFT CONTENT AREA */}
         <div className="lg:col-span-2 space-y-6">
 
           {/* Hero Banner Card */}
-          <div className="glass-panel p-8 rounded-[2.5rem] relative overflow-hidden">
+          <div className="glass-panel p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-[2.5rem] relative overflow-hidden">
             <div className="flex items-center gap-2 mb-4">
               <span className="bg-[#17233E]/5 text-[#17233E] text-[10px] font-black px-3 py-1 rounded-md uppercase tracking-wider">
                 {course.provider || 'YouTube Educational LMS'}

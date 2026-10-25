@@ -266,7 +266,7 @@ const LearningRecommendations = () => {
   }
 
   return (
-    <div className="bg-transparent min-h-screen p-6 md:p-10 font-sans">
+    <div className="bg-transparent min-h-screen p-0 pb-12 font-sans">
       
       {/* Toast Notification */}
       {toastMsg && (
@@ -277,26 +277,26 @@ const LearningRecommendations = () => {
       )}
 
       {/* Header Section */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 sm:mb-8 gap-4">
         <div>
           <div className="flex items-center gap-2 mb-2">
             <span className="text-[10px] font-black uppercase tracking-wider bg-[#1988A3]/10 text-[#1988A3] px-2.5 py-1 rounded-lg border border-[#1988A3]/25">
               {workspaceName}
             </span>
           </div>
-          <h1 className="text-3xl md:text-4xl font-black text-[#17233E] tracking-tight">Learning Recommendations</h1>
-          <p className="text-[#5A6D89] text-sm md:text-base mt-1 font-medium">AI-powered personalized learning linked directly to your skill gaps</p>
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-black text-[#17233E] tracking-tight">Learning Recommendations</h1>
+          <p className="text-[#5A6D89] text-xs sm:text-sm md:text-base mt-1 font-medium">AI-powered personalized learning linked directly to your skill gaps</p>
         </div>
         
-        <div className="flex flex-wrap items-center gap-3">
-          <div className="relative">
+        <div className="flex flex-wrap items-center gap-2.5 sm:gap-3 w-full md:w-auto">
+          <div className="relative flex-1 md:flex-initial w-full sm:w-auto">
             <Search className="absolute left-4 top-3.5 text-[#8A9CB7] w-4 h-4" />
             <input 
               type="text" 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder={`Search ${courses.length || 45}+ courses or skills...`} 
-              className="pl-11 pr-10 py-2.5 bg-[#F0F5FB]/85 backdrop-blur-md border border-[#8A9CB7]/30 rounded-2xl w-60 md:w-72 text-sm text-[#17233E] placeholder:text-[#8A9CB7] focus:outline-none focus:border-[#1988A3] shadow-sm transition-all" 
+              className="pl-11 pr-10 py-2.5 bg-[#F0F5FB]/85 backdrop-blur-md border border-[#8A9CB7]/30 rounded-2xl w-full sm:w-60 md:w-72 text-sm text-[#17233E] placeholder:text-[#8A9CB7] focus:outline-none focus:border-[#1988A3] shadow-sm transition-all" 
             />
             {searchQuery && (
               <button 
@@ -308,11 +308,11 @@ const LearningRecommendations = () => {
             )}
           </div>
 
-          <div className="relative">
+          <div className="relative w-full sm:w-auto">
             <select
               value={selectedLevel}
               onChange={(e) => setSelectedLevel(e.target.value)}
-              className="px-4 py-2.5 bg-[#F0F5FB]/85 backdrop-blur-md border border-[#8A9CB7]/30 rounded-2xl text-xs font-bold text-[#17233E] focus:outline-none focus:border-[#1988A3] shadow-sm cursor-pointer"
+              className="w-full sm:w-auto px-4 py-2.5 bg-[#F0F5FB]/85 backdrop-blur-md border border-[#8A9CB7]/30 rounded-2xl text-xs font-bold text-[#17233E] focus:outline-none focus:border-[#1988A3] shadow-sm cursor-pointer"
             >
               <option value="All">All Skill Levels</option>
               <option value="Beginner">Beginner</option>
@@ -324,7 +324,7 @@ const LearningRecommendations = () => {
       </div>
 
       {/* Category Filter Pills Bar */}
-      <div className="flex items-center gap-2.5 mb-8 pb-2 overflow-x-auto">
+      <div className="flex items-center gap-2 sm:gap-2.5 mb-6 sm:mb-8 pb-2 overflow-x-auto no-scrollbar">
         {[
           'All',
           'Frontend & Web',
@@ -337,7 +337,7 @@ const LearningRecommendations = () => {
           <button
             key={cat}
             onClick={() => setSelectedCategory(cat)}
-            className={`px-4 py-2 rounded-2xl text-xs font-black tracking-wide transition-all whitespace-nowrap border ${
+            className={`px-3.5 sm:px-4 py-1.5 sm:py-2 rounded-xl sm:rounded-2xl text-xs font-black tracking-wide transition-all whitespace-nowrap border ${
               selectedCategory === cat
                 ? 'bg-[#17233E] text-white border-[#17233E] shadow-md shadow-[#17233E]/20 scale-105'
                 : 'bg-[#F0F5FB]/85 backdrop-blur-md text-[#5A6D89] hover:text-[#17233E] border-[#8A9CB7]/30 hover:border-[#1988A3]/40 shadow-sm'
@@ -349,7 +349,7 @@ const LearningRecommendations = () => {
       </div>
 
       {/* Top Stats Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-6 mb-6 sm:mb-10">
         <LearningStat label="Available Courses" value={courses.length} sub="Curated for your profile" color="cyan" />
         <LearningStat label="Active Gaps" value={gaps.length} sub="Targeted for training" color="navy" />
         <LearningStat label="Readiness Boost" value={gaps.length > 0 ? "+25.0%" : "Optimized"} sub="Upon completing gaps" color="emerald" />
@@ -357,7 +357,7 @@ const LearningRecommendations = () => {
       </div>
 
       {/* Top 5 AI Recommendations */}
-      <div className="mb-14">
+      <div className="mb-10 sm:mb-14">
         <div className="flex justify-between items-center mb-6">
           <div>
             <div className="flex items-center gap-3 mb-1">
@@ -810,10 +810,10 @@ const LearningStat = ({ label, value, sub, color }) => {
     amber: 'bg-amber-500/10 border border-amber-500/20'
   };
   return (
-    <div className="glass-panel p-6 rounded-[2rem]">
-      <p className="text-[#5A6D89] text-[10px] font-black uppercase tracking-widest mb-2">{label}</p>
-      <h3 className="text-3xl font-black text-[#17233E] mb-1">{value}</h3>
-      <p className="text-[#5A6D89] text-xs font-medium">{sub}</p>
+    <div className="glass-panel p-3.5 sm:p-6 rounded-2xl sm:rounded-[2rem] flex flex-col justify-between">
+      <p className="text-[#5A6D89] text-[9px] sm:text-[10px] font-black uppercase tracking-wider sm:tracking-widest mb-1 sm:mb-2 truncate">{label}</p>
+      <h3 className="text-xl sm:text-3xl font-black text-[#17233E] mb-0.5 sm:mb-1 truncate">{value}</h3>
+      <p className="text-[#5A6D89] text-[10px] sm:text-xs font-medium truncate">{sub}</p>
     </div>
   );
 };
@@ -826,10 +826,10 @@ const CourseCard = ({
   const isInProgress = (progressPct > 0 && progressPct < 100);
 
   return (
-    <div className={`glass-panel rounded-[2.5rem] overflow-hidden group hover:border-[#1988A3]/50 transition-all flex flex-col justify-between ${
+    <div className={`glass-panel rounded-2xl sm:rounded-[2.5rem] overflow-hidden group hover:border-[#1988A3]/50 transition-all flex flex-col justify-between ${
       isRejected ? 'border-rose-300' : isTopAiRecommendation ? 'border-[#1988A3]/40 shadow-lg' : ''
     }`}>
-      <div className="bg-gradient-to-r from-[#17233E] via-[#1B3154] to-[#121E33] h-36 relative flex items-center justify-center p-6 text-center">
+      <div className="bg-gradient-to-r from-[#17233E] via-[#1B3154] to-[#121E33] h-28 sm:h-36 relative flex items-center justify-center p-4 sm:p-6 text-center">
         <span className="absolute top-4 right-4 text-[9px] font-black px-2.5 py-1 rounded-full border bg-[#1988A3] text-white border-[#1988A3]/50 shadow-sm">
           {match}
         </span>

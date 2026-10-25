@@ -203,7 +203,7 @@ const MyProgress = () => {
   }
 
   return (
-    <div className="bg-transparent min-h-screen p-6 md:p-10 font-sans">
+    <div className="bg-transparent min-h-screen p-0 pb-12 font-sans">
       
       {/* Toast Notification */}
       {toastMsg && (
@@ -214,15 +214,15 @@ const MyProgress = () => {
       )}
 
       {/* Header Section */}
-      <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-10">
+      <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 sm:mb-10">
         <div>
           <div className="flex items-center gap-2 mb-2">
             <span className="text-[10px] font-black uppercase tracking-wider bg-[#1988A3]/10 text-[#1988A3] px-2.5 py-0.5 rounded border border-[#1988A3]/25">
               {workspaceName}
             </span>
           </div>
-          <h1 className="text-3xl md:text-4xl font-black text-[#17233E] tracking-tight">My Learning Progress</h1>
-          <p className="text-sm md:text-base text-[#5A6D89] font-medium mt-1">Real-time course metrics, video progress, and skill gap resolutions</p>
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-black text-[#17233E] tracking-tight">My Learning Progress</h1>
+          <p className="text-xs sm:text-sm md:text-base text-[#5A6D89] font-medium mt-1">Real-time course metrics, video progress, and skill gap resolutions</p>
         </div>
 
         {/* High Contrast Search Bar */}
@@ -247,11 +247,11 @@ const MyProgress = () => {
       </header>
 
       {/* TOP STATS CARDS */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-        <StatCard icon={<Clock className="text-[#1988A3] w-6 h-6" />} label="Learning Time" value={`${totalHoursSpent.toFixed(1)}h`} subtext="Accumulated Hours" color="cyan" />
-        <StatCard icon={<Play className="text-[#17233E] w-6 h-6 fill-current" />} label="In-Progress" value={`${activeCoursesCount}`} subtext="Active Courses" color="navy" />
-        <StatCard icon={<CheckCircle2 className="text-emerald-600 w-6 h-6" />} label="Completed Courses" value={`${completedCoursesCount}`} subtext="100% Finished" color="emerald" />
-        <StatCard icon={<Award className="text-amber-500 w-6 h-6" />} label="Resolved Skill Gaps" value={`${gaps.length === 0 ? 'All Clear' : `${gaps.length} Active`}`} subtext="AI Verified" color="amber" />
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-6 mb-6 sm:mb-10">
+        <StatCard icon={<Clock className="text-[#1988A3] w-5 h-5 sm:w-6 sm:h-6" />} label="Learning Time" value={`${totalHoursSpent.toFixed(1)}h`} subtext="Accumulated Hours" color="cyan" />
+        <StatCard icon={<Play className="text-[#17233E] w-5 h-5 sm:w-6 sm:h-6 fill-current" />} label="In-Progress" value={`${activeCoursesCount}`} subtext="Active Courses" color="navy" />
+        <StatCard icon={<CheckCircle2 className="text-emerald-600 w-5 h-5 sm:w-6 sm:h-6" />} label="Completed Courses" value={`${completedCoursesCount}`} subtext="100% Finished" color="emerald" />
+        <StatCard icon={<Award className="text-amber-500 w-5 h-5 sm:w-6 sm:h-6" />} label="Resolved Skill Gaps" value={`${gaps.length === 0 ? 'All Clear' : `${gaps.length} Active`}`} subtext="AI Verified" color="amber" />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -647,14 +647,14 @@ const StatCard = ({ icon, label, value, subtext, color }) => {
     amber: 'bg-amber-500/10 border border-amber-500/20'
   };
   return (
-    <div className="glass-panel p-6 rounded-[2rem] flex items-center gap-5">
-      <div className={`p-4 rounded-2xl shrink-0 ${themes[color]}`}>
+    <div className="glass-panel p-3.5 sm:p-6 rounded-2xl sm:rounded-[2rem] flex items-center gap-3 sm:gap-5">
+      <div className={`p-2.5 sm:p-4 rounded-xl sm:rounded-2xl shrink-0 ${themes[color]}`}>
         {icon}
       </div>
-      <div>
-        <p className="text-[#5A6D89] text-[10px] font-black uppercase tracking-widest mb-1">{label}</p>
-        <h3 className="text-2xl font-black text-[#17233E] leading-tight mb-0.5">{value}</h3>
-        <p className="text-[#8A9CB7] text-[10px] font-bold">{subtext}</p>
+      <div className="min-w-0">
+        <p className="text-[#5A6D89] text-[9px] sm:text-[10px] font-black uppercase tracking-wider sm:tracking-widest mb-0.5 sm:mb-1 truncate">{label}</p>
+        <h3 className="text-xl sm:text-2xl font-black text-[#17233E] leading-tight mb-0.5 truncate">{value}</h3>
+        <p className="text-[#8A9CB7] text-[9px] sm:text-[10px] font-bold truncate">{subtext}</p>
       </div>
     </div>
   );

@@ -273,34 +273,34 @@ const AssessmentResults = () => {
   }
 
   return (
-    <div className="bg-transparent min-h-screen p-6 md:p-10 font-sans">
+    <div className="bg-transparent min-h-screen p-0 pb-12 font-sans">
       
       {/* Header Section */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-10">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 sm:gap-6 mb-6 sm:mb-10">
         <div>
           <div className="flex items-center gap-2 mb-2">
             <span className="text-[10px] font-black uppercase tracking-wider bg-[#1988A3]/10 text-[#1988A3] px-2.5 py-1 rounded-lg border border-[#1988A3]/25">
               {workspaceName}
             </span>
           </div>
-          <h1 className="text-3xl md:text-4xl font-black text-[#17233E] tracking-tight">Assessment Results</h1>
-          <p className="text-[#5A6D89] text-sm md:text-base mt-1 font-medium">Review your performance, validated skill levels, and detailed validation logs</p>
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-black text-[#17233E] tracking-tight">Assessment Results</h1>
+          <p className="text-[#5A6D89] text-xs sm:text-sm md:text-base mt-1 font-medium">Review your performance, validated skill levels, and detailed validation logs</p>
         </div>
         
-        <div className="flex items-center gap-4">
-          <div className="relative">
+        <div className="flex items-center gap-2.5 sm:gap-4 w-full md:w-auto">
+          <div className="relative flex-1 md:flex-initial w-full sm:w-auto">
             <Search className="absolute left-4 top-3.5 text-[#8A9CB7] w-4 h-4" />
             <input 
               type="text" 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search results..." 
-              className="pl-11 pr-4 py-2.5 bg-[#F0F5FB]/85 backdrop-blur-md border border-[#8A9CB7]/30 rounded-2xl w-60 md:w-72 text-sm text-[#17233E] placeholder:text-[#8A9CB7] focus:outline-none focus:border-[#1988A3] shadow-sm transition-all" 
+              className="pl-11 pr-4 py-2.5 bg-[#F0F5FB]/85 backdrop-blur-md border border-[#8A9CB7]/30 rounded-2xl w-full sm:w-60 md:w-72 text-sm text-[#17233E] placeholder:text-[#8A9CB7] focus:outline-none focus:border-[#1988A3] shadow-sm transition-all" 
             />
           </div>
           <button 
             onClick={() => navigate('/dashboard/assessment')}
-            className="flex items-center gap-2 bg-[#17233E] hover:bg-[#1988A3] text-white px-5 py-2.5 rounded-2xl font-black text-xs uppercase tracking-wider transition-all shadow-lg shadow-[#17233E]/20"
+            className="flex-1 sm:flex-initial flex items-center justify-center gap-2 bg-[#17233E] hover:bg-[#1988A3] text-white px-4 sm:px-5 py-2.5 rounded-2xl font-black text-xs uppercase tracking-wider transition-all shadow-lg shadow-[#17233E]/20"
           >
             Take New Assessment
           </button>
@@ -308,28 +308,28 @@ const AssessmentResults = () => {
       </div>
 
       {/* Stats Overview */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-        <ResultStat label="Average Score" value={`${avgScore}%`} trend={totalTaken > 0 ? "Overall success rate" : "No assessments completed"} icon={<TrendingUp className="w-5 h-5 text-[#1988A3]" />} color="cyan" />
-        <ResultStat label="Highest Proficiency" value={levelLabel} trend={totalTaken > 0 ? `Validated score: ${highestScore}%` : "Awaiting first exam"} icon={<Award className="w-5 h-5 text-emerald-600" />} color="emerald" />
-        <ResultStat label="Assessments Taken" value={totalTaken} trend="Total completed attempts" icon={<Users className="w-5 h-5 text-[#17233E]" />} color="navy" />
-        <ResultStat label="Readiness Impact" value={`+${Math.round(highestScore * 0.1)}%`} trend={totalTaken > 0 ? `Benchmark score: ${highestScore}%` : "Initial profile setup"} icon={<Rocket className="w-5 h-5 text-amber-600" />} color="amber" />
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-6 mb-6 sm:mb-10">
+        <ResultStat label="Average Score" value={`${avgScore}%`} trend={totalTaken > 0 ? "Overall success rate" : "No completed exams"} icon={<TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 text-[#1988A3]" />} color="cyan" />
+        <ResultStat label="Highest Proficiency" value={levelLabel} trend={totalTaken > 0 ? `Validated score: ${highestScore}%` : "Awaiting first exam"} icon={<Award className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600" />} color="emerald" />
+        <ResultStat label="Assessments Taken" value={totalTaken} trend="Total completed attempts" icon={<Users className="w-4 h-4 sm:w-5 sm:h-5 text-[#17233E]" />} color="navy" />
+        <ResultStat label="Readiness Impact" value={`+${Math.round(highestScore * 0.1)}%`} trend={totalTaken > 0 ? `Benchmark score: ${highestScore}%` : "Initial profile setup"} icon={<Rocket className="w-4 h-4 sm:w-5 sm:h-5 text-amber-600" />} color="amber" />
       </div>
 
       {/* Main Analysis Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10 items-stretch">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-8 mb-6 sm:mb-10 items-stretch">
         {/* Score History */}
-        <div className="lg:col-span-2 glass-panel p-6 sm:p-8 rounded-[2.5rem] flex flex-col">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-lg md:text-xl font-black text-[#17233E] flex items-center gap-3">
-              <FileText className="w-5 h-5 text-[#1988A3]" /> Completed Attempts & Score History
+        <div className="lg:col-span-2 glass-panel p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-[2.5rem] flex flex-col">
+          <div className="flex items-center justify-between mb-4 sm:mb-6">
+            <h3 className="text-base sm:text-lg md:text-xl font-black text-[#17233E] flex items-center gap-2 sm:gap-3">
+              <FileText className="w-4 h-4 sm:w-5 sm:h-5 text-[#1988A3]" /> Completed Attempts & Score History
             </h3>
-            <span className="text-xs font-bold text-[#5A6D89] bg-[#17233E]/5 px-3 py-1 rounded-full">
+            <span className="text-xs font-bold text-[#5A6D89] bg-[#17233E]/5 px-2.5 sm:px-3 py-1 rounded-full">
               {filteredTaken.length} {filteredTaken.length === 1 ? 'Attempt' : 'Attempts'}
             </span>
           </div>
           
           {filteredTaken.length > 0 ? (
-            <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2 flex-1 scrollbar-thin scrollbar-thumb-[#8A9CB7]/30 scrollbar-track-transparent">
+            <div className="space-y-3 sm:space-y-4 max-h-[400px] overflow-y-auto pr-1 sm:pr-2 flex-1 scrollbar-thin scrollbar-thumb-[#8A9CB7]/30 scrollbar-track-transparent">
               {filteredTaken.map((t) => {
                 const isPassed = t.score >= 75;
                 const difficulty = t.resultsJson?.difficulty || (t.score >= 80 ? 'ADVANCED' : 'INTERMEDIATE');
@@ -339,18 +339,18 @@ const AssessmentResults = () => {
                   <div 
                     key={t.id} 
                     onClick={() => setSelectedResult(t)}
-                    className="p-5 bg-[#F0F5FB]/85 backdrop-blur-md border border-[#8A9CB7]/25 rounded-2xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 hover:border-[#1988A3]/40 hover:shadow-md transition-all cursor-pointer group"
+                    className="p-3.5 sm:p-5 bg-[#F0F5FB]/85 backdrop-blur-md border border-[#8A9CB7]/25 rounded-xl sm:rounded-2xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3.5 sm:gap-4 hover:border-[#1988A3]/40 hover:shadow-md transition-all cursor-pointer group"
                   >
-                    <div className="flex items-center gap-4">
-                      <div className={`w-12 h-12 rounded-2xl flex items-center justify-center font-black text-sm shrink-0 border ${
+                    <div className="flex items-center gap-3 sm:gap-4">
+                      <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl flex items-center justify-center font-black text-sm shrink-0 border ${
                         isPassed ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : 'bg-rose-500/10 text-rose-600 border-rose-500/20'
                       }`}>
-                        {isPassed ? <Award className="w-6 h-6" /> : <AlertCircle className="w-6 h-6" />}
+                        {isPassed ? <Award className="w-5 h-5 sm:w-6 sm:h-6" /> : <AlertCircle className="w-5 h-5 sm:w-6 sm:h-6" />}
                       </div>
 
                       <div>
-                        <div className="flex items-center gap-2.5 mb-1 flex-wrap">
-                          <h4 className="font-black text-[#17233E] text-base group-hover:text-[#1988A3] transition-colors">
+                        <div className="flex items-center gap-2 mb-1 flex-wrap">
+                          <h4 className="font-black text-[#17233E] text-sm sm:text-base group-hover:text-[#1988A3] transition-colors">
                             {t.title}
                           </h4>
                           <span className="text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full bg-[#17233E]/5 text-[#5A6D89] border border-[#8A9CB7]/20">
@@ -364,17 +364,17 @@ const AssessmentResults = () => {
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-6 self-end sm:self-auto">
+                    <div className="flex items-center gap-4 sm:gap-6 self-end sm:self-auto">
                       <div className="text-right">
                         <p className="text-[10px] font-black text-[#8A9CB7] uppercase tracking-widest">Score</p>
-                        <span className={`text-xl font-black ${isPassed ? 'text-emerald-600' : 'text-rose-500'}`}>
+                        <span className={`text-lg sm:text-xl font-black ${isPassed ? 'text-emerald-600' : 'text-rose-500'}`}>
                           {t.score}%
                         </span>
                       </div>
 
                       <button 
                         onClick={(e) => { e.stopPropagation(); setSelectedResult(t); }}
-                        className="p-2.5 bg-white hover:bg-[#1988A3]/10 text-[#8A9CB7] hover:text-[#1988A3] rounded-xl transition-all border border-[#8A9CB7]/25"
+                        className="p-2 sm:p-2.5 bg-white hover:bg-[#1988A3]/10 text-[#8A9CB7] hover:text-[#1988A3] rounded-xl transition-all border border-[#8A9CB7]/25"
                         title="View Detailed Breakdown"
                       >
                         <Eye className="w-4 h-4" />
@@ -392,10 +392,10 @@ const AssessmentResults = () => {
         </div>
 
         {/* Skill Validation Status */}
-        <div className="glass-panel p-6 sm:p-8 rounded-[2.5rem] text-center flex flex-col justify-between">
+        <div className="glass-panel p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-[2.5rem] text-center flex flex-col justify-between">
           <div>
-            <h3 className="text-lg md:text-xl font-black text-[#17233E] mb-4 text-left">Skill Validation Status</h3>
-            <div className="relative w-32 h-32 mx-auto mb-4">
+            <h3 className="text-base sm:text-lg md:text-xl font-black text-[#17233E] mb-4 text-left">Skill Validation Status</h3>
+            <div className="relative w-28 h-28 sm:w-32 sm:h-32 mx-auto mb-4">
               <svg viewBox="0 0 120 120" className="w-full h-full transform -rotate-90">
                 <circle cx="60" cy="60" r="48" stroke="currentColor" strokeWidth="8" fill="transparent" className="text-[#17233E]/10" />
                 <circle 
@@ -407,12 +407,12 @@ const AssessmentResults = () => {
                 />
               </svg>
               <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className="text-2xl font-black text-[#17233E]">{highestScore}%</span>
+                <span className="text-xl sm:text-2xl font-black text-[#17233E]">{highestScore}%</span>
                 <span className="text-[9px] font-black text-[#8A9CB7] uppercase tracking-wider">Confidence</span>
               </div>
             </div>
 
-            <div className={`px-4 py-1.5 rounded-xl text-xs font-bold inline-flex items-center gap-2 mb-4 border ${
+            <div className={`px-3 sm:px-4 py-1.5 rounded-xl text-xs font-bold inline-flex items-center gap-2 mb-4 border ${
               totalTaken > 0 && highestScore >= 75 ? 'bg-emerald-500/10 text-emerald-700 border-emerald-500/20' : 'bg-[#17233E]/5 text-[#5A6D89] border-[#8A9CB7]/25'
             }`}>
               {totalTaken > 0 && highestScore >= 75 ? <CheckCircle className="w-4 h-4 text-emerald-600" /> : <AlertCircle className="w-4 h-4 text-[#8A9CB7]" />}
@@ -544,13 +544,15 @@ const ResultStat = ({ label, value, trend, icon, color }) => {
     amber: 'bg-amber-500/10 border border-amber-500/20'
   };
   return (
-    <div className="glass-panel p-6 rounded-[2rem]">
-      <div className="flex justify-between items-start mb-3">
-        <p className="text-[#5A6D89] text-xs font-bold uppercase tracking-wider">{label}</p>
-        <div className={`${themes[color]} p-2.5 rounded-2xl`}>{icon}</div>
+    <div className="glass-panel p-3.5 sm:p-6 rounded-2xl sm:rounded-[2rem] flex flex-col justify-between">
+      <div className="flex justify-between items-start gap-1 mb-2 sm:mb-3">
+        <p className="text-[#5A6D89] text-[10px] sm:text-xs font-bold uppercase tracking-wider truncate">{label}</p>
+        <div className={`${themes[color]} p-1.5 sm:p-2.5 rounded-xl sm:rounded-2xl shrink-0`}>{icon}</div>
       </div>
-      <h3 className="text-3xl font-black text-[#17233E] mb-1 tracking-tight">{value}</h3>
-      <p className="text-[#5A6D89] text-xs font-medium">{trend}</p>
+      <div>
+        <h3 className="text-xl sm:text-3xl font-black text-[#17233E] mb-0.5 sm:mb-1 tracking-tight truncate">{value}</h3>
+        <p className="text-[#5A6D89] text-[10px] sm:text-xs font-medium truncate">{trend}</p>
+      </div>
     </div>
   );
 };

@@ -371,20 +371,20 @@ const Certifications = () => {
   }
 
   return (
-    <div className="bg-transparent min-h-screen p-6 md:p-8 font-sans text-[#17233E]">
+    <div className="bg-transparent min-h-screen p-0 pb-12 font-sans text-[#17233E]">
       
       {/* Top Header */}
-      <header className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-8">
+      <header className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-6 sm:mb-8">
         <div>
           <span className="text-[10px] font-black uppercase tracking-wider bg-[#1988A3]/10 text-[#1988A3] px-2.5 py-1 rounded-md border border-[#1988A3]/25 mb-2 inline-block">
             {workspaceName}
           </span>
-          <h1 className="text-3xl md:text-4xl font-black tracking-tight text-[#17233E]">Certifications & Achievements</h1>
-          <p className="text-sm md:text-base text-[#5A6D89] font-medium mt-1">Track, verify, and export your enterprise course & skill credentials</p>
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight text-[#17233E]">Certifications & Achievements</h1>
+          <p className="text-xs sm:text-sm md:text-base text-[#5A6D89] font-medium mt-1">Track, verify, and export your enterprise course & skill credentials</p>
         </div>
 
-        <div className="flex items-center gap-4">
-          <div className="relative w-72">
+        <div className="flex items-center gap-3 sm:gap-4 w-full md:w-auto">
+          <div className="relative flex-1 md:flex-initial w-full sm:w-72">
             <IconSearch className="w-4 h-4 text-[#8A9CB7] absolute left-3.5 top-3.5 pointer-events-none" />
             <input 
               type="text" 
@@ -395,24 +395,24 @@ const Certifications = () => {
             />
           </div>
 
-          <div className="w-10 h-10 rounded-2xl bg-[#17233E] border-2 border-white shadow-md flex items-center justify-center text-white font-black text-sm">
+          <div className="w-10 h-10 rounded-2xl bg-[#17233E] border-2 border-white shadow-md flex items-center justify-center text-white font-black text-sm shrink-0">
             {userInitials}
           </div>
         </div>
       </header>
 
       {/* Top Stats Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5 mb-10">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-5 mb-6 sm:mb-10">
         <HeaderStatCard 
           label="Total Certifications" value={allCertifications.length} 
-          icon={<IconFile className="w-6 h-6 text-[#17233E]" />} 
+          icon={<IconFile className="w-5 h-5 sm:w-6 sm:h-6 text-[#17233E]" />} 
           bgClass="bg-[#17233E]/10" colorClass="text-[#17233E]"
           badge={allCertifications.length > 0 ? `${allCertifications.length} Issued` : '0 Issued'} 
           badgeColor={allCertifications.length > 0 ? "bg-emerald-500/10 text-emerald-700 border border-emerald-500/20" : "bg-slate-100 text-slate-500"}
         />
         <HeaderStatCard 
           label="Badges Earned" value={unlockedBadgesCount} 
-          icon={<IconAward className="w-6 h-6 text-[#1988A3]" />} 
+          icon={<IconAward className="w-5 h-5 sm:w-6 sm:h-6 text-[#1988A3]" />} 
           bgClass="bg-[#1988A3]/10" colorClass="text-[#1988A3]"
           badge={`${unlockedBadgesCount}/${badgesList.length} Unlocked`} 
           badgeColor={unlockedBadgesCount > 0 ? "bg-[#1988A3]/10 text-[#1988A3] border border-[#1988A3]/20" : "bg-slate-100 text-slate-500"}
@@ -509,17 +509,19 @@ const Certifications = () => {
 /* --- SUB-COMPONENTS --- */
 
 const HeaderStatCard = ({ label, value, icon, badge, badgeColor, bgClass }) => (
-  <div className="glass-panel p-5 rounded-2xl hover:border-[#1988A3]/40 transition-all">
-    <div className="flex justify-between items-start mb-3">
-      <div className={`w-11 h-11 ${bgClass} rounded-xl flex items-center justify-center`}>
+  <div className="glass-panel p-3.5 sm:p-5 rounded-xl sm:rounded-2xl hover:border-[#1988A3]/40 transition-all flex flex-col justify-between">
+    <div className="flex justify-between items-start gap-1 mb-2 sm:mb-3">
+      <div className={`w-9 h-9 sm:w-11 sm:h-11 ${bgClass} rounded-xl flex items-center justify-center shrink-0`}>
         {icon}
       </div>
-      <span className={`text-[9px] font-black px-2 py-0.5 rounded-md uppercase tracking-wider ${badgeColor}`}>
+      <span className={`text-[8px] sm:text-[9px] font-black px-1.5 sm:px-2 py-0.5 rounded-md uppercase tracking-wider truncate max-w-[100px] sm:max-w-none ${badgeColor}`}>
         {badge}
       </span>
     </div>
-    <p className="text-[#5A6D89] text-[10px] font-black uppercase tracking-widest mb-0.5">{label}</p>
-    <h3 className="text-2xl font-black text-[#17233E]">{value}</h3>
+    <div>
+      <p className="text-[#5A6D89] text-[9px] sm:text-[10px] font-black uppercase tracking-wider sm:tracking-widest mb-0.5 truncate">{label}</p>
+      <h3 className="text-xl sm:text-2xl font-black text-[#17233E] truncate">{value}</h3>
+    </div>
   </div>
 );
 

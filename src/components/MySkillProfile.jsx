@@ -315,33 +315,33 @@ const MySkillProfile = () => {
   }
 
   return (
-    <div className="bg-transparent min-h-screen p-6 md:p-10 font-sans">
+    <div className="bg-transparent min-h-screen p-0 pb-12 font-sans">
       
       {/* Header Section */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-10">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 sm:gap-6 mb-6 sm:mb-10">
         <div>
           <div className="flex items-center gap-2 mb-2">
             <span className="text-[10px] font-black uppercase tracking-wider bg-[#1988A3]/10 text-[#1988A3] px-2.5 py-1 rounded-lg border border-[#1988A3]/25">
               {user.tenant?.name || 'Enterprise Corp Workspace'}
             </span>
           </div>
-          <h1 className="text-3xl md:text-4xl font-black text-[#17233E] tracking-tight">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-black text-[#17233E] tracking-tight">
             {user.firstName ? `${user.firstName} ${user.lastName}'s Profile` : 'My Skill Profile'}
           </h1>
-          <p className="text-[#5A6D89] text-sm md:text-base mt-1 font-medium">
+          <p className="text-[#5A6D89] text-xs sm:text-sm md:text-base mt-1 font-medium">
             {user.jobTitle ? `${user.jobTitle} • ` : ''}View and manage your professional skill telemetry and readiness
           </p>
         </div>
         
-        <div className="flex flex-wrap items-center gap-3">
-          <div className="relative">
+        <div className="flex flex-wrap items-center gap-2.5 sm:gap-3 w-full md:w-auto">
+          <div className="relative flex-1 md:flex-initial w-full sm:w-auto">
             <Search className="absolute left-4 top-3.5 text-[#8A9CB7] w-4 h-4" />
             <input 
               type="text" 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search skills..." 
-              className="pl-11 pr-4 py-2.5 bg-[#F0F5FB]/85 backdrop-blur-md border border-[#8A9CB7]/30 rounded-2xl w-60 md:w-72 text-sm text-[#17233E] placeholder:text-[#8A9CB7] focus:outline-none focus:border-[#1988A3] shadow-sm transition-all" 
+              className="pl-11 pr-4 py-2.5 bg-[#F0F5FB]/85 backdrop-blur-md border border-[#8A9CB7]/30 rounded-2xl w-full sm:w-60 md:w-72 text-sm text-[#17233E] placeholder:text-[#8A9CB7] focus:outline-none focus:border-[#1988A3] shadow-sm transition-all" 
             />
           </div>
           <button 
@@ -350,13 +350,13 @@ const MySkillProfile = () => {
               setSkillForm({ id: '', name: '', category: 'Technical', level: 3 });
               setShowAddSkill(true);
             }}
-            className="flex items-center gap-2 bg-[#17233E] text-white px-5 py-2.5 rounded-2xl font-black text-xs uppercase tracking-wider hover:bg-[#1988A3] transition-all shadow-lg shadow-[#17233E]/20"
+            className="flex-1 sm:flex-initial flex items-center justify-center gap-2 bg-[#17233E] text-white px-4 sm:px-5 py-2.5 rounded-2xl font-black text-xs uppercase tracking-wider hover:bg-[#1988A3] transition-all shadow-lg shadow-[#17233E]/20"
           >
             <Plus className="w-4 h-4" /> Add Skill
           </button>
           <button 
             onClick={() => setShowAiExtractor(true)}
-            className="flex items-center gap-2 bg-gradient-to-r from-[#17233E] via-[#1B3154] to-[#1988A3] text-white px-5 py-2.5 rounded-2xl font-black text-xs uppercase tracking-wider hover:brightness-110 transition-all shadow-lg shadow-[#1988A3]/25"
+            className="flex-1 sm:flex-initial flex items-center justify-center gap-2 bg-gradient-to-r from-[#17233E] via-[#1B3154] to-[#1988A3] text-white px-4 sm:px-5 py-2.5 rounded-2xl font-black text-xs uppercase tracking-wider hover:brightness-110 transition-all shadow-lg shadow-[#1988A3]/25"
           >
             <Sparkles className="w-4 h-4 text-[#11C6DE] animate-pulse" /> AI Skill Extractor
           </button>
@@ -364,7 +364,7 @@ const MySkillProfile = () => {
       </div>
 
       {/* Top Stats Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-6 mb-6 sm:mb-10">
         <ProfileStat icon={Layout} label="Total Skills" value={totalSkills} color="cyan" />
         <ProfileStat icon={CheckCircle} label="Validated Skills" value={validatedSkills} color="emerald" />
         <ProfileStat icon={Clock} label="Active Gaps" value={rawGaps.length} color="amber" />
@@ -372,16 +372,16 @@ const MySkillProfile = () => {
       </div>
 
       {/* Charts Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-8 mb-6 sm:mb-10">
         {/* Dynamic Category Radar Chart */}
-        <div className="col-span-1 glass-panel p-8 rounded-[2.5rem]">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-lg font-black text-[#17233E]">Proficiency by Category</h3>
+        <div className="col-span-1 glass-panel p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-[2.5rem]">
+          <div className="flex items-center justify-between mb-4 sm:mb-6">
+            <h3 className="text-base sm:text-lg font-black text-[#17233E]">Proficiency by Category</h3>
             <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full bg-[#1988A3]/10 text-[#1988A3] border border-[#1988A3]/20">
               Live Vectors
             </span>
           </div>
-          <div className="h-[280px]">
+          <div className="h-[240px] sm:h-[280px]">
             <ResponsiveContainer width="100%" height="100%">
               <RadarChart cx="50%" cy="50%" outerRadius="75%" data={radarData}>
                 <PolarGrid stroke="#8A9CB7" strokeOpacity={0.25} />
@@ -393,13 +393,13 @@ const MySkillProfile = () => {
         </div>
 
         {/* Dynamic Readiness Contribution */}
-        <div className="col-span-1 lg:col-span-2 glass-panel p-8 rounded-[2.5rem]">
-          <div className="flex items-center justify-between mb-8">
-            <h3 className="text-lg font-black text-[#17233E]">Readiness Contribution Breakdown</h3>
+        <div className="col-span-1 lg:col-span-2 glass-panel p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-[2.5rem]">
+          <div className="flex items-center justify-between mb-6 sm:mb-8">
+            <h3 className="text-base sm:text-lg font-black text-[#17233E]">Readiness Contribution Breakdown</h3>
             <span className="text-xs font-bold text-[#5A6D89]">Top 3 Core Competencies</span>
           </div>
           {rawSkills.length > 0 ? (
-            <div className="space-y-6">
+            <div className="space-y-4 sm:space-y-6">
               {rawSkills.slice(0, 3).map((s, idx) => {
                 const prof = s.proficiencyLevel || 3.0;
                 const pct = Math.round((prof / 5.0) * 100);
@@ -425,16 +425,16 @@ const MySkillProfile = () => {
       </div>
 
       {/* Skills Inventory Table */}
-      <div className="glass-panel rounded-[2.5rem] overflow-hidden mb-10">
-        <div className="p-6 md:p-8 border-b border-[#8A9CB7]/20 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div className="glass-panel rounded-2xl sm:rounded-[2.5rem] overflow-hidden mb-6 sm:mb-10">
+        <div className="p-4 sm:p-6 md:p-8 border-b border-[#8A9CB7]/20 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
             <h3 className="text-lg md:text-xl font-black text-[#17233E]">My Skills Inventory</h3>
             <p className="text-xs text-[#5A6D89] font-medium mt-0.5">Verified competency telemetry in enterprise catalog</p>
           </div>
-          <div className="flex gap-3 relative">
+          <div className="flex gap-2.5 sm:gap-3 relative w-full sm:w-auto">
             <button 
               onClick={() => setShowFilterPanel(p => !p)}
-              className="flex items-center gap-2 px-4 py-2 bg-[#F0F5FB]/85 border border-[#8A9CB7]/30 rounded-xl text-xs font-bold text-[#17233E] hover:bg-[#1988A3]/10 transition-colors"
+              className="flex-1 sm:flex-initial flex items-center justify-center gap-2 px-3.5 sm:px-4 py-2 bg-[#F0F5FB]/85 border border-[#8A9CB7]/30 rounded-xl text-xs font-bold text-[#17233E] hover:bg-[#1988A3]/10 transition-colors"
             >
               <Filter className="w-3.5 h-3.5 text-[#1988A3]" /> Filter
               {filterCategory !== 'All' && <span className="bg-[#1988A3] text-white text-[9px] font-black px-1.5 py-0.5 rounded-md">{filterCategory}</span>}
@@ -457,7 +457,7 @@ const MySkillProfile = () => {
             )}
             <button 
               onClick={handleExport}
-              className="flex items-center gap-2 px-4 py-2 bg-[#F0F5FB]/85 border border-[#8A9CB7]/30 rounded-xl text-xs font-bold text-[#17233E] hover:bg-[#1988A3]/10 transition-colors"
+              className="flex-1 sm:flex-initial flex items-center justify-center gap-2 px-3.5 sm:px-4 py-2 bg-[#F0F5FB]/85 border border-[#8A9CB7]/30 rounded-xl text-xs font-bold text-[#17233E] hover:bg-[#1988A3]/10 transition-colors"
             >
               <Download className="w-3.5 h-3.5 text-[#1988A3]" /> Export CSV
             </button>
@@ -466,16 +466,16 @@ const MySkillProfile = () => {
 
         {filteredSkills.length > 0 ? (
           <div className="max-h-[440px] overflow-y-auto overflow-x-auto scrollbar-thin scrollbar-thumb-[#8A9CB7]/30 scrollbar-track-transparent">
-            <table className="w-full text-left border-collapse">
+            <table className="min-w-[680px] w-full text-left border-collapse">
               <thead className="bg-[#17233E]/5 border-b border-[#8A9CB7]/20 text-[#5A6D89] text-[10px] font-black uppercase tracking-widest sticky top-0 z-20 backdrop-blur-md">
                 <tr>
-                  <th className="px-8 py-4">Skill Name</th>
-                  <th className="px-8 py-4">Category</th>
-                  <th className="px-8 py-4">Proficiency</th>
-                  <th className="px-8 py-4">Status</th>
-                  <th className="px-8 py-4">Readiness %</th>
-                  <th className="px-8 py-4">Last Updated</th>
-                  <th className="px-8 py-4 text-right">Actions</th>
+                  <th className="px-5 sm:px-8 py-3.5 sm:py-4">Skill Name</th>
+                  <th className="px-5 sm:px-8 py-3.5 sm:py-4">Category</th>
+                  <th className="px-5 sm:px-8 py-3.5 sm:py-4">Proficiency</th>
+                  <th className="px-5 sm:px-8 py-3.5 sm:py-4">Status</th>
+                  <th className="px-5 sm:px-8 py-3.5 sm:py-4">Readiness %</th>
+                  <th className="px-5 sm:px-8 py-3.5 sm:py-4">Last Updated</th>
+                  <th className="px-5 sm:px-8 py-3.5 sm:py-4 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#8A9CB7]/15">
@@ -488,24 +488,24 @@ const MySkillProfile = () => {
 
                   return (
                     <tr key={us.id || idx} className="hover:bg-[#E4EEF8]/60 transition-colors text-sm relative">
-                      <td className="px-8 py-5 flex items-center gap-3">
-                        <div className={`w-2.5 h-2.5 rounded-full ${prof >= 4.0 ? 'bg-[#1988A3]' : prof >= 2.5 ? 'bg-[#11C6DE]' : 'bg-amber-400'}`}></div>
+                      <td className="px-5 sm:px-8 py-4 sm:py-5 flex items-center gap-3">
+                        <div className={`w-2.5 h-2.5 rounded-full shrink-0 ${prof >= 4.0 ? 'bg-[#1988A3]' : prof >= 2.5 ? 'bg-[#11C6DE]' : 'bg-amber-400'}`}></div>
                         <span className="font-bold text-[#17233E]">{skillName}</span>
                       </td>
-                      <td className="px-8 py-5 text-[#5A6D89] font-medium text-xs">{catName}</td>
-                      <td className="px-8 py-5">
+                      <td className="px-5 sm:px-8 py-4 sm:py-5 text-[#5A6D89] font-medium text-xs">{catName}</td>
+                      <td className="px-5 sm:px-8 py-4 sm:py-5">
                         <span className="bg-[#17233E]/5 text-[#17233E] px-3 py-1 rounded-lg font-bold text-[11px]">{levelLabel} ({prof})</span>
                       </td>
-                      <td className="px-8 py-5">
+                      <td className="px-5 sm:px-8 py-4 sm:py-5">
                         <span className={`px-3 py-1 rounded-lg font-black text-[10px] uppercase tracking-wider ${
                           statusLabel === 'Validated' ? 'bg-[#1988A3]/15 text-[#1988A3] border border-[#1988A3]/30' : 'bg-[#8A9CB7]/15 text-[#5A6D89]'
                         }`}>
                           {statusLabel}
                         </span>
                       </td>
-                      <td className="px-8 py-5 font-black text-[#17233E]">{Math.round(prof * 20)}%</td>
-                      <td className="px-8 py-5 text-[#8A9CB7] font-medium text-xs">{us.lastAssessedAt ? new Date(us.lastAssessedAt).toLocaleDateString() : 'Active'}</td>
-                      <td className="px-8 py-5 text-right relative">
+                      <td className="px-5 sm:px-8 py-4 sm:py-5 font-black text-[#17233E]">{Math.round(prof * 20)}%</td>
+                      <td className="px-5 sm:px-8 py-4 sm:py-5 text-[#8A9CB7] font-medium text-xs">{us.lastAssessedAt ? new Date(us.lastAssessedAt).toLocaleDateString() : 'Active'}</td>
+                      <td className="px-5 sm:px-8 py-4 sm:py-5 text-right relative">
                         <div className="relative inline-block text-left">
                           <button 
                             onClick={() => setActiveMenuId(activeMenuId === us.id ? null : us.id)}
@@ -700,11 +700,11 @@ const MySkillProfile = () => {
 
       {/* AI SKILL EXTRACTOR MODAL */}
       {showAiExtractor && (
-        <div className="fixed inset-0 z-50 bg-[#17233E]/50 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-[#D8EBF9]/95 backdrop-blur-2xl rounded-3xl max-w-2xl w-full p-8 shadow-2xl border border-white/80 relative">
+        <div className="fixed inset-0 z-50 bg-[#17233E]/50 backdrop-blur-md flex items-center justify-center p-3.5 sm:p-4">
+          <div className="bg-[#D8EBF9]/95 backdrop-blur-2xl rounded-2xl sm:rounded-3xl max-w-2xl w-full p-4 sm:p-8 shadow-2xl border border-white/80 relative max-h-[90vh] overflow-y-auto">
             <button
               onClick={() => { setShowAiExtractor(false); setAiExtractErrorMsg(''); setAiExtractSuccessMsg(''); }}
-              className="absolute top-6 right-6 text-[#8A9CB7] hover:text-[#17233E] p-2 rounded-full hover:bg-slate-100"
+              className="absolute top-4 sm:top-6 right-4 sm:right-6 text-[#8A9CB7] hover:text-[#17233E] p-2 rounded-full hover:bg-slate-100"
             >
               <X className="w-5 h-5" />
             </button>
@@ -824,13 +824,13 @@ const ProfileStat = ({ icon: Icon, label, value, color }) => {
     navy: 'text-[#17233E] bg-[#17233E]/10 border border-[#17233E]/20'
   };
   return (
-    <div className="glass-panel p-6 rounded-[2rem] flex items-center gap-5">
-      <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${colors[color]}`}>
-        <Icon className="w-6 h-6" />
+    <div className="glass-panel p-3.5 sm:p-6 rounded-2xl sm:rounded-[2rem] flex items-center gap-3 sm:gap-5">
+      <div className={`w-10 h-10 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl flex items-center justify-center shrink-0 ${colors[color]}`}>
+        <Icon className="w-5 h-5 sm:w-6 sm:h-6" />
       </div>
-      <div>
-        <p className="text-[#5A6D89] text-[10px] font-black uppercase tracking-widest mb-1">{label}</p>
-        <h3 className="text-2xl md:text-3xl font-black text-[#17233E]">{value}</h3>
+      <div className="min-w-0">
+        <p className="text-[#5A6D89] text-[9px] sm:text-[10px] font-black uppercase tracking-wider sm:tracking-widest mb-0.5 sm:mb-1 truncate">{label}</p>
+        <h3 className="text-xl sm:text-2xl md:text-3xl font-black text-[#17233E] truncate">{value}</h3>
       </div>
     </div>
   );

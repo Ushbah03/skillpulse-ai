@@ -418,7 +418,7 @@ const SkillAssessment = () => {
   }
 
   return (
-    <div className="bg-transparent min-h-screen p-6 md:p-10 font-sans">
+    <div className="bg-transparent min-h-screen p-0 pb-12 font-sans">
       
       {/* Toast Notification */}
       {toastMsg && (
@@ -429,33 +429,33 @@ const SkillAssessment = () => {
       )}
 
       {/* Header Section */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-10">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 sm:gap-6 mb-6 sm:mb-10">
         <div>
           <div className="flex items-center gap-2 mb-2">
             <span className="text-[10px] font-black uppercase tracking-wider bg-[#1988A3]/10 text-[#1988A3] px-2.5 py-1 rounded-lg border border-[#1988A3]/25">
               {workspaceName}
             </span>
           </div>
-          <h1 className="text-3xl md:text-4xl font-black text-[#17233E] tracking-tight">Skill Assessment</h1>
-          <p className="text-[#5A6D89] text-sm md:text-base mt-1 font-medium">Validate your skills through structured assessments and practical challenges</p>
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-black text-[#17233E] tracking-tight">Skill Assessment</h1>
+          <p className="text-[#5A6D89] text-xs sm:text-sm md:text-base mt-1 font-medium">Validate your skills through structured assessments and practical challenges</p>
         </div>
         
-        <div className="flex items-center gap-4">
-          <div className="relative">
+        <div className="flex items-center gap-4 w-full md:w-auto">
+          <div className="relative w-full sm:w-auto flex-1 md:flex-initial">
             <Search className="absolute left-4 top-3.5 text-[#8A9CB7] w-4 h-4" />
             <input 
               type="text" 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search assessments..." 
-              className="pl-11 pr-4 py-2.5 bg-[#F0F5FB]/85 backdrop-blur-md border border-[#8A9CB7]/30 rounded-2xl w-60 md:w-72 text-sm text-[#17233E] placeholder:text-[#8A9CB7] focus:outline-none focus:border-[#1988A3] shadow-sm transition-all" 
+              className="pl-11 pr-4 py-2.5 bg-[#F0F5FB]/85 backdrop-blur-md border border-[#8A9CB7]/30 rounded-2xl w-full sm:w-60 md:w-72 text-sm text-[#17233E] placeholder:text-[#8A9CB7] focus:outline-none focus:border-[#1988A3] shadow-sm transition-all" 
             />
           </div>
         </div>
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-6 mb-6 sm:mb-10">
         <AssessmentStat label="Available Assessments" value={filteredAvailable.length} sub="CURATED FOR YOU" color="cyan" />
         <AssessmentStat label="Completed Attempts" value={taken.length} sub={`PASS RATE: ${taken.length > 0 ? Math.round((taken.filter(t => t.score >= 75).length / taken.length) * 100) : 0}%`} color="emerald" />
         <AssessmentStat label="Verified Skills Earned" value={taken.filter(t => t.score >= 75).length} sub="DATABASE VERIFIED" color="amber" />
@@ -463,24 +463,24 @@ const SkillAssessment = () => {
       </div>
 
       {/* Available Skill Assessments Table */}
-      <div className="glass-panel rounded-[2.5rem] overflow-hidden mb-10">
-        <div className="p-6 md:p-8 border-b border-[#8A9CB7]/20 flex justify-between items-center">
+      <div className="glass-panel rounded-2xl sm:rounded-[2.5rem] overflow-hidden mb-6 sm:mb-10">
+        <div className="p-4 sm:p-6 md:p-8 border-b border-[#8A9CB7]/20 flex justify-between items-center">
           <div>
             <h3 className="text-lg md:text-xl font-black text-[#17233E]">Available Skill Assessments</h3>
             <p className="text-xs text-[#5A6D89] font-medium mt-0.5">Test competencies with adaptive questions and AI generation</p>
           </div>
         </div>
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
+        <div className="overflow-x-auto no-scrollbar">
+          <table className="min-w-[650px] w-full text-left border-collapse">
             <thead className="bg-[#17233E]/5 border-b border-[#8A9CB7]/20 text-[#5A6D89] text-[10px] font-black uppercase tracking-widest">
               <tr>
-                <th className="px-8 py-4">Assessment Name</th>
-                <th className="px-8 py-4">Category</th>
-                <th className="px-8 py-4">Type</th>
-                <th className="px-8 py-4">Duration</th>
-                <th className="px-8 py-4">Difficulty</th>
-                <th className="px-8 py-4">Questions</th>
-                <th className="px-8 py-4">Action</th>
+                <th className="px-5 sm:px-8 py-3.5 sm:py-4">Assessment Name</th>
+                <th className="px-5 sm:px-8 py-3.5 sm:py-4">Category</th>
+                <th className="px-5 sm:px-8 py-3.5 sm:py-4">Type</th>
+                <th className="px-5 sm:px-8 py-3.5 sm:py-4">Duration</th>
+                <th className="px-5 sm:px-8 py-3.5 sm:py-4">Difficulty</th>
+                <th className="px-5 sm:px-8 py-3.5 sm:py-4">Questions</th>
+                <th className="px-5 sm:px-8 py-3.5 sm:py-4">Action</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[#8A9CB7]/15">
@@ -505,8 +505,8 @@ const SkillAssessment = () => {
 
       {/* Completed Assessments List */}
       {taken.length > 0 && (
-        <div className="glass-panel p-6 md:p-8 rounded-[2.5rem] mb-10">
-          <div className="flex items-center justify-between mb-6">
+        <div className="glass-panel p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-[2.5rem] mb-6 sm:mb-10">
+          <div className="flex items-center justify-between mb-4 sm:mb-6">
             <h3 className="text-lg md:text-xl font-black text-[#17233E] flex items-center gap-3">
               <Award className="w-5 h-5 text-[#1988A3]" /> Completed Attempts History
             </h3>
@@ -515,7 +515,7 @@ const SkillAssessment = () => {
             </span>
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-3 sm:space-y-4">
             {taken.map((t) => {
               const difficulty = t.resultsJson?.difficulty || (t.score >= 80 ? 'ADVANCED' : 'INTERMEDIATE');
               const isPassed = t.score >= 75;
@@ -524,24 +524,24 @@ const SkillAssessment = () => {
               return (
                 <div 
                   key={t.id} 
-                  className="p-5 bg-[#F0F5FB]/85 backdrop-blur-md rounded-2xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border border-[#8A9CB7]/25 hover:border-[#1988A3]/40 hover:shadow-md transition-all group"
+                  className="p-4 sm:p-5 bg-[#F0F5FB]/85 backdrop-blur-md rounded-2xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3.5 sm:gap-4 border border-[#8A9CB7]/25 hover:border-[#1988A3]/40 hover:shadow-md transition-all group"
                 >
-                  <div className="flex items-center gap-4">
-                    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center font-black text-sm shrink-0 border ${
+                  <div className="flex items-center gap-3.5 sm:gap-4">
+                    <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl flex items-center justify-center font-black text-sm shrink-0 border ${
                       isPassed ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : 'bg-rose-500/10 text-rose-600 border-rose-500/20'
                     }`}>
-                      {isPassed ? <Award className="w-6 h-6" /> : <AlertCircle className="w-6 h-6" />}
+                      {isPassed ? <Award className="w-5 h-5 sm:w-6 sm:h-6" /> : <AlertCircle className="w-5 h-5 sm:w-6 sm:h-6" />}
                     </div>
 
                     <div>
-                      <div className="flex items-center gap-2.5 mb-1 flex-wrap">
-                        <h4 className="font-black text-[#17233E] text-base group-hover:text-[#1988A3] transition-colors">
+                      <div className="flex items-center gap-2 mb-1 flex-wrap">
+                        <h4 className="font-black text-[#17233E] text-sm sm:text-base group-hover:text-[#1988A3] transition-colors">
                           {t.title}
                         </h4>
-                        <span className="text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full bg-[#17233E]/5 text-[#5A6D89] border border-[#8A9CB7]/20">
+                        <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded-full bg-[#17233E]/5 text-[#5A6D89] border border-[#8A9CB7]/20">
                           {t.category}
                         </span>
-                        <span className={`text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full border ${diffBadgeStyle}`}>
+                        <span className={`text-[10px] font-black uppercase px-2 py-0.5 rounded-full border ${diffBadgeStyle}`}>
                           ★ {difficulty}
                         </span>
                       </div>
@@ -549,7 +549,7 @@ const SkillAssessment = () => {
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-6 self-end sm:self-auto">
+                  <div className="flex items-center gap-4 sm:gap-6 self-end sm:self-auto">
                     <div className="text-right hidden sm:block">
                       <p className="text-[10px] font-black text-[#8A9CB7] uppercase tracking-widest">Correct Answers</p>
                       <p className="text-xs font-bold text-[#17233E]">{t.correctAnswers} / {t.totalQuestions}</p>
@@ -562,7 +562,7 @@ const SkillAssessment = () => {
                       </span>
                     </div>
 
-                    <span className={`px-3.5 py-1.5 rounded-xl text-xs font-black uppercase tracking-wider border ${
+                    <span className={`px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-xl text-[10px] sm:text-xs font-black uppercase tracking-wider border ${
                       isPassed ? 'bg-emerald-500/10 text-emerald-700 border-emerald-500/20' : 'bg-rose-500/10 text-rose-700 border-rose-500/20'
                     }`}>
                       {isPassed ? 'PASSED' : 'GAP CREATED'}
@@ -604,11 +604,11 @@ const SkillAssessment = () => {
 
       {/* Real Interactive Assessment Modal */}
       {activeTest && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#17233E]/70 backdrop-blur-md p-6 overflow-y-auto">
-          <div className="bg-[#D8EBF9]/95 backdrop-blur-2xl rounded-[2.5rem] shadow-2xl w-full max-w-3xl overflow-hidden border border-white/80">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#17233E]/70 backdrop-blur-md p-3.5 sm:p-6 overflow-y-auto">
+          <div className="bg-[#D8EBF9]/95 backdrop-blur-2xl rounded-2xl sm:rounded-[2.5rem] shadow-2xl w-full max-w-3xl overflow-hidden border border-white/80 max-h-[92vh] overflow-y-auto">
             
             {/* Modal Header */}
-            <div className="bg-gradient-to-r from-[#17233E] via-[#1B3154] to-[#121E33] p-8 text-white flex justify-between items-center relative">
+            <div className="bg-gradient-to-r from-[#17233E] via-[#1B3154] to-[#121E33] p-4 sm:p-8 text-white flex justify-between items-start sm:items-center relative gap-3">
               <div>
                 <div className="flex items-center gap-2 mb-2">
                   <span className="bg-[#1988A3] text-white text-[10px] font-black px-2.5 py-0.5 rounded uppercase tracking-wider">
@@ -616,17 +616,17 @@ const SkillAssessment = () => {
                   </span>
                   <span className="text-xs font-bold text-[#8A9CB7]">• {activeTest.difficulty}</span>
                 </div>
-                <h2 className="text-2xl font-black">{activeTest.title}</h2>
+                <h2 className="text-xl sm:text-2xl font-black">{activeTest.title}</h2>
               </div>
 
               {!testResult && (
-                <div className="flex items-center gap-6">
-                  <div className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-xl text-sm font-bold text-[#11C6DE] border border-white/10">
+                <div className="flex items-center gap-3 sm:gap-6">
+                  <div className="flex items-center gap-1.5 sm:gap-2 bg-white/10 px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-bold text-[#11C6DE] border border-white/10">
                     <Clock className="w-4 h-4" />
                     <span>{Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, '0')}</span>
                   </div>
-                  <button onClick={() => setActiveTest(null)} className="text-[#8A9CB7] hover:text-white transition-colors">
-                    <X className="w-6 h-6" />
+                  <button onClick={() => setActiveTest(null)} className="text-[#8A9CB7] hover:text-white transition-colors p-1">
+                    <X className="w-5 h-5 sm:w-6 sm:h-6" />
                   </button>
                 </div>
               )}
@@ -634,13 +634,13 @@ const SkillAssessment = () => {
 
             {/* Modal Body */}
             {!testResult ? (
-              <div className="p-8">
+              <div className="p-4 sm:p-8">
                 {/* Stepper Progress */}
-                <div className="flex justify-between items-center mb-6">
-                  <span className="text-xs font-black uppercase text-[#8A9CB7] tracking-widest">
+                <div className="flex justify-between items-center mb-4 sm:mb-6">
+                  <span className="text-[11px] sm:text-xs font-black uppercase text-[#8A9CB7] tracking-wider sm:tracking-widest">
                     Question {currentQIndex + 1} of {activeTest.questions.length}
                   </span>
-                  <div className="w-48 h-2 bg-[#17233E]/10 rounded-full overflow-hidden">
+                  <div className="w-32 sm:w-48 h-2 bg-[#17233E]/10 rounded-full overflow-hidden">
                     <div 
                       className="h-full bg-gradient-to-r from-[#1988A3] to-[#11C6DE] transition-all duration-300 rounded-full"
                       style={{ width: `${((currentQIndex + 1) / activeTest.questions.length) * 100}%` }}
@@ -652,18 +652,18 @@ const SkillAssessment = () => {
                 {activeTest.questions[currentQIndex] && (
                   <div>
                     {validationError && (
-                      <div className="mb-6 bg-amber-500/10 border border-amber-500/30 text-amber-700 px-4 py-3 rounded-2xl text-xs font-bold flex items-center gap-2.5">
+                      <div className="mb-4 sm:mb-6 bg-amber-500/10 border border-amber-500/30 text-amber-700 px-4 py-3 rounded-2xl text-xs font-bold flex items-center gap-2.5">
                         <AlertCircle className="w-4.5 h-4.5 shrink-0 text-amber-600" />
                         <span>{validationError}</span>
                       </div>
                     )}
 
-                    <h3 className="text-lg font-bold text-[#17233E] mb-6 leading-relaxed">
+                    <h3 className="text-base sm:text-lg font-bold text-[#17233E] mb-4 sm:mb-6 leading-relaxed">
                       {activeTest.questions[currentQIndex].question}
                     </h3>
 
                     {/* Options Grid */}
-                    <div className="space-y-3 mb-8">
+                    <div className="space-y-2.5 sm:space-y-3 mb-6 sm:mb-8">
                       {activeTest.questions[currentQIndex].options.map((opt, idx) => {
                         const qId = activeTest.questions[currentQIndex].id;
                         const isSelected = userAnswers[qId] === idx;
@@ -671,21 +671,21 @@ const SkillAssessment = () => {
                           <button
                             key={idx}
                             onClick={() => handleSelectOption(qId, idx)}
-                            className={`w-full text-left p-4 rounded-2xl border text-sm font-bold transition-all flex items-center justify-between ${
+                            className={`w-full text-left p-3.5 sm:p-4 rounded-xl sm:rounded-2xl border text-xs sm:text-sm font-bold transition-all flex items-center justify-between ${
                               isSelected 
                                 ? 'bg-[#1988A3]/10 border-[#1988A3] text-[#17233E] shadow-sm' 
                                 : 'bg-white border-[#8A9CB7]/30 text-[#17233E] hover:bg-[#E4EEF8]/80 hover:border-[#1988A3]/40'
                             }`}
                           >
-                            <span className="flex items-center gap-3">
-                              <span className={`w-7 h-7 rounded-xl text-xs font-black flex items-center justify-center border ${
+                            <span className="flex items-center gap-2.5 sm:gap-3">
+                              <span className={`w-6 h-6 sm:w-7 sm:h-7 rounded-lg sm:rounded-xl text-xs font-black flex items-center justify-center border shrink-0 ${
                                 isSelected ? 'bg-[#1988A3] text-white border-[#1988A3]' : 'bg-[#17233E]/5 text-[#5A6D89] border-[#8A9CB7]/30'
                               }`}>
                                 {String.fromCharCode(65 + idx)}
                               </span>
-                              {opt}
+                              <span>{opt}</span>
                             </span>
-                            {isSelected && <Check className="w-5 h-5 text-[#1988A3]" />}
+                            {isSelected && <Check className="w-4 h-4 sm:w-5 sm:h-5 text-[#1988A3] shrink-0" />}
                           </button>
                         );
                       })}
@@ -699,7 +699,7 @@ const SkillAssessment = () => {
                           setValidationError('');
                           setCurrentQIndex(prev => prev - 1);
                         }}
-                        className="px-6 py-2.5 border border-[#8A9CB7]/30 rounded-xl text-xs font-bold text-[#5A6D89] hover:bg-[#1988A3]/10 disabled:opacity-40 transition-colors"
+                        className="px-4 sm:px-6 py-2.5 border border-[#8A9CB7]/30 rounded-xl text-xs font-bold text-[#5A6D89] hover:bg-[#1988A3]/10 disabled:opacity-40 transition-colors"
                       >
                         Previous
                       </button>
@@ -707,7 +707,7 @@ const SkillAssessment = () => {
                       {currentQIndex < activeTest.questions.length - 1 ? (
                         <button
                           onClick={handleNextQuestion}
-                          className="px-6 py-2.5 bg-[#17233E] text-white rounded-xl text-xs font-bold hover:bg-[#1988A3] transition-colors shadow-md"
+                          className="px-5 sm:px-6 py-2.5 bg-[#17233E] text-white rounded-xl text-xs font-bold hover:bg-[#1988A3] transition-colors shadow-md"
                         >
                           Next Question
                         </button>
@@ -715,7 +715,7 @@ const SkillAssessment = () => {
                         <button
                           onClick={handleValidateAndSubmit}
                           disabled={submittingId === activeTest.id}
-                          className="px-8 py-2.5 bg-gradient-to-r from-[#1988A3] to-[#11C6DE] text-[#17233E] rounded-xl text-xs font-black uppercase tracking-wider hover:brightness-110 transition-colors flex items-center gap-2 shadow-lg shadow-[#1988A3]/25"
+                          className="px-6 sm:px-8 py-2.5 bg-gradient-to-r from-[#1988A3] to-[#11C6DE] text-[#17233E] rounded-xl text-xs font-black uppercase tracking-wider hover:brightness-110 transition-colors flex items-center gap-2 shadow-lg shadow-[#1988A3]/25"
                         >
                           {submittingId && <Loader2 className="w-4 h-4 animate-spin" />}
                           Submit Exam
@@ -727,36 +727,36 @@ const SkillAssessment = () => {
               </div>
             ) : (
               /* Test Results View */
-              <div className="p-10 text-center">
-                <div className={`w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 shadow-xl ${
+              <div className="p-6 sm:p-10 text-center">
+                <div className={`w-16 h-16 sm:w-20 sm:h-20 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6 shadow-xl ${
                   testResult.passed ? 'bg-emerald-500/10 text-emerald-600' : 'bg-rose-500/10 text-rose-600'
                 }`}>
-                  {testResult.passed ? <CheckCircle2 className="w-10 h-10" /> : <AlertCircle className="w-10 h-10" />}
+                  {testResult.passed ? <CheckCircle2 className="w-8 h-8 sm:w-10 sm:h-10" /> : <AlertCircle className="w-8 h-8 sm:w-10 sm:h-10" />}
                 </div>
 
-                <h3 className="text-2xl font-black text-[#17233E] mb-2">
+                <h3 className="text-xl sm:text-2xl font-black text-[#17233E] mb-2">
                   {testResult.passed ? 'Assessment Passed! 🎉' : 'Assessment Completed (Gap Recorded)'}
                 </h3>
                 
-                <p className="text-[#5A6D89] text-sm mb-6 max-w-md mx-auto leading-relaxed">
+                <p className="text-[#5A6D89] text-xs sm:text-sm mb-6 max-w-md mx-auto leading-relaxed">
                   {testResult.message}
                 </p>
 
-                <div className="bg-[#17233E]/5 p-6 rounded-2xl max-w-sm mx-auto mb-8 border border-[#8A9CB7]/25 flex justify-around items-center">
+                <div className="bg-[#17233E]/5 p-4 sm:p-6 rounded-2xl max-w-sm mx-auto mb-6 sm:mb-8 border border-[#8A9CB7]/25 flex justify-around items-center">
                   <div>
                     <p className="text-[10px] font-black text-[#8A9CB7] uppercase tracking-widest">Final Score</p>
-                    <p className={`text-3xl font-black ${testResult.passed ? 'text-emerald-600' : 'text-rose-500'}`}>{testResult.score}%</p>
+                    <p className={`text-2xl sm:text-3xl font-black ${testResult.passed ? 'text-emerald-600' : 'text-rose-500'}`}>{testResult.score}%</p>
                   </div>
                   <div className="h-8 w-px bg-[#8A9CB7]/30" />
                   <div>
                     <p className="text-[10px] font-black text-[#8A9CB7] uppercase tracking-widest">Correct Answers</p>
-                    <p className="text-3xl font-black text-[#17233E]">{testResult.correct} / {testResult.total}</p>
+                    <p className="text-2xl sm:text-3xl font-black text-[#17233E]">{testResult.correct} / {testResult.total}</p>
                   </div>
                 </div>
 
                 <button
                   onClick={() => setActiveTest(null)}
-                  className="bg-[#17233E] hover:bg-[#1988A3] text-white px-8 py-3 rounded-2xl font-bold text-xs uppercase tracking-wider transition-all shadow-lg"
+                  className="bg-[#17233E] hover:bg-[#1988A3] text-white px-6 sm:px-8 py-3 rounded-2xl font-bold text-xs uppercase tracking-wider transition-all shadow-lg"
                 >
                   Return to Assessments Dashboard
                 </button>
@@ -781,10 +781,10 @@ const AssessmentStat = ({ label, value, sub, color }) => {
     navy: 'text-[#17233E] bg-[#17233E]/10 border border-[#17233E]/20'
   };
   return (
-    <div className="glass-panel p-6 rounded-[2rem]">
-      <p className="text-[#5A6D89] text-xs font-bold mb-3">{label}</p>
-      <h3 className="text-3xl font-black text-[#17233E] mb-3 tracking-tight">{value}</h3>
-      <span className={`${themes[color]} px-3 py-1 rounded-lg text-[9px] font-black tracking-widest inline-block`}>
+    <div className="glass-panel p-3.5 sm:p-6 rounded-2xl sm:rounded-[2rem] flex flex-col justify-between">
+      <p className="text-[#5A6D89] text-[10px] sm:text-xs font-bold mb-1.5 sm:mb-3 truncate">{label}</p>
+      <h3 className="text-xl sm:text-3xl font-black text-[#17233E] mb-1.5 sm:mb-3 tracking-tight truncate">{value}</h3>
+      <span className={`${themes[color]} px-2 sm:px-3 py-0.5 sm:py-1 rounded-lg text-[8px] sm:text-[9px] font-black tracking-wider sm:tracking-widest inline-block truncate max-w-full`}>
         {sub}
       </span>
     </div>
