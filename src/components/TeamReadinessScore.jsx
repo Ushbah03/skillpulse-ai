@@ -276,10 +276,10 @@ export default function TeamReadinessScore() {
         </div>
 
         {/* Chart Matrices Layout */}
-        <div className="grid grid-cols-12 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-8">
           
           {/* Vector Map Chart */}
-          <div className="col-span-5 bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-col justify-between">
+          <div className="col-span-1 lg:col-span-5 bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-col justify-between">
             <div>
               <h3 className="text-xl font-bold text-slate-900 tracking-tight">Capability Vector Mapping</h3>
               <p className="text-xs text-slate-400 font-semibold mt-1">Required vs Current core competency vectors</p>
@@ -298,7 +298,7 @@ export default function TeamReadinessScore() {
           </div>
 
           {/* Timeline Line Chart */}
-          <div className="col-span-7 bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-col justify-between">
+          <div className="col-span-1 lg:col-span-7 bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-col justify-between">
             <div className="flex justify-between items-start">
               <div>
                 <h3 className="text-xl font-bold text-slate-900 tracking-tight">Readiness Index Velocity</h3>
@@ -332,17 +332,17 @@ export default function TeamReadinessScore() {
         </div>
 
         {/* Table + Sidebar Breakdown */}
-        <div className="grid grid-cols-12 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-8">
           
           {/* Individual Member Readiness Table */}
-          <div className="col-span-8 bg-white rounded-2xl sm:rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden">
+          <div className="col-span-1 lg:col-span-8 bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-2xl sm:rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 overflow-hidden">
             <div className="p-6 border-b border-slate-50">
               <h3 className="text-xl font-bold text-slate-900 tracking-tight">Individual Member Readiness Breakdown</h3>
               <p className="text-xs text-slate-400 font-semibold mt-0.5">Target project compliance analysis mapping per engineer</p>
             </div>
 
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-[560px] text-left border-collapse">
+            <div className="overflow-x-auto no-scrollbar">
+              <table className="w-full min-w-[640px] text-left border-collapse">
                 <thead>
                   <tr className="border-b border-white/60 bg-white/40 backdrop-blur-xs text-xs font-black tracking-widest text-[#8A9CB7] uppercase">
                     <th className="py-4 px-6">Team Member</th>
@@ -408,7 +408,7 @@ export default function TeamReadinessScore() {
           </div>
 
           {/* Right Action Side Intelligence panel */}
-          <div className="col-span-4 flex flex-col justify-between h-full space-y-6">
+          <div className="col-span-1 lg:col-span-4 flex flex-col justify-between h-full space-y-4 sm:space-y-6">
             
             {/* Real-time Validation Risks */}
             <div className="bg-white rounded-2xl sm:rounded-[2rem] border border-slate-100 p-4 sm:p-6 shadow-sm">

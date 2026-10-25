@@ -420,7 +420,7 @@ export default function SkillGapAnalysis() {
             </div>
           </div>
 
-          <div className="grid grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             <AIIntelligenceCard 
               type="CRITICAL WARNING"
               typeColor="bg-rose-50 text-rose-600 border-rose-100"
@@ -784,7 +784,7 @@ const AnalysisRow = ({ data, onAssign }) => {
 };
 
 const AIIntelligenceCard = ({ type, typeColor, confidence, title, description, actionText, onAction }) => (
-  <div className="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm space-y-4 flex flex-col justify-between">
+  <div className="bg-[#E4EEF8]/70 backdrop-blur-md rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-white/85 shadow-sm space-y-3 sm:space-y-4 flex flex-col justify-between hover:border-[#1988A3]/50 transition-all">
     <div>
       <div className="flex justify-between items-center mb-3">
         <span className={`text-[10px] font-black tracking-wider px-2 py-0.5 border rounded-md uppercase ${typeColor}`}>
@@ -794,8 +794,8 @@ const AIIntelligenceCard = ({ type, typeColor, confidence, title, description, a
           <Sparkles size={12} className="text-blue-500" /> {confidence} Conf.
         </span>
       </div>
-      <h4 className="text-lg font-black text-slate-900 tracking-tight">{title}</h4>
-      <p className="text-sm text-slate-500 font-semibold leading-relaxed mt-2">{description}</p>
+      <h4 className="text-base sm:text-lg font-black text-[#17233E] tracking-tight leading-snug">{title}</h4>
+      <p className="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed mt-2">{description}</p>
     </div>
     
     <button 
