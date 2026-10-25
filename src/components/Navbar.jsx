@@ -141,22 +141,40 @@ const Navbar = () => {
             </div>
 
             {/* In-Menu Responsive Side-by-side Auth Buttons */}
-            <div className="flex flex-row gap-3 mt-3 px-2">
-              <Link 
-                to="/login" 
-                onClick={() => setIsOpen(false)}
-                className="flex-1 text-center py-2.5 rounded-full text-xs font-bold text-white border border-white/20 bg-white/10 hover:bg-white/20 transition-all shadow-sm backdrop-blur-md"
-              >
-                Login
-              </Link>
-              <Link 
-                to="/signup" 
-                onClick={() => setIsOpen(false)}
-                className="flex-1 text-center py-2.5 rounded-full text-xs font-bold text-white bg-[#1988A3] hover:bg-[#157289] transition shadow-md shadow-[#1988A3]/25"
-              >
-                Sign Up
-              </Link>
-            </div>
+            {currentUser ? (
+              <div className="flex flex-row gap-3 mt-3 px-2">
+                <Link 
+                  to={dashboardPath}
+                  onClick={() => setIsOpen(false)}
+                  className="flex-1 text-center py-2.5 rounded-full text-xs font-bold text-white bg-[#1988A3] hover:bg-[#157289] transition shadow-md shadow-[#1988A3]/25"
+                >
+                  Dashboard
+                </Link>
+                <button 
+                  onClick={() => { setIsOpen(false); handleLogout(); }}
+                  className="flex-1 text-center py-2.5 rounded-full text-xs font-bold text-[#8A9CB7] border border-white/20 hover:text-white transition-all shadow-sm backdrop-blur-md cursor-pointer"
+                >
+                  Logout
+                </button>
+              </div>
+            ) : (
+              <div className="flex flex-row gap-3 mt-3 px-2">
+                <Link 
+                  to="/login" 
+                  onClick={() => setIsOpen(false)}
+                  className="flex-1 text-center py-2.5 rounded-full text-xs font-bold text-white border border-white/20 bg-white/10 hover:bg-white/20 transition-all shadow-sm backdrop-blur-md"
+                >
+                  Login
+                </Link>
+                <Link 
+                  to="/signup" 
+                  onClick={() => setIsOpen(false)}
+                  className="flex-1 text-center py-2.5 rounded-full text-xs font-bold text-white bg-[#1988A3] hover:bg-[#157289] transition shadow-md shadow-[#1988A3]/25"
+                >
+                  Sign Up
+                </Link>
+              </div>
+            )}
           </motion.div>
         )}
       </AnimatePresence>

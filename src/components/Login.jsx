@@ -249,8 +249,20 @@ const Login = () => {
           initial={{ opacity: 0, y: 50, scale: 0.97 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ duration: 0.8, cubicBezier: [0.16, 1, 0.3, 1] }}
-          className="bg-white/70 backdrop-blur-3xl border border-white/90 rounded-3xl md:rounded-[2.5rem] p-6 sm:p-10 md:p-12 shadow-[0_30px_70px_rgba(23,35,62,0.12),inset_0_1.5px_2px_rgba(255,255,255,1)] w-full max-w-lg mx-auto transition-all duration-300"
+          className="bg-white/70 backdrop-blur-3xl border border-white/90 rounded-3xl md:rounded-[2.5rem] p-5 sm:p-10 md:p-12 shadow-[0_30px_70px_rgba(23,35,62,0.12),inset_0_1.5px_2px_rgba(255,255,255,1)] w-full max-w-lg mx-auto transition-all duration-300"
         >
+          {/* Mobile-Only Brand Header */}
+          <Link to="/" className="lg:hidden flex items-center justify-center gap-2.5 mb-6 group">
+            <div className="w-9 h-9 bg-[#17233E] rounded-xl flex items-center justify-center shadow-md border border-white/40 group-hover:scale-105 transition-all">
+              <svg className="w-5 h-5 text-[#11C6DE]" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+              </svg>
+            </div>
+            <span className="text-xl font-extrabold tracking-tight text-[#17233E]">
+              SkillPulse <span className="text-[#1988A3]">-AI</span>
+            </span>
+          </Link>
+
           <div className="mb-6 sm:mb-8 text-left">
             <h2 className="text-2xl sm:text-3xl font-extrabold mb-1.5 text-[#17233E] tracking-tight">Sign in to your account</h2>
             <p className="text-[#5A6D89] text-xs sm:text-sm font-medium">Enter your credentials to continue</p>

@@ -147,17 +147,17 @@ export default function CheckoutPage() {
   return (
     <div className="min-h-screen bg-[#0B1120] text-slate-100 flex flex-col justify-between font-sans">
       {/* Top Brand Header */}
-      <header className="border-b border-slate-800 bg-[#0F172A]/80 backdrop-blur-md px-6 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="bg-indigo-600/30 p-2 rounded-xl border border-indigo-500/30">
-            <Zap className="h-6 w-6 text-indigo-400 fill-indigo-400" />
+      <header className="border-b border-slate-800 bg-[#0F172A]/80 backdrop-blur-md px-4 sm:px-6 py-4 flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2.5 sm:gap-3">
+          <div className="bg-indigo-600/30 p-1.5 sm:p-2 rounded-xl border border-indigo-500/30">
+            <Zap className="h-5 w-5 sm:h-6 sm:w-6 text-indigo-400 fill-indigo-400" />
           </div>
-          <span className="text-xl font-bold bg-gradient-to-r from-white via-slate-200 to-indigo-300 bg-clip-text text-transparent">
+          <span className="text-lg sm:text-xl font-bold bg-gradient-to-r from-white via-slate-200 to-indigo-300 bg-clip-text text-transparent">
             SkillPulse AI
           </span>
         </div>
-        <div className="flex items-center gap-2 text-xs font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-3 py-1.5 rounded-full">
-          <ShieldCheck className="w-4 h-4" /> 256-Bit Encrypted Secure Checkout
+        <div className="flex items-center gap-1.5 sm:gap-2 text-[11px] sm:text-xs font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2.5 sm:px-3 py-1.5 rounded-full shrink-0">
+          <ShieldCheck className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> <span className="hidden sm:inline">256-Bit Encrypted </span>Secure Checkout
         </div>
       </header>
 

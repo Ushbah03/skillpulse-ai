@@ -35,7 +35,7 @@ const SkillPulseLanding = () => {
 
       {/* 1. HERO SECTION WITH EXECUTIVE FROSTED CONTAINER */}
       <section className="pt-4 sm:pt-8 pb-12 sm:pb-16 px-4 sm:px-6 md:px-10 relative z-10">
-        <div className="max-w-7xl mx-auto rounded-3xl md:rounded-[3.5rem] py-12 sm:py-16 md:py-20 px-6 sm:px-10 md:px-16 overflow-hidden glass-hero-dark text-white relative">
+        <div className="max-w-7xl mx-auto rounded-3xl md:rounded-[3.5rem] py-10 sm:py-16 md:py-20 px-5 sm:px-10 md:px-16 overflow-hidden glass-hero-dark text-white relative">
           <div className="grid lg:grid-cols-2 items-center gap-12 relative z-10">
             <motion.div 
               initial="hidden"
@@ -170,7 +170,7 @@ const SkillPulseLanding = () => {
         </div>
         
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-5">
             {[
               { num: "01", t: "Assess Skills", d: "Baseline evaluations using role-specific taxonomy frameworks." },
               { num: "02", t: "Analyze Gaps", d: "AI-driven mapping against benchmark organizational requirements." },
@@ -245,7 +245,7 @@ const SkillPulseLanding = () => {
 
       {/* 5. INTELLIGENCE SECTION */}
       <section className="py-12 px-4 md:px-10 relative z-10">
-        <div className="max-w-7xl mx-auto rounded-[3rem] py-16 md:py-20 px-8 md:px-16 glass-hero-dark text-white text-left relative overflow-hidden">
+        <div className="max-w-7xl mx-auto rounded-[2rem] sm:rounded-[3rem] py-12 sm:py-16 md:py-20 px-5 sm:px-10 md:px-16 glass-hero-dark text-white text-left relative overflow-hidden">
           <div className="grid lg:grid-cols-2 gap-12 items-center relative z-10">
             <div>
               <h2 className="text-3xl md:text-5xl font-extrabold mb-6 leading-tight tracking-tight text-white">
@@ -306,7 +306,7 @@ const SkillPulseLanding = () => {
 
       {/* 6. CTA SECTION */}
       <section className="py-20 px-4 md:px-10 relative z-10 mb-8">
-        <div className="max-w-5xl mx-auto rounded-[3rem] py-16 px-8 text-center glass-hero-dark text-white relative overflow-hidden">
+        <div className="max-w-5xl mx-auto rounded-[2rem] sm:rounded-[3rem] py-12 sm:py-16 px-5 sm:px-8 text-center glass-hero-dark text-white relative overflow-hidden">
           <h2 className="text-4xl md:text-5xl font-extrabold mb-4 tracking-tight text-white">Transform Workforce Skills with AI</h2>
           <p className="text-[#E9EAF7]/85 text-base md:text-lg mb-10 max-w-2xl mx-auto font-light">
             Join leading enterprise teams building future-ready organizations with isolated, data-driven platforms.

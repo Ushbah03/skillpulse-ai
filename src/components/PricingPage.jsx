@@ -232,8 +232,8 @@ const PricingPage = () => {
             <p className="text-[#5A6D89] text-base max-w-xl mx-auto font-normal">Granular capability breakdown across all deployment tiers.</p>
           </div>
           
-          <div className="overflow-x-auto rounded-3xl glass-panel shadow-xl">
-            <table className="w-full text-left border-collapse">
+          <div className="overflow-x-auto rounded-3xl glass-panel shadow-xl -mx-2 sm:mx-0">
+            <table className="w-full min-w-[580px] text-left border-collapse">
               <thead>
                 <tr className="border-b border-[#8A9CB7]/30 bg-[#E9EAF7]/50">
                   <th className="py-4.5 px-6 font-bold text-[#17233E] text-sm">Capabilities</th>

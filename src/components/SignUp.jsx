@@ -374,6 +374,18 @@ const SignUp = () => {
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
           className="bg-white/70 backdrop-blur-3xl border border-white/90 rounded-3xl md:rounded-[2.5rem] p-5 sm:p-8 md:p-10 shadow-[0_30px_70px_rgba(23,35,62,0.12),inset_0_1.5px_2px_rgba(255,255,255,1)] w-full max-w-lg mx-auto transition-all duration-300"
         >
+          {/* Mobile-Only Brand Header */}
+          <Link to="/" className="lg:hidden flex items-center justify-center gap-2.5 mb-5 group">
+            <div className="w-9 h-9 bg-[#17233E] rounded-xl flex items-center justify-center shadow-md border border-white/40 group-hover:scale-105 transition-all">
+              <svg className="w-5 h-5 text-[#11C6DE]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+              </svg>
+            </div>
+            <span className="text-xl font-extrabold tracking-tight text-[#17233E]">
+              SkillPulse <span className="text-[#1988A3]">-AI</span>
+            </span>
+          </Link>
+
           <div className="mb-5 text-left">
             <h2 className="text-2xl font-extrabold mb-1 tracking-tight text-[#17233E]">
               Create your account
