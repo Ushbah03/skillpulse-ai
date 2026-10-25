@@ -101,7 +101,7 @@ const PricingPage = () => {
       </div>
 
       {/* 1. HERO HEADER */}
-      <section className="relative pt-16 sm:pt-20 pb-12 sm:pb-16 px-6 text-center overflow-hidden z-10">
+      <section className="relative pt-10 sm:pt-20 pb-8 sm:pb-14 px-4 sm:px-6 text-center overflow-hidden z-10">
         <div className="container mx-auto max-w-4xl relative z-10">
           <div className="inline-flex items-center gap-2 bg-[#1988A3]/10 border border-[#1988A3]/25 px-4 py-1.5 rounded-full mb-6 backdrop-blur-md">
             <Sparkles className="w-4 h-4 text-[#1988A3] animate-pulse" />
@@ -110,14 +110,14 @@ const PricingPage = () => {
             </span>
           </div>
 
-          <h1 className="text-3xl md:text-5xl font-extrabold mb-4 tracking-tight leading-tight text-[#17233E]">
+          <h1 className="text-2xl sm:text-4xl md:text-5xl font-extrabold mb-3 tracking-tight leading-tight text-[#17233E]">
             Predictable Plans for Every <br />
             <span className="bg-gradient-to-r from-[#17233E] via-[#1B3154] to-[#1988A3] bg-clip-text text-transparent">
               Stage of Growth
             </span>
           </h1>
 
-          <p className="text-[#5A6D89] text-base md:text-lg max-w-2xl mx-auto font-normal leading-relaxed mb-10">
+          <p className="text-[#5A6D89] text-xs sm:text-base md:text-lg max-w-xl mx-auto font-normal leading-relaxed mb-6 sm:mb-10">
             Scale workforce skill intelligence, gap detection, and AI recommendations with complete multi-tenant governance.
           </p>
 
@@ -126,7 +126,7 @@ const PricingPage = () => {
             <button
               type="button"
               onClick={() => setIsYearly(false)}
-              className={`px-6 py-2.5 rounded-full text-xs font-bold transition-all duration-300 cursor-pointer ${
+              className={`px-4 sm:px-6 py-2 sm:py-2.5 rounded-full text-[11px] sm:text-xs font-bold transition-all duration-300 cursor-pointer ${
                 !isYearly 
                   ? 'bg-[#17233E] text-white shadow-md shadow-[#17233E]/20' 
                   : 'text-[#5A6D89] hover:text-[#17233E]'
@@ -137,7 +137,7 @@ const PricingPage = () => {
             <button
               type="button"
               onClick={() => setIsYearly(true)}
-              className={`px-6 py-2.5 rounded-full text-xs font-bold transition-all duration-300 flex items-center gap-2 cursor-pointer ${
+              className={`px-4 sm:px-6 py-2 sm:py-2.5 rounded-full text-[11px] sm:text-xs font-bold transition-all duration-300 flex items-center gap-2 cursor-pointer ${
                 isYearly 
                   ? 'bg-[#17233E] text-white shadow-md shadow-[#17233E]/20' 
                   : 'text-[#5A6D89] hover:text-[#17233E]'
@@ -159,7 +159,7 @@ const PricingPage = () => {
             {plans.map((plan, i) => (
               <div 
                 key={i} 
-                className={`relative flex flex-col rounded-3xl p-6 sm:p-8 md:p-10 glass-panel transition-all duration-300 ${
+                className={`relative flex flex-col rounded-2xl sm:rounded-3xl p-4 sm:p-7 md:p-10 glass-panel transition-all duration-300 ${
                   plan.featured 
                     ? 'border-[#1988A3] shadow-[0_20px_50px_rgba(25,136,163,0.18)] ring-2 ring-[#1988A3]/25 bg-white/80' 
                     : 'hover:border-[#1988A3]/40'
@@ -171,7 +171,7 @@ const PricingPage = () => {
                   </span>
                 )}
                 
-                <h3 className="text-2xl md:text-3xl font-extrabold text-[#17233E] mb-2">{plan.name}</h3>
+                <h3 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-[#17233E] mb-1.5">{plan.name}</h3>
                 <p className="text-[#5A6D89] text-xs leading-relaxed mb-6 min-h-[36px] font-normal">{plan.desc}</p>
                 
                 {/* Price Display */}
@@ -183,7 +183,7 @@ const PricingPage = () => {
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: 10 }}
                       transition={{ duration: 0.25 }}
-                      className="text-4xl md:text-5xl font-black text-[#17233E] tracking-tight"
+                      className="text-3xl sm:text-4xl md:text-5xl font-black text-[#17233E] tracking-tight"
                     >
                       {plan.price === "Custom" ? "Custom" : `$${plan.price}`}
                     </motion.span>
@@ -228,11 +228,11 @@ const PricingPage = () => {
             <span className="px-3.5 py-1.5 rounded-full bg-[#1988A3]/10 border border-[#1988A3]/25 text-[#1988A3] text-xs font-mono font-bold uppercase tracking-wider inline-block mb-3.5">
               DETAILED COMPARISON
             </span>
-            <h2 className="text-3xl md:text-5xl font-extrabold text-[#17233E] mb-3">Workspace Feature Matrix</h2>
-            <p className="text-[#5A6D89] text-base max-w-xl mx-auto font-normal">Granular capability breakdown across all deployment tiers.</p>
+            <h2 className="text-xl sm:text-3xl md:text-5xl font-extrabold text-[#17233E] mb-2 sm:mb-3">Workspace Feature Matrix</h2>
+            <p className="text-[#5A6D89] text-xs sm:text-base max-w-xl mx-auto font-normal">Granular capability breakdown across all deployment tiers.</p>
           </div>
           
-          <div className="overflow-x-auto rounded-3xl glass-panel shadow-xl -mx-2 sm:mx-0">
+          <div className="overflow-x-auto rounded-2xl sm:rounded-3xl glass-panel shadow-xl -mx-2 sm:mx-0">
             <table className="w-full min-w-[580px] text-left border-collapse">
               <thead>
                 <tr className="border-b border-[#8A9CB7]/30 bg-[#E9EAF7]/50">
@@ -265,13 +265,13 @@ const PricingPage = () => {
       </section>
 
       {/* 4. FREQUENTLY ASKED QUESTIONS */}
-      <section className="py-16 px-6 md:px-12 relative z-10 mb-12">
-        <div className="text-center mb-10">
-          <span className="px-3.5 py-1.5 rounded-full bg-[#17233E]/10 border border-[#17233E]/20 text-[#17233E] text-xs font-mono font-bold uppercase tracking-wider inline-block mb-3.5">
+      <section className="py-10 sm:py-16 px-4 sm:px-6 md:px-12 relative z-10 mb-8 sm:mb-12">
+        <div className="text-center mb-6 sm:mb-10">
+          <span className="px-3 py-1 rounded-full bg-[#17233E]/10 border border-[#17233E]/20 text-[#17233E] text-[10px] sm:text-xs font-mono font-bold uppercase tracking-wider inline-block mb-2.5 sm:mb-3.5">
             QUESTIONS & ANSWERS
           </span>
-          <h2 className="text-3xl md:text-5xl font-extrabold text-[#17233E] mb-3">Frequently Asked Questions</h2>
-          <p className="text-[#5A6D89] text-base max-w-xl mx-auto font-normal">Key details on multi-tenant billing, security, and scope boundary.</p>
+          <h2 className="text-xl sm:text-3xl md:text-5xl font-extrabold text-[#17233E] mb-2 sm:mb-3">Frequently Asked Questions</h2>
+          <p className="text-[#5A6D89] text-xs sm:text-base max-w-xl mx-auto font-normal">Key details on multi-tenant billing, security, and scope boundary.</p>
         </div>
         
         <div className="container mx-auto max-w-3xl space-y-3.5">
@@ -284,7 +284,7 @@ const PricingPage = () => {
             >
               <div 
                 onClick={() => setOpenIndex(openIndex === i ? null : i)}
-                className="p-5 flex justify-between items-center cursor-pointer select-none"
+                className="p-3.5 sm:p-5 flex justify-between items-center cursor-pointer select-none"
               >
                 <span className={`font-semibold text-sm ${openIndex === i ? 'text-[#1988A3]' : 'text-[#17233E]'}`}>{faq.q}</span>
                 <div className={`w-6 h-6 rounded-full border flex items-center justify-center font-bold text-xs transition-colors ${openIndex === i ? 'border-[#1988A3] bg-[#1988A3] text-white' : 'border-[#8A9CB7]/40 text-[#5A6D89]'}`}>
@@ -300,7 +300,7 @@ const PricingPage = () => {
                     exit={{ height: 0, opacity: 0 }}
                     transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
                   >
-                    <div className="p-5 pt-0 text-[#5A6D89] text-xs leading-relaxed font-normal border-t border-[#8A9CB7]/15">
+                    <div className="p-3.5 sm:p-5 pt-0 text-[#5A6D89] text-xs leading-relaxed font-normal border-t border-[#8A9CB7]/15">
                       {faq.a}
                     </div>
                   </motion.div>

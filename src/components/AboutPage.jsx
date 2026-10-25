@@ -20,7 +20,7 @@ const AboutPage = () => {
       </div>
 
       {/* 1. HERO HEADER */}
-      <section className="relative pt-16 sm:pt-20 pb-16 px-6 overflow-hidden z-10">
+      <section className="relative pt-10 sm:pt-20 pb-10 sm:pb-16 px-4 sm:px-6 overflow-hidden z-10">
         <div className="container mx-auto max-w-6xl relative z-10 grid md:grid-cols-2 gap-12 items-center text-left">
           <div>
             <div className="inline-flex items-center gap-2 bg-[#1988A3]/10 border border-[#1988A3]/25 px-4 py-1.5 rounded-full mb-6 backdrop-blur-md">
@@ -30,13 +30,13 @@ const AboutPage = () => {
               </span>
             </div>
 
-            <h1 className="text-3xl md:text-5xl font-extrabold leading-tight mb-5 tracking-tight text-[#17233E]">
+            <h1 className="text-2xl sm:text-4xl md:text-5xl font-extrabold leading-tight mb-3 sm:mb-5 tracking-tight text-[#17233E]">
               Redefining Workforce <br /> 
               <span className="bg-gradient-to-r from-[#17233E] via-[#1B3154] to-[#1988A3] bg-clip-text text-transparent">
                 Intelligence with AI
               </span>
             </h1>
-            <p className="text-[#5A6D89] text-base mb-5 font-normal leading-relaxed">
+            <p className="text-[#5A6D89] text-xs sm:text-base mb-3 sm:mb-5 font-normal leading-relaxed">
               SkillPulse AI bridges the gap between talent potential and organizational growth using real-time skill analytics and PostgreSQL-backed workforce telemetry.
             </p>
             <p className="text-[#17233E] text-xs border-l-2 border-[#1988A3] pl-4 py-1 font-mono font-medium">
@@ -46,7 +46,7 @@ const AboutPage = () => {
           
           <div className="flex justify-center relative group">
              <div className="absolute -inset-4 bg-[#1988A3]/25 rounded-[2.5rem] blur-2xl opacity-60 pointer-events-none" />
-             <div className="relative z-10 bg-gradient-to-br from-[#17233E]/95 via-[#1B3154]/90 to-[#121E33]/95 backdrop-blur-2xl border border-white/20 rounded-[2.5rem] p-4 sm:p-5 shadow-[0_25px_60px_-15px_rgba(23,35,62,0.35)] overflow-hidden">
+             <div className="relative z-10 bg-gradient-to-br from-[#17233E]/95 via-[#1B3154]/90 to-[#121E33]/95 backdrop-blur-2xl border border-white/20 rounded-2xl sm:rounded-[2.5rem] p-3 sm:p-5 shadow-[0_25px_60px_-15px_rgba(23,35,62,0.35)] overflow-hidden">
                <img 
                  src={aboutImg} 
                  alt="Intelligence Radar Visual" 
@@ -58,16 +58,16 @@ const AboutPage = () => {
       </section>
 
       {/* 2. THE CHALLENGES WE SOLVE */}
-      <section className="py-16 md:py-20 px-6 md:px-12 relative z-10">
+      <section className="py-10 sm:py-16 md:py-20 px-4 sm:px-6 md:px-12 relative z-10">
         <div className="container mx-auto text-center mb-14 max-w-3xl">
           <span className="px-3.5 py-1.5 rounded-full bg-[#17233E]/10 border border-[#17233E]/20 text-[#17233E] text-xs font-mono font-bold uppercase tracking-wider inline-block mb-3.5">
             WORKFORCE DISCONNECTS
           </span>
-          <h2 className="text-3xl md:text-5xl font-extrabold text-[#17233E] mb-3 tracking-tight">The Challenges Modern Organizations Face</h2>
-          <p className="text-[#5A6D89] text-base font-normal">Traditional performance reviews are static and manual. SkillPulse AI makes talent management predictive and continuous.</p>
+          <h2 className="text-xl sm:text-3xl md:text-5xl font-extrabold text-[#17233E] mb-2 sm:mb-3 tracking-tight">The Challenges Modern Organizations Face</h2>
+          <p className="text-[#5A6D89] text-xs sm:text-base font-normal">Traditional performance reviews are static and manual. SkillPulse AI makes talent management predictive and continuous.</p>
         </div>
 
-        <div className="container mx-auto grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl text-left">
+        <div className="container mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-6 max-w-7xl text-left">
           {[
             { title: "Unidentified Skill Gaps", desc: "Organizations struggle to pinpoint exact technical skill deficiencies across departments." },
             { title: "Static Performance Logs", desc: "Legacy tools track historical attendance instead of active skill development and growth." },
@@ -76,12 +76,12 @@ const AboutPage = () => {
           ].map((item, i) => (
             <div 
               key={i} 
-              className="p-7 rounded-3xl glass-panel hover:border-[#1988A3]/40 transition-all duration-300 flex flex-col group shadow-md"
+              className="p-4 sm:p-6 md:p-7 rounded-2xl sm:rounded-3xl glass-panel hover:border-[#1988A3]/40 transition-all duration-300 flex flex-col group shadow-sm"
             >
               <div className="w-11 h-11 bg-[#17233E] text-white rounded-2xl mb-5 group-hover:bg-[#1988A3] transition-colors flex items-center justify-center font-bold font-mono text-sm shadow-md shadow-[#17233E]/20">
                 0{i+1}
               </div>
-              <h3 className="text-lg font-extrabold mb-2 text-[#17233E] group-hover:text-[#1988A3] transition-colors">{item.title}</h3>
+              <h3 className="text-base sm:text-lg font-bold mb-1.5 text-[#17233E] group-hover:text-[#1988A3] transition-colors">{item.title}</h3>
               <p className="text-[#5A6D89] text-xs leading-relaxed font-normal">{item.desc}</p>
             </div>
           ))}
@@ -89,14 +89,14 @@ const AboutPage = () => {
       </section>
 
       {/* 3. OUR INTELLIGENT ARCHITECTURE */}
-      <section className="py-16 md:py-20 px-6 md:px-12 relative z-10">
+      <section className="py-10 sm:py-16 md:py-20 px-4 sm:px-6 md:px-12 relative z-10">
         <div className="container mx-auto max-w-7xl grid md:grid-cols-2 gap-14 items-center text-left">
           <div>
             <span className="px-3.5 py-1.5 rounded-full bg-[#1988A3]/10 border border-[#1988A3]/25 text-[#1988A3] text-xs font-mono font-bold uppercase tracking-wider inline-block mb-3.5">
               PLATFORM ARCHITECTURE
             </span>
-            <h2 className="text-3xl md:text-5xl font-extrabold text-[#17233E] mb-5 tracking-tight">Our Intelligent Approach</h2>
-            <p className="text-[#5A6D89] text-base mb-8 leading-relaxed font-normal">
+            <h2 className="text-xl sm:text-3xl md:text-5xl font-extrabold text-[#17233E] mb-3 sm:mb-5 tracking-tight">Our Intelligent Approach</h2>
+            <p className="text-[#5A6D89] text-xs sm:text-base mb-5 sm:mb-8 leading-relaxed font-normal">
               SkillPulse AI connects live PostgreSQL databases with specialized AI inference engines to provide real-time skill intelligence across all enterprise levels.
             </p>
             
@@ -109,7 +109,7 @@ const AboutPage = () => {
               ].map((item, i) => (
                 <div 
                   key={i} 
-                  className="flex items-start gap-3.5 p-4 glass-panel rounded-2xl"
+                  className="flex items-start gap-3 p-3 sm:p-4 glass-panel rounded-xl sm:rounded-2xl"
                 >
                   <div className="w-5 h-5 rounded-full bg-[#1988A3]/15 border border-[#1988A3]/30 flex items-center justify-center shrink-0 mt-0.5">
                     <CheckCircle2 className="w-3.5 h-3.5 text-[#1988A3]" />
@@ -125,7 +125,7 @@ const AboutPage = () => {
 
           {/* Right Side: Image Framing */}
           <div className="relative pt-4">
-            <div className="relative z-10 glass-panel p-3 rounded-3xl overflow-hidden shadow-2xl">
+            <div className="relative z-10 glass-panel p-2.5 sm:p-3 rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl">
                <img 
                  src={intelligentImg} 
                  alt="SkillPulse AI Platform Overview" 
@@ -134,8 +134,8 @@ const AboutPage = () => {
             </div>
 
             {/* Live Metrics Badge */}
-            <div className="absolute -bottom-5 -left-5 z-20 bg-[#17233E] text-white p-5 rounded-2xl shadow-xl select-none border border-white/20">
-               <div className="text-3xl font-black font-mono text-[#1988A3]">100%</div>
+            <div className="mt-3 sm:mt-0 sm:absolute sm:-bottom-5 sm:-left-5 z-20 bg-[#17233E] text-white p-3.5 sm:p-5 rounded-xl sm:rounded-2xl shadow-xl select-none border border-white/20 text-center sm:text-left">
+               <div className="text-2xl sm:text-3xl font-black font-mono text-[#1988A3]">100%</div>
                <div className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#8A9CB7] mt-0.5">
                  PostgreSQL Telemetry Sync
                </div>
@@ -145,8 +145,8 @@ const AboutPage = () => {
       </section>
 
       {/* 4. IMPACT METRICS BAR */}
-      <section className="py-16 border-t border-b border-[#8A9CB7]/30 bg-white/40 backdrop-blur-md relative z-10">
-        <div className="container mx-auto max-w-7xl grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+      <section className="py-8 sm:py-16 px-4 border-t border-b border-[#8A9CB7]/30 bg-white/40 backdrop-blur-md relative z-10">
+        <div className="container mx-auto max-w-7xl grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6 text-center">
            {[
              { val: "5 Roles", label: "Multi-Tenant Governance" },
              { val: "100%", label: "Live Database Telemetry" },
@@ -155,9 +155,9 @@ const AboutPage = () => {
            ].map((stat, i) => (
              <div 
                key={i} 
-               className="p-6 rounded-2xl glass-panel shadow-sm"
+               className="p-3 sm:p-6 rounded-xl sm:rounded-2xl glass-panel shadow-sm"
              >
-               <div className="text-3xl md:text-4xl font-black text-[#17233E] mb-1 font-mono">
+               <div className="text-xl sm:text-3xl md:text-4xl font-black text-[#17233E] mb-0.5 sm:mb-1 font-mono">
                  {stat.val}
                </div>
                <div className="text-[10px] font-mono font-bold text-[#5A6D89] uppercase tracking-widest">{stat.label}</div>
@@ -167,22 +167,22 @@ const AboutPage = () => {
       </section>
 
       {/* 5. CALL TO ACTION */}
-      <section className="relative text-white py-20 px-6 text-center overflow-hidden z-10 mb-8">
-        <div className="container mx-auto max-w-4xl relative z-10 rounded-[2.5rem] py-16 px-8 glass-hero-dark shadow-2xl">
-          <h2 className="text-3xl md:text-5xl font-extrabold mb-4 tracking-tight leading-tight">Ready to Elevate Your Workforce Intelligence?</h2>
-          <p className="text-[#E9EAF7]/85 text-base mb-8 max-w-xl mx-auto font-light">
+      <section className="relative text-white py-10 sm:py-20 px-4 sm:px-6 text-center overflow-hidden z-10 mb-8">
+        <div className="container mx-auto max-w-4xl relative z-10 rounded-2xl sm:rounded-[2.5rem] py-8 sm:py-16 px-4 sm:px-8 glass-hero-dark shadow-2xl">
+          <h2 className="text-xl sm:text-3xl md:text-5xl font-extrabold mb-3 sm:mb-4 tracking-tight leading-tight">Ready to Elevate Your Workforce Intelligence?</h2>
+          <p className="text-[#E9EAF7]/85 text-xs sm:text-base mb-6 sm:mb-8 max-w-xl mx-auto font-light">
             Discover how SkillPulse AI transforms skills tracking, gap detection, and workforce readiness across your enterprise.
           </p>
-          <div className="flex flex-wrap justify-center gap-4">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 max-w-xs sm:max-w-none mx-auto">
             <Link 
               to="/features"
-              className="bg-white text-[#17233E] px-8 py-3.5 rounded-full font-extrabold text-sm transition-all shadow-xl hover:bg-[#E9EAF7]"
+              className="bg-white text-[#17233E] px-6 sm:px-8 py-3 sm:py-3.5 rounded-full font-extrabold text-xs sm:text-sm transition-all shadow-xl hover:bg-[#E9EAF7] text-center"
             >
               Explore All Features
             </Link>
             <Link 
               to="/pricing"
-              className="bg-white/10 hover:bg-white/20 text-white border border-white/30 px-8 py-3.5 rounded-full font-bold text-sm transition-all"
+              className="bg-white/10 hover:bg-white/20 text-white border border-white/30 px-6 sm:px-8 py-3 sm:py-3.5 rounded-full font-bold text-xs sm:text-sm transition-all text-center"
             >
               View Pricing Tiers
             </Link>
