@@ -218,10 +218,10 @@ export default function SkillGapAnalysis() {
       )}
 
       {/* Main Content Area - Fluid full width */}
-      <main className="flex-1 ml-0 lg:ml-64 pt-20 lg:pt-8 p-4 md:p-8 w-full relative z-10 space-y-8">
+      <main className="flex-1 ml-0 lg:ml-64 pt-20 lg:pt-8 px-3.5 sm:px-6 md:px-8 py-4 sm:py-8 w-full relative z-10 space-y-4 sm:space-y-8">
         
         {/* Top Header Section */}
-        <header className="flex justify-between items-center">
+        <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-6">
           <div>
             <h1 className="text-3xl font-black text-[#0b1221] tracking-tight">Skill Gap Analysis (Team)</h1>
             <p className="text-slate-500 text-sm font-semibold mt-1">Identify missing skills and analyze deficiencies to improve team capability</p>
@@ -261,7 +261,7 @@ export default function SkillGapAnalysis() {
         </header>
 
         {/* 1. Top Performance Metrics Cards */}
-        <div className="grid grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-5">
           <OverviewMetricCard 
             title="Total Gaps" 
             value={stats.totalGaps} 
@@ -292,7 +292,7 @@ export default function SkillGapAnalysis() {
         </div>
 
         {/* 2. Team Skill Gap Analysis Block */}
-        <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/85 shadow-xl shadow-[#1B3154]/6 space-y-6">
+        <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 border border-white/85 shadow-xl shadow-[#1B3154]/6 space-y-4 sm:space-y-6">
           <div className="flex justify-between items-center">
             <h3 className="text-xl font-bold text-slate-900 tracking-tight">Team Skill Gap Analysis</h3>
             <div className="flex items-center gap-3">
@@ -303,7 +303,7 @@ export default function SkillGapAnalysis() {
                   placeholder="Search member or skill..." 
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="bg-slate-50 border border-slate-200/80 rounded-xl pl-11 pr-4 py-2 text-xs font-semibold text-slate-700 w-64 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:bg-white transition-all"
+                  className="bg-slate-50 border border-slate-200/80 rounded-xl pl-11 pr-4 py-2 text-xs font-semibold text-slate-700 w-full sm:w-64 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:bg-white transition-all"
                 />
               </div>
               <button 
@@ -348,7 +348,7 @@ export default function SkillGapAnalysis() {
         </div>
 
         {/* 3. Team Skill Gap Heatmap Section */}
-        <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/85 shadow-xl shadow-[#1B3154]/6 space-y-8">
+        <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 border border-white/85 shadow-xl shadow-[#1B3154]/6 space-y-4 sm:space-y-8">
           <div className="flex justify-between items-start">
             <div>
               <h3 className="text-xl font-bold text-slate-900 tracking-tight">Team Skill Gap Heatmap</h3>
@@ -409,7 +409,7 @@ export default function SkillGapAnalysis() {
         </div>
 
         {/* 4. AI Skill Gap Intelligence */}
-        <div className="bg-[#F3F6FF] rounded-[2.5rem] p-8 border border-blue-100/60 space-y-6">
+        <div className="bg-[#F3F6FF] rounded-2xl sm:rounded-[2.5rem] p-4 sm:p-8 border border-blue-100/60 space-y-4 sm:space-y-6">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-blue-600 rounded-2xl flex items-center justify-center text-white shadow-md">
               <BrainCircuit size={20} />
@@ -456,7 +456,7 @@ export default function SkillGapAnalysis() {
         </div>
 
         {/* 5. Skill Gap Resolution Actions Footer */}
-        <div className="bg-[#0b111e] p-8 rounded-[2.5rem] text-white flex justify-between items-center shadow-xl">
+        <div className="bg-[#0b111e] p-4 sm:p-8 rounded-2xl sm:rounded-[2.5rem] text-white flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 shadow-xl">
           <div>
             <h3 className="text-xl font-bold tracking-tight mb-1">Skill Gap Resolution Actions</h3>
             <p className="text-slate-400 text-xs font-semibold">Surgical interventions to bridge identified technical deficiencies</p>

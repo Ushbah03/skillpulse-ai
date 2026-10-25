@@ -201,16 +201,16 @@ export default function TeamReports() {
       )}
 
       {/* Primary Workforce View Dashboard Framework */}
-      <main className="flex-1 ml-0 lg:ml-64 pt-20 lg:pt-8 p-4 md:p-8 w-full relative z-10 space-y-8">
+      <main className="flex-1 ml-0 lg:ml-64 pt-20 lg:pt-8 px-3.5 sm:px-6 md:px-8 py-4 sm:py-8 w-full relative z-10 space-y-4 sm:space-y-8">
         
         {/* Top Header & Operational Controls */}
-        <header className="flex justify-between items-center mb-4">
+        <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-6 mb-4">
           <div>
             <h1 className="text-4xl font-black text-[#0b1221] tracking-tight">Team Reports</h1>
             <p className="text-slate-500 text-base font-semibold mt-2">Generate and analyze comprehensive team workforce reports</p>
           </div>
 
-          <div className="flex items-center gap-3.5">
+          <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 sm:gap-3.5 w-full sm:w-auto">
             <div className="relative">
               <select 
                 value={selectedMemberScope} 
@@ -283,7 +283,7 @@ export default function TeamReports() {
         </header>
 
         {/* 1. Core Performance Matrix Cards Panel */}
-        <div className="grid grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-5">
           <OverviewReportCard
             title="PERFORMANCE SCORE"
             value={reportsData?.performanceScore || '0.0'}
@@ -317,7 +317,7 @@ export default function TeamReports() {
         </div>
 
         {/* 2. Longitudinal Tracking Analysis Block */}
-        <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/85 shadow-xl shadow-[#1B3154]/6 space-y-6">
+        <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 border border-white/85 shadow-xl shadow-[#1B3154]/6 space-y-4 sm:space-y-6">
           <div className="flex justify-between items-center">
             <div>
               <h3 className="text-2xl font-bold text-slate-900 tracking-tight">Team Performance Trend Analysis</h3>
@@ -337,7 +337,7 @@ export default function TeamReports() {
           </div>
 
           {/* Smooth Vector Graph Chart Area */}
-          <div className="h-64 relative pt-10 flex flex-col justify-between">
+          <div className="overflow-x-auto no-scrollbar"><div className="h-64 min-w-[560px] relative pt-10 flex flex-col justify-between">
             <svg className="absolute inset-0 w-full h-full overflow-visible" preserveAspectRatio="none" viewBox="0 0 1000 240">
               <path 
                 d={(() => {
@@ -388,12 +388,13 @@ export default function TeamReports() {
             </div>
           </div>
         </div>
+        </div>
 
         {/* 3. Skill & Training Proficiency Split Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-8">
           
           {/* Skill Distribution Segment */}
-          <div className="lg:col-span-6 bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/85 shadow-xl shadow-[#1B3154]/6 space-y-6">
+          <div className="lg:col-span-6 bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 border border-white/85 shadow-xl shadow-[#1B3154]/6 space-y-4 sm:space-y-6">
             <h3 className="text-2xl font-bold text-slate-900 tracking-tight">Skill Distribution by Category</h3>
             <div className="space-y-5 pt-2">
               {categoriesDistribution.map((cat, idx) => (
@@ -411,7 +412,7 @@ export default function TeamReports() {
           </div>
 
           {/* Proficiency Donut Breakdown */}
-          <div className="lg:col-span-6 bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-col justify-between">
+          <div className="lg:col-span-6 bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-col justify-between">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-2xl font-bold text-slate-900 tracking-tight">Skill Proficiency Distribution</h3>
               <span className="text-xs font-bold text-slate-400 bg-slate-50 px-3 py-1 rounded-full border border-slate-100">Live Breakdown</span>
@@ -538,7 +539,7 @@ export default function TeamReports() {
         </div>
 
         {/* 4. Intervention Effectiveness Comparison Analytics */}
-        <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/85 shadow-xl shadow-[#1B3154]/6 space-y-6">
+        <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 border border-white/85 shadow-xl shadow-[#1B3154]/6 space-y-4 sm:space-y-6">
           <div>
             <h3 className="text-2xl font-bold text-slate-900 tracking-tight">Training Effectiveness Analysis</h3>
             <p className="text-slate-400 text-sm font-semibold mt-1">Comparison of skill proficiency levels before and after professional training interventions</p>
@@ -572,7 +573,7 @@ export default function TeamReports() {
               </div>
             </div>
 
-            <div className="col-span-9 bg-slate-50/60 rounded-3xl p-8 border border-slate-100 flex items-end justify-between h-56 relative">
+            <div className="col-span-1 lg:col-span-9 bg-slate-50/60 rounded-2xl sm:rounded-3xl p-4 sm:p-8 border border-slate-100 flex flex-col sm:flex-row items-center sm:items-end justify-between min-h-[224px] relative overflow-x-auto no-scrollbar">
               <div className="flex gap-16 items-end flex-1 justify-around h-full pt-6">
                 {(reportsData?.effectiveness?.bars && reportsData.effectiveness.bars.length > 0) ? (
                   reportsData.effectiveness.bars.map((b, idx) => (
@@ -598,7 +599,7 @@ export default function TeamReports() {
         </div>
 
         {/* 5. Detailed Team Workforce Spreadsheet */}
-        <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/85 shadow-xl shadow-[#1B3154]/6 space-y-6">
+        <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 border border-white/85 shadow-xl shadow-[#1B3154]/6 space-y-4 sm:space-y-6">
           <div className="flex justify-between items-center">
             <h3 className="text-2xl font-bold text-slate-900 tracking-tight">Detailed Team Workforce Report</h3>
             <div className="relative">
@@ -608,7 +609,7 @@ export default function TeamReports() {
                 placeholder="Search members..." 
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="bg-slate-50 border border-slate-200/80 rounded-xl pl-11 pr-4 py-2.5 text-sm font-semibold text-slate-700 w-64 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:bg-white transition-all"
+                className="bg-slate-50 border border-slate-200/80 rounded-xl pl-11 pr-4 py-2.5 text-sm font-semibold text-slate-700 w-full sm:w-64 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:bg-white transition-all"
               />
             </div>
           </div>
@@ -645,7 +646,7 @@ export default function TeamReports() {
 
 
         {/* 7. AI Intelligence Insights Footer Block */}
-        <div className="bg-[#F3F6FF] rounded-[2.5rem] p-8 border border-blue-100/60 space-y-6">
+        <div className="bg-[#F3F6FF] rounded-2xl sm:rounded-[2.5rem] p-4 sm:p-8 border border-blue-100/60 space-y-4 sm:space-y-6">
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-3">
               <div className="w-11 h-11 bg-blue-600 rounded-xl flex items-center justify-center text-white shadow-md shadow-blue-600/10">
@@ -661,7 +662,7 @@ export default function TeamReports() {
             </span>
           </div>
 
-          <div className="grid grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-6">
             {(reportsData?.aiInsights && reportsData.aiInsights.length > 0 ? reportsData.aiInsights : [
               {
                 badge: "GROWTH",
@@ -711,7 +712,7 @@ export default function TeamReports() {
         </div>
 
         {/* 8. Dashboard Executive Visual Summary Dark Module */}
-        <div className="bg-[#0b111e] p-10 rounded-[2.5rem] text-white flex justify-between items-center shadow-xl">
+        <div className="bg-[#0b111e] p-4 sm:p-8 md:p-10 rounded-2xl sm:rounded-[2.5rem] text-white flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 shadow-xl">
           <div className="max-w-md space-y-2">
             <h3 className="text-3xl font-bold tracking-tight">Executive Visual Summary</h3>
             <p className="text-slate-400 text-sm font-semibold leading-relaxed">
@@ -735,7 +736,7 @@ export default function TeamReports() {
             </div>
           </div>
 
-          <div className="w-[420px] bg-[#141b2b] border border-slate-800 p-6 rounded-3xl space-y-4">
+          <div className="w-full lg:w-[420px] bg-[#141b2b] border border-slate-800 p-4 sm:p-6 rounded-2xl sm:rounded-3xl space-y-4">
             <DarkBarTrack label="READINESS" percentage={reportsData?.executiveSummary?.readiness ?? 0} color="bg-blue-500" />
             <DarkBarTrack label="OPTIMIZATION" percentage={reportsData?.executiveSummary?.optimization ?? 0} color="bg-cyan-400" />
             <DarkBarTrack label="RESILIENCE" percentage={reportsData?.executiveSummary?.resilience ?? 0} color="bg-indigo-500" />

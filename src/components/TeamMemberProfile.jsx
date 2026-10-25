@@ -380,17 +380,17 @@ const TeamMemberProfile = () => {
       <TeamLeaderSidebar activeTab={activeTab} setActiveTab={setActiveTab} />
       
       {/* Main Content Area */}
-      <main className="flex-1 ml-0 lg:ml-64 pt-20 lg:pt-8 p-4 md:p-8 w-full relative z-10 space-y-8">
+      <main className="flex-1 ml-0 lg:ml-64 pt-20 lg:pt-8 px-3.5 sm:px-6 md:px-8 py-4 sm:py-8 w-full relative z-10 space-y-4 sm:space-y-8">
         
         {/* Top Header Section */}
-        <header className="flex justify-between items-center">
+        <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-6">
           <div>
             <h1 className="text-3xl md:text-4xl font-extrabold text-[#17233E] tracking-tight">Team Member <span className="bg-gradient-to-r from-[#1988A3] to-[#11C6DE] bg-clip-text text-transparent">Profile</span></h1>
             <p className="text-[#8A9CB7] text-sm md:text-base font-medium mt-1">View comprehensive capability, telemetry, and readiness intelligence</p>
           </div>
           
           {/* Right Controls Dropdown & User */}
-          <div className="flex items-center gap-4">
+          <div className="flex flex-wrap sm:flex-nowrap items-center justify-between sm:justify-end gap-3 w-full sm:w-auto">
             <div className="relative">
               <button 
                 onClick={() => setIsMemberDropdownOpen(!isMemberDropdownOpen)}
@@ -447,9 +447,9 @@ const TeamMemberProfile = () => {
         ) : (
           <>
             {/* 1. Main Profile Banner Card */}
-            <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/85 shadow-xl shadow-[#1B3154]/6 flex justify-between items-center">
-              <div className="flex items-center gap-6">
-                <div className="relative w-28 h-28">
+            <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 sm:gap-6">
+              <div className="flex items-center gap-3.5 sm:gap-6 w-full md:w-auto">
+                <div className="relative w-16 h-16 sm:w-24 sm:h-24 md:w-28 md:h-28 shrink-0">
                   <img 
                     src={activeMember?.avatarUrl || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200"} 
                     alt={selectedName} 
@@ -475,7 +475,7 @@ const TeamMemberProfile = () => {
               </div>
 
               {/* Right Metrics Grid */}
-              <div className="flex gap-16 pr-8">
+              <div className="flex justify-between sm:justify-start gap-4 sm:gap-10 md:gap-16 w-full md:w-auto pt-3 md:pt-0 border-t md:border-t-0 border-white/40">
                 <div className="text-center">
                   <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 mb-1">Readiness</p>
                   <p className="text-3xl font-black text-blue-600">{readinessPct}</p>
@@ -492,7 +492,7 @@ const TeamMemberProfile = () => {
             </div>
 
             {/* 2. Key Metrics 4-Column Row */}
-            <div className="grid grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-5">
               <MetricCard title="Overall Skill Score" value={overallScore}>
                 <div className="relative w-12 h-12 flex items-center justify-center">
                   <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
@@ -527,10 +527,10 @@ const TeamMemberProfile = () => {
             </div>
 
             {/* 3. Member Skill Matrix Table */}
-            <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/85 shadow-xl shadow-[#1B3154]/6">
-              <h3 className="text-xl font-bold text-slate-900 mb-6 tracking-tight">Member Skill Matrix</h3>
-              <div className="overflow-hidden border border-slate-100 rounded-2xl">
-                <table className="w-full text-left border-collapse">
+            <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 border border-white/85 shadow-xl shadow-[#1B3154]/6">
+              <h3 className="text-lg sm:text-xl font-bold text-slate-900 mb-4 sm:mb-6 tracking-tight">Member Skill Matrix</h3>
+              <div className="overflow-x-auto no-scrollbar border border-slate-100 rounded-2xl">
+                <table className="w-full min-w-[560px] text-left border-collapse">
                   <thead>
                     <tr className="border-b border-slate-100 text-[11px] font-black uppercase tracking-wider text-slate-400 bg-slate-50/50">
                       <th className="py-4 px-6">Skill Name</th>
@@ -576,9 +576,9 @@ const TeamMemberProfile = () => {
             </div>
 
             {/* 4. Charts Twin Grid (Radar + Growth) - Interactive & Responsive on Click */}
-            <div className="grid grid-cols-12 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-8">
               {/* Skill Proficiency Radar */}
-              <div className="col-span-6 bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-col justify-between transition-all">
+              <div className="col-span-1 lg:col-span-6 bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-col justify-between transition-all">
                 <div className="flex justify-between items-center mb-4">
                   <div>
                     <h3 className="text-xl font-bold text-slate-900 tracking-tight">Skill Proficiency Radar</h3>
@@ -742,7 +742,7 @@ const TeamMemberProfile = () => {
               </div>
 
               {/* Skill Growth Trend - 100% Real Progression Data & Responsive on Click */}
-              <div className="col-span-6 bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-col justify-between transition-all">
+              <div className="col-span-1 lg:col-span-6 bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-col justify-between transition-all">
                 <div className="flex justify-between items-center mb-4">
                   <div>
                     <h3 className="text-xl font-bold text-slate-900 tracking-tight">Skill Growth Trend</h3>
@@ -876,8 +876,8 @@ const TeamMemberProfile = () => {
             </div>
 
             {/* 5. Training History Section */}
-            <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/85 shadow-xl shadow-[#1B3154]/6">
-              <h3 className="text-xl font-bold text-slate-900 mb-6 tracking-tight">Training History</h3>
+            <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 border border-white/85 shadow-xl shadow-[#1B3154]/6">
+              <h3 className="text-lg sm:text-xl font-bold text-slate-900 mb-4 sm:mb-6 tracking-tight">Training History</h3>
               <div className="space-y-4">
                 {memberEnrollments.length > 0 ? (
                   memberEnrollments.map((en) => (
@@ -899,11 +899,11 @@ const TeamMemberProfile = () => {
             </div>
 
             {/* 6. Skill Gaps Identified */}
-            <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/85 shadow-xl shadow-[#1B3154]/6">
-              <h3 className="text-xl font-bold text-slate-900 mb-6 tracking-tight">Skill Gaps Identified</h3>
+            <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 border border-white/85 shadow-xl shadow-[#1B3154]/6">
+              <h3 className="text-lg sm:text-xl font-bold text-slate-900 mb-4 sm:mb-6 tracking-tight">Skill Gaps Identified</h3>
               {memberGaps.length > 0 ? (
                 memberGaps.map((gap) => (
-                  <div key={gap.id} className="p-6 bg-amber-50/40 rounded-2xl border border-amber-100/70 flex justify-between items-center mb-3">
+                  <div key={gap.id} className="p-3.5 sm:p-6 bg-amber-50/40 rounded-2xl border border-amber-100/70 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4 mb-3">
                     <div>
                       <h4 className="text-sm font-black text-slate-900">
                         Missing Skill: {gap.skill?.name || 'Technical Gap'}
@@ -928,7 +928,7 @@ const TeamMemberProfile = () => {
             </div>
 
             {/* 7. AI Development Insights - 100% Real Data */}
-            <div className="bg-[#0b0f19] p-8 rounded-[2.5rem] text-white shadow-xl space-y-6">
+            <div className="bg-[#0b0f19] p-4 sm:p-8 rounded-2xl sm:rounded-[2.5rem] text-white shadow-xl space-y-4 sm:space-y-6">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-blue-500/10 rounded-xl flex items-center justify-center">
                   <Layers className="text-blue-400" size={22} />
@@ -936,7 +936,7 @@ const TeamMemberProfile = () => {
                 <h4 className="text-xl font-bold tracking-tight">AI Development Insights</h4>
               </div>
               
-              <div className="grid grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-6">
                 <InsightBox 
                   title="Growth Path" 
                   text={memberMetrics?.aiInsights?.growthPath || `${selectedName.split(' ')[0]} demonstrates verified capability across ${memberSkills.length} skills.`} 
@@ -953,7 +953,7 @@ const TeamMemberProfile = () => {
             </div>
 
             {/* 8. Bottom Fast Actions Block */}
-            <div className="flex gap-4 items-center justify-between pt-2">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-4 pt-2">
               <button 
                 onClick={() => navigate(`/team-leader/assign-learning?userId=${activeMember.id}`)}
                 className="flex-1 py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm rounded-xl transition-all shadow-md text-center cursor-pointer"
@@ -989,10 +989,10 @@ const TeamMemberProfile = () => {
 
 /* --- Component Helpers --- */
 const MetricCard = ({ title, value, children }) => (
-  <div className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm flex items-center justify-between">
+  <div className="bg-white p-3.5 sm:p-6 rounded-2xl sm:rounded-[2rem] border border-slate-100 shadow-sm flex items-center justify-between">
     <div>
-      <p className="text-slate-400 text-[10px] font-black uppercase tracking-wider mb-1">{title}</p>
-      <h4 className="text-3xl font-black text-slate-900 tracking-tight">{value}</h4>
+      <p className="text-slate-400 text-[9px] sm:text-[10px] font-black uppercase tracking-wider mb-0.5 sm:mb-1 truncate">{title}</p>
+      <h4 className="text-lg sm:text-2xl md:text-3xl font-black text-slate-900 tracking-tight">{value}</h4>
     </div>
     {children}
   </div>

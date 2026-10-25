@@ -132,7 +132,7 @@ export default function TeamReadinessScore() {
       <TeamLeaderSidebar activeTab={activeTab} setActiveTab={setActiveTab} />
       
       {/* Main Content Pane - Fluid Full Width */}
-      <main className="flex-1 ml-0 lg:ml-64 pt-20 lg:pt-8 p-4 md:p-8 w-full relative z-10 space-y-8">
+      <main className="flex-1 ml-0 lg:ml-64 pt-20 lg:pt-8 px-3.5 sm:px-6 md:px-8 py-4 sm:py-8 w-full relative z-10 space-y-4 sm:space-y-8">
         
         {/* Notification Toast */}
         {toastMessage && (
@@ -143,14 +143,14 @@ export default function TeamReadinessScore() {
         )}
 
         {/* Top Header Row */}
-        <header className="flex justify-between items-center">
+        <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-6">
           <div>
             <h1 className="text-3xl font-black text-[#0b1221] tracking-tight">Project Readiness Score</h1>
             <p className="text-[#8A9CB7] text-sm md:text-base font-medium mt-1">Evaluate team eligibility and target tracking indices for upcoming project deployments</p>
           </div>
           
-          <div className="flex items-center gap-4">
-            <div className="relative w-80">
+          <div className="flex flex-wrap sm:flex-nowrap items-center justify-between sm:justify-end gap-3 w-full sm:w-auto">
+            <div className="relative w-full sm:w-80">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
               <input 
                 type="text" 
@@ -180,13 +180,13 @@ export default function TeamReadinessScore() {
         </header>
 
         {/* Dynamic Card Grids */}
-        <div className="grid grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-5">
           
           {/* Index Card */}
-          <div className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm flex justify-between items-center relative overflow-hidden">
+          <div className="bg-white p-3.5 sm:p-6 rounded-2xl sm:rounded-[2rem] border border-slate-100 shadow-sm flex justify-between items-center relative overflow-hidden">
             <div>
-              <p className="text-slate-400 text-xs font-bold mb-1.5 uppercase tracking-wider">Overall Readiness Index</p>
-              <h4 className="text-3xl font-black text-slate-900 tracking-tight">Production Fit</h4>
+              <p className="text-slate-400 text-[9px] sm:text-xs font-bold mb-1 sm:mb-1.5 uppercase tracking-wider truncate">Overall Readiness Index</p>
+              <h4 className="text-lg sm:text-2xl md:text-3xl font-black text-slate-900 tracking-tight">Production Fit</h4>
             </div>
             <div className="w-16 h-16 rounded-full border-[5px] border-emerald-500 flex items-center justify-center text-base font-black text-emerald-600 shadow-inner">
               {overallScoreVal}%
@@ -194,10 +194,10 @@ export default function TeamReadinessScore() {
           </div>
 
           {/* Validation Bar Card */}
-          <div className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm flex flex-col justify-between">
+          <div className="bg-white p-3.5 sm:p-6 rounded-2xl sm:rounded-[2rem] border border-slate-100 shadow-sm flex flex-col justify-between">
             <div>
-              <p className="text-slate-400 text-xs font-bold mb-1.5 uppercase tracking-wider">Target Skills Validated</p>
-              <h4 className="text-3xl font-black text-slate-900 tracking-tight">{totalValidatedSkills} Skills</h4>
+              <p className="text-slate-400 text-[9px] sm:text-xs font-bold mb-1 sm:mb-1.5 uppercase tracking-wider truncate">Target Skills Validated</p>
+              <h4 className="text-lg sm:text-2xl md:text-3xl font-black text-slate-900 tracking-tight">{totalValidatedSkills} Skills</h4>
             </div>
             <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden mt-3">
               <div className="h-full bg-blue-500 rounded-full" style={{ width: `${overallScoreVal}%` }}></div>
@@ -205,10 +205,10 @@ export default function TeamReadinessScore() {
           </div>
 
           {/* Qualified Members Metric */}
-          <div className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm flex flex-col justify-between">
+          <div className="bg-white p-3.5 sm:p-6 rounded-2xl sm:rounded-[2rem] border border-slate-100 shadow-sm flex flex-col justify-between">
             <div>
-              <p className="text-slate-400 text-xs font-bold mb-1.5 uppercase tracking-wider">Qualified Members</p>
-              <h4 className="text-3xl font-black text-slate-900 tracking-tight">{qualifiedCount} / {totalMembersCount} Members</h4>
+              <p className="text-slate-400 text-[9px] sm:text-xs font-bold mb-1 sm:mb-1.5 uppercase tracking-wider truncate">Qualified Members</p>
+              <h4 className="text-lg sm:text-2xl md:text-3xl font-black text-slate-900 tracking-tight">{qualifiedCount} / {totalMembersCount} Members</h4>
             </div>
             <p className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded mt-3 self-start">
               {totalMembersCount > 0 ? ((qualifiedCount / totalMembersCount) * 100).toFixed(0) : '0'}% Match Rate
@@ -216,10 +216,10 @@ export default function TeamReadinessScore() {
           </div>
 
           {/* Critical Gaps Item */}
-          <div className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm flex flex-col justify-between">
+          <div className="bg-white p-3.5 sm:p-6 rounded-2xl sm:rounded-[2rem] border border-slate-100 shadow-sm flex flex-col justify-between">
             <div>
-              <p className="text-slate-400 text-xs font-bold mb-1.5 uppercase tracking-wider">Critical Capability Gaps</p>
-              <h4 className="text-3xl font-black text-rose-500 tracking-tight">{criticalGapsCount} Gaps Left</h4>
+              <p className="text-slate-400 text-[9px] sm:text-xs font-bold mb-1 sm:mb-1.5 uppercase tracking-wider truncate">Critical Capability Gaps</p>
+              <h4 className="text-lg sm:text-2xl md:text-3xl font-black text-rose-500 tracking-tight">{criticalGapsCount} Gaps Left</h4>
             </div>
             <button 
               onClick={() => setActiveModal('requirements')}
@@ -233,8 +233,8 @@ export default function TeamReadinessScore() {
         </div>
 
         {/* Filters Panel */}
-        <div className="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm flex items-center justify-between">
-          <div className="flex items-center gap-3">
+        <div className="bg-white rounded-2xl p-3.5 sm:p-4 border border-slate-100 shadow-sm flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4">
+          <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 sm:gap-3">
             <div className="flex items-center gap-2 text-slate-500 text-sm font-bold px-2">
               <SlidersHorizontal size={16} />
               <span>Target Context:</span>
@@ -335,14 +335,14 @@ export default function TeamReadinessScore() {
         <div className="grid grid-cols-12 gap-8">
           
           {/* Individual Member Readiness Table */}
-          <div className="col-span-8 bg-white rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden">
+          <div className="col-span-8 bg-white rounded-2xl sm:rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden">
             <div className="p-6 border-b border-slate-50">
               <h3 className="text-xl font-bold text-slate-900 tracking-tight">Individual Member Readiness Breakdown</h3>
               <p className="text-xs text-slate-400 font-semibold mt-0.5">Target project compliance analysis mapping per engineer</p>
             </div>
 
             <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse">
+              <table className="w-full min-w-[560px] text-left border-collapse">
                 <thead>
                   <tr className="border-b border-slate-100 bg-slate-50/50 text-xs font-black tracking-widest text-slate-400 uppercase">
                     <th className="py-4 px-6">Team Member</th>
@@ -411,7 +411,7 @@ export default function TeamReadinessScore() {
           <div className="col-span-4 flex flex-col justify-between h-full space-y-6">
             
             {/* Real-time Validation Risks */}
-            <div className="bg-white rounded-[2rem] border border-slate-100 p-6 shadow-sm">
+            <div className="bg-white rounded-2xl sm:rounded-[2rem] border border-slate-100 p-4 sm:p-6 shadow-sm">
               <div className="flex items-center gap-3 text-rose-500 mb-4">
                 <ShieldAlert size={20} />
                 <h4 className="text-sm font-black uppercase tracking-wider">Critical Readiness Risks</h4>
@@ -443,7 +443,7 @@ export default function TeamReadinessScore() {
             </div>
 
             {/* AI Action Panel */}
-            <div className="bg-[#0b0f19] rounded-[2rem] p-6 text-white shadow-xl flex flex-col justify-between flex-1 min-h-[190px]">
+            <div className="bg-[#0b0f19] rounded-2xl sm:rounded-[2rem] p-4 sm:p-6 text-white shadow-xl flex flex-col justify-between flex-1 min-h-[190px]">
               <div>
                 <span className="text-[10px] bg-blue-500/20 text-blue-400 font-black px-2.5 py-1 rounded-lg uppercase tracking-wide inline-block mb-3">
                   AI Skill Recommendation

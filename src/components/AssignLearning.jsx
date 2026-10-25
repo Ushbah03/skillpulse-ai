@@ -306,7 +306,7 @@ const AssignLearning = () => {
       <TeamLeaderSidebar activeTab={activeTab} setActiveTab={setActiveTab} />
       
       {/* Main Container Area */}
-      <main className="flex-1 ml-0 lg:ml-64 pt-20 lg:pt-8 p-4 md:p-8 w-full relative z-10 space-y-8">
+      <main className="flex-1 ml-0 lg:ml-64 pt-20 lg:pt-8 px-3.5 sm:px-6 md:px-8 py-4 sm:py-8 w-full relative z-10 space-y-4 sm:space-y-8">
         
         {/* Toast Notifications */}
         {toastMessage && (
@@ -334,15 +334,15 @@ const AssignLearning = () => {
         )}
 
         {/* Top Header Section */}
-        <header className="flex justify-between items-center">
+        <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-6">
           <div>
             <h1 className="text-3xl md:text-4xl font-extrabold text-[#17233E] tracking-tight">Assign Learning to <span className="bg-gradient-to-r from-[#1988A3] to-[#11C6DE] bg-clip-text text-transparent">Team</span></h1>
             <p className="text-[#8A9CB7] text-sm md:text-base font-medium mt-1">Assign curated training programs based on critical skill gaps and growth goals</p>
           </div>
           
           {/* Header Controls */}
-          <div className="flex items-center gap-4">
-            <div className="relative w-64 md:w-72">
+          <div className="flex flex-wrap sm:flex-nowrap items-center justify-between sm:justify-end gap-3 w-full sm:w-auto">
+            <div className="relative w-full sm:w-64 md:w-72">
               <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-slate-400">
                 <Search size={18} />
               </span>
@@ -383,7 +383,7 @@ const AssignLearning = () => {
         ) : (
           <>
             {/* 1. Metrics Grid Row */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-5">
               <TopMetricCard title="Available Programs" value={String(stats.availableProgramsCount)} extra="Global Catalog" color="bg-blue-50 text-blue-600">
                 <BookOpenCheck size={20} />
               </TopMetricCard>
@@ -402,17 +402,17 @@ const AssignLearning = () => {
             </div>
 
             {/* 2. Content Split Grid */}
-            <div className="grid grid-cols-12 gap-8 items-start">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-8 items-start">
               
               {/* LEFT: Available Training Programs Section */}
-              <div className="col-span-12 lg:col-span-8 bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/85 shadow-xl shadow-[#1B3154]/6 space-y-6">
+              <div className="col-span-1 lg:col-span-8 bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 border border-white/85 shadow-xl shadow-[#1B3154]/6 space-y-4 sm:space-y-6">
                 <div className="flex justify-between items-center">
                   <h3 className="text-xl font-bold text-slate-900 tracking-tight">Available Training Programs</h3>
                   <span className="text-xs font-bold text-slate-400">{filteredPrograms.length} Programs</span>
                 </div>
 
                 <div className="overflow-x-auto overflow-y-auto max-h-[420px] border border-slate-100 rounded-2xl shadow-xs scrollbar-thin">
-                  <table className="w-full text-left border-collapse">
+                  <table className="w-full min-w-[560px] text-left border-collapse">
                     <thead className="sticky top-0 bg-slate-50/95 backdrop-blur-xs z-10 border-b border-slate-200">
                       <tr className="text-[11px] font-black uppercase tracking-wider text-slate-500">
                         <th className="py-4 px-6">Training Name</th>
@@ -488,7 +488,7 @@ const AssignLearning = () => {
                     <span className="text-xs font-bold text-slate-400">{enrollments.length} Assignments</span>
                   </div>
                   <div className="overflow-x-auto overflow-y-auto max-h-[360px] border border-slate-100 rounded-2xl shadow-xs scrollbar-thin">
-                    <table className="w-full text-left border-collapse">
+                    <table className="w-full min-w-[560px] text-left border-collapse">
                       <thead className="sticky top-0 bg-slate-50/95 backdrop-blur-xs z-10 border-b border-slate-200">
                         <tr className="text-[11px] font-black uppercase tracking-wider text-slate-500">
                           <th className="py-4 px-6">Training Name</th>
@@ -539,10 +539,10 @@ const AssignLearning = () => {
               </div>
 
               {/* RIGHT: Select Team Members, Recs, & Action Box */}
-              <div className="col-span-4 space-y-6">
+              <div className="col-span-1 lg:col-span-4 space-y-4 sm:space-y-6">
                 
                 {/* Box 1: Select Team Members */}
-                <div className="bg-white rounded-[2.5rem] p-6 border border-slate-100 shadow-sm space-y-4">
+                <div className="bg-white rounded-2xl sm:rounded-[2.5rem] p-4 sm:p-6 border border-slate-100 shadow-sm space-y-4">
                   <div className="flex items-center justify-between">
                     <h3 className="text-lg font-bold text-slate-900 tracking-tight">Select Team Members</h3>
                     <button 
@@ -585,7 +585,7 @@ const AssignLearning = () => {
                 </div>
 
                 {/* Box 2: AI Recommended Block */}
-                <div className="bg-white rounded-[2.5rem] p-6 border border-slate-100 shadow-sm space-y-4">
+                <div className="bg-white rounded-2xl sm:rounded-[2.5rem] p-4 sm:p-6 border border-slate-100 shadow-sm space-y-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2 text-purple-600">
                       <Zap size={18} fill="currentColor" />
@@ -815,7 +815,7 @@ const AssignLearning = () => {
 
 /* --- Component Helpers --- */
 const TopMetricCard = ({ title, value, extra, color, extraColor = "text-slate-400", children }) => (
-  <div className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm flex items-center justify-between">
+  <div className="bg-white p-3.5 sm:p-6 rounded-2xl sm:rounded-[2rem] border border-slate-100 shadow-sm flex items-center justify-between">
     <div className="space-y-1">
       <p className="text-slate-400 text-[10px] font-black uppercase tracking-wider">{title}</p>
       <h4 className="text-3xl font-black text-slate-900 tracking-tight">{value}</h4>

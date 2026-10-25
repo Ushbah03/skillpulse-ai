@@ -197,7 +197,7 @@ const TeamFormation = () => {
       <TeamLeaderSidebar activeTab={activeTab} setActiveTab={setActiveTab} />
 
       {/* Main Form & Squad Studio Area - Fluid Full Width Container */}
-      <main className="flex-1 ml-0 lg:ml-64 pt-20 lg:pt-8 p-4 md:p-8 w-full relative z-10 space-y-8">
+      <main className="flex-1 ml-0 lg:ml-64 pt-20 lg:pt-8 px-3.5 sm:px-6 md:px-8 py-4 sm:py-8 w-full relative z-10 space-y-4 sm:space-y-8">
         
         {/* Toast Notification */}
         {toastMessage && (
@@ -226,7 +226,7 @@ const TeamFormation = () => {
         )}
 
         {/* Top Header */}
-        <header className="flex justify-between items-center">
+        <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-6">
           <div>
             <div className="flex items-center gap-2 mb-1">
               <span className="bg-blue-50 text-blue-600 text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md border border-blue-100 flex items-center gap-1">
@@ -239,7 +239,7 @@ const TeamFormation = () => {
             </p>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 sm:gap-3 w-full sm:w-auto">
             <button 
               onClick={handleGenerate}
               disabled={isGenerating}
@@ -261,16 +261,16 @@ const TeamFormation = () => {
         </header>
 
         {/* 12-Column Balanced Grid Layout */}
-        <div className="grid grid-cols-12 gap-8 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-8 items-start">
           
           {/* LEFT 8 COLUMNS: Requirements & Candidates Grid */}
-          <div className="col-span-12 lg:col-span-8 space-y-8">
+          <div className="col-span-1 lg:col-span-8 space-y-4 sm:space-y-8">
             
             {/* Project Parameters Card */}
-            <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/85 shadow-xl shadow-[#1B3154]/6 space-y-6">
+            <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 border border-white/85 shadow-xl shadow-[#1B3154]/6 space-y-6">
               <h3 className="text-lg font-bold text-slate-900">Project Requirements & Target Skills</h3>
               
-              <div className="grid grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 sm:gap-6">
                 <div>
                   <label className="text-xs font-black uppercase tracking-wider text-slate-400 block mb-2">Project Name</label>
                   <input 
@@ -329,7 +329,7 @@ const TeamFormation = () => {
 
             {/* AI Skill Deficiency & Hiring Prompt Alert Banner */}
             {aiReport?.hasDeficiency && (
-              <div className="bg-amber-500/10 border-2 border-amber-500/30 rounded-[2.5rem] p-6 md:p-8 space-y-4 shadow-sm">
+              <div className="bg-amber-500/10 border-2 border-amber-500/30 rounded-2xl sm:rounded-[2.5rem] p-4 sm:p-6 md:p-8 space-y-4 shadow-sm">
                 <div className="flex items-start gap-4">
                   <div className="p-3 bg-amber-500 text-white rounded-2xl shrink-0 mt-0.5 shadow-md">
                     <AlertTriangle className="w-6 h-6" />
@@ -369,7 +369,7 @@ const TeamFormation = () => {
             )}
 
             {/* AI Matched Squad Results */}
-            <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/85 shadow-xl shadow-[#1B3154]/6 space-y-6">
+            <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 border border-white/85 shadow-xl shadow-[#1B3154]/6 space-y-6">
               <div className="flex justify-between items-center">
                 <div>
                   <h3 className="text-xl font-bold text-slate-900 tracking-tight">AI Recommended Project Squad</h3>
@@ -388,7 +388,7 @@ const TeamFormation = () => {
                   <SkillPulseLoader message="Running Neural Squad Matchmaker..." fullScreen={false} />
                 </div>
               ) : candidates.length > 0 ? (
-                <div className="grid grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-6">
                   {candidates.map((c) => (
                     <div 
                       key={c.id} 
@@ -480,10 +480,10 @@ const TeamFormation = () => {
           </div>
 
           {/* RIGHT 4 COLUMNS: Squad Analytics & Fast Actions Panel */}
-          <div className="col-span-4 space-y-6">
+          <div className="col-span-1 lg:col-span-4 space-y-4 sm:space-y-6">
             
             {/* Box 1: Squad Synergy & Fit Analytics */}
-            <div className="bg-white rounded-[2.5rem] p-6 border border-slate-100 shadow-sm space-y-5">
+            <div className="bg-white rounded-2xl sm:rounded-[2.5rem] p-4 sm:p-6 border border-slate-100 shadow-sm space-y-5">
               <div className="flex items-center gap-2 text-blue-600">
                 <ShieldCheck size={20} />
                 <h3 className="text-base font-black text-slate-900 tracking-tight">Squad Synergy Metrics</h3>
@@ -510,7 +510,7 @@ const TeamFormation = () => {
             </div>
 
             {/* Box 2: AI Composition Insights */}
-            <div className="bg-white rounded-[2.5rem] p-6 border border-slate-100 shadow-sm space-y-4">
+            <div className="bg-white rounded-2xl sm:rounded-[2.5rem] p-4 sm:p-6 border border-slate-100 shadow-sm space-y-4">
               <div className="flex items-center gap-2 text-purple-600">
                 <Zap size={18} fill="currentColor" />
                 <h3 className="text-base font-black text-slate-900 tracking-tight">AI Composition Insight</h3>

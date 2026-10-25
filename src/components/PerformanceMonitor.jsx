@@ -170,7 +170,7 @@ export default function PerformanceMonitor() {
       <TeamLeaderSidebar activeTab={activeTab} setActiveTab={setActiveTab} />
       
       {/* 2. Main Content Area - Fluid Full Width */}
-      <main className="flex-1 ml-0 lg:ml-64 pt-20 lg:pt-8 p-4 md:p-8 w-full relative z-10 space-y-8">
+      <main className="flex-1 ml-0 lg:ml-64 pt-20 lg:pt-8 px-3.5 sm:px-6 md:px-8 py-4 sm:py-8 w-full relative z-10 space-y-4 sm:space-y-8">
         
         {/* Toast Notification */}
         {toastMessage && (
@@ -239,22 +239,22 @@ export default function PerformanceMonitor() {
         </header>
 
         {/* 3. Performance Metrics Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl p-6 md:p-7 rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex justify-between items-center min-h-[160px] relative overflow-hidden">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-5">
+          <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl p-3.5 sm:p-6 md:p-7 rounded-2xl sm:rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex justify-between items-center min-h-0 sm:min-h-[160px] relative overflow-hidden">
             <div>
-              <p className="text-xs font-black text-slate-400 uppercase tracking-widest">Overall Team Score</p>
-              <h3 className="text-2xl font-black text-slate-900 mt-3 tracking-tight">{summary.overallTier || 'Capability Score'}</h3>
+              <p className="text-[9px] sm:text-xs font-black text-slate-400 uppercase tracking-widest truncate">Overall Team Score</p>
+              <h3 className="text-base sm:text-xl md:text-2xl font-black text-slate-900 mt-1 sm:mt-3 tracking-tight truncate">{summary.overallTier || 'Capability Score'}</h3>
             </div>
             <div className="w-16 h-16 rounded-full border-[5px] border-indigo-600 flex items-center justify-center text-base font-black text-indigo-600 shadow-inner">
               {summary.overallTeamScorePct}
             </div>
           </div>
 
-          <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl p-6 md:p-7 rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-col justify-between min-h-[160px]">
-            <p className="text-xs font-black text-slate-400 uppercase tracking-widest">Avg Member Perf.</p>
+          <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl p-3.5 sm:p-6 md:p-7 rounded-2xl sm:rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-col justify-between min-h-0 sm:min-h-[160px]">
+            <p className="text-[9px] sm:text-xs font-black text-slate-400 uppercase tracking-widest truncate">Avg Member Perf.</p>
             <div className="mt-2">
               <div className="flex items-baseline gap-1.5">
-                <span className="text-4xl font-black text-slate-900 tracking-tight">{summary.avgMemberPerf}</span>
+                <span className="text-xl sm:text-3xl md:text-4xl font-black text-slate-900 tracking-tight">{summary.avgMemberPerf}</span>
                 <span className="text-base font-black text-slate-400">/ 10</span>
               </div>
               <div className="flex items-center gap-1 text-emerald-600 text-sm font-bold mt-2">
@@ -264,20 +264,20 @@ export default function PerformanceMonitor() {
             </div>
           </div>
 
-          <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl p-6 md:p-7 rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-col justify-between min-h-[160px]">
-            <p className="text-xs font-black text-slate-400 uppercase tracking-widest">High Performers</p>
+          <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl p-3.5 sm:p-6 md:p-7 rounded-2xl sm:rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-col justify-between min-h-0 sm:min-h-[160px]">
+            <p className="text-[9px] sm:text-xs font-black text-slate-400 uppercase tracking-widest truncate">High Performers</p>
             <div className="mt-2">
-              <h3 className="text-4xl font-black text-slate-900 tracking-tight">{summary.highPerformersCount}</h3>
+              <h3 className="text-xl sm:text-3xl md:text-4xl font-black text-slate-900 tracking-tight">{summary.highPerformersCount}</h3>
               <span className="inline-block bg-indigo-50 border border-indigo-100 text-indigo-600 text-xs font-black px-3 py-1 rounded-xl mt-3">
                 Top Performers
               </span>
             </div>
           </div>
 
-          <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl p-6 md:p-7 rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-col justify-between min-h-[160px]">
-            <p className="text-xs font-black text-slate-400 uppercase tracking-widest">Risk Alerts</p>
+          <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl p-3.5 sm:p-6 md:p-7 rounded-2xl sm:rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-col justify-between min-h-0 sm:min-h-[160px]">
+            <p className="text-[9px] sm:text-xs font-black text-slate-400 uppercase tracking-widest truncate">Risk Alerts</p>
             <div className="mt-2">
-              <h3 className="text-4xl font-black text-slate-900 tracking-tight">{summary.riskAlertsCount}</h3>
+              <h3 className="text-xl sm:text-3xl md:text-4xl font-black text-slate-900 tracking-tight">{summary.riskAlertsCount}</h3>
               <span className="inline-flex items-center gap-1.5 bg-rose-50 border border-rose-100 text-rose-600 text-xs font-black px-3 py-1 rounded-xl mt-3 animate-pulse">
                 <AlertTriangle className="w-3.5 h-3.5" /> Action Required
               </span>
@@ -286,13 +286,13 @@ export default function PerformanceMonitor() {
         </div>
 
         {/* 4. Main Analytics Layout Grid */}
-        <div className="grid grid-cols-12 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-8">
           
           {/* Left Column: Charts and Table */}
-          <div className="col-span-12 lg:col-span-8 space-y-8">
+          <div className="col-span-1 lg:col-span-8 space-y-4 sm:space-y-8">
             
             {/* Performance Trend Chart */}
-            <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 p-6 md:p-8">
+            <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-2xl sm:rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 p-4 sm:p-6 md:p-8">
               <div className="flex justify-between items-center mb-6">
                 <div>
                   <h3 className="text-2xl font-bold text-slate-900 tracking-tight">Team Performance Trend</h3>
@@ -428,7 +428,7 @@ export default function PerformanceMonitor() {
             </div>
 
             {/* Sub Charts Row */}
-            <div className="grid grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-6">
               
               {/* Performance Distribution */}
               <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 p-6 md:p-8">
@@ -448,7 +448,7 @@ export default function PerformanceMonitor() {
               </div>
 
               {/* Category Breakdown */}
-              <div className="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm p-8 flex flex-col justify-between">
+              <div className="bg-white rounded-2xl sm:rounded-[2.5rem] border border-slate-100 shadow-sm p-4 sm:p-6 md:p-8 flex flex-col justify-between">
                 <h4 className="text-base font-black text-slate-400 uppercase tracking-widest mb-2">Category Breakdown</h4>
                 <div className="flex items-center justify-around h-full">
                   <div className="relative w-32 h-32">
@@ -483,10 +483,10 @@ export default function PerformanceMonitor() {
           </div>
 
           {/* Right Column: Risk & AI Sidebars */}
-          <div className="col-span-12 lg:col-span-4 space-y-8">
+          <div className="col-span-1 lg:col-span-4 space-y-4 sm:space-y-8">
             
             {/* Performance Risks Breakdown Block */}
-            <div className="bg-white rounded-[2.5rem] border border-slate-100 p-8 shadow-sm">
+            <div className="bg-white rounded-2xl sm:rounded-[2.5rem] border border-slate-100 p-4 sm:p-6 md:p-8 shadow-sm">
               <h3 className="text-xs font-black tracking-widest uppercase text-rose-600 mb-5">Performance Risks ({atRiskMembers.length})</h3>
               
               {atRiskMembers.length > 0 ? (
@@ -531,7 +531,7 @@ export default function PerformanceMonitor() {
             </div>
 
             {/* AI Performance Intelligence Card */}
-            <div className="bg-white rounded-[2.5rem] border border-slate-100 p-8 shadow-sm">
+            <div className="bg-white rounded-2xl sm:rounded-[2.5rem] border border-slate-100 p-4 sm:p-6 md:p-8 shadow-sm">
               <div className="flex items-center gap-2 mb-5 text-indigo-600">
                 <Sparkles size={20} />
                 <h3 className="text-lg font-black text-slate-900 tracking-tight">AI Performance Intelligence</h3>
@@ -539,7 +539,7 @@ export default function PerformanceMonitor() {
               
               <div className="space-y-5">
                 <div className="border-l-4 border-indigo-500 pl-4 py-1">
-                  <h4 className="text-xs font-black text-slate-400 uppercase tracking-widest">Velocity Forecast</h4>
+                  <h4 className="text-[9px] sm:text-xs font-black text-slate-400 uppercase tracking-widest truncate">Velocity Forecast</h4>
                   <p className="text-sm text-slate-600 font-semibold mt-1.5 leading-relaxed">
                     {aiIntelligence.velocityReason || `Predicting velocity expansion based on verified skill acquisition and training progression.`}
                   </p>
@@ -549,7 +549,7 @@ export default function PerformanceMonitor() {
                 </div>
 
                 <div className="border-l-4 border-slate-300 pl-4 py-1">
-                  <h4 className="text-xs font-black text-slate-400 uppercase tracking-widest">Prescriptive Intervention</h4>
+                  <h4 className="text-[9px] sm:text-xs font-black text-slate-400 uppercase tracking-widest truncate">Prescriptive Intervention</h4>
                   <p className="text-sm text-slate-600 font-semibold mt-1.5 leading-relaxed">
                     {aiIntelligence.prescriptiveRecommendation || `All team capability baselines currently stabilized.`}
                   </p>
@@ -622,7 +622,7 @@ export default function PerformanceMonitor() {
                   </div>
 
                   <div>
-                    <label className="text-xs font-black text-slate-400 uppercase tracking-widest block mb-2">Assign Targeted Course</label>
+                    <label className="text-[9px] sm:text-xs font-black text-slate-400 uppercase tracking-widest truncate block mb-2">Assign Targeted Course</label>
                     <select 
                       value={selectedCourseIdForPlan} 
                       onChange={(e) => setSelectedCourseIdForPlan(e.target.value)}
@@ -641,7 +641,7 @@ export default function PerformanceMonitor() {
                   </div>
 
                   <div>
-                    <label className="text-xs font-black text-slate-400 uppercase tracking-widest block mb-2">Milestone Target Date</label>
+                    <label className="text-[9px] sm:text-xs font-black text-slate-400 uppercase tracking-widest truncate block mb-2">Milestone Target Date</label>
                     <input 
                       type="date" 
                       value={planTargetDate} 
