@@ -303,7 +303,7 @@ export default function TeamTrainingRequests() {
               </div>
               <div className="w-[12%]">REQUEST ID</div>
               <div className="w-[20%]">MEMBER</div>
-              <div className="w-[30%]">REQUESTED TRAINING</div>
+              <div className="min-w-[200px] flex-1 pr-4">REQUESTED TRAINING</div>
               <div className="w-[11%] text-center">PRIORITY</div>
               <div className="w-[11%] text-center">STATUS</div>
               <div className="w-[12%] text-right">ACTIONS</div>
@@ -587,10 +587,10 @@ const RequestItemRow = ({ item, isSelected, onSelect, onApprove, onReject, onVie
 
   return (
     <div className={`flex items-center justify-between p-4 rounded-2xl border transition-all shadow-sm ${
-      isSelected ? 'bg-blue-50/40 border-blue-200' : 'bg-[#FFFDF5]/40 border-amber-100/30 hover:border-slate-200 hover:bg-white'
+      isSelected ? 'bg-blue-500/15 border-[#1988A3] shadow-sm' : 'bg-[#E4EEF8]/60 backdrop-blur-md border border-white/85 hover:border-[#1988A3]/50 hover:bg-[#E4EEF8]/90'
     }`}>
       
-      <div className="w-[4%] flex items-center">
+      <div className="w-8 shrink-0 flex items-center">
         <input 
           type="checkbox" 
           checked={isSelected}
@@ -599,9 +599,9 @@ const RequestItemRow = ({ item, isSelected, onSelect, onApprove, onReject, onVie
         />
       </div>
 
-      <div className="w-[12%] text-xs font-bold text-slate-400 tracking-tight">{item.id}</div>
+      <div className="w-24 shrink-0 text-xs font-bold text-[#8A9CB7] tracking-tight">{item.id}</div>
       
-      <div className="flex items-center gap-3 w-[20%]">
+      <div className="flex items-center gap-2.5 w-48 shrink-0">
         <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-black text-xs flex items-center justify-center border border-blue-200 shrink-0">
           {item.initials || 'EM'}
         </div>
@@ -613,18 +613,18 @@ const RequestItemRow = ({ item, isSelected, onSelect, onApprove, onReject, onVie
         <p className="text-[11px] font-semibold text-slate-400 mt-0.5">{item.role}</p>
       </div>
 
-      <div className="w-[11%] flex justify-center">
+      <div className="w-28 shrink-0 flex justify-center">
         <span className={`px-2.5 py-0.5 rounded-lg text-[10px] font-black ${priorityBadge}`}>
           {item.priority}
         </span>
       </div>
 
-      <div className="w-[11%] flex justify-center items-center gap-1.5 text-xs font-black text-slate-700">
+      <div className="w-28 shrink-0 flex justify-center items-center gap-1.5 text-xs font-bold text-[#17233E]">
         <span className={`w-2 h-2 rounded-full ${statusDot}`}></span>
         {item.status}
       </div>
 
-      <div className="w-[12%] flex justify-end items-center gap-1.5">
+      <div className="w-28 shrink-0 flex justify-end items-center gap-1.5">
         {item.status === "Pending" ? (
           <>
             <button 

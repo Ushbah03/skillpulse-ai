@@ -422,7 +422,7 @@ const AssignLearning = () => {
                         <th className="py-4 px-6 text-center">Action</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-50 text-sm font-bold text-slate-800 bg-white">
+                    <tbody className="divide-y divide-white/60 text-sm font-bold text-[#17233E] bg-[#E4EEF8]/30 backdrop-blur-xs">
                       {filteredPrograms.length > 0 ? (
                         filteredPrograms.map((program) => {
                           const skillTag = program.skillsTaught?.[0]?.skill?.name || 'Technical';
@@ -498,7 +498,7 @@ const AssignLearning = () => {
                           <th className="py-4 px-6">Status</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-slate-50 text-sm font-bold text-slate-800 bg-white">
+                      <tbody className="divide-y divide-white/60 text-sm font-bold text-[#17233E] bg-[#E4EEF8]/30 backdrop-blur-xs">
                         {enrollments.length > 0 ? (
                           enrollments.map((en) => {
                             const isDone = en.status === 'COMPLETED' || en.progressPct >= 100;
@@ -542,7 +542,7 @@ const AssignLearning = () => {
               <div className="col-span-1 lg:col-span-4 space-y-4 sm:space-y-6">
                 
                 {/* Box 1: Select Team Members */}
-                <div className="bg-white rounded-2xl sm:rounded-[2.5rem] p-4 sm:p-6 border border-slate-100 shadow-sm space-y-4">
+                <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-white/85 shadow-xl shadow-[#1B3154]/6 space-y-4">
                   <div className="flex items-center justify-between">
                     <h3 className="text-lg font-bold text-slate-900 tracking-tight">Select Team Members</h3>
                     <button 
@@ -585,7 +585,7 @@ const AssignLearning = () => {
                 </div>
 
                 {/* Box 2: AI Recommended Block */}
-                <div className="bg-white rounded-2xl sm:rounded-[2.5rem] p-4 sm:p-6 border border-slate-100 shadow-sm space-y-4">
+                <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-white/85 shadow-xl shadow-[#1B3154]/6 space-y-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2 text-purple-600">
                       <Zap size={18} fill="currentColor" />
@@ -814,8 +814,8 @@ const AssignLearning = () => {
 };
 
 /* --- Component Helpers --- */
-const TopMetricCard = ({ title, value, extra, color, extraColor = "text-slate-400", children }) => (
-  <div className="bg-white p-3.5 sm:p-6 rounded-2xl sm:rounded-[2rem] border border-slate-100 shadow-sm flex items-center justify-between">
+const TopMetricCard = ({ title, value, extra, color, extraColor = "text-[#8A9CB7]", children }) => (
+  <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex items-center justify-between group hover:border-[#1988A3]/40 transition-all">
     <div className="space-y-1">
       <p className="text-slate-400 text-[10px] font-black uppercase tracking-wider">{title}</p>
       <h4 className="text-3xl font-black text-slate-900 tracking-tight">{value}</h4>
@@ -919,7 +919,7 @@ const MemberCheckRow = ({ name, role, gap, gapStyle, img, initials, isSelected, 
   <div 
     onClick={onToggle}
     className={`flex items-center justify-between p-3.5 rounded-2xl border transition-all cursor-pointer ${
-      isSelected ? 'bg-blue-50/40 border-blue-200' : 'bg-white border-slate-100 hover:border-slate-200'
+      isSelected ? 'bg-blue-500/15 border-[#1988A3] shadow-sm' : 'bg-[#E4EEF8]/60 backdrop-blur-md border border-white/85 hover:border-[#1988A3]/50 hover:bg-[#E4EEF8]/90'
     }`}
   >
     <div className="flex items-center gap-3">
@@ -947,7 +947,7 @@ const MemberCheckRow = ({ name, role, gap, gapStyle, img, initials, isSelected, 
 );
 
 const RecommendationCard = ({ title, level, levelStyle, text, onAction }) => (
-  <div className="p-4 bg-slate-50/60 rounded-2xl border border-slate-100 flex flex-col gap-3">
+  <div className="p-4 bg-[#E4EEF8]/60 backdrop-blur-md rounded-2xl border border-white/85 flex flex-col gap-3 shadow-sm">
     <div className="flex justify-between items-start gap-2">
       <h4 className="text-sm font-extrabold text-slate-900 leading-snug">{title}</h4>
       <span className={`text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded shrink-0 ${levelStyle}`}>

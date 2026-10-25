@@ -799,12 +799,12 @@ export default function TeamReports() {
 const OverviewReportCard = ({ title, value, valueSuffix, icon, iconBg, trend, trendColor, customRing }) => (
   <div className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm flex flex-col justify-between min-h-[140px] relative overflow-hidden">
     <div className="flex justify-between items-start">
-      <span className="text-[10px] font-black text-slate-400 tracking-widest">{title}</span>
+      <span className="text-[10px] font-black text-[#8A9CB7] tracking-widest truncate">{title}</span>
       <div className={`w-8 h-8 ${iconBg} rounded-lg flex items-center justify-center`}>{icon}</div>
     </div>
     
     <div className="mt-4 flex justify-between items-end">
-      <h4 className="text-4xl font-black text-slate-900 tracking-tight">
+      <h4 className="text-xl sm:text-3xl md:text-4xl font-black text-[#17233E] tracking-tight">
         {value}{valueSuffix && <span className="text-base text-slate-400 font-medium ml-0.5">{valueSuffix}</span>}
       </h4>
       {trend && (
@@ -830,7 +830,7 @@ const DoubleBarChartGroup = ({ label, valBefore, valAfter }) => (
 const WorkforceRow = ({ member, onClick }) => (
   <div 
     onClick={onClick}
-    className="flex items-center justify-between p-4 bg-white rounded-2xl border border-slate-100 hover:border-slate-200 hover:shadow-sm transition-all text-center text-sm font-semibold text-slate-700 cursor-pointer"
+    className="flex items-center justify-between p-3.5 sm:p-4 bg-[#E4EEF8]/60 backdrop-blur-md rounded-2xl border border-white/85 hover:border-[#1988A3]/50 hover:bg-[#E4EEF8]/90 hover:shadow-sm transition-all text-center text-sm font-semibold text-[#17233E] cursor-pointer"
   >
     <div className="w-[20%] flex items-center gap-3.5 text-left">
       <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-black text-xs flex items-center justify-center border-2 border-white shadow-sm shrink-0">

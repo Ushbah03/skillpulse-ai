@@ -183,7 +183,7 @@ export default function TeamReadinessScore() {
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-5">
           
           {/* Index Card */}
-          <div className="bg-white p-3.5 sm:p-6 rounded-2xl sm:rounded-[2rem] border border-slate-100 shadow-sm flex justify-between items-center relative overflow-hidden">
+          <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex justify-between items-center relative overflow-hidden group hover:border-[#1988A3]/40 transition-all">
             <div>
               <p className="text-slate-400 text-[9px] sm:text-xs font-bold mb-1 sm:mb-1.5 uppercase tracking-wider truncate">Overall Readiness Index</p>
               <h4 className="text-lg sm:text-2xl md:text-3xl font-black text-slate-900 tracking-tight">Production Fit</h4>
@@ -194,7 +194,7 @@ export default function TeamReadinessScore() {
           </div>
 
           {/* Validation Bar Card */}
-          <div className="bg-white p-3.5 sm:p-6 rounded-2xl sm:rounded-[2rem] border border-slate-100 shadow-sm flex flex-col justify-between">
+          <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-col justify-between group hover:border-[#1988A3]/40 transition-all">
             <div>
               <p className="text-slate-400 text-[9px] sm:text-xs font-bold mb-1 sm:mb-1.5 uppercase tracking-wider truncate">Target Skills Validated</p>
               <h4 className="text-lg sm:text-2xl md:text-3xl font-black text-slate-900 tracking-tight">{totalValidatedSkills} Skills</h4>
@@ -205,7 +205,7 @@ export default function TeamReadinessScore() {
           </div>
 
           {/* Qualified Members Metric */}
-          <div className="bg-white p-3.5 sm:p-6 rounded-2xl sm:rounded-[2rem] border border-slate-100 shadow-sm flex flex-col justify-between">
+          <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-col justify-between group hover:border-[#1988A3]/40 transition-all">
             <div>
               <p className="text-slate-400 text-[9px] sm:text-xs font-bold mb-1 sm:mb-1.5 uppercase tracking-wider truncate">Qualified Members</p>
               <h4 className="text-lg sm:text-2xl md:text-3xl font-black text-slate-900 tracking-tight">{qualifiedCount} / {totalMembersCount} Members</h4>
@@ -216,7 +216,7 @@ export default function TeamReadinessScore() {
           </div>
 
           {/* Critical Gaps Item */}
-          <div className="bg-white p-3.5 sm:p-6 rounded-2xl sm:rounded-[2rem] border border-slate-100 shadow-sm flex flex-col justify-between">
+          <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-col justify-between group hover:border-[#1988A3]/40 transition-all">
             <div>
               <p className="text-slate-400 text-[9px] sm:text-xs font-bold mb-1 sm:mb-1.5 uppercase tracking-wider truncate">Critical Capability Gaps</p>
               <h4 className="text-lg sm:text-2xl md:text-3xl font-black text-rose-500 tracking-tight">{criticalGapsCount} Gaps Left</h4>
@@ -233,7 +233,7 @@ export default function TeamReadinessScore() {
         </div>
 
         {/* Filters Panel */}
-        <div className="bg-white rounded-2xl p-3.5 sm:p-4 border border-slate-100 shadow-sm flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4">
+        <div className="bg-[#E4EEF8]/60 backdrop-blur-md rounded-2xl p-3.5 sm:p-4 border border-white/85 shadow-sm flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4">
           <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 sm:gap-3">
             <div className="flex items-center gap-2 text-slate-500 text-sm font-bold px-2">
               <SlidersHorizontal size={16} />
@@ -344,7 +344,7 @@ export default function TeamReadinessScore() {
             <div className="overflow-x-auto">
               <table className="w-full min-w-[560px] text-left border-collapse">
                 <thead>
-                  <tr className="border-b border-slate-100 bg-slate-50/50 text-xs font-black tracking-widest text-slate-400 uppercase">
+                  <tr className="border-b border-white/60 bg-white/40 backdrop-blur-xs text-xs font-black tracking-widest text-[#8A9CB7] uppercase">
                     <th className="py-4 px-6">Team Member</th>
                     <th className="py-4 px-4 text-center">Readiness Index</th>
                     <th className="py-4 px-4 text-center">Verified Target Skills</th>
@@ -352,7 +352,7 @@ export default function TeamReadinessScore() {
                     <th className="py-4 px-6 text-right">Status State</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-50 text-sm font-bold">
+                <tbody className="divide-y divide-white/60 text-sm font-bold text-[#17233E]">
                   {filteredMembers.length > 0 ? (
                     filteredMembers.map((member) => (
                       <tr 

@@ -409,7 +409,7 @@ export default function SkillGapAnalysis() {
         </div>
 
         {/* 4. AI Skill Gap Intelligence */}
-        <div className="bg-[#F3F6FF] rounded-2xl sm:rounded-[2.5rem] p-4 sm:p-8 border border-blue-100/60 space-y-4 sm:space-y-6">
+        <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-4 sm:p-8 border border-white/85 shadow-xl shadow-[#1B3154]/6 space-y-4 sm:space-y-6">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-blue-600 rounded-2xl flex items-center justify-center text-white shadow-md">
               <BrainCircuit size={20} />
