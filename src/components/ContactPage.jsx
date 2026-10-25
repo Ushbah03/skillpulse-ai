@@ -37,13 +37,13 @@ const ContactPage = () => {
         <div className="container mx-auto max-w-7xl">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-left">
             {/* Sales Card */}
-            <div className="glass-panel rounded-3xl p-8 sm:p-10 hover:border-[#1988A3]/50 transition-all duration-300 flex flex-col justify-between shadow-xl">
+            <div className="glass-panel rounded-3xl p-6 sm:p-10 hover:border-[#1988A3]/50 transition-all duration-300 flex flex-col justify-between shadow-xl">
               <div>
-                <div className="w-14 h-14 bg-[#1988A3]/10 text-[#1988A3] rounded-2xl flex items-center justify-center mb-8 shadow-sm">
-                  <MessageSquare className="w-7 h-7" />
+                <div className="w-12 h-12 sm:w-14 sm:h-14 bg-[#1988A3]/10 text-[#1988A3] rounded-2xl flex items-center justify-center mb-6 sm:mb-8 shadow-sm">
+                  <MessageSquare className="w-6 h-6 sm:w-7 sm:h-7" />
                 </div>
-                <h3 className="text-2xl font-extrabold text-[#17233E] mb-3 tracking-tight">Sales Inquiries</h3>
-                <p className="text-[#5A6D89] mb-8 leading-relaxed text-sm font-normal">
+                <h3 className="text-xl sm:text-2xl font-extrabold text-[#17233E] mb-3 tracking-tight">Sales Inquiries</h3>
+                <p className="text-[#5A6D89] mb-6 sm:mb-8 leading-relaxed text-xs sm:text-sm font-normal">
                   Interested in our multi-tenant enterprise solution? Speak with our workforce intelligence experts.
                 </p>
               </div>
@@ -54,13 +54,13 @@ const ContactPage = () => {
             </div>
 
             {/* Support Card */}
-            <div className="glass-panel rounded-3xl p-8 sm:p-10 hover:border-[#1988A3]/50 transition-all duration-300 flex flex-col justify-between shadow-xl">
+            <div className="glass-panel rounded-3xl p-6 sm:p-10 hover:border-[#1988A3]/50 transition-all duration-300 flex flex-col justify-between shadow-xl">
               <div>
-                <div className="w-14 h-14 bg-[#1988A3]/10 text-[#1988A3] rounded-2xl flex items-center justify-center mb-8 shadow-sm">
-                  <Mail className="w-7 h-7" />
+                <div className="w-12 h-12 sm:w-14 sm:h-14 bg-[#1988A3]/10 text-[#1988A3] rounded-2xl flex items-center justify-center mb-6 sm:mb-8 shadow-sm">
+                  <Mail className="w-6 h-6 sm:w-7 sm:h-7" />
                 </div>
-                <h3 className="text-2xl font-extrabold text-[#17233E] mb-3 tracking-tight">Customer Support</h3>
-                <p className="text-[#5A6D89] mb-8 leading-relaxed text-sm font-normal">
+                <h3 className="text-xl sm:text-2xl font-extrabold text-[#17233E] mb-3 tracking-tight">Customer Support</h3>
+                <p className="text-[#5A6D89] mb-6 sm:mb-8 leading-relaxed text-xs sm:text-sm font-normal">
                   Need help configuring tenant roles or LMS connectors? Our team responds within standard SLA windows.
                 </p>
               </div>
@@ -71,20 +71,20 @@ const ContactPage = () => {
             </div>
 
             {/* Phone Card */}
-            <div className="glass-panel rounded-3xl p-8 sm:p-10 hover:border-[#1988A3]/50 transition-all duration-300 flex flex-col justify-between shadow-xl">
+            <div className="glass-panel rounded-3xl p-6 sm:p-10 hover:border-[#1988A3]/50 transition-all duration-300 flex flex-col justify-between shadow-xl">
               <div>
-                <div className="w-14 h-14 bg-[#17233E]/10 text-[#17233E] rounded-2xl flex items-center justify-center mb-8 shadow-sm">
-                  <Phone className="w-7 h-7 text-[#1988A3]" />
+                <div className="w-12 h-12 sm:w-14 sm:h-14 bg-[#17233E]/10 text-[#17233E] rounded-2xl flex items-center justify-center mb-6 sm:mb-8 shadow-sm">
+                  <Phone className="w-6 h-6 sm:w-7 sm:h-7 text-[#1988A3]" />
                 </div>
-                <h3 className="text-2xl font-extrabold text-[#17233E] mb-3 tracking-tight">Direct Hotline</h3>
-                <div className="space-y-1.5 mb-8">
-                  <p className="text-[#17233E] font-extrabold text-xl tracking-tight">+1 (555) 000-0000</p>
+                <h3 className="text-xl sm:text-2xl font-extrabold text-[#17233E] mb-3 tracking-tight">Direct Hotline</h3>
+                <div className="space-y-1.5 mb-6 sm:mb-8">
+                  <p className="text-[#17233E] font-extrabold text-lg sm:text-xl tracking-tight">+1 (555) 000-0000</p>
                   <p className="text-[#5A6D89] text-xs font-normal">
                     Mon-Fri: 9:00 AM - 6:00 PM EST
                   </p>
                 </div>
               </div>
-              <span className="text-[#5A6D89] font-mono text-xs uppercase font-bold tracking-wider">
+              <span className="text-[#5A6D89] font-mono text-[11px] sm:text-xs uppercase font-bold tracking-wider">
                 Enterprise Support Ready
               </span>
             </div>
@@ -130,7 +130,7 @@ const ContactPage = () => {
           </div>
 
           <div className="lg:w-2/3 w-full">
-             <div className="w-full h-[420px] bg-white rounded-[3rem] overflow-hidden glass-panel relative group">
+             <div className="w-full h-[280px] sm:h-[420px] bg-white rounded-3xl sm:rounded-[3rem] overflow-hidden glass-panel relative group">
                 <img 
                   src="https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?auto=format&fit=crop&q=80&w=2000" 
                   alt="Map Location" 
@@ -147,16 +147,16 @@ const ContactPage = () => {
       </section>
 
       {/* SECTION 4: FINAL CTA */}
-      <section className="py-16 px-6 md:px-20 mb-8 relative z-10">
-        <div className="max-w-5xl mx-auto rounded-[3rem] py-16 text-center glass-hero-dark text-white relative overflow-hidden">
-          <h2 className="text-3xl md:text-4xl font-extrabold mb-4 tracking-tight text-white leading-tight">
+      <section className="py-12 sm:py-16 px-6 md:px-20 mb-8 relative z-10">
+        <div className="max-w-5xl mx-auto rounded-3xl sm:rounded-[3rem] py-12 sm:py-16 px-6 text-center glass-hero-dark text-white relative overflow-hidden">
+          <h2 className="text-2xl sm:text-4xl font-extrabold mb-4 tracking-tight text-white leading-tight">
             Ready to Transform <br /> Workforce Skills?
           </h2>
-          <div className="flex flex-wrap justify-center gap-4 relative z-10">
-            <Link to="/signup" className="bg-white text-[#17233E] hover:bg-[#E9EAF7] px-8 py-3.5 rounded-full font-bold text-sm transition shadow-xl">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5 relative z-10 w-full max-w-xs sm:max-w-none mx-auto mt-6">
+            <Link to="/signup" className="w-full sm:w-auto text-center bg-white text-[#17233E] hover:bg-[#E9EAF7] px-8 py-3.5 rounded-full font-bold text-sm transition shadow-xl">
               Start Free Trial
             </Link>
-            <Link to="/features" className="bg-white/10 border border-white/25 text-white hover:bg-white/20 px-8 py-3.5 rounded-full font-bold text-sm transition backdrop-blur-md">
+            <Link to="/features" className="w-full sm:w-auto text-center bg-white/10 border border-white/25 text-white hover:bg-white/20 px-8 py-3.5 rounded-full font-bold text-sm transition backdrop-blur-md">
               Explore Platform
             </Link>
           </div>

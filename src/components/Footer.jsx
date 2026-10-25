@@ -34,7 +34,7 @@ export function Footer() {
       <div className="absolute bottom-0 right-1/4 w-[450px] h-[200px] bg-[#11C6DE]/08 blur-[90px] pointer-events-none rounded-full" />
 
       <div className="relative z-10 max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 lg:gap-12 items-start pb-12 border-b border-white/10">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-start pb-12 border-b border-white/10">
           
           {/* Brand & Mission Column (5 cols) */}
           <div className="lg:col-span-5 text-left">
@@ -67,56 +67,59 @@ export function Footer() {
             </div>
           </div>
 
-          {/* Solutions Column (2.5 cols) */}
-          <div className="lg:col-span-2 text-left">
-            <h4 className="font-bold mb-4 text-white text-xs uppercase tracking-wider font-mono flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#1988A3]" /> Solutions
-            </h4>
-            <ul className="space-y-3 text-[#8A9CB7] text-sm font-normal">
-              {solutions.map((item) => (
-                <li key={item.name}>
-                  <Link to={item.path} className="hover:text-white hover:translate-x-0.5 transition-all inline-block">
-                    {item.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
+          {/* Links Grid: Responsive multi-column layout on mobile */}
+          <div className="lg:col-span-7 grid grid-cols-2 sm:grid-cols-3 gap-8">
+            {/* Solutions Column */}
+            <div className="text-left">
+              <h4 className="font-bold mb-4 text-white text-xs uppercase tracking-wider font-mono flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#1988A3]" /> Solutions
+              </h4>
+              <ul className="space-y-3 text-[#8A9CB7] text-xs sm:text-sm font-normal">
+                {solutions.map((item) => (
+                  <li key={item.name}>
+                    <Link to={item.path} className="hover:text-white hover:translate-x-0.5 transition-all inline-block">
+                      {item.name}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
 
-          {/* Platform Column (2.5 cols) */}
-          <div className="lg:col-span-2 text-left">
-            <h4 className="font-bold mb-4 text-white text-xs uppercase tracking-wider font-mono flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#11C6DE]" /> Platform
-            </h4>
-            <ul className="space-y-3 text-[#8A9CB7] text-sm font-normal">
-              {platformLinks.map((item) => (
-                <li key={item.name}>
-                  <Link to={item.path} className="hover:text-white hover:translate-x-0.5 transition-all inline-block">
-                    {item.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
+            {/* Platform Column */}
+            <div className="text-left">
+              <h4 className="font-bold mb-4 text-white text-xs uppercase tracking-wider font-mono flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#11C6DE]" /> Platform
+              </h4>
+              <ul className="space-y-3 text-[#8A9CB7] text-xs sm:text-sm font-normal">
+                {platformLinks.map((item) => (
+                  <li key={item.name}>
+                    <Link to={item.path} className="hover:text-white hover:translate-x-0.5 transition-all inline-block">
+                      {item.name}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
 
-          {/* Company Column (2 cols) */}
-          <div className="lg:col-span-3 text-left">
-            <h4 className="font-bold mb-4 text-white text-xs uppercase tracking-wider font-mono flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#8A9CB7]" /> Company & Trust
-            </h4>
-            <ul className="space-y-3 text-[#8A9CB7] text-sm font-normal mb-5">
-              {companyLinks.map((item) => (
-                <li key={item.name}>
-                  <Link to={item.path} className="hover:text-white hover:translate-x-0.5 transition-all inline-block">
-                    {item.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
+            {/* Company Column */}
+            <div className="col-span-2 sm:col-span-1 text-left">
+              <h4 className="font-bold mb-4 text-white text-xs uppercase tracking-wider font-mono flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#8A9CB7]" /> Company & Trust
+              </h4>
+              <ul className="space-y-3 text-[#8A9CB7] text-xs sm:text-sm font-normal mb-5">
+                {companyLinks.map((item) => (
+                  <li key={item.name}>
+                    <Link to={item.path} className="hover:text-white hover:translate-x-0.5 transition-all inline-block">
+                      {item.name}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
 
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-[11px] text-[#8A9CB7] font-mono">
-              <ShieldCheck className="w-3.5 h-3.5 text-[#1988A3]" />
-              <span>Multi-Tenant Isolated</span>
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-[11px] text-[#8A9CB7] font-mono">
+                <ShieldCheck className="w-3.5 h-3.5 text-[#1988A3]" />
+                <span>Multi-Tenant Isolated</span>
+              </div>
             </div>
           </div>
         </div>

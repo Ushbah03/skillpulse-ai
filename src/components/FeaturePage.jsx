@@ -109,28 +109,28 @@ const FeaturePage = () => {
         </div>
 
         <div className="container mx-auto max-w-4xl relative z-10">
-          <div className="inline-flex items-center gap-2 bg-[#1988A3]/10 border border-[#1988A3]/25 px-4 py-1.5 rounded-full mb-6 backdrop-blur-md shadow-sm">
+          <div className="inline-flex items-center gap-2 bg-[#1988A3]/10 border border-[#1988A3]/25 px-3 sm:px-4 py-1.5 rounded-full mb-4 sm:mb-6 backdrop-blur-md shadow-sm">
             <span className="w-2 h-2 bg-[#1988A3] rounded-full animate-ping"></span>
-            <span className="text-[#1988A3] text-[11px] font-bold uppercase tracking-widest font-mono">
+            <span className="text-[#1988A3] text-[10px] sm:text-[11px] font-bold uppercase tracking-wider font-mono">
               {tenant.name} Enterprise Capabilities
             </span>
           </div>
 
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold mb-5 tracking-tight leading-tight text-[#17233E]">
+          <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold mb-4 sm:mb-5 tracking-tight leading-tight text-[#17233E]">
             Powerful Features Built for <br />
             <span className="bg-gradient-to-r from-[#17233E] via-[#1B3154] to-[#1988A3] bg-clip-text text-transparent">
               Workforce Intelligence
             </span>
           </h1>
 
-          <p className="text-[#5A6D89] text-base md:text-lg max-w-2xl mx-auto font-normal leading-relaxed mb-8">
+          <p className="text-[#5A6D89] text-sm sm:text-base md:text-lg max-w-2xl mx-auto font-normal leading-relaxed mb-6 sm:mb-8">
             Explore the AI-driven tools that power skill growth, predictive gap resolution, and enterprise workforce readiness across your entire organization.
           </p>
 
-          <div className="flex flex-wrap justify-center items-center gap-4">
+          <div className="flex flex-col sm:flex-row justify-center items-stretch sm:items-center gap-3 sm:gap-4 max-w-xs sm:max-w-none mx-auto">
             <Link 
               to="/contact" 
-              className="bg-[#1988A3] hover:bg-[#157289] text-white px-8 py-3.5 rounded-full font-bold text-sm sm:text-base transition-all shadow-lg shadow-[#1988A3]/30 hover:shadow-[#1988A3]/50 inline-flex items-center gap-2 group"
+              className="bg-[#1988A3] hover:bg-[#157289] text-white px-7 py-3 sm:py-3.5 rounded-full font-bold text-xs sm:text-sm md:text-base transition-all shadow-lg shadow-[#1988A3]/30 hover:shadow-[#1988A3]/50 inline-flex items-center justify-center gap-2 group text-center"
             >
               Request Live Demo <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </Link>
@@ -138,7 +138,7 @@ const FeaturePage = () => {
             {/* Interactive Loading Animation Simulator Trigger */}
             <button
               onClick={handleSimulateCalibration}
-              className="glass-panel px-6 py-3.5 rounded-full font-bold text-sm sm:text-base text-[#17233E] hover:border-[#1988A3]/60 transition-all inline-flex items-center gap-2 shadow-sm cursor-pointer"
+              className="glass-panel px-6 py-3 sm:py-3.5 rounded-full font-bold text-xs sm:text-sm md:text-base text-[#17233E] hover:border-[#1988A3]/60 transition-all inline-flex items-center justify-center gap-2 shadow-sm cursor-pointer text-center"
               title="Click to see the high-tech SkillPulse AI Loading Animation"
             >
               <RefreshCw className="w-4 h-4 text-[#1988A3] animate-spin" style={{ animationDuration: '3s' }} />
@@ -160,18 +160,18 @@ const FeaturePage = () => {
               <div className="w-full h-full bg-gradient-to-r from-transparent via-white/50 to-transparent animate-shimmer-sweep" />
             </div>
 
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 mb-4 sm:mb-6">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#17233E] text-white text-[10px] font-mono font-bold uppercase shadow-sm">
                 <span className="w-1.5 h-1.5 rounded-full bg-[#11C6DE] animate-ping" />
                 Prisma Engine Synced
               </div>
-              <span className="text-[11px] font-mono font-bold text-[#1988A3]">
+              <span className="text-[10px] sm:text-[11px] font-mono font-bold text-[#1988A3]">
                 Live Adaptive Scoring
               </span>
             </div>
 
             {/* Interactive Category Selector Tabs */}
-            <div className="flex gap-2 p-1.5 bg-[#E9EAF7] rounded-2xl mb-6 border border-[#8A9CB7]/30">
+            <div className="flex gap-1.5 sm:gap-2 p-1.5 bg-[#E9EAF7] rounded-2xl mb-5 sm:mb-6 border border-[#8A9CB7]/30">
               {[
                 { id: 'engineering', label: 'Engineering' },
                 { id: 'leadership', label: 'Leadership' },
@@ -180,7 +180,7 @@ const FeaturePage = () => {
                 <button
                   key={tab.id}
                   onClick={() => setActiveCategory(tab.id)}
-                  className={`flex-1 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer ${
+                  className={`flex-1 py-1.5 sm:py-2 text-[11px] sm:text-xs font-bold rounded-xl transition-all cursor-pointer ${
                     activeCategory === tab.id
                       ? 'bg-[#17233E] text-white shadow-md'
                       : 'text-[#5A6D89] hover:text-[#17233E]'
@@ -192,13 +192,13 @@ const FeaturePage = () => {
             </div>
 
             {/* Animated Dynamic Progress Bars with Particle Tips */}
-            <div className="bg-white/60 rounded-2xl p-6 border border-white/80 shadow-inner space-y-6">
-              <div className="flex items-center justify-between border-b border-[#8A9CB7]/20 pb-3">
+            <div className="bg-white/60 rounded-2xl p-4 sm:p-6 border border-white/80 shadow-inner space-y-5 sm:space-y-6">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1 border-b border-[#8A9CB7]/20 pb-3">
                 <h4 className="font-extrabold text-[#17233E] text-sm sm:text-base flex items-center gap-2">
                   <Sparkles className="w-4 h-4 text-[#1988A3]" />
                   <span>Real-Time Capability Matrix</span>
                 </h4>
-                <span className="text-xs font-mono font-bold text-[#5A6D89]">
+                <span className="text-[10px] sm:text-xs font-mono font-bold text-[#5A6D89]">
                   Quarterly Snapshot
                 </span>
               </div>
@@ -210,22 +210,22 @@ const FeaturePage = () => {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
                   transition={{ duration: 0.3 }}
-                  className="space-y-5"
+                  className="space-y-4 sm:space-y-5"
                 >
                   {assessmentData[activeCategory].map((s, i) => (
                     <div key={i} className="group">
-                      <div className="flex justify-between items-center text-xs font-bold mb-2 uppercase tracking-wider text-[#17233E] font-mono">
-                        <span className="truncate max-w-[200px] sm:max-w-none">{s.label}</span>
-                        <div className="flex items-center gap-2">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-xs font-bold mb-1.5 font-mono">
+                        <span className="text-[#17233E] text-xs font-bold leading-tight">{s.label}</span>
+                        <div className="flex items-center justify-between sm:justify-end gap-2">
                           <span className="text-[10px] text-[#5A6D89] font-normal lowercase bg-white/70 px-2 py-0.5 rounded-md border border-[#8A9CB7]/30">
                             {s.tag}
                           </span>
-                          <span className="text-[#1988A3] font-bold">{s.val}%</span>
+                          <span className="text-[#1988A3] font-bold text-xs">{s.val}%</span>
                         </div>
                       </div>
 
                       {/* Animated Glowing Progress Bar */}
-                      <div className="w-full h-3 bg-[#E9EAF7] rounded-full overflow-hidden p-0.5 shadow-inner relative">
+                      <div className="w-full h-2.5 sm:h-3 bg-[#E9EAF7] rounded-full overflow-hidden p-0.5 shadow-inner relative">
                         <motion.div 
                           initial={{ width: 0 }}
                           animate={{ width: `${s.val}%` }}
@@ -288,7 +288,7 @@ const FeaturePage = () => {
             <p className="text-[#5A6D89] text-base md:text-lg mb-8 font-normal leading-relaxed">
               Our neural engine cross-evaluates talent profiles against organizational objectives to detect, isolate, and forecast skill deficiencies before they impact delivery.
             </p>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               {[
                 { title: 'Gap Visualization', desc: 'Interactive vector mapping & proficiency clustering.' },
                 { title: 'Priority Ranking', desc: 'Urgency-weighted skill queues for L&D budgets.' },
@@ -298,7 +298,7 @@ const FeaturePage = () => {
                 <motion.div 
                   key={i} 
                   whileHover={{ y: -3, scale: 1.02 }}
-                  className="p-5 glass-panel rounded-2xl hover:border-[#1988A3]/50 transition-all cursor-pointer group"
+                  className="p-4 sm:p-5 glass-panel rounded-2xl hover:border-[#1988A3]/50 transition-all cursor-pointer group"
                 >
                   <h4 className="font-bold text-[#17233E] text-sm mb-1 flex items-center justify-between">
                     <span>{f.title}</span>

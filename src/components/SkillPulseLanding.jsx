@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Link, useParams } from 'react-router-dom';
-import { Building2, ShieldCheck, Cpu, Zap, ArrowRight, Activity, Sparkles, CheckCircle2 } from 'lucide-react';
+import { Building2, ShieldCheck, Cpu, Zap, ArrowRight, Activity, Sparkles, CheckCircle2, BrainCircuit } from 'lucide-react';
 import dashboardImg from '../assets/images/intro-image.jpg';
 
 const SkillPulseLanding = () => {
@@ -72,16 +72,16 @@ const SkillPulseLanding = () => {
                 Measure readiness. Close skill gaps. Accelerate workforce growth with enterprise tenant-isolated data insights.
               </motion.p>
 
-              <motion.div variants={intenseUp} className="flex flex-row items-center justify-start gap-3 sm:gap-4 w-full">
+              <motion.div variants={intenseUp} className="flex flex-col sm:flex-row items-stretch sm:items-center justify-start gap-3 sm:gap-4 w-full">
                 <Link 
                   to="/signup" 
-                  className="bg-white text-[#17233E] hover:bg-[#E9EAF7] px-7 sm:px-9 py-3 sm:py-3.5 rounded-full font-extrabold text-xs sm:text-sm transition-all shadow-xl shadow-[#17233E]/30 inline-flex items-center gap-2"
+                  className="bg-white text-[#17233E] hover:bg-[#E9EAF7] px-7 sm:px-9 py-3.5 rounded-full font-extrabold text-xs sm:text-sm transition-all shadow-xl shadow-[#17233E]/30 inline-flex items-center justify-center gap-2 text-center"
                 >
                   Get Started <ArrowRight className="w-4 h-4 text-[#1988A3]" />
                 </Link>
                 <Link 
                   to="/contact" 
-                  className="bg-white/10 hover:bg-white/20 border border-white/25 text-white px-6 sm:px-8 py-3 sm:py-3.5 rounded-full font-bold text-xs sm:text-sm transition-all backdrop-blur-md shadow-md inline-block"
+                  className="bg-white/10 hover:bg-white/20 border border-white/25 text-white px-6 sm:px-8 py-3.5 rounded-full font-bold text-xs sm:text-sm transition-all backdrop-blur-md shadow-md inline-flex items-center justify-center text-center"
                 >
                   Request Demo
                 </Link>
@@ -98,8 +98,8 @@ const SkillPulseLanding = () => {
                     className="rounded-[1.2rem] w-full opacity-95 shadow-inner" 
                   />
 
-                  {/* Floating Micro-Widget 1: Live Skill Gap Accuracy */}
-                  <div className="absolute -top-3 sm:-top-5 right-2 sm:-right-4 bg-white/95 border border-white backdrop-blur-xl px-3.5 py-2 rounded-2xl shadow-xl flex items-center gap-2.5 text-[#17233E]">
+                  {/* Desktop Floating Micro-Widgets (Hidden on Mobile) */}
+                  <div className="hidden sm:flex absolute -top-3 sm:-top-5 right-2 sm:-right-4 bg-white/95 border border-white backdrop-blur-xl px-3.5 py-2 rounded-2xl shadow-xl items-center gap-2.5 text-[#17233E]">
                     <div className="p-1.5 rounded-xl bg-[#1988A3]/10 text-[#1988A3]">
                       <Zap className="w-3.5 h-3.5" />
                     </div>
@@ -109,14 +109,35 @@ const SkillPulseLanding = () => {
                     </div>
                   </div>
 
-                  {/* Floating Micro-Widget 2: Live Provisioned Tenants */}
-                  <div className="absolute -bottom-3 sm:-bottom-5 left-2 sm:-left-4 bg-white/95 border border-white backdrop-blur-xl px-3.5 py-2 rounded-2xl shadow-xl flex items-center gap-2.5 text-[#17233E]">
+                  <div className="hidden sm:flex absolute -bottom-3 sm:-bottom-5 left-2 sm:-left-4 bg-white/95 border border-white backdrop-blur-xl px-3.5 py-2 rounded-2xl shadow-xl items-center gap-2.5 text-[#17233E]">
                     <div className="p-1.5 rounded-xl bg-[#17233E]/10 text-[#17233E]">
                       <Building2 className="w-3.5 h-3.5 text-[#1988A3]" />
                     </div>
                     <div className="text-left">
                       <div className="text-[9px] text-[#5A6D89] uppercase font-mono font-bold">PostgreSQL Multi-Tenant</div>
                       <div className="text-[11px] font-extrabold text-[#17233E]">Live Partition Active</div>
+                    </div>
+                  </div>
+
+                  {/* Mobile Docked Micro-Widgets (Clean row below preview, no overlapping) */}
+                  <div className="sm:hidden grid grid-cols-2 gap-2 mt-3 text-left">
+                    <div className="bg-white/95 border border-white px-2.5 py-2 rounded-xl shadow-md flex items-center gap-2 text-[#17233E]">
+                      <div className="p-1 rounded-lg bg-[#1988A3]/10 text-[#1988A3] shrink-0">
+                        <Zap className="w-3 h-3" />
+                      </div>
+                      <div className="min-w-0">
+                        <div className="text-[8px] text-[#5A6D89] uppercase font-mono font-bold truncate">Accuracy</div>
+                        <div className="text-[10px] font-extrabold text-[#1988A3]">98.4% Precision</div>
+                      </div>
+                    </div>
+                    <div className="bg-white/95 border border-white px-2.5 py-2 rounded-xl shadow-md flex items-center gap-2 text-[#17233E]">
+                      <div className="p-1 rounded-lg bg-[#17233E]/10 text-[#17233E] shrink-0">
+                        <Building2 className="w-3 h-3 text-[#1988A3]" />
+                      </div>
+                      <div className="min-w-0">
+                        <div className="text-[8px] text-[#5A6D89] uppercase font-mono font-bold truncate">PostgreSQL</div>
+                        <div className="text-[10px] font-extrabold text-[#17233E]">Live Synced</div>
+                      </div>
                     </div>
                   </div>
 
@@ -127,33 +148,53 @@ const SkillPulseLanding = () => {
       </section>
 
       {/* 2. FEATURES SECTION WITH FROSTED GLASS CARDS */}
-      <section className="py-20 md:py-24 px-6 md:px-16 text-center relative z-10">
-        <div className="max-w-3xl mx-auto mb-14">
+      <section className="py-16 md:py-24 px-5 sm:px-6 md:px-16 text-center relative z-10">
+        <div className="max-w-3xl mx-auto mb-10 sm:mb-14">
           <span className="px-3.5 py-1.5 rounded-full bg-[#1988A3]/10 border border-[#1988A3]/25 text-[#1988A3] text-xs font-mono font-bold uppercase tracking-wider inline-block mb-3.5">
             PLATFORM CAPABILITIES
           </span>
-          <h2 className="text-3xl md:text-5xl font-extrabold text-[#17233E] mb-4 tracking-tight">Unlock Your Workforce Potential</h2>
-          <p className="text-[#5A6D89] text-base md:text-lg font-normal">Actionable intelligence to align your team's capabilities with strategic goals.</p>
+          <h2 className="text-2xl sm:text-4xl md:text-5xl font-extrabold text-[#17233E] mb-3 sm:mb-4 tracking-tight">Unlock Your Workforce Potential</h2>
+          <p className="text-[#5A6D89] text-sm sm:text-base md:text-lg font-normal">Actionable intelligence to align your team's capabilities with strategic goals.</p>
         </div>
 
-        <div className="max-w-7xl mx-auto grid md:grid-cols-3 gap-8 text-left">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 text-left">
           {[
-            { title: "AI Skill Gap Analysis", desc: "Automatically detect critical skill deficiencies across enterprise teams and predict future talent needs.", dot: "bg-[#1988A3]", tag: "GenAI Engine" },
-            { title: "Workforce Readiness", desc: "Quantify your organization's preparedness with dynamic, real-time readiness scoring models.", dot: "bg-[#17233E]", tag: "Live Scoring" },
-            { title: "Multi-Tenant Security", desc: "Enterprise-grade isolated data architecture supporting custom SSO and role-based access control.", dot: "bg-[#5A6D89]", tag: "Data Partition" }
+            { 
+              title: "AI Skill Gap Analysis", 
+              desc: "Automatically detect critical skill deficiencies across enterprise teams and predict future talent needs.", 
+              icon: BrainCircuit,
+              color: "text-[#1988A3] bg-[#1988A3]/10 border-[#1988A3]/25",
+              tag: "GenAI Engine" 
+            },
+            { 
+              title: "Workforce Readiness", 
+              desc: "Quantify your organization's preparedness with dynamic, real-time readiness scoring models.", 
+              icon: Activity,
+              color: "text-[#11C6DE] bg-[#11C6DE]/10 border-[#11C6DE]/25",
+              tag: "Live Scoring" 
+            },
+            { 
+              title: "Multi-Tenant Security", 
+              desc: "Enterprise-grade isolated data architecture supporting custom SSO and role-based access control.", 
+              icon: ShieldCheck,
+              color: "text-[#17233E] bg-[#17233E]/10 border-[#17233E]/25",
+              tag: "Data Partition" 
+            }
           ].map((item, i) => (
             <div 
               key={i} 
-              className="p-8 rounded-[2rem] glass-panel transition-all duration-300 group cursor-pointer relative overflow-hidden"
+              className="p-6 sm:p-8 rounded-3xl glass-panel transition-all duration-300 group cursor-pointer relative overflow-hidden hover:border-[#1988A3]/50 shadow-md"
             >
-              <div className="flex items-center justify-between mb-6">
-                <div className={`w-8 h-3.5 ${item.dot} rounded-full opacity-80`} />
-                <span className="text-[10px] font-mono font-bold text-[#5A6D89] bg-[#E9EAF7] px-2.5 py-1 rounded-full border border-[#8A9CB7]/30">
+              <div className="flex items-center justify-between mb-5">
+                <div className={`w-10 h-10 rounded-2xl border flex items-center justify-center ${item.color} shadow-xs group-hover:scale-105 transition-transform`}>
+                  <item.icon className="w-5 h-5" />
+                </div>
+                <span className="text-[10px] font-mono font-bold text-[#5A6D89] bg-[#E9EAF7] px-3 py-1 rounded-full border border-[#8A9CB7]/30 shadow-2xs">
                   {item.tag}
                 </span>
               </div>
-              <h3 className="font-extrabold text-2xl mb-3 text-[#17233E] group-hover:text-[#1988A3] transition-colors">{item.title}</h3>
-              <p className="text-[#5A6D89] text-sm leading-relaxed font-normal">{item.desc}</p>
+              <h3 className="font-extrabold text-xl sm:text-2xl mb-2.5 text-[#17233E] group-hover:text-[#1988A3] transition-colors">{item.title}</h3>
+              <p className="text-[#5A6D89] text-xs sm:text-sm leading-relaxed font-normal">{item.desc}</p>
             </div>
           ))}
         </div>

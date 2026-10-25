@@ -211,7 +211,7 @@ const FAQPage = () => {
           </div>
 
           {/* Support Box */}
-          <div className="mt-14 text-center glass-panel rounded-3xl p-8 max-w-xl mx-auto shadow-xl">
+          <div className="mt-14 text-center glass-panel rounded-3xl p-6 sm:p-8 max-w-xl mx-auto shadow-xl">
             <div className="w-12 h-12 bg-[#1988A3]/10 border border-[#1988A3]/25 text-[#1988A3] rounded-2xl flex items-center justify-center mx-auto mb-4">
               <Mail className="w-6 h-6" />
             </div>
@@ -219,7 +219,7 @@ const FAQPage = () => {
             <p className="text-[#5A6D89] text-xs font-normal mb-6">Reach out to our team for detailed information on platform features or enterprise deployments.</p>
             <Link 
               to="/contact"
-              className="bg-[#1988A3] hover:bg-[#157289] text-white px-7 py-3 rounded-xl font-bold text-xs transition-all shadow-md shadow-[#1988A3]/25 inline-block cursor-pointer"
+              className="w-full sm:w-auto bg-[#1988A3] hover:bg-[#157289] text-white px-7 py-3 rounded-xl font-bold text-xs transition-all shadow-md shadow-[#1988A3]/25 inline-block cursor-pointer text-center"
             >
               Contact Support
             </Link>
@@ -229,22 +229,22 @@ const FAQPage = () => {
       </section>
 
       {/* 3. BOTTOM CTA */}
-      <section className="py-16 px-6 text-center relative z-10 mb-8">
+      <section className="py-12 sm:py-16 px-6 text-center relative z-10 mb-8">
         <div className="container mx-auto max-w-3xl">
-          <h2 className="text-3xl md:text-5xl font-extrabold text-[#17233E] mb-4 tracking-tight">Ready to Explore SkillPulse AI?</h2>
-          <p className="text-[#5A6D89] text-base mb-8 max-w-lg mx-auto font-normal">
+          <h2 className="text-2xl sm:text-4xl md:text-5xl font-extrabold text-[#17233E] mb-4 tracking-tight">Ready to Explore SkillPulse AI?</h2>
+          <p className="text-[#5A6D89] text-sm sm:text-base mb-8 max-w-lg mx-auto font-normal">
             Discover multi-tenant workforce intelligence, skill gap inference, and 5-tier role governance.
           </p>
-          <div className="flex flex-wrap justify-center gap-4">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5 max-w-xs sm:max-w-none mx-auto">
             <Link 
               to="/features"
-              className="bg-[#17233E] hover:bg-[#1B3154] text-white px-8 py-3.5 rounded-xl font-bold text-sm transition-all shadow-md shadow-[#17233E]/20"
+              className="w-full sm:w-auto text-center bg-[#17233E] hover:bg-[#1B3154] text-white px-8 py-3.5 rounded-xl font-bold text-sm transition-all shadow-md shadow-[#17233E]/20"
             >
               Explore Features
             </Link>
             <Link 
               to="/pricing"
-              className="bg-white/70 hover:bg-white text-[#17233E] border border-white px-8 py-3.5 rounded-xl font-bold text-sm transition-all shadow-sm"
+              className="w-full sm:w-auto text-center bg-white/70 hover:bg-white text-[#17233E] border border-white px-8 py-3.5 rounded-xl font-bold text-sm transition-all shadow-sm"
             >
               View Pricing Tiers
             </Link>
