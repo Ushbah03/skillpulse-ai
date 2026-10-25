@@ -131,7 +131,7 @@ const RoleSelection = () => {
 
   return (
     <div
-      className="min-h-screen flex items-center justify-center p-6 overflow-hidden relative selection:bg-indigo-600 selection:text-white py-12"
+      className="min-h-screen flex items-center justify-center p-3 sm:p-6 overflow-hidden relative selection:bg-indigo-600 selection:text-white py-8 sm:py-12"
       style={containerStyle}
     >
       <style>{`
@@ -154,8 +154,8 @@ const RoleSelection = () => {
           bg-[#1E293B]/70
           backdrop-blur-2xl
           border border-white/10
-          rounded-[2.5rem]
-          p-8 md:p-12
+          rounded-2xl sm:rounded-[2.5rem]
+          p-4 sm:p-8 md:p-12
           max-w-[1280px]
           w-full
           text-center
@@ -163,11 +163,11 @@ const RoleSelection = () => {
         "
       >
         <motion.div initial="hidden" animate="visible" variants={staggerGrid}>
-          <motion.h2 variants={textVariant} className="text-3xl md:text-5xl font-bold text-white mb-3 tracking-tight">
+          <motion.h2 variants={textVariant} className="text-2xl sm:text-3xl md:text-5xl font-bold text-white mb-2 sm:mb-3 tracking-tight">
             Select Workplace Context
           </motion.h2>
 
-          <motion.p variants={textVariant} className="text-slate-400 mb-10 text-base md:text-lg max-w-2xl mx-auto leading-relaxed">
+          <motion.p variants={textVariant} className="text-slate-400 mb-6 sm:mb-10 text-xs sm:text-base md:text-lg max-w-2xl mx-auto leading-relaxed">
             Choose your portal view based on your assigned organizational tier and scope.
           </motion.p>
         </motion.div>
@@ -178,7 +178,7 @@ const RoleSelection = () => {
           animate="visible"
           variants={staggerGrid}
           style={{ perspective: 1200 }}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 mb-10"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3.5 sm:gap-4 mb-6 sm:mb-10"
         >
           {roles.map((role) => (
             <motion.div
@@ -192,7 +192,7 @@ const RoleSelection = () => {
               }}
               whileTap={{ scale: 0.98 }}
               onClick={() => setSelectedRole(role.id)}
-              className={`relative p-5 rounded-[1.8rem] border transition-all duration-500 cursor-pointer text-left flex flex-col h-[270px] backdrop-blur-xl group overflow-hidden ${
+              className={`relative p-4 sm:p-5 rounded-2xl sm:rounded-[1.8rem] border transition-all duration-500 cursor-pointer text-left flex flex-col min-h-[250px] sm:h-[270px] backdrop-blur-xl group overflow-hidden ${
                 selectedRole === role.id
                   ? 'bg-indigo-600/10 border-indigo-500/70 shadow-[0_0_30px_rgba(99,102,241,0.35)]'
                   : 'bg-white/[0.03] border-white/10 hover:border-white/20 hover:bg-white/[0.05]'
