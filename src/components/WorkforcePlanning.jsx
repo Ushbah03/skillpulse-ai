@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Search, 
-  ChevronLeft, 
-  ChevronRight, 
-  Filter, 
+import {
+  Search,
+  ChevronLeft,
+  ChevronRight,
+  Filter,
   SlidersHorizontal,
   BrainCircuit,
   TrendingUp,
@@ -18,7 +18,7 @@ import {
   Loader2
 } from 'lucide-react';
 import HRSidebar from './HRSidebar';
-import SkillPulseLoader from './SkillPulseLoader'; 
+import SkillPulseLoader from './SkillPulseLoader';
 import { motion, AnimatePresence } from 'framer-motion';
 import { hrAPI } from '../services/api';
 
@@ -69,7 +69,7 @@ const WorkforceLineChart = ({ data }) => {
     <div className="relative w-full select-none">
       {/* Dynamic Hover Tooltip / Live Milestone Indicator */}
       {activeHover !== null && (
-        <div 
+        <div
           className="absolute z-20 pointer-events-none transition-all duration-150 transform -translate-x-1/2 -top-4 bg-slate-900/95 text-white px-3.5 py-2 rounded-xl shadow-xl border border-slate-700 text-xs backdrop-blur-md"
           style={{ left: `${(xPos(activeHover) / W) * 100}%` }}
         >
@@ -111,22 +111,22 @@ const WorkforceLineChart = ({ data }) => {
         {/* Y-Axis Grid Lines & Numerical Labels */}
         {yTicks.map(tick => (
           <g key={tick}>
-            <line 
-              x1={padL} 
-              x2={W - padR} 
-              y1={yPos(tick)} 
-              y2={yPos(tick)} 
-              stroke="#f1f5f9" 
-              strokeDasharray={tick === 0 ? "none" : "4 4"} 
-              strokeWidth="1.2" 
+            <line
+              x1={padL}
+              x2={W - padR}
+              y1={yPos(tick)}
+              y2={yPos(tick)}
+              stroke="#f1f5f9"
+              strokeDasharray={tick === 0 ? "none" : "4 4"}
+              strokeWidth="1.2"
             />
-            <text 
-              x={padL - 10} 
-              y={yPos(tick) + 3} 
-              textAnchor="end" 
-              fontSize="10" 
-              fill="#94a3b8" 
-              fontWeight="700" 
+            <text
+              x={padL - 10}
+              y={yPos(tick) + 3}
+              textAnchor="end"
+              fontSize="10"
+              fill="#94a3b8"
+              fontWeight="700"
               fontFamily="sans-serif"
             >
               {tick}
@@ -135,23 +135,23 @@ const WorkforceLineChart = ({ data }) => {
         ))}
 
         {/* 'NOW' Current Month Vertical Marker */}
-        <line 
-          x1={xPos(currentMonthIdx)} 
-          x2={xPos(currentMonthIdx)} 
-          y1={padT} 
-          y2={padT + chartH} 
-          stroke="#64748b" 
-          strokeDasharray="3 3" 
-          strokeWidth="1.5" 
-          strokeOpacity="0.4" 
+        <line
+          x1={xPos(currentMonthIdx)}
+          x2={xPos(currentMonthIdx)}
+          y1={padT}
+          y2={padT + chartH}
+          stroke="#64748b"
+          strokeDasharray="3 3"
+          strokeWidth="1.5"
+          strokeOpacity="0.4"
         />
-        <text 
-          x={xPos(currentMonthIdx)} 
-          y={padT - 10} 
-          textAnchor="middle" 
-          fontSize="9" 
-          fill="#64748b" 
-          fontWeight="800" 
+        <text
+          x={xPos(currentMonthIdx)}
+          y={padT - 10}
+          textAnchor="middle"
+          fontSize="9"
+          fill="#64748b"
+          fontWeight="800"
           letterSpacing="0.05em"
         >
           TODAY
@@ -162,26 +162,26 @@ const WorkforceLineChart = ({ data }) => {
         <path d={toArea(projected)} fill="url(#gradProjected)" />
 
         {/* Historical + Forecast Lines */}
-        <motion.path 
+        <motion.path
           initial={{ pathLength: 0 }}
           animate={{ pathLength: 1 }}
           transition={{ duration: 1.2, ease: "easeInOut" }}
-          d={toPath(current)} 
-          fill="none" 
-          stroke="#3b82f6" 
-          strokeWidth="2.5" 
-          strokeLinecap="round" 
+          d={toPath(current)}
+          fill="none"
+          stroke="#3b82f6"
+          strokeWidth="2.5"
+          strokeLinecap="round"
           strokeLinejoin="round"
         />
-        <motion.path 
+        <motion.path
           initial={{ pathLength: 0 }}
           animate={{ pathLength: 1 }}
           transition={{ duration: 1.2, ease: "easeInOut" }}
-          d={toPath(projected)} 
-          fill="none" 
-          stroke="#8b5cf6" 
-          strokeWidth="2.5" 
-          strokeLinecap="round" 
+          d={toPath(projected)}
+          fill="none"
+          stroke="#8b5cf6"
+          strokeWidth="2.5"
+          strokeLinecap="round"
           strokeLinejoin="round"
         />
 
@@ -204,35 +204,35 @@ const WorkforceLineChart = ({ data }) => {
               />
 
               {/* Current Supply Marker */}
-              <circle 
-                cx={xPos(i)} 
-                cy={yPos(current[i])} 
-                r={isHovered ? 6 : 4} 
-                fill="#3b82f6" 
-                stroke="#ffffff" 
+              <circle
+                cx={xPos(i)}
+                cy={yPos(current[i])}
+                r={isHovered ? 6 : 4}
+                fill="#3b82f6"
+                stroke="#ffffff"
                 strokeWidth={isHovered ? 2.5 : 1.5}
                 className="transition-all duration-150"
               />
 
               {/* Projected Demand Marker */}
-              <circle 
-                cx={xPos(i)} 
-                cy={yPos(projected[i])} 
-                r={isHovered ? 6 : 4} 
-                fill="#8b5cf6" 
-                stroke="#ffffff" 
+              <circle
+                cx={xPos(i)}
+                cy={yPos(projected[i])}
+                r={isHovered ? 6 : 4}
+                fill="#8b5cf6"
+                stroke="#ffffff"
                 strokeWidth={isHovered ? 2.5 : 1.5}
                 className="transition-all duration-150"
               />
 
               {/* Month X-Axis Label */}
-              <text 
-                x={xPos(i)} 
-                y={H - 10} 
-                textAnchor="middle" 
-                fontSize="11" 
-                fill={isHovered ? "#1e293b" : "#94a3b8"} 
-                fontWeight={isHovered ? "800" : "600"} 
+              <text
+                x={xPos(i)}
+                y={H - 10}
+                textAnchor="middle"
+                fontSize="11"
+                fill={isHovered ? "#1e293b" : "#94a3b8"}
+                fontWeight={isHovered ? "800" : "600"}
                 fontFamily="sans-serif"
               >
                 {m}
@@ -329,7 +329,7 @@ const WorkforcePlanning = () => {
 
   const roleData = React.useMemo(() => {
     if (!analyticsData?.members) return [];
-    
+
     const resolveRoleName = (member) => {
       if (member.jobTitle && member.jobTitle.trim() && member.jobTitle.toUpperCase() !== 'EMPLOYEE') {
         return member.jobTitle;
@@ -338,7 +338,7 @@ const WorkforcePlanning = () => {
       if (member.role === 'COMPANY_ADMIN') return 'Executive Administrator';
       if (member.role === 'HR_MANAGER') return 'HR Specialist / Manager';
       if (member.role === 'TEAM_LEADER') return `${deptName} Team Lead`;
-      
+
       // Standardize Employee title based on Department domain
       if (deptName === 'Engineering') return 'Software Engineer';
       if (deptName === 'Development') return 'Full Stack Developer';
@@ -354,7 +354,7 @@ const WorkforcePlanning = () => {
       const roleName = resolveRoleName(m);
       const deptName = m.department?.name || 'Unassigned';
       const key = `${roleName}::${deptName}`;
-      
+
       if (!roleGroups[key]) {
         roleGroups[key] = {
           role: roleName,
@@ -372,7 +372,7 @@ const WorkforcePlanning = () => {
     analyticsData.skillGaps?.forEach(g => {
       const user = g.user;
       if (!user) return;
-      const matchingGroup = Object.values(roleGroups).find(group => 
+      const matchingGroup = Object.values(roleGroups).find(group =>
         group.userIds.has(g.userId) || group.dept === user.department?.name
       );
       if (matchingGroup) {
@@ -426,7 +426,7 @@ const WorkforcePlanning = () => {
   }, [roleData]);
 
   const filteredRoles = React.useMemo(() => {
-    let result = roleData.filter(r => 
+    let result = roleData.filter(r =>
       r.role.toLowerCase().includes(searchQuery.toLowerCase()) ||
       r.dept.toLowerCase().includes(searchQuery.toLowerCase())
     );
@@ -470,7 +470,7 @@ const WorkforcePlanning = () => {
       r.gap
     ]);
 
-    const csvContent = "data:text/csv;charset=utf-8," 
+    const csvContent = "data:text/csv;charset=utf-8,"
       + [headers.join(","), ...rows.map(e => e.join(","))].join("\n");
 
     const encodedUri = encodeURI(csvContent);
@@ -555,7 +555,7 @@ const WorkforcePlanning = () => {
         };
 
         setToastMessage(res?.message || res?.data?.message || "Strategic workforce recruitment plan approved and locked.");
-        
+
         // Update local state immediately so modal & banner transform live
         setForecastData(prev => ({
           ...prev,
@@ -598,7 +598,7 @@ const WorkforcePlanning = () => {
         setToastMessage(`Internal upskilling track dispatched to ${rec.recommendedCandidate.name}.`);
         setForecastData(prev => ({
           ...prev,
-          internalTalentRecommendations: (prev.internalTalentRecommendations || []).map(r => 
+          internalTalentRecommendations: (prev.internalTalentRecommendations || []).map(r =>
             r.id === rec.id ? { ...r, isAlreadyEnrolled: true } : r
           )
         }));
@@ -636,12 +636,12 @@ const WorkforcePlanning = () => {
       {/* 1. Sidebar with Tenant context */}
       <HRSidebar currentTenant={currentTenant} currentScreen="Workforce Planning" />
 
-      <main className="flex-1 ml-0 lg:ml-64 pt-20 lg:pt-8 p-4 md:p-8 w-full relative z-10 space-y-8">
-        
+      <main className="flex-1 ml-0 lg:ml-64 pt-20 lg:pt-8 px-3.5 sm:px-6 md:px-8 pb-10 w-full max-w-full overflow-x-hidden relative z-10 space-y-6 sm:space-y-8">
+
         {/* Toast Notification Layer */}
         <AnimatePresence>
           {toastMessage && (
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
@@ -654,30 +654,30 @@ const WorkforcePlanning = () => {
         </AnimatePresence>
 
         {/* --- SECTION 1: HEADER --- */}
-        <header className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl p-6 rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-wrap justify-between items-center gap-4 mb-4">
+        <header className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
           <div>
-            <h1 className="text-2xl font-black text-[#0b1221] tracking-tight flex items-center gap-3">
+            <h1 className="text-xl sm:text-2xl font-black text-[#0b1221] tracking-tight flex flex-wrap items-center gap-2 sm:gap-3">
               Workforce Planning
               <span className="flex items-center gap-1.5 px-2.5 py-1 bg-slate-100 rounded-lg text-xs font-bold text-slate-500 tracking-normal">
                 <Building size={14} className="text-slate-400" />
                 {currentTenant}
               </span>
             </h1>
-            <p className="text-slate-400 text-xs font-semibold mt-0.5">Strategic workforce forecasting and hiring intelligence</p>
+            <p className="text-slate-500 text-xs font-semibold mt-0.5">Strategic workforce forecasting and hiring intelligence</p>
           </div>
-          
-          <div className="flex items-center gap-4">
-            <div className="relative group">
+
+          <div className="flex items-center gap-3 w-full sm:w-auto">
+            <div className="relative group flex-1 sm:flex-initial w-full sm:w-auto">
               <Search className="absolute left-4 top-3 text-slate-400 group-focus-within:text-blue-500 transition-colors" size={18} />
-              <input 
-                type="text" 
+              <input
+                type="text"
                 value={searchQuery}
                 onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
-                placeholder="Search roles, departments..." 
-                className="w-80 pl-11 pr-4 py-2.5 bg-[#f3f4f6]/60 rounded-xl text-sm font-semibold text-slate-700 outline-none border border-transparent focus:border-blue-500/30 focus:bg-white focus:shadow-[0_0_0_4px_rgba(59,130,246,0.1)] transition-all" 
+                placeholder="Search roles, departments..."
+                className="w-full sm:w-80 pl-11 pr-4 py-2.5 bg-[#f3f4f6]/60 rounded-xl text-sm font-semibold text-slate-700 outline-none border border-transparent focus:border-blue-500/30 focus:bg-white focus:shadow-[0_0_0_4px_rgba(59,130,246,0.1)] transition-all"
               />
             </div>
-            <div className="w-10 h-10 rounded-full bg-indigo-600 text-white font-bold flex items-center justify-center border-2 border-white shadow-sm cursor-pointer" onClick={() => triggerAction("Profile View")}>
+            <div className="w-10 h-10 rounded-full bg-indigo-600 text-white font-bold flex items-center justify-center border-2 border-white shadow-sm cursor-pointer shrink-0" onClick={() => triggerAction("Profile View")}>
               {storedUser.firstName ? `${storedUser.firstName[0]}${storedUser.lastName ? storedUser.lastName[0] : ''}` : 'HR'}
             </div>
           </div>
@@ -690,7 +690,7 @@ const WorkforcePlanning = () => {
         ) : (
           <>
             {/* --- SECTION 2: TOP METRICS CARDS --- */}
-            <div className="grid grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-6">
               <MetricCard title="Total Workforce" value={`${totalEmployees}`} trend="Active workforce members" trendColor="text-emerald-500" icon={<Users className="text-blue-500" size={20} />} iconBg="bg-blue-50" />
               <MetricCard title="Projected Need (6m)" value={`${projectedNeed}`} trend={`+${projectedNeed - totalEmployees} projected growth`} trendColor="text-purple-500" icon={<TrendingUp className="text-purple-500" size={20} />} iconBg="bg-purple-50" />
               <MetricCard title="Current Hiring Pipeline" value={`${analyticsData?.skillGaps?.length || 0}`} trend="Active gap mitigation paths" trendColor="text-slate-400" icon={<Briefcase className="text-emerald-500" size={20} />} iconBg="bg-emerald-50" />
@@ -698,13 +698,13 @@ const WorkforcePlanning = () => {
             </div>
 
         {/* --- SECTION 3: FORECAST LINE CHART --- */}
-        <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 p-8 space-y-6">
-          <div className="flex justify-between items-center">
+        <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-2xl sm:rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 p-4 sm:p-8 space-y-4 sm:space-y-6">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4">
             <div>
-              <h3 className="text-xl font-bold text-slate-900">Workforce Forecast Trend (12 Months)</h3>
+              <h3 className="text-lg sm:text-xl font-bold text-slate-900">Workforce Forecast Trend (12 Months)</h3>
               <p className="text-xs text-slate-400 font-medium mt-0.5">Holt's linear trend trajectory derived from live DB headcount & active skill deficit backlog</p>
             </div>
-            <div className="flex items-center gap-5 text-[11px] font-bold text-slate-600">
+            <div className="flex flex-wrap items-center gap-3 sm:gap-5 text-[11px] font-bold text-slate-600">
               <span className="flex items-center gap-2">
                 <span className="w-3 h-3 rounded-full bg-blue-500 inline-block"/> Current Workforce ({totalEmployees})
               </span>
@@ -716,15 +716,19 @@ const WorkforcePlanning = () => {
               </span>
             </div>
           </div>
-          <WorkforceLineChart data={forecastData?.growthTrends} />
+          <div className="overflow-x-auto no-scrollbar pb-2">
+            <div className="min-w-[650px]">
+              <WorkforceLineChart data={forecastData?.growthTrends} />
+            </div>
+          </div>
         </div>
 
         {/* --- SECTION 4: HIRING DEMAND & DONUT DISTRIBUTION --- */}
-        <div className="grid grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-8">
           {/* Hiring Demand */}
-          <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 p-8 space-y-6">
-            <h3 className="text-xl font-bold text-slate-900">Hiring Demand by Department</h3>
-            <div className="space-y-4">
+          <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-2xl sm:rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 p-4 sm:p-8 space-y-4 sm:space-y-6">
+            <h3 className="text-lg sm:text-xl font-bold text-slate-900">Hiring Demand by Department</h3>
+            <div className="space-y-3 sm:space-y-4">
               {hiringDemand.length > 0 ? (
                 hiringDemand.map((d) => (
                   <div key={d.dept} className="cursor-pointer group" onClick={() => triggerAction(`${d.dept} Hiring Demand`)}>
@@ -744,12 +748,12 @@ const WorkforcePlanning = () => {
           </div>
 
           {/* Workforce Allocation */}
-          <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 p-8 space-y-6">
-            <h3 className="text-xl font-bold text-slate-900">Workforce Allocation Distribution</h3>
+          <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-2xl sm:rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 p-4 sm:p-8 space-y-4 sm:space-y-6">
+            <h3 className="text-lg sm:text-xl font-bold text-slate-900">Workforce Allocation Distribution</h3>
             {allocationLegend.length > 0 ? (
-              <div className="flex items-center gap-8">
+              <div className="flex flex-col sm:flex-row items-center gap-6 sm:gap-8">
                 <DonutChart segments={allocationLegend} />
-                <div className="space-y-3">
+                <div className="space-y-2.5 sm:space-y-3 w-full sm:w-auto">
                   {allocationLegend.map((l) => (
                     <div key={l.label} className="flex items-center gap-3 text-xs font-bold text-slate-600 cursor-pointer hover:text-slate-900 transition-colors" onClick={() => triggerAction(`${l.label} Details`)}>
                       <span className="w-3 h-3 rounded-full flex-shrink-0" style={{ background: l.color }} />
@@ -765,14 +769,14 @@ const WorkforcePlanning = () => {
         </div>
 
         {/* --- SECTION 5: ROLE-BASED DEMAND TABLE --- */}
-        <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 overflow-hidden">
-          <div className="p-8 border-b border-slate-50 flex justify-between items-center">
-            <h3 className="text-xl font-black text-slate-900">Role-Based Workforce Demand</h3>
+        <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-2xl sm:rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 overflow-hidden">
+          <div className="p-4 sm:p-8 border-b border-slate-200/50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+            <h3 className="text-lg sm:text-xl font-black text-slate-900">Role-Based Workforce Demand</h3>
             <div className="flex gap-3 relative">
               {/* Filter Dropdown */}
               <div className="relative">
-                <button 
-                  onClick={() => { setIsFilterOpen(!isFilterOpen); setIsSortOpen(false); }} 
+                <button
+                  onClick={() => { setIsFilterOpen(!isFilterOpen); setIsSortOpen(false); }}
                   className={`flex items-center gap-2 px-4 py-2 border rounded-xl text-xs font-bold transition-colors ${departmentFilter !== "ALL" ? "border-blue-500 bg-blue-50 text-blue-600" : "border-slate-200 text-slate-600 hover:bg-slate-50"}`}
                 >
                   <Filter size={14}/> {departmentFilter === "ALL" ? "Filter" : departmentFilter}
@@ -780,14 +784,14 @@ const WorkforcePlanning = () => {
                 {isFilterOpen && (
                   <div className="absolute right-0 mt-2 w-48 bg-white/90 backdrop-blur-xl rounded-2xl shadow-xl border border-white/85 p-2 z-30">
                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-3 py-1">Department</p>
-                    <button 
+                    <button
                       onClick={() => { setDepartmentFilter("ALL"); setIsFilterOpen(false); setCurrentPage(1); }}
                       className={`w-full text-left px-3 py-2 text-xs font-bold rounded-lg ${departmentFilter === "ALL" ? "bg-blue-50 text-blue-600" : "hover:bg-slate-50 text-slate-700"}`}
                     >
                       All Departments
                     </button>
                     {uniqueDepartments.map(d => (
-                      <button 
+                      <button
                         key={d}
                         onClick={() => { setDepartmentFilter(d); setIsFilterOpen(false); setCurrentPage(1); }}
                         className={`w-full text-left px-3 py-2 text-xs font-bold rounded-lg ${departmentFilter === d ? "bg-blue-50 text-blue-600" : "hover:bg-slate-50 text-slate-700"}`}
@@ -801,8 +805,8 @@ const WorkforcePlanning = () => {
 
               {/* Sort Dropdown */}
               <div className="relative">
-                <button 
-                  onClick={() => { setIsSortOpen(!isSortOpen); setIsFilterOpen(false); }} 
+                <button
+                  onClick={() => { setIsSortOpen(!isSortOpen); setIsFilterOpen(false); }}
                   className={`flex items-center gap-2 px-4 py-2 border rounded-xl text-xs font-bold transition-colors ${sortKey !== "DEFAULT" ? "border-blue-500 bg-blue-50 text-blue-600" : "border-slate-200 text-slate-600 hover:bg-slate-50"}`}
                 >
                   <SlidersHorizontal size={14}/> Sort
@@ -816,7 +820,7 @@ const WorkforcePlanning = () => {
                       { key: "ROLE_ASC", label: "Role Name (A-Z)" },
                       { key: "CURRENT_DESC", label: "Highest Current Count" }
                     ].map(opt => (
-                      <button 
+                      <button
                         key={opt.key}
                         onClick={() => { setSortKey(opt.key); setIsSortOpen(false); }}
                         className={`w-full text-left px-3 py-2 text-xs font-bold rounded-lg ${sortKey === opt.key ? "bg-blue-50 text-blue-600" : "hover:bg-slate-50 text-slate-700"}`}
@@ -829,8 +833,9 @@ const WorkforcePlanning = () => {
               </div>
             </div>
           </div>
-          
-          <table className="w-full text-left">
+
+          <div className="overflow-x-auto no-scrollbar">
+          <table className="w-full text-left min-w-[650px]">
             <thead>
               <tr className="bg-slate-50/50 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">
                 <th className="py-4 px-8">Role</th>
@@ -864,33 +869,34 @@ const WorkforcePlanning = () => {
               )}
             </tbody>
           </table>
+          </div>
 
           {/* 🔄 PAGINATION FOOTER */}
-          <div className="p-6 bg-slate-50/50 flex justify-between items-center text-xs font-bold text-slate-500">
+          <div className="p-4 sm:p-6 bg-slate-50/50 flex flex-col sm:flex-row justify-between items-center gap-3 text-xs font-bold text-slate-500">
             <div>
               Showing <span className="text-slate-900">{filteredRoles.length > 0 ? (currentPage - 1) * itemsPerPage + 1 : 0}-{Math.min(currentPage * itemsPerPage, filteredRoles.length)}</span> of <span className="text-slate-900">{filteredRoles.length}</span> entries
             </div>
             <div className="flex items-center gap-1">
-              <button 
-                onClick={() => setCurrentPage(p => Math.max(1, p - 1))} 
+              <button
+                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                 disabled={currentPage === 1}
                 className="px-3 py-2 bg-white/70 border border-white/80 rounded-xl hover:bg-[#E4EEF8] disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-2xs text-[#17233E]"
               >
                 <ChevronLeft size={14} />
               </button>
-              
+
               {Array.from({ length: totalPages }, (_, i) => i + 1).map(num => (
-                <button 
-                  key={num} 
-                  onClick={() => setCurrentPage(num)} 
+                <button
+                  key={num}
+                  onClick={() => setCurrentPage(num)}
                   className={`w-9 h-9 rounded-lg transition-all ${currentPage === num ? 'bg-[#0b1221] text-white' : 'bg-white border border-slate-200 hover:bg-slate-50'}`}
                 >
                   {num}
                 </button>
               ))}
-              
-              <button 
-                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} 
+
+              <button
+                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                 disabled={currentPage === totalPages || totalPages === 0}
                 className="px-3 py-2 bg-white/70 border border-white/80 rounded-xl hover:bg-[#E4EEF8] disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-2xs text-[#17233E]"
               >
@@ -901,14 +907,14 @@ const WorkforcePlanning = () => {
         </div>
 
         {/* --- SECTION 6: AI FORECAST INSIGHT BANNER --- */}
-        <div className="bg-[#0b1221] rounded-2xl p-8 text-white flex justify-between items-center shadow-2xl relative overflow-hidden group">
-          <div className="flex gap-6 items-center relative z-10">
-            <div className="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center text-blue-400 group-hover:scale-105 transition-transform">
-              <BrainCircuit size={32} />
+        <div className="bg-[#0b1221] rounded-2xl sm:rounded-3xl p-5 sm:p-8 text-white flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-6 shadow-2xl relative overflow-hidden group">
+          <div className="flex gap-4 sm:gap-6 items-center relative z-10">
+            <div className="w-12 h-12 sm:w-14 sm:h-14 bg-white/10 rounded-2xl flex items-center justify-center text-blue-400 group-hover:scale-105 transition-transform shrink-0">
+              <BrainCircuit size={28} />
             </div>
             <div>
-              <div className="flex items-center gap-3 mb-1">
-                <h4 className="text-xl font-bold tracking-tight">AI Workforce Forecast Insight</h4>
+              <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-1">
+                <h4 className="text-lg sm:text-xl font-bold tracking-tight">AI Workforce Forecast Insight</h4>
                 {forecastData?.isPlanApproved ? (
                   <span className="text-[10px] font-black px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 uppercase tracking-widest flex items-center gap-1">
                     <CheckCircle2 size={12} /> Plan Approved (FY 2026-27)
@@ -919,16 +925,16 @@ const WorkforcePlanning = () => {
                   </span>
                 )}
               </div>
-              <p className="text-slate-400 text-sm mt-1 max-w-2xl leading-relaxed">
-                {forecastData?.aiInsight || (forecastData?.emergingSkillDemands && forecastData.emergingSkillDemands.length > 0 
+              <p className="text-slate-400 text-xs sm:text-sm mt-1 max-w-2xl leading-relaxed">
+                {forecastData?.aiInsight || (forecastData?.emergingSkillDemands && forecastData.emergingSkillDemands.length > 0
                   ? `AI predicts hiring demand for ${forecastData.emergingSkillDemands[0].skill} will grow across ${currentTenant}. Early recruitment is recommended.`
                   : `Workforce trajectory forecast for ${currentTenant} is active with real competency deficit modeling.`)}
               </p>
             </div>
           </div>
-          <button 
+          <button
             onClick={() => setIsAIModalOpen(true)}
-            className="px-8 py-4 bg-gradient-to-r from-[#1988A3] to-[#11C6DE] hover:from-[#157289] hover:to-[#0EB3C9] text-white shadow-lg shadow-[#1988A3]/25 font-black text-sm rounded-xl transition-all shadow-lg shadow-blue-600/20 active:scale-95 relative z-10 flex-shrink-0"
+            className="w-full sm:w-auto px-6 sm:px-8 py-3.5 sm:py-4 bg-gradient-to-r from-[#1988A3] to-[#11C6DE] hover:from-[#157289] hover:to-[#0EB3C9] text-white shadow-lg shadow-[#1988A3]/25 font-black text-xs sm:text-sm rounded-xl transition-all active:scale-95 relative z-10 flex-shrink-0 text-center"
           >
             {forecastData?.isPlanApproved ? "View Approved Plan" : "View Forecast Details"}
           </button>
@@ -942,13 +948,13 @@ const WorkforcePlanning = () => {
       <AnimatePresence>
         {isAIModalOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-gradient-to-br from-[#D8EBF9] to-[#BEDDF5] backdrop-blur-2xl rounded-3xl p-8 max-w-lg w-full shadow-2xl relative border border-white/90"
+              className="bg-gradient-to-br from-[#D8EBF9] to-[#BEDDF5] backdrop-blur-2xl rounded-2xl sm:rounded-3xl p-5 sm:p-8 max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl relative border border-white/90"
             >
-              <button 
+              <button
                 onClick={() => setIsAIModalOpen(false)}
                 className="absolute top-6 right-6 text-slate-400 hover:text-slate-800"
               >
@@ -1097,7 +1103,7 @@ const WorkforcePlanning = () => {
                   </div>
 
                   {forecastData?.isPlanApproved ? (
-                    <button 
+                    <button
                       onClick={() => setIsAIModalOpen(false)}
                       className="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold transition-colors flex items-center justify-center gap-2"
                     >
@@ -1105,7 +1111,7 @@ const WorkforcePlanning = () => {
                       Recruitment Plan Approved (Close)
                     </button>
                   ) : (
-                    <button 
+                    <button
                       onClick={handleApproveHiringPlan}
                       disabled={isApproving}
                       className="w-full py-3.5 bg-[#0b1221] hover:bg-[#16233d] disabled:opacity-50 text-white rounded-xl font-bold transition-colors flex items-center justify-center gap-2"
@@ -1129,13 +1135,13 @@ const WorkforcePlanning = () => {
         {/* 2. REALLOCATE HEADCOUNT MODAL */}
         {isReallocateModalOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
               className="bg-gradient-to-br from-[#D8EBF9] to-[#BEDDF5] backdrop-blur-2xl rounded-3xl p-8 max-w-lg w-full shadow-2xl relative border border-white/90"
             >
-              <button 
+              <button
                 onClick={() => setIsReallocateModalOpen(false)}
                 className="absolute top-6 right-6 text-slate-400 hover:text-slate-800"
               >
@@ -1151,7 +1157,7 @@ const WorkforcePlanning = () => {
               <form onSubmit={handleConfirmReallocation} className="space-y-4 mb-6">
                 <div>
                   <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-1.5">From Source Department</label>
-                  <select 
+                  <select
                     value={reallocateForm.source}
                     onChange={(e) => setReallocateForm(prev => ({ ...prev, source: e.target.value }))}
                     className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 outline-none focus:border-blue-500"
@@ -1163,7 +1169,7 @@ const WorkforcePlanning = () => {
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-1.5">To Target Department</label>
-                  <select 
+                  <select
                     value={reallocateForm.target}
                     onChange={(e) => setReallocateForm(prev => ({ ...prev, target: e.target.value }))}
                     className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 outline-none focus:border-blue-500"
@@ -1175,8 +1181,8 @@ const WorkforcePlanning = () => {
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-1.5">Headcount Seats to Transfer</label>
-                  <input 
-                    type="number" 
+                  <input
+                    type="number"
                     min="1"
                     max="50"
                     value={reallocateForm.count}
@@ -1185,7 +1191,7 @@ const WorkforcePlanning = () => {
                     required
                   />
                 </div>
-                <button 
+                <button
                   type="submit"
                   className="w-full py-3 bg-[#0b1221] hover:bg-[#16233d] text-white rounded-xl font-bold transition-colors mt-2"
                 >
@@ -1199,13 +1205,13 @@ const WorkforcePlanning = () => {
         {/* 3. SYNC RECRUITMENT GOALS MODAL */}
         {isRecruitmentModalOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
               className="bg-gradient-to-br from-[#D8EBF9] to-[#BEDDF5] backdrop-blur-2xl rounded-3xl p-8 max-w-lg w-full shadow-2xl relative border border-white/90"
             >
-              <button 
+              <button
                 onClick={() => setIsRecruitmentModalOpen(false)}
                 className="absolute top-6 right-6 text-slate-400 hover:text-slate-800"
               >
@@ -1228,7 +1234,7 @@ const WorkforcePlanning = () => {
                   <span className="font-bold text-slate-900">{currentTenant}</span>
                 </div>
               </div>
-              <button 
+              <button
                 onClick={handleSyncRecruitment}
                 disabled={isSyncing}
                 className="w-full py-3 bg-purple-600 hover:bg-purple-700 disabled:opacity-50 text-white rounded-xl font-bold transition-colors flex items-center justify-center gap-2"
@@ -1253,16 +1259,16 @@ const WorkforcePlanning = () => {
 
 // --- MINI COMPONENTS ---
 const MetricCard = ({ title, value, trend, trendColor, valueColor = "text-slate-900", icon, iconBg }) => (
-  <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 p-6 flex flex-col justify-between min-h-[140px] relative hover:border-[#1988A3]/40 transition-all duration-300">
-    <div className="flex justify-between items-start">
-      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{title}</p>
-      <div className={`w-9 h-9 rounded-xl ${iconBg} flex items-center justify-center`}>
+  <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-2xl sm:rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 p-3.5 sm:p-6 flex flex-col justify-between min-h-[110px] sm:min-h-[140px] relative hover:border-[#1988A3]/40 transition-all duration-300">
+    <div className="flex justify-between items-start gap-1">
+      <p className="text-[9px] sm:text-[10px] font-black text-slate-500 uppercase tracking-widest truncate">{title}</p>
+      <div className={`w-7 h-7 sm:w-9 sm:h-9 rounded-xl ${iconBg} flex items-center justify-center shrink-0`}>
         {icon}
       </div>
     </div>
-    <div className="mt-2">
-      <h4 className={`text-3xl font-black tracking-tight ${valueColor}`}>{value}</h4>
-      <p className={`text-[10px] font-bold mt-2 ${trendColor}`}>{trend}</p>
+    <div className="mt-1 sm:mt-2">
+      <h4 className={`text-2xl sm:text-3xl font-black tracking-tight ${valueColor}`}>{value}</h4>
+      <p className={`text-[9px] sm:text-[10px] font-bold mt-1 sm:mt-2 truncate ${trendColor}`}>{trend}</p>
     </div>
   </div>
 );

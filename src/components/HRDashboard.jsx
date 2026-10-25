@@ -108,7 +108,7 @@ const HRDashboard = () => {
       <HRSidebar currentTenant={displayTenantName} currentScreen="Dashboard" />
 
       {/* 2. Main Dashboard Panel */}
-      <main className="flex-1 ml-0 lg:ml-64 pt-20 lg:pt-8 p-4 md:p-8 w-full relative z-10 space-y-8">
+      <main className="flex-1 ml-0 lg:ml-64 pt-20 lg:pt-8 px-3.5 sm:px-6 md:px-8 pb-10 w-full max-w-full overflow-x-hidden relative z-10 space-y-6 sm:space-y-8">
         
         {/* Toast Notification Layer */}
         <AnimatePresence>
@@ -126,27 +126,27 @@ const HRDashboard = () => {
         </AnimatePresence>
 
         {/* Global Header */}
-        <header className="flex flex-wrap justify-between items-center bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl p-6 rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 gap-4">
+        <header className="flex flex-wrap justify-between items-center bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 gap-4">
           <div>
-            <h1 className="text-2xl md:text-3xl font-extrabold text-[#17233E] tracking-tight flex items-center gap-2.5">
-              HR <span className="bg-gradient-to-r from-[#1988A3] to-[#11C6DE] bg-clip-text text-transparent">Dashboard</span>
-              <span className="flex items-center gap-1 px-2.5 py-1 bg-[#1988A3]/10 border border-[#1988A3]/25 rounded-xl text-[11px] font-bold text-[#1988A3]">
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-[#17233E] tracking-tight flex items-center gap-2 sm:gap-2.5 flex-wrap">
+              <span>HR <span className="bg-gradient-to-r from-[#1988A3] to-[#11C6DE] bg-clip-text text-transparent">Dashboard</span></span>
+              <span className="flex items-center gap-1 px-2.5 py-1 bg-[#1988A3]/10 border border-[#1988A3]/25 rounded-xl text-[10px] sm:text-[11px] font-bold text-[#1988A3]">
                 <Building size={12} className="text-indigo-500" />
                 {displayTenantName}
               </span>
             </h1>
-            <p className="text-[#8A9CB7] text-xs md:text-sm font-medium mt-1">Workforce intelligence overview & real-time analytics</p>
+            <p className="text-[#8A9CB7] text-xs sm:text-sm font-medium mt-1">Workforce intelligence overview & real-time analytics</p>
           </div>
           
-          <div className="flex items-center gap-3">
-            <div className="relative">
+          <div className="flex items-center gap-3 w-full sm:w-auto">
+            <div className="relative w-full sm:w-64">
               <Search className="absolute left-3.5 top-2.5 text-slate-400" size={15} />
               <input 
                 type="text" 
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search departments, skills..." 
-                className="w-64 pl-9 pr-3 py-2 bg-white/80 backdrop-blur-md rounded-xl text-xs font-semibold text-[#17233E] outline-none border border-white/85 focus:border-[#1988A3] shadow-sm transition-all placeholder:text-[#8A9CB7]"
+                className="w-full pl-9 pr-3 py-2 bg-white/80 backdrop-blur-md rounded-xl text-xs font-semibold text-[#17233E] outline-none border border-white/85 focus:border-[#1988A3] shadow-sm transition-all placeholder:text-[#8A9CB7]"
               />
             </div>
           </div>
@@ -159,7 +159,7 @@ const HRDashboard = () => {
         ) : (
           <>
             {/* 3. Core Metrics Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
               <MetricCard 
                 title="Total Employees" 
                 value={`${analyticsData?.totalEmployees || 0}`} 
@@ -187,13 +187,13 @@ const HRDashboard = () => {
                 subtext={analyticsData?.criticalGapsCount > 0 ? `${analyticsData.criticalGapsCount} Critical Skill Gaps` : "No Critical Gaps"}
                 subtextStyle={analyticsData?.criticalGapsCount > 0 ? "text-amber-700 font-bold" : "text-emerald-600 font-bold"}
               />
-              <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl p-6 rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-col justify-between hover:border-[#1988A3]/40 transition-all duration-300">
-                <div className="flex justify-between items-start">
-                  <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">Compliance Rate</span>
-                  <div className="w-8 h-8 bg-indigo-50 text-indigo-600 rounded-lg flex items-center justify-center"><GraduationCap size={16} /></div>
+              <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-col justify-between hover:border-[#1988A3]/40 transition-all duration-300">
+                <div className="flex justify-between items-start gap-1">
+                  <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-400 truncate">Compliance Rate</span>
+                  <div className="w-7 h-7 sm:w-8 sm:h-8 bg-indigo-50 text-indigo-600 rounded-lg flex items-center justify-center shrink-0"><GraduationCap size={16} /></div>
                 </div>
-                <div className="mt-2 w-full space-y-1.5">
-                  <h3 className="text-2xl font-black text-slate-900 tracking-tight">{analyticsData?.complianceRate || "0%"}</h3>
+                <div className="mt-1.5 w-full space-y-1 sm:space-y-1.5">
+                  <h3 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight truncate">{analyticsData?.complianceRate || "0%"}</h3>
                   <div className="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
                     <motion.div 
                       initial={{ width: 0 }}
@@ -202,7 +202,7 @@ const HRDashboard = () => {
                       className="h-full bg-indigo-600 rounded-full" 
                     />
                   </div>
-                  <p className="text-[11px] font-bold text-slate-500">
+                  <p className="text-[9px] sm:text-[11px] font-bold text-slate-500 truncate">
                     {analyticsData?.compliantRecordsCount ?? 0} of {analyticsData?.complianceRecordsCount ?? 0} Records Compliant
                   </p>
                 </div>
@@ -557,15 +557,15 @@ const HRDashboard = () => {
 
 /* Sub-components for cleaner rendering */
 const MetricCard = ({ title, value, icon, iconColor = "", iconBg = "", subtext, subtextColor = "", subtextStyle = "" }) => (
-  <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl p-6 rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-col justify-between hover:border-[#1988A3]/40 transition-all duration-300">
-    <div className="flex justify-between items-start">
-      <span className="text-xs font-bold uppercase tracking-wider text-[#8A9CB7]">{title}</span>
-      <div className={`w-8 h-8 ${iconBg} ${iconColor} rounded-lg flex items-center justify-center`}>{icon}</div>
+  <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-col justify-between hover:border-[#1988A3]/40 transition-all duration-300">
+    <div className="flex justify-between items-start gap-1 mb-2">
+      <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-[#8A9CB7] truncate">{title}</span>
+      <div className={`w-7 h-7 sm:w-8 sm:h-8 ${iconBg} ${iconColor} rounded-lg flex items-center justify-center shrink-0`}>{icon}</div>
     </div>
-    <div className="mt-1.5">
-      <h3 className="text-2xl md:text-3xl font-extrabold text-[#17233E] tracking-tight">{value}</h3>
+    <div className="mt-1">
+      <h3 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-[#17233E] tracking-tight truncate">{value}</h3>
       {subtext && (
-        <div className={subtextColor ? `inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-bold mt-1.5 border ${subtextColor}` : `text-[11px] font-bold mt-1.5 ${subtextStyle}`}>
+        <div className={subtextColor ? `inline-flex items-center gap-1 px-1.5 sm:px-2 py-0.5 rounded-md text-[9px] sm:text-[11px] font-bold mt-1 sm:mt-1.5 border truncate max-w-full ${subtextColor}` : `text-[9px] sm:text-[11px] font-bold mt-1 sm:mt-1.5 truncate ${subtextStyle}`}>
           {subtext}
         </div>
       )}

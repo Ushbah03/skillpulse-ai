@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Search, 
-  Bell, 
-  TrendingUp, 
-  CheckCircle2, 
-  Clock, 
-  XCircle, 
-  ChevronRight, 
-  FileDown, 
+import {
+  Search,
+  Bell,
+  TrendingUp,
+  CheckCircle2,
+  Clock,
+  XCircle,
+  ChevronRight,
+  FileDown,
   SlidersHorizontal,
   AlertTriangle,
   BrainCircuit,
@@ -58,16 +58,16 @@ const ComplianceTrendChart = ({ trendData = [] }) => {
         </linearGradient>
       </defs>
       <path d={areaPath} fill="url(#compGrad)" />
-      <motion.path 
+      <motion.path
         initial={{ pathLength: 0 }}
         animate={{ pathLength: 1 }}
         transition={{ duration: 1.2, ease: "easeInOut" }}
-        d={linePath} 
-        fill="none" 
-        stroke="#3b82f6" 
-        strokeWidth="2.5" 
-        strokeLinecap="round" 
-        strokeLinejoin="round" 
+        d={linePath}
+        fill="none"
+        stroke="#3b82f6"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
       {months.map((m, i) => (
         <text key={m + i} x={xPos(i)} y={H - 6} textAnchor="middle" fontSize="11" fill="#9ca3af" fontWeight="600" fontFamily="sans-serif">{m}</text>
@@ -210,7 +210,7 @@ const ComplianceManagement = () => {
       const rawDate        = item.dueDate || item.expiryDate;
       const score          = isExpired ? 45 : isPending ? 72 : 98;
       const initials       = item.user?.firstName ? `${item.user.firstName[0]}${item.user.lastName ? item.user.lastName[0] : ''}` : 'EM';
-      
+
       return {
         id:          item.id || idx + 1,
         name:        item.user ? `${item.user.firstName} ${item.user.lastName}` : (item.userId || `Employee ${idx + 1}`),
@@ -238,7 +238,7 @@ const ComplianceManagement = () => {
   const expiringCount = complianceState?.data ? complianceState.data.filter(r => r.status === 'PENDING').length : 0;
   const nonCompliantCount = complianceState?.data ? complianceState.data.filter(r => r.status === 'EXPIRED' || r.status === 'NON_COMPLIANT').length : 0;
 
-  const overallComplianceRate = totalRecords > 0 
+  const overallComplianceRate = totalRecords > 0
     ? (complianceState?.summary?.overallCompliancePct ?? Math.round((compliantCount / totalRecords) * 100))
     : 0;
   const compliantPct = totalRecords ? Math.round((compliantCount / totalRecords) * 100) : 0;
@@ -297,7 +297,7 @@ const ComplianceManagement = () => {
       `"${e.score}%"`
     ]);
 
-    const csvContent = "data:text/csv;charset=utf-8," 
+    const csvContent = "data:text/csv;charset=utf-8,"
       + [headers.join(","), ...rows.map(r => r.join(","))].join("\n");
 
     const encodedUri = encodeURI(csvContent);
@@ -313,7 +313,7 @@ const ComplianceManagement = () => {
   };
 
   const filteredEmployees = React.useMemo(() => {
-    let result = employeeData.filter(e => 
+    let result = employeeData.filter(e =>
       e.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       e.dept.toLowerCase().includes(searchQuery.toLowerCase()) ||
       e.cert.toLowerCase().includes(searchQuery.toLowerCase())
@@ -342,12 +342,12 @@ const ComplianceManagement = () => {
       {/* Sidebar with Tenant Context */}
       <HRSidebar currentTenant={currentTenant} currentScreen="Compliance Management" />
 
-      <main className="flex-1 ml-0 lg:ml-64 pt-20 lg:pt-8 p-4 md:p-8 w-full relative z-10 space-y-8">
-        
+      <main className="flex-1 ml-0 lg:ml-64 pt-20 lg:pt-8 px-3.5 sm:px-6 md:px-8 pb-10 w-full max-w-full overflow-x-hidden relative z-10 space-y-6 sm:space-y-8">
+
         {/* Toast Notification Layer */}
         <AnimatePresence>
           {toastMessage && (
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
@@ -368,31 +368,31 @@ const ComplianceManagement = () => {
         <>
 
         {/* ── HEADER ── */}
-        <header className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl p-6 rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-wrap justify-between items-center gap-4 mb-4">
+        <header className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
           <div>
-            <h1 className="text-2xl font-black text-[#0b1221] tracking-tight flex items-center gap-3">
+            <h1 className="text-xl sm:text-2xl font-black text-[#0b1221] tracking-tight flex flex-wrap items-center gap-2 sm:gap-3">
               Compliance Management
               <span className="flex items-center gap-1.5 px-2.5 py-1 bg-slate-100 rounded-lg text-xs font-bold text-slate-500 tracking-normal">
                 <Building size={14} className="text-slate-400" />
                 {currentTenant}
               </span>
             </h1>
-            <p className="text-slate-400 text-xs font-semibold mt-0.5">Certification tracking and workforce compliance monitoring</p>
+            <p className="text-slate-500 text-xs font-semibold mt-0.5">Certification tracking and workforce compliance monitoring</p>
           </div>
-          
-          <div className="flex items-center gap-4">
-            <div className="relative group">
+
+          <div className="flex items-center gap-3 w-full sm:w-auto">
+            <div className="relative group flex-1 sm:flex-initial w-full sm:w-auto">
               <Search className="absolute left-4 top-3 text-slate-400 group-focus-within:text-blue-500 transition-colors" size={18} />
-              <input 
-                type="text" 
+              <input
+                type="text"
                 value={searchQuery}
                 onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
-                placeholder="Search compliance, roles..." 
-                className="w-80 pl-11 pr-4 py-2.5 bg-[#f3f4f6]/60 rounded-xl text-sm font-semibold text-slate-700 outline-none border border-transparent focus:border-blue-500/30 focus:bg-white focus:shadow-[0_0_0_4px_rgba(59,130,246,0.1)] transition-all" 
+                placeholder="Search compliance, roles..."
+                className="w-full sm:w-80 pl-11 pr-4 py-2.5 bg-[#f3f4f6]/60 rounded-xl text-sm font-semibold text-slate-700 outline-none border border-transparent focus:border-blue-500/30 focus:bg-white focus:shadow-[0_0_0_4px_rgba(59,130,246,0.1)] transition-all"
               />
             </div>
-            <div 
-              className="w-10 h-10 rounded-full bg-indigo-600 text-white font-bold flex items-center justify-center border-2 border-white shadow-sm cursor-pointer" 
+            <div
+              className="w-10 h-10 rounded-full bg-indigo-600 text-white font-bold flex items-center justify-center border-2 border-white shadow-sm cursor-pointer shrink-0"
               onClick={() => triggerAction("Profile View")}
             >
               {storedUser.firstName ? `${storedUser.firstName[0]}${storedUser.lastName ? storedUser.lastName[0] : ''}` : 'HR'}
@@ -401,12 +401,12 @@ const ComplianceManagement = () => {
         </header>
 
         {/* ── STAT CARDS ── */}
-        <div className="grid grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-6">
           {/* Overall Compliance Rate */}
-          <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 p-6 flex justify-between items-start hover:border-[#1988A3]/40 transition-all duration-300">
+          <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-2xl sm:rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 p-3.5 sm:p-6 flex justify-between items-start hover:border-[#1988A3]/40 transition-all duration-300">
             <div>
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Overall Compliance Rate</p>
-              <p className="text-3xl font-black text-slate-900">{totalRecords > 0 ? `${overallComplianceRate}%` : '0%'}</p>
+              <p className="text-[9px] sm:text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1 sm:mb-2 truncate">Overall Compliance Rate</p>
+              <p className="text-2xl sm:text-3xl font-black text-slate-900">{totalRecords > 0 ? `${overallComplianceRate}%` : '0%'}</p>
               <p className={`text-xs mt-2 font-bold ${totalRecords > 0 ? (overallComplianceRate >= 80 ? 'text-emerald-500' : 'text-rose-500') : 'text-slate-400'}`}>
                 {totalRecords > 0 ? (overallComplianceRate >= 80 ? '▲ Stable' : '▼ Action Required') : 'No records tracked'}
               </p>
@@ -417,10 +417,10 @@ const ComplianceManagement = () => {
           </div>
 
           {/* Expiring */}
-          <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 p-6 flex justify-between items-start hover:border-[#1988A3]/40 transition-all duration-300">
+          <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-2xl sm:rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 p-3.5 sm:p-6 flex justify-between items-start hover:border-[#1988A3]/40 transition-all duration-300">
             <div>
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Expiring (30 days)</p>
-              <p className="text-3xl font-black text-slate-900">{expiringCount}</p>
+              <p className="text-[9px] sm:text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1 sm:mb-2 truncate">Expiring (30 days)</p>
+              <p className="text-2xl sm:text-3xl font-black text-slate-900">{expiringCount}</p>
               <p className="text-xs mt-2 text-amber-500 font-bold">{expiringCount > 0 ? 'Attention required' : 'No upcoming expirations'}</p>
             </div>
             <div className="w-9 h-9 rounded-xl bg-amber-50 flex items-center justify-center flex-shrink-0">
@@ -429,10 +429,10 @@ const ComplianceManagement = () => {
           </div>
 
           {/* Non-Compliant */}
-          <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 p-6 flex justify-between items-start hover:border-[#1988A3]/40 transition-all duration-300">
+          <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-2xl sm:rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 p-3.5 sm:p-6 flex justify-between items-start hover:border-[#1988A3]/40 transition-all duration-300">
             <div>
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Non-Compliant</p>
-              <p className="text-3xl font-black text-red-500">{nonCompliantCount}</p>
+              <p className="text-[9px] sm:text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1 sm:mb-2 truncate">Non-Compliant</p>
+              <p className="text-2xl sm:text-3xl font-black text-red-500">{nonCompliantCount}</p>
               <p className="text-xs mt-2 text-slate-400 font-semibold">{nonCompliantCount > 0 ? 'Requires re-certification' : 'No violations recorded'}</p>
             </div>
             <div className="w-9 h-9 rounded-xl bg-red-50 flex items-center justify-center flex-shrink-0">
@@ -441,10 +441,10 @@ const ComplianceManagement = () => {
           </div>
 
           {/* Compliance Trend */}
-          <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 p-6 flex justify-between items-start hover:border-[#1988A3]/40 transition-all duration-300">
+          <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-2xl sm:rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 p-3.5 sm:p-6 flex justify-between items-start hover:border-[#1988A3]/40 transition-all duration-300">
             <div>
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Compliance Trend</p>
-              <p className="text-3xl font-black text-slate-900">{totalRecords > 0 ? `${overallComplianceRate}%` : '0%'}</p>
+              <p className="text-[9px] sm:text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1 sm:mb-2 truncate">Compliance Trend</p>
+              <p className="text-2xl sm:text-3xl font-black text-slate-900">{totalRecords > 0 ? `${overallComplianceRate}%` : '0%'}</p>
               <p className="text-xs mt-2 text-slate-400 font-bold flex items-center gap-1">
                 {totalRecords > 0 ? `Live calculation (${totalRecords} records)` : '0 records tracked'}
               </p>
@@ -456,18 +456,18 @@ const ComplianceManagement = () => {
         </div>
 
         {/* ── STATUS DISTRIBUTION + TREND CHART ── */}
-        <div className="grid grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-8">
           {/* Compliance Status Distribution */}
-          <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 p-8 space-y-6">
-            <h3 className="text-xl font-bold text-slate-900">Compliance Status Distribution</h3>
-            <div className="flex items-center gap-8">
-              <StatusDonut 
-                compliantPct={compliantPct} 
-                expiringPct={expiringPct} 
-                nonCompliantPct={nonCompliantPct} 
-                totalCount={totalRecords} 
+          <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-2xl sm:rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 p-4 sm:p-8 space-y-4 sm:space-y-6">
+            <h3 className="text-lg sm:text-xl font-bold text-slate-900">Compliance Status Distribution</h3>
+            <div className="flex flex-col sm:flex-row items-center gap-6 sm:gap-8">
+              <StatusDonut
+                compliantPct={compliantPct}
+                expiringPct={expiringPct}
+                nonCompliantPct={nonCompliantPct}
+                totalCount={totalRecords}
               />
-              <div className="space-y-4">
+              <div className="space-y-3 sm:space-y-4 w-full sm:w-auto">
                 <div className="flex items-start gap-3 cursor-pointer group" onClick={() => triggerAction("Filter Compliant")}>
                   <span className="w-3 h-3 rounded-full bg-emerald-500 mt-1 flex-shrink-0" />
                   <div>
@@ -494,19 +494,23 @@ const ComplianceManagement = () => {
           </div>
 
           {/* Compliance Trend Chart */}
-          <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 p-8 space-y-6">
+          <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-2xl sm:rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 p-4 sm:p-8 space-y-4 sm:space-y-6">
             <div className="flex justify-between items-center">
-              <h3 className="text-xl font-bold text-slate-900">Compliance Trend (12 Months)</h3>
+              <h3 className="text-lg sm:text-xl font-bold text-slate-900">Compliance Trend (12 Months)</h3>
               <span className="text-[10px] font-black px-3 py-1 rounded-lg bg-slate-100 text-slate-500 uppercase tracking-wider">Overall Rate</span>
             </div>
-            <ComplianceTrendChart trendData={complianceState?.trend || []} />
+            <div className="overflow-x-auto no-scrollbar pb-2">
+              <div className="min-w-[450px]">
+                <ComplianceTrendChart trendData={complianceState?.trend || []} />
+              </div>
+            </div>
           </div>
         </div>
 
         {/* ── CERTIFICATION EXPIRY TIMELINE ── */}
-        <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 p-8 space-y-6">
-          <div className="flex justify-between items-center">
-            <h3 className="text-xl font-bold text-slate-900">Certification Expiry Timeline</h3>
+        <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-2xl sm:rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 p-4 sm:p-8 space-y-4 sm:space-y-6">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+            <h3 className="text-lg sm:text-xl font-bold text-slate-900">Certification Expiry Timeline</h3>
             <div className="flex items-center gap-6 text-[10px] font-black text-slate-400 uppercase tracking-widest">
               <span className="flex items-center gap-2"><span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"/>Valid</span>
               <span className="flex items-center gap-2"><span className="w-2.5 h-2.5 rounded-full bg-amber-400 inline-block"/>Expiring</span>
@@ -542,14 +546,14 @@ const ComplianceManagement = () => {
         </div>
 
         {/* ── EMPLOYEE CERTIFICATION COMPLIANCE TABLE ── */}
-        <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 overflow-hidden">
-          <div className="p-8 border-b border-slate-100 flex justify-between items-center">
-            <h3 className="text-xl font-bold text-slate-900">Employee Certification Compliance</h3>
-            <div className="flex items-center gap-3 relative">
+        <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-2xl sm:rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 overflow-hidden">
+          <div className="p-4 sm:p-8 border-b border-slate-200/50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+            <h3 className="text-lg sm:text-xl font-bold text-slate-900">Employee Certification Compliance</h3>
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3 relative w-full sm:w-auto">
               {/* Department Filter Dropdown */}
               <div className="relative">
-                <button 
-                  onClick={() => setIsFilterOpen(!isFilterOpen)} 
+                <button
+                  onClick={() => setIsFilterOpen(!isFilterOpen)}
                   className={`inline-flex items-center gap-2 px-4 py-2 border rounded-xl text-xs font-bold transition-colors ${departmentFilter !== "ALL" ? "border-blue-500 bg-blue-50 text-blue-600" : "border-slate-200 text-slate-600 hover:bg-slate-50"}`}
                 >
                   <Filter size={14} /> {departmentFilter === "ALL" ? "Filter By Dept" : departmentFilter}
@@ -557,14 +561,14 @@ const ComplianceManagement = () => {
                 {isFilterOpen && (
                   <div className="absolute right-0 mt-2 w-48 bg-white/90 backdrop-blur-xl rounded-2xl shadow-xl border border-white/85 p-2 z-30">
                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-3 py-1">Department</p>
-                    <button 
+                    <button
                       onClick={() => { setDepartmentFilter("ALL"); setIsFilterOpen(false); setCurrentPage(1); }}
                       className={`w-full text-left px-3 py-2 text-xs font-bold rounded-lg ${departmentFilter === "ALL" ? "bg-blue-50 text-blue-600" : "hover:bg-slate-50 text-slate-700"}`}
                     >
                       All Departments
                     </button>
                     {uniqueDepartments.map(d => (
-                      <button 
+                      <button
                         key={d}
                         onClick={() => { setDepartmentFilter(d); setIsFilterOpen(false); setCurrentPage(1); }}
                         className={`w-full text-left px-3 py-2 text-xs font-bold rounded-lg ${departmentFilter === d ? "bg-blue-50 text-blue-600" : "hover:bg-slate-50 text-slate-700"}`}
@@ -577,8 +581,8 @@ const ComplianceManagement = () => {
               </div>
 
               {/* Export CSV/PDF Button */}
-              <button 
-                onClick={handleExportCSV} 
+              <button
+                onClick={handleExportCSV}
                 className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-bold hover:bg-blue-700 transition-colors shadow-sm"
               >
                 <FileDown size={14} /> Export Report
@@ -586,7 +590,8 @@ const ComplianceManagement = () => {
             </div>
           </div>
 
-          <table className="w-full text-left">
+          <div className="overflow-x-auto no-scrollbar">
+          <table className="w-full text-left min-w-[650px]">
             <thead>
               <tr className="bg-slate-50/50 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">
                 <th className="py-4 px-8">Employee Name</th>
@@ -630,33 +635,34 @@ const ComplianceManagement = () => {
               )}
             </tbody>
           </table>
+          </div>
 
           {/* 🔄 PAGINATION FOOTER */}
-          <div className="p-6 bg-slate-50/50 flex justify-between items-center text-xs font-bold text-slate-500 border-t border-slate-100">
+          <div className="p-4 sm:p-6 bg-slate-50/50 flex flex-col sm:flex-row justify-between items-center gap-3 text-xs font-bold text-slate-500 border-t border-slate-200/50">
             <div>
               Showing <span className="text-slate-900">{filteredEmployees.length > 0 ? (currentPage - 1) * itemsPerPage + 1 : 0}-{Math.min(currentPage * itemsPerPage, filteredEmployees.length)}</span> of <span className="text-slate-900">{filteredEmployees.length}</span> entries
             </div>
             <div className="flex items-center gap-1">
-              <button 
-                onClick={() => setCurrentPage(p => Math.max(1, p - 1))} 
+              <button
+                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                 disabled={currentPage === 1}
                 className="px-3 py-2 bg-white/70 border border-white/80 rounded-xl hover:bg-[#E4EEF8] disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-2xs text-[#17233E]"
               >
                 <ChevronLeft size={14} />
               </button>
-              
+
               {Array.from({ length: totalPages }, (_, i) => i + 1).map(num => (
-                <button 
-                  key={num} 
-                  onClick={() => setCurrentPage(num)} 
+                <button
+                  key={num}
+                  onClick={() => setCurrentPage(num)}
                   className={`w-9 h-9 rounded-lg transition-all ${currentPage === num ? 'bg-[#0b1221] text-white' : 'bg-white border border-slate-200 hover:bg-slate-50'}`}
                 >
                   {num}
                 </button>
               ))}
-              
-              <button 
-                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} 
+
+              <button
+                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                 disabled={currentPage === totalPages || totalPages === 0}
                 className="px-3 py-2 bg-white/70 border border-white/80 rounded-xl hover:bg-[#E4EEF8] disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-2xs text-[#17233E]"
               >
@@ -667,32 +673,32 @@ const ComplianceManagement = () => {
         </div>
 
         {/* ── AI COMPLIANCE RISK INSIGHT BANNER ── */}
-        <div className="bg-[#0b1221] rounded-2xl p-8 text-white flex justify-between items-center shadow-2xl relative overflow-hidden group">
-          <div className="flex gap-6 items-center relative z-10">
-            <div className="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center text-amber-400 group-hover:scale-105 transition-transform">
-              <BrainCircuit size={32} />
+        <div className="bg-[#0b1221] rounded-2xl sm:rounded-3xl p-5 sm:p-8 text-white flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-6 shadow-2xl relative overflow-hidden group">
+          <div className="flex gap-4 sm:gap-6 items-center relative z-10">
+            <div className="w-12 h-12 sm:w-14 sm:h-14 bg-white/10 rounded-2xl flex items-center justify-center text-amber-400 group-hover:scale-105 transition-transform shrink-0">
+              <BrainCircuit size={28} />
             </div>
             <div>
-              <div className="flex items-center gap-3 mb-1">
-                <h4 className="text-xl font-bold tracking-tight">AI Compliance Risk Insight</h4>
+              <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-1">
+                <h4 className="text-lg sm:text-xl font-bold tracking-tight">AI Compliance Risk Insight</h4>
                 <span className="text-[10px] font-black px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 uppercase tracking-widest">
-                  {totalRecords === 0 
-                    ? "No Data" 
+                  {totalRecords === 0
+                    ? "No Data"
                     : (complianceState?.aiRisk?.riskLevel ? `${complianceState.aiRisk.riskLevel} Risk` : (overallComplianceRate >= 80 ? "Low Risk" : "Action Required"))}
                 </span>
               </div>
               <p className="text-slate-400 text-sm mt-1 max-w-2xl leading-relaxed">
                 {totalRecords === 0
                   ? `No active compliance or certification records found in database for ${currentTenant}. Track regulatory certifications to enable AI compliance risk modeling.`
-                  : (complianceState?.aiRisk?.message || (expiringCount > 0 || nonCompliantCount > 0 
+                  : (complianceState?.aiRisk?.message || (expiringCount > 0 || nonCompliantCount > 0
                     ? `AI predicts compliance vulnerability across ${currentTenant} due to ${expiringCount + nonCompliantCount} pending/expired certification records. Early renewal notifications are recommended.`
                     : `All compliance certification records for ${currentTenant} are fully verified and up to date.`))}
               </p>
             </div>
           </div>
-          <button 
+          <button
             onClick={() => setIsRiskModalOpen(true)}
-            className="px-8 py-4 bg-gradient-to-r from-[#1988A3] to-[#11C6DE] hover:from-[#157289] hover:to-[#0EB3C9] text-white shadow-lg shadow-[#1988A3]/25 font-black text-sm rounded-xl transition-all shadow-lg shadow-blue-600/20 active:scale-95 relative z-10 flex-shrink-0"
+            className="w-full sm:w-auto px-6 sm:px-8 py-3.5 sm:py-4 bg-gradient-to-r from-[#1988A3] to-[#11C6DE] hover:from-[#157289] hover:to-[#0EB3C9] text-white shadow-lg shadow-[#1988A3]/25 font-black text-xs sm:text-sm rounded-xl transition-all active:scale-95 relative z-10 flex-shrink-0 text-center"
           >
             View Risk Details
           </button>
@@ -706,13 +712,13 @@ const ComplianceManagement = () => {
       <AnimatePresence>
         {isRiskModalOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-gradient-to-br from-[#D8EBF9] to-[#BEDDF5] backdrop-blur-2xl rounded-3xl p-8 max-w-lg w-full shadow-2xl relative border border-white/90"
+              className="bg-gradient-to-br from-[#D8EBF9] to-[#BEDDF5] backdrop-blur-2xl rounded-2xl sm:rounded-3xl p-5 sm:p-8 max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl relative border border-white/90"
             >
-              <button 
+              <button
                 onClick={() => setIsRiskModalOpen(false)}
                 className="absolute top-6 right-6 text-slate-400 hover:text-slate-800"
               >
@@ -751,13 +757,13 @@ const ComplianceManagement = () => {
                   </div>
                 )}
               </div>
-              
+
               {totalRecords === 0 ? (
                 <div className="p-4 bg-slate-100 text-slate-500 rounded-xl text-xs font-semibold text-center">
                   No compliance records available. Add employee certifications to dispatch automated renewal reminders.
                 </div>
               ) : (
-                <button 
+                <button
                   onClick={handleSendReminders}
                   disabled={dispatchingReminders || (expiringCount + nonCompliantCount === 0)}
                   className="w-full py-3 bg-[#0b1221] hover:bg-[#16233d] disabled:bg-slate-300 disabled:cursor-not-allowed text-white rounded-xl font-bold transition-colors flex items-center justify-center gap-2"

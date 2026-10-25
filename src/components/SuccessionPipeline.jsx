@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { 
-  Search, Bell, HelpCircle, Filter, Download, 
+import {
+  Search, Bell, HelpCircle, Filter, Download,
   TrendingUp, AlertTriangle, Users, Timer, MoreHorizontal,
   ChevronRight, Award, ShieldCheck, RefreshCw, UserCheck, Loader2
 } from 'lucide-react';
@@ -11,8 +11,8 @@ import { hrAPI } from '../services/api';
 
 
 // ── Competency Radar Chart (SVG) ──────────────────────────────────────────────
-const RadarChart = ({ 
-  candidateScores = [0.85, 0.80, 0.85, 0.85, 0.80, 0.85], 
+const RadarChart = ({
+  candidateScores = [0.85, 0.80, 0.85, 0.85, 0.80, 0.85],
   benchmarkScores = [0.85, 0.80, 0.85, 0.85, 0.80, 0.85],
   labels = ['Technical', 'Domain', 'Soft Skills', 'Leadership', 'Execution', 'Readiness']
 }) => {
@@ -307,15 +307,15 @@ const SuccessionPipeline = () => {
 
   // Dynamic bench tracks from database roles
   const techPool = useMemo(() => {
-    return allCandidates.filter(c => 
-      /tech|cto|eng|develop|softw|architect/i.test(c.targetRole) || 
+    return allCandidates.filter(c =>
+      /tech|cto|eng|develop|softw|architect/i.test(c.targetRole) ||
       /develop|eng/i.test(c.department)
     );
   }, [allCandidates]);
 
   const opsPool = useMemo(() => {
-    return allCandidates.filter(c => 
-      !/tech|cto|eng|develop|softw|architect/i.test(c.targetRole) && 
+    return allCandidates.filter(c =>
+      !/tech|cto|eng|develop|softw|architect/i.test(c.targetRole) &&
       !/develop|eng/i.test(c.department)
     );
   }, [allCandidates]);
@@ -355,15 +355,15 @@ const SuccessionPipeline = () => {
     return true;
   };
 
-  const filteredTechPool = useMemo(() => 
-    techPool.filter(c => 
+  const filteredTechPool = useMemo(() =>
+    techPool.filter(c =>
       (c.name || '').toLowerCase().includes((searchQuery || '').toLowerCase()) &&
       matchesReadinessFilter(c, readinessFilter)
     ), [searchQuery, readinessFilter, techPool]
   );
 
-  const filteredOpsPool = useMemo(() => 
-    opsPool.filter(c => 
+  const filteredOpsPool = useMemo(() =>
+    opsPool.filter(c =>
       (c.name || '').toLowerCase().includes((searchQuery || '').toLowerCase()) &&
       matchesReadinessFilter(c, readinessFilter)
     ), [searchQuery, readinessFilter, opsPool]
@@ -432,10 +432,10 @@ const SuccessionPipeline = () => {
       {/* ── LEFT NAVIGATION SIDEBAR ── */}
       <HRSidebar />
 
-      <div className="flex-1 ml-0 lg:ml-64 pt-20 lg:pt-8 p-4 md:p-8 w-full relative z-10 space-y-8">
+      <main className="flex-1 ml-0 lg:ml-64 pt-20 lg:pt-8 px-3.5 sm:px-6 md:px-8 pb-10 w-full max-w-full overflow-x-hidden relative z-10 space-y-6 sm:space-y-8">
         {/* ── HEADER / TOP NAV ── */}
-        <header className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl p-6 rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-wrap items-center justify-between gap-4 sticky top-4 z-20">
-          <div className="flex items-center gap-2 text-sm font-semibold text-slate-400">
+        <header className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
+          <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 text-xs sm:text-sm font-semibold text-slate-400">
             <span>HR Manager</span>
             <span className="text-slate-300">›</span>
             <span>Talent Planning</span>
@@ -443,18 +443,18 @@ const SuccessionPipeline = () => {
             <span className="text-slate-900 font-bold">Succession & HiPo Pipeline</span>
           </div>
 
-          <div className="flex items-center gap-4">
-            <div className="relative">
+          <div className="flex items-center gap-3 w-full sm:w-auto">
+            <div className="relative flex-1 sm:flex-initial w-full sm:w-auto">
               <Search className="absolute left-3 top-2.5 text-slate-400" size={15} />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search talent pool..."
-                className="pl-9 pr-4 py-2 rounded-full bg-white/80 backdrop-blur-md border border-white/85 text-xs text-[#17233E] outline-none w-56 border border-transparent focus:border-indigo-500 focus:bg-white transition-all"
+                className="w-full sm:w-56 pl-9 pr-4 py-2 rounded-full bg-white/80 backdrop-blur-md border border-white/85 text-xs text-[#17233E] outline-none border border-transparent focus:border-indigo-500 focus:bg-white transition-all"
               />
             </div>
-            <button className="p-2 rounded-full hover:bg-slate-100 transition-colors">
+            <button className="p-2 rounded-full hover:bg-slate-100 transition-colors shrink-0">
               <HelpCircle size={18} className="text-slate-400" />
             </button>
           </div>
@@ -466,22 +466,22 @@ const SuccessionPipeline = () => {
             <SkillPulseLoader message="Synchronizing Enterprise Workforce Telemetry..." fullScreen={false} />
           </div>
         ) : (
-        <div className="px-8 py-6 space-y-6">
+        <div className="px-0 sm:px-4 py-2 sm:py-6 space-y-6">
 
           {/* ── HEADER TITLE BLOCK ── */}
-          <div className="flex justify-between items-start">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
-              <h1 className="text-2xl font-black text-slate-900 tracking-tight">Executive Leadership & Succession Pipeline</h1>
-              <p className="text-sm text-slate-500 font-medium mt-1">
+              <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">Executive Leadership & Succession Pipeline</h1>
+              <p className="text-xs sm:text-sm text-slate-500 font-medium mt-1">
                 AI-assisted readiness tracking, critical role succession, and high-potential development.
               </p>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3 w-full sm:w-auto">
               <span className="text-xs text-slate-500 font-semibold bg-white border border-slate-200 px-3 py-1.5 rounded-lg shadow-sm">
                 Tenant: <strong>{displayTenantName}</strong>
               </span>
               <div className="relative">
-                <button 
+                <button
                   onClick={() => setIsFilterOpen(!isFilterOpen)}
                   className="inline-flex items-center gap-2 px-4 py-2 border border-white/85 rounded-xl text-xs font-bold text-[#17233E] bg-white/70 backdrop-blur-md hover:bg-[#E4EEF8] transition-all shadow-sm"
                 >
@@ -501,7 +501,7 @@ const SuccessionPipeline = () => {
                   </div>
                 )}
               </div>
-              <button 
+              <button
                 onClick={handleExport}
                 disabled={isExporting}
                 className="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-[#1988A3] to-[#11C6DE] hover:from-[#157289] hover:to-[#0EB3C9] text-white shadow-lg shadow-[#1988A3]/25 rounded-xl text-xs font-bold transition-all shadow-md active:scale-95 disabled:opacity-50"
@@ -520,10 +520,10 @@ const SuccessionPipeline = () => {
           )}
 
           {/* ── METRIC CARDS ── */}
-          <div className="grid grid-cols-4 gap-5">
-            <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 rounded-2xl p-5 hover:border-[#1988A3]/40 transition-all duration-300">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-5">
+            <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 rounded-2xl p-3.5 sm:p-5 hover:border-[#1988A3]/40 transition-all duration-300">
               <div className="flex justify-between items-start">
-                <p className="text-xs font-bold uppercase tracking-wider text-slate-400">Overall Readiness</p>
+                <p className="text-[9px] sm:text-xs font-bold uppercase tracking-wider text-slate-500 truncate">Overall Readiness</p>
                 <div className="w-8 h-8 rounded-xl bg-emerald-50 flex items-center justify-center">
                   <TrendingUp size={16} className="text-emerald-600" />
                 </div>
@@ -538,9 +538,9 @@ const SuccessionPipeline = () => {
               </div>
             </div>
 
-            <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 rounded-2xl p-5 hover:border-[#1988A3]/40 transition-all duration-300">
+            <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 rounded-2xl p-3.5 sm:p-5 hover:border-[#1988A3]/40 transition-all duration-300">
               <div className="flex justify-between items-start">
-                <p className="text-xs font-bold uppercase tracking-wider text-slate-400">Critical Skill Gaps</p>
+                <p className="text-[9px] sm:text-xs font-bold uppercase tracking-wider text-slate-500 truncate">Critical Skill Gaps</p>
                 <div className="w-8 h-8 rounded-xl bg-rose-50 flex items-center justify-center">
                   <AlertTriangle size={16} className="text-rose-500" />
                 </div>
@@ -555,9 +555,9 @@ const SuccessionPipeline = () => {
               </div>
             </div>
 
-            <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 rounded-2xl p-5 hover:border-[#1988A3]/40 transition-all duration-300">
+            <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 rounded-2xl p-3.5 sm:p-5 hover:border-[#1988A3]/40 transition-all duration-300">
               <div className="flex justify-between items-start">
-                <p className="text-xs font-bold uppercase tracking-wider text-slate-400">HiPo Talent Pool</p>
+                <p className="text-[9px] sm:text-xs font-bold uppercase tracking-wider text-slate-500 truncate">HiPo Talent Pool</p>
                 <div className="w-8 h-8 rounded-xl bg-indigo-50 flex items-center justify-center">
                   <Users size={16} className="text-indigo-600" />
                 </div>
@@ -581,9 +581,9 @@ const SuccessionPipeline = () => {
               </div>
             </div>
 
-            <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 rounded-2xl p-5 hover:border-[#1988A3]/40 transition-all duration-300">
+            <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 rounded-2xl p-3.5 sm:p-5 hover:border-[#1988A3]/40 transition-all duration-300">
               <div className="flex justify-between items-start">
-                <p className="text-xs font-bold uppercase tracking-wider text-slate-400">Avg. Time to Ready</p>
+                <p className="text-[9px] sm:text-xs font-bold uppercase tracking-wider text-slate-500 truncate">Avg. Time to Ready</p>
                 <div className="w-8 h-8 rounded-xl bg-purple-50 flex items-center justify-center">
                   <Timer size={16} className="text-purple-600" />
                 </div>
@@ -600,16 +600,16 @@ const SuccessionPipeline = () => {
           </div>
 
           {/* ── MIDDLE GRID: SUCCESSION POOLS + RADAR & SKILL GAPS ── */}
-          <div className="grid grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-5">
 
             {/* LEFT 2 COLUMNS: DEPTH CHART */}
-            <div className="col-span-2 bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 p-6">
+            <div className="col-span-1 lg:col-span-2 bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-2xl sm:rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 p-4 sm:p-6">
               <div className="flex justify-between items-center mb-5">
                 <div>
                   <h3 className="text-base font-black text-slate-900">Succession Depth Chart</h3>
                   <p className="text-xs text-slate-400 font-medium">Mapped key leadership seats & readiness pools</p>
                 </div>
-                <button 
+                <button
                   onClick={() => setIsExpanded(!isExpanded)}
                   className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-xs font-bold text-slate-700 transition-colors"
                 >
@@ -648,7 +648,7 @@ const SuccessionPipeline = () => {
               </div>
 
               {/* Successor Pools Grid */}
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 {/* Tech & Engineering Bench Pool */}
                 <div className="border border-white/80 rounded-2xl p-4 bg-white/60 hover:bg-[#E4EEF8]/80 backdrop-blur-md shadow-sm transition-all">
                   <div className="flex justify-between items-center mb-3">
@@ -661,8 +661,8 @@ const SuccessionPipeline = () => {
                     {filteredTechPool.length === 0 ? (
                       <p className="text-xs text-slate-400 py-2">No matching candidates in filter</p>
                     ) : filteredTechPool.map((p) => (
-                      <div 
-                        key={p.id} 
+                      <div
+                        key={p.id}
                         onClick={() => setSelectedCandidate(p.name)}
                         className={`flex items-center gap-2.5 p-2.5 rounded-xl cursor-pointer transition-all ${selectedCandidate === p.name ? 'bg-indigo-50/70 border border-indigo-200 shadow-sm' : 'hover:bg-slate-50'}`}
                       >
@@ -707,7 +707,7 @@ const SuccessionPipeline = () => {
                     {filteredOpsPool.length === 0 ? (
                       <p className="text-xs text-slate-400 py-2">No matching candidates in filter</p>
                     ) : filteredOpsPool.map((p) => (
-                      <div 
+                      <div
                         key={p.id}
                         onClick={() => setSelectedCandidate(p.name)}
                         className={`flex items-center gap-2.5 p-2.5 rounded-xl cursor-pointer transition-all ${selectedCandidate === p.name ? 'bg-indigo-50/70 border border-indigo-200 shadow-sm' : 'hover:bg-slate-50'}`}
@@ -753,9 +753,9 @@ const SuccessionPipeline = () => {
                     Active: {selectedCandidate}
                   </span>
                 </div>
-                <RadarChart 
-                  candidateScores={activeProfile.candidateScores} 
-                  benchmarkScores={activeProfile.benchmarkScores} 
+                <RadarChart
+                  candidateScores={activeProfile.candidateScores}
+                  benchmarkScores={activeProfile.benchmarkScores}
                 />
                 <div className="mt-2 space-y-1 text-xs">
                   <div className="flex justify-between items-center">
@@ -795,7 +795,7 @@ const SuccessionPipeline = () => {
                     </div>
                   ))}
                 </div>
-                <button 
+                <button
                   onClick={() => setToastMessage('Enterprise training pathways initiated for active pipeline gaps.')}
                   className="mt-4 w-full py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition-all cursor-pointer"
                 >
@@ -806,19 +806,20 @@ const SuccessionPipeline = () => {
           </div>
 
           {/* ── BOTTOM PANEL: INDIVIDUAL CAREER TRAJECTORY ── */}
-          <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 p-6">
-            <div className="flex justify-between items-center mb-6">
+          <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-2xl sm:rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 p-4 sm:p-6">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4 sm:mb-6">
               <div>
-                <h3 className="text-base font-black text-slate-900">Target Career Development Trajectory</h3>
+                <h3 className="text-sm sm:text-base font-black text-slate-900">Target Career Development Trajectory</h3>
                 <p className="text-xs text-slate-400 font-medium">Milestone progression for selected candidate</p>
               </div>
-              <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-100 rounded-xl text-xs font-extrabold text-slate-700">
+              <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-100 rounded-xl text-xs font-extrabold text-slate-700 w-full sm:w-auto justify-between sm:justify-start">
                 <span>Selected Candidate: <strong>{selectedCandidate}</strong></span>
               </div>
             </div>
 
             {/* Growth Stepper Timeline */}
-            <div className="relative flex items-start justify-between px-6 py-2">
+            <div className="overflow-x-auto no-scrollbar pb-3">
+            <div className="min-w-[600px] relative flex items-start justify-between px-6 py-2">
               <div className="absolute top-7 left-12 right-12 h-0.5 bg-slate-200 z-0" />
               <div className="absolute top-7 z-0" style={{ left: 'calc(12.5% + 12px)', width: '25%', height: '2px', background: '#10b981' }} />
 
@@ -848,11 +849,12 @@ const SuccessionPipeline = () => {
                 </div>
               ))}
             </div>
+            </div>
           </div>
 
         </div>
         )}
-      </div>
+      </main>
     </div>
   );
 };

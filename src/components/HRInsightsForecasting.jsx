@@ -1,14 +1,14 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { 
-  Layers, 
-  TrendingUp, 
-  Download, 
-  ChevronDown, 
-  Sparkles, 
-  Users, 
-  Briefcase, 
-  Shield, 
+import {
+  Layers,
+  TrendingUp,
+  Download,
+  ChevronDown,
+  Sparkles,
+  Users,
+  Briefcase,
+  Shield,
   FileText,
   Search,
   CheckCircle2,
@@ -64,7 +64,7 @@ const HRInsightsForecasting = () => {
   // --- DERIVED 100% FROM DATABASE METRICS ---
   const forecastMetrics = useMemo(() => {
     if (!liveForecast) return [];
-    
+
     const readinessPct = liveForecast.readinessPct ?? Math.round((liveForecast.avgReadiness || 0) * 100);
     const activeGapsCount = liveForecast.activeGaps || 0;
     const criticalGapsCount = liveForecast.criticalGapsCount || 0;
@@ -278,12 +278,12 @@ const HRInsightsForecasting = () => {
       {/* HRSidebar Navigation */}
       <HRSidebar currentTenant={displayTenantName} currentScreen="HR Insights & Forecasting" />
 
-      <main className="flex-1 ml-0 lg:ml-64 pt-20 lg:pt-8 p-4 md:p-8 w-full relative z-10 space-y-8">
-        
+      <main className="flex-1 ml-0 lg:ml-64 pt-20 lg:pt-8 px-3.5 sm:px-6 md:px-8 pb-10 w-full max-w-full overflow-x-hidden relative z-10 space-y-6 sm:space-y-8">
+
         {/* TOAST NOTIFICATION LAYER */}
         <AnimatePresence>
           {toastMessage && (
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: -20, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -20, scale: 0.95 }}
@@ -303,9 +303,9 @@ const HRInsightsForecasting = () => {
         ) : (
         <>
         {/* HEADER BAR */}
-        <header className="flex flex-wrap justify-between items-center bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl p-6 rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 gap-4 sticky top-4 z-20">
+        <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 gap-4 mb-4">
           <div>
-            <h1 className="text-xl font-black text-slate-900 tracking-tight flex items-center gap-2.5">
+            <h1 className="text-lg sm:text-xl font-black text-slate-900 tracking-tight flex flex-wrap items-center gap-2 sm:gap-2.5">
               HR Insights & Forecasting
               <span className="flex items-center gap-1 px-2 py-0.5 bg-indigo-50 border border-indigo-100 rounded-md text-[11px] font-bold text-indigo-700">
                 <Building size={12} className="text-indigo-500" />
@@ -316,25 +316,25 @@ const HRInsightsForecasting = () => {
               AI-powered workforce intelligence & predictive skill readiness analytics directly from PostgreSQL DB
             </p>
           </div>
-          
-          <div className="flex items-center gap-2.5">
+
+          <div className="flex flex-wrap items-center gap-2 sm:gap-2.5 w-full sm:w-auto">
             {/* Search Input */}
-            <div className="relative">
+            <div className="relative flex-1 sm:flex-initial w-full sm:w-auto">
               <Search className="absolute left-3 top-2.5 text-slate-400" size={15} />
-              <input 
-                type="text" 
+              <input
+                type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search forecasts, skills..." 
-                className="w-56 pl-9 pr-3 py-1.5 bg-white/80 backdrop-blur-md border border-white/85 rounded-xl text-xs font-semibold text-slate-700 outline-none border border-transparent focus:border-indigo-500 focus:bg-white transition-all" 
+                placeholder="Search forecasts, skills..."
+                className="w-full sm:w-56 pl-9 pr-3 py-1.5 bg-white/80 backdrop-blur-md border border-white/85 rounded-xl text-xs font-semibold text-slate-700 outline-none border border-transparent focus:border-indigo-500 focus:bg-white transition-all"
               />
             </div>
 
             {/* Department Filter */}
             <div className="relative flex items-center bg-white/70 backdrop-blur-md border border-white/80 rounded-xl px-3 py-2 shadow-sm text-xs font-bold text-slate-700">
               <Layers size={14} className="text-slate-400 mr-1.5" />
-              <select 
-                value={selectedDept} 
+              <select
+                value={selectedDept}
                 onChange={(e) => setSelectedDept(e.target.value)}
                 className="bg-transparent outline-none cursor-pointer pr-4 appearance-none text-xs font-bold text-slate-700"
               >
@@ -347,7 +347,7 @@ const HRInsightsForecasting = () => {
 
 
 
-            <button 
+            <button
               onClick={handleExportReport}
               className="text-xs font-bold bg-[#1988A3] text-white px-3.5 py-1.5 rounded-lg hover:bg-[#17233E] transition-all flex items-center gap-1.5 shadow-sm active:scale-95 cursor-pointer"
             >
@@ -357,12 +357,12 @@ const HRInsightsForecasting = () => {
         </header>
 
         {/* --- SECTION 1: TOP COMPACT FORECAST METRIC CARDS --- */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
           {forecastMetrics.map((card) => (
-            <div key={card.id} className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 rounded-2xl p-5 flex flex-col justify-between hover:border-[#1988A3]/40 transition-all duration-300">
+            <div key={card.id} className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 rounded-xl sm:rounded-2xl p-3.5 sm:p-5 flex flex-col justify-between hover:border-[#1988A3]/40 transition-all duration-300">
               <div>
-                <div className="flex justify-between items-center">
-                  <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">{card.title}</span>
+                <div className="flex justify-between items-center gap-1">
+                  <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-wider text-slate-500 truncate">{card.title}</span>
                   {card.badge && (
                     <span className={`text-[9px] font-black px-1.5 py-0.5 rounded border ${card.badgeColor}`}>
                       {card.badge}
@@ -396,9 +396,9 @@ const HRInsightsForecasting = () => {
 
         {/* --- SECTION 2: 2-COLUMN SIDE-BY-SIDE FORECAST CHART & ATTRITION RISK PANEL --- */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
-          
+
           {/* FUTURE SKILL GAP FORECAST CHART (7 COLS) */}
-          <div className="lg:col-span-7 bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 rounded-3xl p-6 space-y-4 flex flex-col justify-between">
+          <div className="lg:col-span-7 bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 rounded-2xl sm:rounded-3xl p-4 sm:p-6 space-y-4 flex flex-col justify-between">
             <div className="flex flex-wrap justify-between items-center gap-2">
               <div>
                 <h3 className="text-base font-bold text-slate-900 tracking-tight flex items-center gap-2">
@@ -414,7 +414,8 @@ const HRInsightsForecasting = () => {
               </div>
             </div>
 
-            <div className="h-56 flex items-end justify-between border-b border-slate-100 pb-2 px-1 gap-1 overflow-visible">
+            <div className="overflow-x-auto no-scrollbar pb-2">
+            <div className="min-w-[500px] h-56 flex items-end justify-between border-b border-slate-100 pb-2 px-1 gap-1 overflow-visible">
               {gapForecastData.length > 0 ? (
                 gapForecastData.map((data, idx) => {
                   const currentVal = Math.max(0, Math.min(100, Math.round(data.current ?? 0)));
@@ -422,12 +423,12 @@ const HRInsightsForecasting = () => {
                   const isSelected = selectedBarData?.month === data.month;
 
                   return (
-                    <div 
-                      key={idx} 
+                    <div
+                      key={idx}
                       onClick={() => setSelectedBarData(data)}
                       className={`flex flex-col items-center flex-1 group cursor-pointer py-1.5 px-0.5 rounded-lg transition-all ${
-                        isSelected 
-                          ? 'bg-indigo-50/90 ring-2 ring-indigo-500 shadow-sm' 
+                        isSelected
+                          ? 'bg-indigo-50/90 ring-2 ring-indigo-500 shadow-sm'
                           : 'hover:bg-slate-50'
                       }`}
                       title={`Click to inspect ${data.month}: ${data.isForecast ? 'Projected' : 'Verified'} ${currentVal}%, Target ${predictedVal}%`}
@@ -457,29 +458,29 @@ const HRInsightsForecasting = () => {
                       </div>
 
                       <div className="w-full flex items-end justify-center gap-1 h-36">
-                        <motion.div 
+                        <motion.div
                           initial={{ height: 0 }}
                           animate={{ height: `${currentVal}%` }}
                           style={{ height: `${currentVal}%` }}
                           transition={{ duration: 0.5, delay: idx * 0.03 }}
                           className={`w-2.5 sm:w-3.5 rounded-t transition-colors ${
                             data.isForecast
-                              ? isSelected 
-                                ? 'bg-[#11C6DE]/40 border border-[#11C6DE] border-dashed shadow-sm' 
+                              ? isSelected
+                                ? 'bg-[#11C6DE]/40 border border-[#11C6DE] border-dashed shadow-sm'
                                 : 'bg-[#11C6DE]/25 border border-[#11C6DE] border-dashed group-hover:bg-indigo-300'
-                              : isSelected 
-                              ? 'bg-[#1988A3] shadow-sm' 
+                              : isSelected
+                              ? 'bg-[#1988A3] shadow-sm'
                               : 'bg-[#1988A3] group-hover:bg-[#1988A3]'
-                          }`} 
+                          }`}
                         />
-                        <motion.div 
+                        <motion.div
                           initial={{ height: 0 }}
                           animate={{ height: `${predictedVal}%` }}
                           style={{ height: `${predictedVal}%` }}
                           transition={{ duration: 0.5, delay: idx * 0.03 + 0.05 }}
                           className={`w-2.5 sm:w-3.5 rounded-t transition-colors ${
                             isSelected ? 'bg-indigo-800 shadow-sm' : 'bg-[#17233E] group-hover:bg-indigo-800'
-                          }`} 
+                          }`}
                         />
                       </div>
                       <span className={`text-[10px] mt-2 transition-colors ${
@@ -496,10 +497,11 @@ const HRInsightsForecasting = () => {
                 </div>
               )}
             </div>
+            </div>
 
             {/* INTERACTIVE MONTH DETAIL INSPECTOR (ON CLICK) */}
             {selectedBarData ? (
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, y: 6 }}
                 animate={{ opacity: 1, y: 0 }}
                 className="p-3.5 rounded-xl bg-slate-50/90 border border-indigo-100 shadow-sm space-y-2.5"
@@ -510,14 +512,14 @@ const HRInsightsForecasting = () => {
                       {selectedBarData.month} Detail Inspection
                     </span>
                     <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
-                      selectedBarData.isForecast 
-                        ? 'bg-indigo-50 text-indigo-700 border-indigo-200' 
+                      selectedBarData.isForecast
+                        ? 'bg-indigo-50 text-indigo-700 border-indigo-200'
                         : 'bg-emerald-50 text-emerald-700 border-emerald-200'
                     }`}>
                       {selectedBarData.isForecast ? '6-Month AI Projection' : 'Verified Database Record'}
                     </span>
                   </div>
-                  <button 
+                  <button
                     onClick={() => setSelectedBarData(null)}
                     className="text-[11px] font-bold text-slate-400 hover:text-slate-700 flex items-center gap-1 cursor-pointer"
                   >
@@ -534,8 +536,8 @@ const HRInsightsForecasting = () => {
                       {Math.max(0, Math.min(100, Math.round(selectedBarData.current ?? 0)))}%
                     </span>
                     <span className="text-[10px] text-slate-500 font-semibold">
-                      {selectedBarData.isForecast 
-                        ? 'Projected LMS course progression' 
+                      {selectedBarData.isForecast
+                        ? 'Projected LMS course progression'
                         : 'Verified maturity from DB assessments'}
                     </span>
                   </div>
@@ -581,8 +583,8 @@ const HRInsightsForecasting = () => {
                       {selectedBarData.currentSupply ?? (liveForecast?.totalEmployees || 9)} Staff
                     </span>
                     <span className="text-[10px] text-slate-500 font-semibold">
-                      {selectedBarData.futureDemand 
-                        ? `Projected need: ${selectedBarData.futureDemand}` 
+                      {selectedBarData.futureDemand
+                        ? `Projected need: ${selectedBarData.futureDemand}`
                         : 'No active staff in DB'}
                     </span>
                   </div>
@@ -595,7 +597,7 @@ const HRInsightsForecasting = () => {
                   Click on any month's bar above to inspect detailed capability vs target numbers.
                 </span>
                 {gapForecastData.length > 0 && (
-                  <button 
+                  <button
                     onClick={() => setSelectedBarData(gapForecastData[gapForecastData.length - 1])}
                     className="text-[11px] font-bold text-indigo-600 hover:text-indigo-800 underline cursor-pointer shrink-0 ml-2"
                   >
@@ -607,7 +609,7 @@ const HRInsightsForecasting = () => {
           </div>
 
           {/* HIGH ATTRITION RISK PANEL (5 COLS) */}
-          <div className="lg:col-span-5 bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 rounded-3xl shadow-sm flex flex-col justify-between overflow-hidden p-6">
+          <div className="lg:col-span-5 bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 rounded-2xl sm:rounded-3xl shadow-sm flex flex-col justify-between overflow-hidden p-4 sm:p-6">
             <div>
               <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
                 <h3 className="text-base font-bold text-slate-900 tracking-tight flex items-center gap-2">
@@ -638,7 +640,7 @@ const HRInsightsForecasting = () => {
               </div>
             </div>
             <div className="p-3 bg-slate-50 border-t border-slate-100 text-center">
-              <button 
+              <button
                 onClick={() => navigate('/hr-dashboard/career-planning')}
                 className="text-xs font-bold text-indigo-600 hover:text-indigo-800 transition-colors flex items-center justify-center gap-1 w-full cursor-pointer"
               >
@@ -650,9 +652,9 @@ const HRInsightsForecasting = () => {
         </div>
 
         {/* --- SECTION 3: AI STRATEGIC RECOMMENDATIONS PANEL --- */}
-        <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-3xl p-6 text-[#17233E] shadow-xl shadow-[#1B3154]/6 border border-white/85 flex flex-col justify-between relative overflow-hidden">
+        <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-4 sm:p-6 text-[#17233E] shadow-xl shadow-[#1B3154]/6 border border-white/85 flex flex-col justify-between relative overflow-hidden">
           <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-indigo-500/15 to-transparent pointer-events-none rounded-full" />
-          
+
           <div className="flex items-center gap-3 mb-4 relative z-10">
             <div className="w-8 h-8 rounded-lg bg-[#1988A3]/20 flex items-center justify-center border border-indigo-500/30 text-indigo-400">
               <Sparkles size={16} />
@@ -676,7 +678,7 @@ const HRInsightsForecasting = () => {
                     </div>
                     <h4 className="text-xs font-bold text-[#17233E] mb-1 group-hover:text-[#1988A3] transition-colors">{rec.title}</h4>
                     <p className="text-[11px] text-[#5A6D89] font-medium leading-relaxed mb-2.5">{rec.desc}</p>
-                    
+
                     {rec.peerMentor && (
                       <div className="mb-3 px-2 py-1 bg-[#1988A3]/10 border border-indigo-500/20 rounded-md text-[10px] text-indigo-300 font-semibold flex items-center justify-between">
                         <span>Peer Mentor Synergy:</span>
@@ -684,7 +686,7 @@ const HRInsightsForecasting = () => {
                       </div>
                     )}
                   </div>
-                  <button 
+                  <button
                     onClick={() => setActiveModalAction(rec)}
                     className="text-xs font-bold text-indigo-400 hover:text-indigo-300 flex items-center gap-1 transition-colors pt-2 border-t border-slate-800/60 cursor-pointer"
                   >
@@ -707,13 +709,13 @@ const HRInsightsForecasting = () => {
       <AnimatePresence>
         {activeModalAction && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-gradient-to-br from-[#D8EBF9] to-[#BEDDF5] backdrop-blur-2xl rounded-3xl p-6 max-w-md w-full shadow-2xl relative border border-white/90"
+              className="bg-gradient-to-br from-[#D8EBF9] to-[#BEDDF5] backdrop-blur-2xl rounded-2xl sm:rounded-3xl p-4 sm:p-6 max-w-md w-full max-h-[90vh] overflow-y-auto shadow-2xl relative border border-white/90"
             >
-              <button 
+              <button
                 onClick={() => setActiveModalAction(null)}
                 className="absolute top-5 right-5 text-slate-400 hover:text-slate-800"
               >
@@ -754,7 +756,7 @@ const HRInsightsForecasting = () => {
                   </div>
                 )}
               </div>
-              <button 
+              <button
                 disabled={submittingAction}
                 onClick={() => handleInitiateWorkflow(activeModalAction)}
                 className="w-full py-3 bg-[#0b1221] hover:bg-[#16233d] disabled:opacity-50 text-white rounded-xl font-bold text-xs transition-colors shadow-md cursor-pointer flex items-center justify-center gap-2"

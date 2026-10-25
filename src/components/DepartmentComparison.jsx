@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { 
-  Sparkles, ChevronLeft, ChevronRight, Filter, Calendar, 
+import {
+  Sparkles, ChevronLeft, ChevronRight, Filter, Calendar,
   Loader2, TrendingUp, TrendingDown, Users, Download,
   Code2, Palette, Megaphone, Cpu, BarChart3, Briefcase, Building2
 } from 'lucide-react';
@@ -150,8 +150,8 @@ const DepartmentComparison = () => {
   };
 
   const cardWidthCalc = `calc((100% - ${(visibleCount - 1) * 12}px) / ${visibleCount})`;
-  const trackTranslateX = startIndex === 0 
-    ? '0px' 
+  const trackTranslateX = startIndex === 0
+    ? '0px'
     : `calc(-${startIndex} * (${100 / visibleCount}% + ${12 - ((visibleCount - 1) * 12) / visibleCount}px))`;
 
   const colorStyles = [
@@ -213,8 +213,8 @@ const DepartmentComparison = () => {
     const activeMonths = rawMonths.slice(-sliceCount);
 
     const activeDepts = deptMetrics.filter(d => d.hasSkills || d.monthlyTrend?.some(m => m.score > 0));
-    const deptsToPlot = activeDepts.length > 0 
-      ? [...activeDepts].sort((a, b) => b.avgProf - a.avgProf).slice(0, 3) 
+    const deptsToPlot = activeDepts.length > 0
+      ? [...activeDepts].sort((a, b) => b.avgProf - a.avgProf).slice(0, 3)
       : deptMetrics.slice(0, 3);
 
     const lines = deptsToPlot.map(dept => {
@@ -341,19 +341,19 @@ const DepartmentComparison = () => {
       </div>
       <HRSidebar />
 
-      <main className="flex-1 min-w-0 ml-0 lg:ml-64 pt-20 lg:pt-8 p-4 md:p-8 relative z-10 space-y-8">
-        
+      <main className="flex-1 min-w-0 ml-0 lg:ml-64 pt-20 lg:pt-8 px-3.5 sm:px-6 md:px-8 pb-10 w-full max-w-full overflow-x-hidden relative z-10 space-y-6 sm:space-y-8">
+
         {/* HEADER NAVIGATION BAR */}
-        <header className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl p-6 rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-wrap items-center justify-between gap-4 sticky top-4 z-20">
+        <header className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
           <div>
-            <h1 className="text-lg font-black text-slate-900 tracking-tight">Department Comparison</h1>
+            <h1 className="text-base sm:text-lg font-black text-slate-900 tracking-tight">Department Comparison</h1>
             <p className="text-xs text-slate-500 font-medium mt-0.5">Cross-departmental performance, skill maturity & readiness matrix</p>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3 w-full sm:w-auto">
             <div className="flex items-center gap-2 bg-slate-100 px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-700">
               <Calendar size={14} className="text-indigo-600" />
-              <select 
-                value={selectedPeriod} 
+              <select
+                value={selectedPeriod}
                 onChange={(e) => setSelectedPeriod(e.target.value)}
                 className="bg-transparent outline-none cursor-pointer"
               >
@@ -362,7 +362,7 @@ const DepartmentComparison = () => {
                 <option value="YTD">Year to Date</option>
               </select>
             </div>
-            <button 
+            <button
               onClick={handleExportCSV}
               className="px-3.5 py-1.5 bg-gradient-to-r from-[#1988A3] to-[#11C6DE] hover:from-[#157289] hover:to-[#0EB3C9] text-white shadow-lg shadow-[#1988A3]/25 font-bold text-xs rounded-xl shadow-xs transition-all active:scale-95 flex items-center gap-1.5 cursor-pointer"
             >
@@ -398,7 +398,7 @@ const DepartmentComparison = () => {
                     Showing {startIndex + 1}–{Math.min(startIndex + visibleCount, deptMetrics.length)} of {deptMetrics.length}
                   </span>
                 </div>
-                
+
                 <div className="flex items-center gap-2">
                   {/* Slider step dots */}
                   <div className="hidden sm:flex items-center gap-1 mr-1">
@@ -415,19 +415,19 @@ const DepartmentComparison = () => {
                   </div>
 
                   <div className="flex items-center gap-1">
-                    <motion.button 
+                    <motion.button
                       whileTap={{ scale: 0.9 }}
-                      onClick={handlePrev} 
-                      disabled={startIndex === 0} 
+                      onClick={handlePrev}
+                      disabled={startIndex === 0}
                       className="p-2 rounded-xl border border-white/80 bg-white/70 hover:bg-[#E4EEF8] disabled:opacity-30 disabled:cursor-not-allowed transition-all shadow-sm cursor-pointer text-[#17233E]"
                       title="Previous department"
                     >
                       <ChevronLeft size={16} />
                     </motion.button>
-                    <motion.button 
+                    <motion.button
                       whileTap={{ scale: 0.9 }}
-                      onClick={handleNext} 
-                      disabled={startIndex >= maxIndex} 
+                      onClick={handleNext}
+                      disabled={startIndex >= maxIndex}
                       className="p-2 rounded-xl border border-white/80 bg-white/70 hover:bg-[#E4EEF8] disabled:opacity-30 disabled:cursor-not-allowed transition-all shadow-sm cursor-pointer text-[#17233E]"
                       title="Next department"
                     >
@@ -439,7 +439,7 @@ const DepartmentComparison = () => {
 
               {/* OVERFLOW-HIDDEN 4-CARD VIEWPORT */}
               <div className="overflow-hidden w-full rounded-2xl py-0.5">
-                <motion.div 
+                <motion.div
                   className="flex gap-3"
                   animate={{ x: trackTranslateX }}
                   transition={{ type: "spring", stiffness: 280, damping: 28 }}
@@ -449,16 +449,16 @@ const DepartmentComparison = () => {
                     const IconComp = theme.icon;
 
                     return (
-                      <motion.div 
-                        key={dm.id} 
+                      <motion.div
+                        key={dm.id}
                         style={{ width: cardWidthCalc }}
                         whileHover={{ y: -4, scale: 1.01 }}
                         transition={{ duration: 0.2 }}
-                        className="relative overflow-hidden shrink-0 bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 hover:border-[#1988A3]/50 rounded-3xl p-5 shadow-xl shadow-[#1B3154]/6 transition-all duration-300 flex flex-col justify-between group cursor-default"
+                        className="relative overflow-hidden shrink-0 bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 hover:border-[#1988A3]/50 rounded-2xl sm:rounded-3xl p-3.5 sm:p-5 shadow-xl shadow-[#1B3154]/6 transition-all duration-300 flex flex-col justify-between group cursor-default"
                       >
                         {/* Top Accent Gradient Bar */}
                         <div className={`absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r ${theme.gradient}`} />
-                        
+
                         {/* Corner Ambient Glow */}
                         <div className={`absolute -top-10 -right-10 w-24 h-24 bg-gradient-to-br ${theme.accentGlow} rounded-full blur-xl group-hover:scale-150 transition-all duration-500 pointer-events-none`} />
 
@@ -498,11 +498,11 @@ const DepartmentComparison = () => {
                             <span className="text-base font-black text-slate-900 tracking-tight">{dm.score}</span>
                           </div>
                           <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
-                            <motion.div 
+                            <motion.div
                               initial={{ width: 0 }}
                               animate={{ width: `${dm.perfScore}%` }}
                               transition={{ duration: 0.8, ease: "easeOut" }}
-                              className={`h-full rounded-full bg-gradient-to-r ${theme.barColor}`} 
+                              className={`h-full rounded-full bg-gradient-to-r ${theme.barColor}`}
                             />
                           </div>
                         </div>
@@ -529,9 +529,9 @@ const DepartmentComparison = () => {
 
             {/* 2-COLUMN GRID: TREND CHART & SKILL HEATMAP */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-              
+
               {/* TREND LINES CARD */}
-              <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 rounded-3xl p-6 flex flex-col justify-between">
+              <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 rounded-2xl sm:rounded-3xl p-4 sm:p-6 flex flex-col justify-between">
                 <div>
                   <div className="flex justify-between items-center mb-3">
                     <div>
@@ -541,7 +541,7 @@ const DepartmentComparison = () => {
                     <div className="flex items-center gap-3 text-[11px] font-bold text-slate-600 flex-wrap">
                       {trendChartData.lines.map((line, idx) => (
                         <span key={idx} className="flex items-center gap-1.5">
-                          <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: line.color }} /> 
+                          <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: line.color }} />
                           <span className="text-slate-700">{line.name}</span>
                           <span className="text-slate-400 text-[10px]">({line.latestScore.toFixed(1)})</span>
                         </span>
@@ -571,25 +571,25 @@ const DepartmentComparison = () => {
 
                         return (
                           <g key={lineIdx}>
-                            <path 
-                              d={pathD} 
-                              fill="none" 
-                              stroke={line.color} 
-                              strokeWidth="2.5" 
-                              strokeLinecap="round" 
-                              strokeLinejoin="round" 
+                            <path
+                              d={pathD}
+                              fill="none"
+                              stroke={line.color}
+                              strokeWidth="2.5"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
                             />
                             {pts.map((p, i) => {
                               const x = 25 + (i / Math.max(1, pts.length - 1)) * w;
                               const y = 125 - (Math.min(5.0, Math.max(0, p)) / 5.0) * h;
                               return (
-                                <circle 
-                                  key={i} 
-                                  cx={x} 
-                                  cy={y} 
-                                  r="4" 
-                                  fill="#ffffff" 
-                                  stroke={line.color} 
+                                <circle
+                                  key={i}
+                                  cx={x}
+                                  cy={y}
+                                  r="4"
+                                  fill="#ffffff"
+                                  stroke={line.color}
                                   strokeWidth="2.5"
                                 >
                                   <title>{`${line.name}: ${p.toFixed(1)} / 5.0 (${trendChartData.months[i]})`}</title>
@@ -642,8 +642,8 @@ const DepartmentComparison = () => {
                         {heatmapDomains.map((_, valIdx) => {
                           const val = dept.scores?.[valIdx] || 0.0;
                           return (
-                            <div 
-                              key={valIdx} 
+                            <div
+                              key={valIdx}
                               className={`${getHeatmapColor(val)} rounded-lg py-1.5 text-center text-xs shadow-2xs font-semibold`}
                             >
                               {val > 0 ? val.toFixed(1) : '—'}
@@ -662,9 +662,9 @@ const DepartmentComparison = () => {
 
             {/* 2-COLUMN GRID: TRAINING COMPLETION & AI STRATEGIC INSIGHT */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-              
+
               {/* TRAINING COMPLETION RATE CARD */}
-              <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 rounded-3xl p-6">
+              <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 rounded-2xl sm:rounded-3xl p-4 sm:p-6">
                 <div className="flex items-center justify-between mb-3">
                   <div>
                     <h3 className="text-xs font-black text-slate-900 uppercase tracking-wider">Training Completion Rate</h3>
@@ -685,9 +685,9 @@ const DepartmentComparison = () => {
                         <span className="text-slate-900 font-black">{cr.trainingCompletion}%</span>
                       </div>
                       <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
-                        <div 
-                          className={`h-full ${cr.style.bar} rounded-full transition-all duration-500`} 
-                          style={{ width: `${cr.trainingCompletion}%` }} 
+                        <div
+                          className={`h-full ${cr.style.bar} rounded-full transition-all duration-500`}
+                          style={{ width: `${cr.trainingCompletion}%` }}
                         />
                       </div>
                     </div>
@@ -696,7 +696,7 @@ const DepartmentComparison = () => {
               </div>
 
               {/* AI STRATEGIC INSIGHT BOX */}
-              <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl text-[#17233E] rounded-3xl p-6 border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-col justify-between relative overflow-hidden">
+              <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl text-[#17233E] rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-col justify-between relative overflow-hidden">
                 <div className="space-y-2.5">
                   <div className="flex items-center gap-2">
                     <span className="inline-flex items-center gap-1.5 text-[10px] font-black px-2.5 py-0.5 bg-[#1988A3]/10 text-[#1988A3] border border-[#1988A3]/20 rounded-md uppercase tracking-wider">
@@ -711,9 +711,9 @@ const DepartmentComparison = () => {
                     {liveAnalytics?.deptInsight?.summary || liveAnalytics?.aiInsight || "Live capability profiling is active across all tenant departments. Real-time verified proficiency indices and courseware completions are continuously monitored."}
                   </p>
                 </div>
-                
+
                 <div className="pt-4 flex justify-end">
-                  <button 
+                  <button
                     onClick={() => navigate('/hr-dashboard/skill-gap-reports')}
                     className="px-4 py-2 bg-gradient-to-r from-[#1988A3] to-[#11C6DE] hover:from-[#157289] hover:to-[#0EB3C9] text-white font-bold text-xs rounded-xl shadow-md shadow-[#1988A3]/25 transition-all flex items-center gap-1.5 cursor-pointer active:scale-95 border-0"
                   >
@@ -726,22 +726,22 @@ const DepartmentComparison = () => {
             </div>
 
             {/* COMPACT DEPARTMENT PERFORMANCE RANKING TABLE */}
-            <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 rounded-3xl overflow-hidden p-6">
-              <div className="px-5 py-3.5 border-b border-slate-100 flex justify-between items-center">
+            <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 rounded-2xl sm:rounded-3xl overflow-hidden p-4 sm:p-6">
+              <div className="p-3.5 sm:px-5 sm:py-3.5 border-b border-slate-200/50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
                 <div>
                   <h3 className="text-xs font-black text-slate-900 uppercase tracking-wider">Department Performance Ranking</h3>
                   <p className="text-[11px] text-slate-400 font-medium">Ranked by performance score, verified proficiency and training completion</p>
                 </div>
-                <button 
+                <button
                   onClick={handleExportCSV}
                   className="flex items-center gap-1.5 text-xs font-bold text-slate-600 hover:text-slate-900 border border-slate-200 px-3 py-1 rounded-lg bg-slate-50 hover:bg-slate-100 cursor-pointer transition-all"
                 >
                   <Filter size={13} /> Export CSV
                 </button>
               </div>
-              
-              <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse">
+
+              <div className="overflow-x-auto no-scrollbar">
+                <table className="w-full text-left border-collapse min-w-[700px]">
                   <thead>
                     <tr className="bg-slate-50 border-b border-slate-100 text-[11px] font-black text-slate-400 uppercase tracking-wider">
                       <th className="px-5 py-2.5">Rank</th>
@@ -772,23 +772,23 @@ const DepartmentComparison = () => {
                   </tbody>
                 </table>
               </div>
-              
-              <div className="bg-slate-50 border-t border-slate-100 px-5 py-2.5 flex items-center justify-between text-xs font-semibold text-slate-400">
+
+              <div className="bg-slate-50/60 border-t border-slate-200/50 p-3 sm:px-5 sm:py-2.5 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs font-semibold text-slate-500">
                 <span>
                   Showing {Math.min(rankingRows.length, (activePage - 1) * ITEMS_PER_PAGE + 1)} to {Math.min(rankingRows.length, activePage * ITEMS_PER_PAGE)} of {rankingRows.length} active departments
                 </span>
                 <div className="flex items-center gap-1.5">
-                  <button 
-                    onClick={() => setActivePage(p => Math.max(1, p - 1))} 
-                    disabled={activePage === 1} 
+                  <button
+                    onClick={() => setActivePage(p => Math.max(1, p - 1))}
+                    disabled={activePage === 1}
                     className="p-1.5 rounded-lg border border-white/80 bg-white/70 hover:bg-[#E4EEF8] disabled:opacity-40 cursor-pointer shadow-2xs transition-colors"
                   >
                     <ChevronLeft size={14} />
                   </button>
                   <span className="text-xs text-slate-600 font-bold px-1.5">{activePage} / {totalPages}</span>
-                  <button 
-                    onClick={() => setActivePage(p => Math.min(totalPages, p + 1))} 
-                    disabled={activePage >= totalPages} 
+                  <button
+                    onClick={() => setActivePage(p => Math.min(totalPages, p + 1))}
+                    disabled={activePage >= totalPages}
                     className="p-1.5 rounded-lg border border-white/80 bg-white/70 hover:bg-[#E4EEF8] disabled:opacity-40 cursor-pointer shadow-2xs transition-colors"
                   >
                     <ChevronRight size={14} />

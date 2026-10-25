@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { 
-  Search, TrendingUp, Award, AlertCircle, Sparkles, 
-  Filter, Download, ChevronLeft, ChevronRight, Briefcase, 
+import {
+  Search, TrendingUp, Award, AlertCircle, Sparkles,
+  Filter, Download, ChevronLeft, ChevronRight, Briefcase,
   UserCheck, Settings, FileText, Check, ArrowUpDown, Loader2
 } from 'lucide-react';
 import HRSidebar from './HRSidebar';
@@ -23,8 +23,8 @@ const PerformanceDistribution = ({ data }) => {
                 <div className="absolute opacity-0 group-hover:opacity-100 bottom-full left-1/2 transform -translate-x-1/2 bg-slate-800 text-white text-[10px] font-bold px-2 py-1 rounded mb-1 transition-opacity whitespace-nowrap z-10">
                   {bar.count} Employees
                 </div>
-                <div 
-                  className={`w-full ${bar.color} rounded-t-xl transition-all duration-500 ease-out`} 
+                <div
+                  className={`w-full ${bar.color} rounded-t-xl transition-all duration-500 ease-out`}
                   style={{ height: heightPct }}
                 />
               </div>
@@ -156,7 +156,7 @@ const EmployeePerformance = () => {
         risk = 'Low';
       }
 
-      const riskColor = 
+      const riskColor =
         risk === 'High' ? 'text-rose-600 bg-rose-50 border border-rose-100' :
         risk === 'Medium' ? 'text-amber-600 bg-amber-50 border border-amber-100' :
         risk === 'Low' ? 'text-emerald-600 bg-emerald-50 border border-emerald-100' :
@@ -184,7 +184,7 @@ const EmployeePerformance = () => {
         statusColor = 'bg-rose-50 text-rose-700 border border-rose-100';
       }
 
-      const skillColor = 
+      const skillColor =
         skillScore >= 80 ? 'bg-emerald-500' :
         skillScore >= 60 ? 'bg-indigo-500' :
         skillScore > 0 ? 'bg-amber-500' : 'bg-slate-300';
@@ -233,39 +233,39 @@ const EmployeePerformance = () => {
     return rawPerformanceDetails.reduce((sum, d) => sum + d.completedEnrollments, 0);
   }, [rawPerformanceDetails]);
 
-  const trainingCompletionRate = totalEnrollments > 0 
-    ? Math.round((totalCompletedEnrollments / totalEnrollments) * 100) 
+  const trainingCompletionRate = totalEnrollments > 0
+    ? Math.round((totalCompletedEnrollments / totalEnrollments) * 100)
     : 0;
 
   const highPerformersCount = rawPerformanceDetails.filter(d => d.isAssessed && d.performanceNum >= 75).length;
   const atRiskCount = rawPerformanceDetails.filter(d => d.risk === 'High').length;
 
   const statMetrics = [
-    { 
-      label: 'Avg. Performance', 
-      value: `${avgPerfNum}%`, 
-      sub: `${assessedEmployees.length} of ${rawPerformanceDetails.length} employees assessed`, 
-      type: 'spark' 
+    {
+      label: 'Avg. Performance',
+      value: `${avgPerfNum}%`,
+      sub: `${assessedEmployees.length} of ${rawPerformanceDetails.length} employees assessed`,
+      type: 'spark'
     },
-    { 
-      label: 'High Performers', 
-      value: `${highPerformersCount}`, 
-      sub: `${rawPerformanceDetails.length > 0 ? Math.round((highPerformersCount / rawPerformanceDetails.length) * 100) : 0}% of workforce`, 
-      progress: `${rawPerformanceDetails.length > 0 ? Math.round((highPerformersCount / rawPerformanceDetails.length) * 100) : 0}%`, 
-      type: 'bar' 
+    {
+      label: 'High Performers',
+      value: `${highPerformersCount}`,
+      sub: `${rawPerformanceDetails.length > 0 ? Math.round((highPerformersCount / rawPerformanceDetails.length) * 100) : 0}% of workforce`,
+      progress: `${rawPerformanceDetails.length > 0 ? Math.round((highPerformersCount / rawPerformanceDetails.length) * 100) : 0}%`,
+      type: 'bar'
     },
-    { 
-      label: 'At-Risk Employees', 
-      value: `${atRiskCount}`, 
-      sub: atRiskCount > 0 ? `${atRiskCount} with critical capability deficits` : 'Zero high-risk employees', 
-      type: 'avatars' 
+    {
+      label: 'At-Risk Employees',
+      value: `${atRiskCount}`,
+      sub: atRiskCount > 0 ? `${atRiskCount} with critical capability deficits` : 'Zero high-risk employees',
+      type: 'avatars'
     },
-    { 
-      label: 'Training Progress', 
-      value: `${trainingCompletionRate}%`, 
-      sub: `${totalCompletedEnrollments} of ${totalEnrollments} courses completed`, 
-      pct: trainingCompletionRate, 
-      type: 'radial' 
+    {
+      label: 'Training Progress',
+      value: `${trainingCompletionRate}%`,
+      sub: `${totalCompletedEnrollments} of ${totalEnrollments} courses completed`,
+      pct: trainingCompletionRate,
+      type: 'radial'
     }
   ];
 
@@ -325,7 +325,7 @@ const EmployeePerformance = () => {
   // Filtering & Sorting Logic
   const processedDetails = useMemo(() => {
     let result = rawPerformanceDetails.filter((item) => {
-      const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+      const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                             item.role.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesDept = selectedDept === 'All' || item.dept === selectedDept;
       return matchesSearch && matchesDept;
@@ -358,7 +358,7 @@ const EmployeePerformance = () => {
   };
 
   const toggleSelectRow = (id) => {
-    setSelectedRows(prev => 
+    setSelectedRows(prev =>
       prev.includes(id) ? prev.filter(rowId => rowId !== id) : [...prev, id]
     );
   };
@@ -381,19 +381,19 @@ const EmployeePerformance = () => {
   const handleExportCSV = () => {
     const headers = ["Employee Name", "Department", "Role", "Skill Score", "Assessment Score", "Performance Index", "Training Status", "Risk Level"];
     const rows = processedDetails.map(d => [
-      `"${d.name}"`, 
-      `"${d.dept}"`, 
-      `"${d.role}"`, 
-      `"${d.skillScore}%"`, 
+      `"${d.name}"`,
+      `"${d.dept}"`,
+      `"${d.role}"`,
+      `"${d.skillScore}%"`,
       `"${d.avgAssessmentScore !== null ? d.avgAssessmentScore + '%' : 'Pending'}"`,
-      `"${d.performance}"`, 
-      `"${d.status}"`, 
+      `"${d.performance}"`,
+      `"${d.status}"`,
       `"${d.risk}"`
     ]);
-    
-    const csvContent = "data:text/csv;charset=utf-8," 
+
+    const csvContent = "data:text/csv;charset=utf-8,"
       + [headers.join(","), ...rows.map(e => e.join(","))].join("\n");
-      
+
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
@@ -423,8 +423,8 @@ const EmployeePerformance = () => {
       </div>
       <HRSidebar />
 
-      <div className="flex-1 ml-0 lg:ml-64 pt-20 lg:pt-8 p-4 md:p-8 w-full relative z-10 space-y-8">
-        
+      <main className="flex-1 ml-0 lg:ml-64 pt-20 lg:pt-8 px-3.5 sm:px-6 md:px-8 pb-10 w-full max-w-full overflow-x-hidden relative z-10 space-y-6 sm:space-y-8">
+
         {activeNotification && (
           <div className="fixed top-5 right-8 z-50 bg-slate-900 text-white text-xs font-bold px-4 py-3 rounded-xl shadow-lg flex items-center gap-2 transition-all">
             <Sparkles size={14} className="text-[#1988A3]" />
@@ -433,20 +433,20 @@ const EmployeePerformance = () => {
         )}
 
         {/* HEADER BAR */}
-        <header className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl p-6 rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-wrap items-center justify-between gap-4 sticky top-4 z-20">
+        <header className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
           <div>
-            <h1 className="text-xl font-black text-slate-900 tracking-tight">Employee Performance Reports</h1>
-            <p className="text-xs text-slate-400 font-medium mt-0.5">Monitor workforce performance, identify risks, and improve productivity</p>
+            <h1 className="text-lg sm:text-xl font-black text-slate-900 tracking-tight">Employee Performance Reports</h1>
+            <p className="text-xs text-slate-500 font-medium mt-0.5">Monitor workforce performance, identify risks, and improve productivity</p>
           </div>
-          <div className="flex items-center gap-4">
-            <div className="relative">
+          <div className="flex items-center gap-3 w-full sm:w-auto">
+            <div className="relative flex-1 sm:flex-initial w-full sm:w-auto">
               <Search className="absolute left-3 top-2.5 text-slate-400" size={16} />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
                 placeholder="Search employees, skills..."
-                className="pl-9 pr-4 py-2 rounded-xl bg-white/80 backdrop-blur-md border border-white/85 text-xs text-[#17233E] outline-none w-64 border border-slate-100 focus:border-slate-200 focus:bg-white transition-all"
+                className="w-full sm:w-64 pl-9 pr-4 py-2 rounded-xl bg-white/80 backdrop-blur-md border border-white/85 text-xs text-[#17233E] outline-none border border-slate-100 focus:border-slate-200 focus:bg-white transition-all"
               />
             </div>
           </div>
@@ -458,14 +458,14 @@ const EmployeePerformance = () => {
           </div>
         ) : (
           <>
-        <div className="px-8 py-6 space-y-6">
+        <div className="px-0 sm:px-4 py-2 sm:py-6 space-y-6">
 
           {/* TOP METRIC CARDS */}
-          <div className="grid grid-cols-4 gap-5">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-5">
             {statMetrics.map((card, i) => (
-              <div key={i} className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 rounded-2xl p-5 flex flex-col justify-between relative overflow-hidden hover:border-[#1988A3]/40 transition-all duration-300">
+              <div key={i} className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 rounded-2xl p-3.5 sm:p-5 flex flex-col justify-between relative overflow-hidden hover:border-[#1988A3]/40 transition-all duration-300">
                 <div className="flex justify-between items-start">
-                  <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">{card.label}</span>
+                  <span className="text-[9px] sm:text-xs font-bold text-slate-500 uppercase tracking-wider truncate">{card.label}</span>
                   {card.type === 'spark' && <TrendingUp size={16} className="text-[#1988A3]" />}
                   {card.type === 'bar' && <Award size={16} className="text-emerald-500" />}
                   {card.type === 'avatars' && <AlertCircle size={16} className="text-rose-400" />}
@@ -502,23 +502,27 @@ const EmployeePerformance = () => {
           </div>
 
           {/* HISTOGRAM CARD */}
-          <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 p-6">
+          <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-2xl sm:rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 p-4 sm:p-6">
             <div className="flex justify-between items-center">
               <div>
-                <h3 className="text-base font-black text-slate-900">Performance Distribution</h3>
+                <h3 className="text-sm sm:text-base font-black text-slate-900">Performance Distribution</h3>
                 <p className="text-xs text-slate-400 font-medium mt-0.5">Employee count by performance score range across organization</p>
               </div>
             </div>
-            <PerformanceDistribution data={histogramData} />
+            <div className="overflow-x-auto no-scrollbar pb-2">
+              <div className="min-w-[450px]">
+                <PerformanceDistribution data={histogramData} />
+              </div>
+            </div>
           </div>
 
           {/* PERFORMANCE TABLE */}
-          <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 overflow-hidden">
-            <div className="px-6 py-5 flex justify-between items-center border-b border-slate-100">
-              <h3 className="text-base font-black text-slate-900">Performance Details</h3>
-              <div className="flex items-center gap-3">
+          <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-2xl sm:rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 overflow-hidden">
+            <div className="p-4 sm:p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-slate-200/50">
+              <h3 className="text-sm sm:text-base font-black text-slate-900">Performance Details</h3>
+              <div className="flex flex-wrap items-center gap-2 sm:gap-3 w-full sm:w-auto">
                 {selectedRows.length > 0 && (
-                  <button 
+                  <button
                     onClick={handleBulkTraining}
                     className="text-xs font-bold bg-gradient-to-r from-[#1988A3] to-[#11C6DE] hover:from-[#157289] hover:to-[#0EB3C9] text-white px-3.5 py-1.5 rounded-xl transition-all shadow-sm"
                   >
@@ -526,7 +530,7 @@ const EmployeePerformance = () => {
                   </button>
                 )}
                 <div className="relative">
-                  <button 
+                  <button
                     onClick={() => setIsFilterMenuOpen(!isFilterMenuOpen)}
                     className="text-xs font-bold bg-slate-50 border border-slate-100 text-slate-600 px-3 py-1.5 rounded-xl hover:bg-slate-100 flex items-center gap-1.5 transition-all"
                   >
@@ -551,7 +555,7 @@ const EmployeePerformance = () => {
                     </div>
                   )}
                 </div>
-                <button 
+                <button
                   onClick={handleExportCSV}
                   className="text-xs font-bold bg-slate-50 border border-slate-100 text-slate-600 px-3 py-1.5 rounded-xl hover:bg-slate-100 flex items-center gap-1.5 transition-all"
                 >
@@ -560,13 +564,13 @@ const EmployeePerformance = () => {
               </div>
             </div>
 
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse">
+            <div className="overflow-x-auto no-scrollbar">
+              <table className="w-full text-left border-collapse min-w-[750px]">
                 <thead>
                   <tr className="bg-slate-50/50 border-b border-slate-100">
                     <th className="px-4 py-3.5 w-10 text-center">
-                      <input 
-                        type="checkbox" 
+                      <input
+                        type="checkbox"
                         onChange={(e) => {
                           if (e.target.checked) setSelectedRows(currentTableData.map(r => r.id));
                           else setSelectedRows([]);
@@ -594,8 +598,8 @@ const EmployeePerformance = () => {
                     currentTableData.map((row) => (
                       <tr key={row.id} className="hover:bg-slate-50/40 transition-colors">
                         <td className="px-4 py-4 text-center">
-                          <input 
-                            type="checkbox" 
+                          <input
+                            type="checkbox"
                             checked={selectedRows.includes(row.id)}
                             onChange={() => toggleSelectRow(row.id)}
                           />
@@ -650,19 +654,19 @@ const EmployeePerformance = () => {
             </div>
 
             {/* Pagination Controls */}
-            <div className="px-6 py-4 flex items-center justify-between border-t border-slate-100 bg-slate-50/30">
+            <div className="p-4 sm:px-6 sm:py-4 flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-slate-200/50 bg-slate-50/30">
               <span className="text-xs font-semibold text-slate-400">
                 Showing page <span className="text-slate-700 font-bold">{currentPage}</span> of {totalPages}
               </span>
               <div className="flex items-center gap-2">
-                <button 
+                <button
                   onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                   disabled={currentPage === 1}
                   className="p-1.5 rounded-lg border border-white/80 bg-white/70 text-[#17233E] hover:bg-[#E4EEF8] disabled:opacity-40 transition-all cursor-pointer shadow-2xs"
                 >
                   <ChevronLeft size={16} />
                 </button>
-                <button 
+                <button
                   onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                   disabled={currentPage === totalPages}
                   className="p-1.5 rounded-lg border border-white/80 bg-white/70 text-[#17233E] hover:bg-[#E4EEF8] disabled:opacity-40 transition-all cursor-pointer shadow-2xs"
@@ -676,7 +680,7 @@ const EmployeePerformance = () => {
         </div>
         </>
         )}
-      </div>
+      </main>
     </div>
   );
 };

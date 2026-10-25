@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { 
-  Search, Bell, HelpCircle, Download, 
+import {
+  Search, Bell, HelpCircle, Download,
   RefreshCw, BookOpen, Sparkles, X, CheckCircle, Loader2,
   CheckCircle2, XCircle, ShieldAlert, UserCheck, Award
 } from 'lucide-react';
@@ -31,7 +31,7 @@ const DeficiencyChart = ({ data }) => {
   const bars = data.map((d, i) => {
     const label = d.department || d.dept || 'Dept';
     const pct = Math.min(100, Math.max(0, Math.round(d.gapPct ?? d.pct ?? 0)));
-    
+
     let barColor = ELEGANT_COLORS[i % ELEGANT_COLORS.length];
     if (pct > 50) barColor = '#f43f5e';
     else if (pct >= 30) barColor = '#f59e0b';
@@ -64,13 +64,13 @@ const DeficiencyChart = ({ data }) => {
               {b.pct}%
             </text>
             {/* Department Label below bar angled cleanly */}
-            <text 
-              x={x + barW / 2 + 4} 
-              y={padT + H + 12} 
-              textAnchor="end" 
-              fontSize="9" 
-              fill="#475569" 
-              fontFamily="sans-serif" 
+            <text
+              x={x + barW / 2 + 4}
+              y={padT + H + 12}
+              textAnchor="end"
+              fontSize="9"
+              fill="#475569"
+              fontFamily="sans-serif"
               fontWeight="700"
               transform={`rotate(-32, ${x + barW / 2 + 4}, ${padT + H + 12})`}
             >
@@ -162,13 +162,13 @@ const ActionModal = ({ isOpen, title, description, confirmText, onConfirm, onClo
         </p>
 
         <div className="flex items-center justify-end gap-3 pt-2">
-          <button 
+          <button
             onClick={onClose}
             className="px-4 py-2 text-xs font-bold text-slate-600 hover:bg-slate-100 rounded-xl transition-all"
           >
             Cancel
           </button>
-          <button 
+          <button
             onClick={onConfirm}
             className={`px-4 py-2 text-xs font-bold text-white rounded-xl shadow-md transition-all ${
               isDanger ? 'bg-rose-600 hover:bg-rose-700' : 'bg-indigo-600 hover:bg-indigo-700'
@@ -357,11 +357,11 @@ const SkillGapReports = () => {
       }));
   }, [gapAnalytics]);
 
-  const filteredHeatmap = heatmapData.filter(item => 
+  const filteredHeatmap = heatmapData.filter(item =>
     item.dept.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const filteredEmployees = employees.filter(emp => 
+  const filteredEmployees = employees.filter(emp =>
     emp.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     emp.dept.toLowerCase().includes(searchQuery.toLowerCase()) ||
     emp.gap.toLowerCase().includes(searchQuery.toLowerCase())
@@ -427,10 +427,10 @@ const SkillGapReports = () => {
       </div>
       <HRSidebar />
 
-      <div className="flex-1 ml-0 lg:ml-64 pt-20 lg:pt-8 p-4 md:p-8 w-full relative z-10 space-y-8">
+      <main className="flex-1 ml-0 lg:ml-64 pt-20 lg:pt-8 px-3.5 sm:px-6 md:px-8 pb-10 w-full max-w-full overflow-x-hidden relative z-10 space-y-6 sm:space-y-8">
         {/* ── TOP NAV / HEADER ── */}
-        <header className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl p-6 rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-wrap items-center justify-between gap-4 sticky top-4 z-20">
-          <div className="flex items-center gap-2 text-sm font-semibold text-slate-400">
+        <header className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
+          <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 text-xs sm:text-sm font-semibold text-slate-400">
             <span>HR Manager</span>
             <span className="text-slate-300">›</span>
             <span>Talent Planning</span>
@@ -438,24 +438,24 @@ const SkillGapReports = () => {
             <span className="text-slate-900 font-bold">Skill Gap Reports</span>
           </div>
 
-          <div className="flex items-center gap-4">
-            <div className="relative">
+          <div className="flex items-center gap-3 w-full sm:w-auto">
+            <div className="relative flex-1 sm:flex-initial w-full sm:w-auto">
               <Search className="absolute left-3 top-2.5 text-slate-400" size={15} />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search departments or skills..."
-                className="pl-9 pr-4 py-2 rounded-full bg-white/80 backdrop-blur-md border border-white/85 text-xs text-[#17233E] outline-none w-64 border border-transparent focus:border-indigo-500 focus:bg-white transition-all"
+                className="w-full sm:w-64 pl-9 pr-4 py-2 rounded-full bg-white/80 backdrop-blur-md border border-white/85 text-xs text-[#17233E] outline-none border border-transparent focus:border-indigo-500 focus:bg-white transition-all"
               />
             </div>
-            <button className="p-2 rounded-full hover:bg-slate-100 transition-colors">
+            <button className="p-2 rounded-full hover:bg-slate-100 transition-colors shrink-0">
               <HelpCircle size={18} className="text-slate-400" />
             </button>
           </div>
         </header>
 
-        <div className="px-8 py-6 space-y-6">
+        <div className="px-0 sm:px-4 py-2 sm:py-6 space-y-6">
           {loading ? (
             <div className="flex flex-col items-center justify-center min-h-[450px] bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 p-12 my-4">
               <div className="p-4 bg-indigo-50 rounded-2xl mb-4 animate-bounce">
@@ -467,19 +467,19 @@ const SkillGapReports = () => {
           ) : (
             <>
           {/* ── PAGE TITLE ROW ── */}
-          <div className="flex justify-between items-start">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
-              <h1 className="text-2xl font-black text-slate-900 tracking-tight">Enterprise Skill Gap Analysis</h1>
-              <p className="text-sm text-slate-500 font-medium mt-1">
+              <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">Enterprise Skill Gap Analysis</h1>
+              <p className="text-xs sm:text-sm text-slate-500 font-medium mt-1">
                 Comprehensive heatmap of organizational competency and skill deficiencies across key business units.
               </p>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3 w-full sm:w-auto">
               <span className="text-xs text-slate-400 font-semibold bg-white border border-slate-200 px-3 py-1.5 rounded-lg shadow-sm">
                 Tenant: {displayTenantName}
               </span>
 
-              <button 
+              <button
                 onClick={handleExport}
                 disabled={isExporting}
                 className="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-[#1988A3] to-[#11C6DE] hover:from-[#157289] hover:to-[#0EB3C9] text-white shadow-lg shadow-[#1988A3]/25 rounded-xl text-xs font-bold transition-all shadow-md active:scale-95 disabled:opacity-50"
@@ -492,12 +492,12 @@ const SkillGapReports = () => {
 
           {/* ── COMPETENCY HEATMAP ── */}
           <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 overflow-hidden">
-            <div className="px-6 pt-5 pb-4 flex justify-between items-start border-b border-slate-100">
+            <div className="p-4 sm:p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-slate-200/50">
               <div>
-                <h3 className="text-base font-black text-slate-900">Competency Heatmap</h3>
+                <h3 className="text-sm sm:text-base font-black text-slate-900">Competency Heatmap</h3>
                 <p className="text-xs text-slate-400 font-medium mt-0.5">Showing baseline proficiency score vs organizational target requirement (1.0 - 5.0 scale)</p>
               </div>
-              <div className="flex items-center gap-3 text-xs font-bold">
+              <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-[10px] sm:text-xs font-bold">
                 <span className="inline-flex items-center gap-1.5 bg-slate-50 text-slate-500 border border-slate-200 px-2.5 py-1 rounded-lg">
                   <span className="w-2 h-2 rounded-full bg-slate-400"/> No Data (0.0)
                 </span>
@@ -555,21 +555,25 @@ const SkillGapReports = () => {
           </div>
 
           {/* ── DEFICIENCY INDEX + HIGH PRIORITY MISSING SKILLS ── */}
-          <div className="grid grid-cols-2 gap-5">
-            <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 p-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-5">
+            <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-2xl sm:rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 p-4 sm:p-6">
               <div className="flex justify-between items-center mb-2">
-                <h3 className="text-base font-black text-slate-900">Dept Skill Deficiency Index</h3>
+                <h3 className="text-sm sm:text-base font-black text-slate-900">Dept Skill Deficiency Index</h3>
                 <span className="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded">
                   Calculated Avg Risk
                 </span>
               </div>
-              <DeficiencyChart data={deptDeficiencyData} />
+              <div className="overflow-x-auto no-scrollbar pb-2">
+                <div className="min-w-[420px]">
+                  <DeficiencyChart data={deptDeficiencyData} />
+                </div>
+              </div>
               <p className="text-xs text-slate-400 font-medium text-center mt-2">
                 Higher percentage bars indicate a severe average gap across mandatory skill targets.
               </p>
             </div>
 
-            <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 p-6">
+            <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-2xl sm:rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 p-4 sm:p-6">
               <div className="flex justify-between items-center mb-5">
                 <h3 className="text-base font-black text-slate-900">High-Priority Missing Skills</h3>
               </div>
@@ -597,13 +601,13 @@ const SkillGapReports = () => {
           </div>
 
           {/* ── CRITICAL SKILL GAPS BY EMPLOYEE ── */}
-          <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 overflow-hidden">
-            <div className="px-6 py-4 flex justify-between items-center border-b border-slate-100">
+          <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-2xl sm:rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 overflow-hidden">
+            <div className="p-4 sm:p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-slate-200/50">
               <div>
-                <h3 className="text-base font-black text-slate-900">Critical Skill Gaps by Individual Employee</h3>
+                <h3 className="text-sm sm:text-base font-black text-slate-900">Critical Skill Gaps by Individual Employee</h3>
                 <p className="text-xs text-slate-400 font-medium mt-0.5">High-impact skill deficiencies flagged for targeted development</p>
               </div>
-              <button 
+              <button
                 onClick={() => setSearchQuery('')}
                 className="text-xs font-bold text-slate-500 hover:text-slate-800 transition-colors"
               >
@@ -611,8 +615,8 @@ const SkillGapReports = () => {
               </button>
             </div>
 
-            <div className="overflow-y-auto" style={{ maxHeight: 320 }}>
-              <table className="w-full text-left">
+            <div className="overflow-x-auto no-scrollbar" style={{ maxHeight: 320 }}>
+              <table className="w-full text-left min-w-[650px]">
                 <thead className="sticky top-0 bg-slate-50/90 backdrop-blur z-10 border-b border-slate-200">
                   <tr>
                     <th className="px-6 py-3 text-xs font-black text-slate-500 uppercase tracking-wider">Employee</th>
@@ -654,7 +658,7 @@ const SkillGapReports = () => {
                               Already Assigned
                             </span>
                           ) : (
-                            <button 
+                            <button
                               onClick={() => handleAssignTraining(emp.id, emp.name, emp.gap, emp.skillId)}
                               className="inline-flex items-center gap-1.5 px-3.5 py-1.5 border border-white/80 rounded-xl text-xs font-bold text-[#17233E] bg-white/70 hover:bg-[#E4EEF8] transition-all shadow-sm active:scale-95"
                             >
@@ -678,26 +682,26 @@ const SkillGapReports = () => {
           </div>
 
           {/* ── UNASSIGNED & DIRECT EMPLOYEE COURSE ENROLLMENT REQUESTS (AUTHORITY APPROVAL) ── */}
-          <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 overflow-hidden mt-6">
-            <div className="px-6 py-4 flex justify-between items-center border-b border-slate-100 bg-slate-50/50">
+          <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-2xl sm:rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 overflow-hidden mt-6">
+            <div className="p-4 sm:p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-slate-200/50 bg-slate-50/50">
               <div className="flex items-center gap-3">
-                <div className="p-2.5 rounded-xl bg-amber-50 text-amber-600 border border-amber-200/60">
+                <div className="p-2.5 rounded-xl bg-amber-50 text-amber-600 border border-amber-200/60 shrink-0">
                   <ShieldAlert size={20} />
                 </div>
                 <div>
-                  <h3 className="text-base font-black text-slate-900">Direct Authority Course Approval Requests</h3>
+                  <h3 className="text-sm sm:text-base font-black text-slate-900">Direct Authority Course Approval Requests</h3>
                   <p className="text-xs text-slate-500 font-medium mt-0.5">
-                    Course enrollment requests from unassigned employees (not part of any team) requiring HR / Company authorization
+                    Course enrollment requests from unassigned employees requiring authorization
                   </p>
                 </div>
               </div>
-              <span className="text-xs font-extrabold text-amber-700 bg-amber-50 border border-amber-200 px-3.5 py-1.5 rounded-full shadow-2xs">
+              <span className="text-xs font-extrabold text-amber-700 bg-amber-50 border border-amber-200 px-3.5 py-1.5 rounded-full shadow-2xs shrink-0">
                 {unassignedCourseRequests.filter(r => r.status === 'Pending').length} Pending Approvals
               </span>
             </div>
 
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse">
+            <div className="overflow-x-auto no-scrollbar">
+              <table className="w-full text-left border-collapse min-w-[700px]">
                 <thead className="bg-slate-50/80 border-b border-slate-200">
                   <tr>
                     <th className="px-6 py-3 text-xs font-black text-slate-500 uppercase tracking-wider">Employee</th>
@@ -788,7 +792,7 @@ const SkillGapReports = () => {
         </>
       )}
     </div>
-  </div>
+  </main>
 
       {/* ── CUSTOM DIALOGS & NOTIFICATIONS ── */}
       <ToastNotification toast={toast} onClose={() => setToast((prev) => ({ ...prev, visible: false }))} />

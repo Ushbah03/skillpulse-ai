@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { 
-  Search, Bell, Plus, Users, Clock, CheckCircle, 
+import {
+  Search, Bell, Plus, Users, Clock, CheckCircle,
   ArrowRight, Calendar, Sparkles, X, BookOpen, Award, Check, Loader2,
   ChevronLeft, ChevronRight, UserCheck
 } from 'lucide-react';
@@ -22,11 +22,11 @@ const ProgramPopularityChart = ({ programs = [] }) => {
   const counts = categories.map(cat => {
     const matching = programs.filter(p => p.category === cat.key);
     const totalEnrolled = matching.reduce((sum, p) => sum + (Number(p.enrolledCount) || 0), 0);
-    return { 
+    return {
       category: cat.key,
-      label: cat.label, 
-      count: totalEnrolled, 
-      color: cat.color 
+      label: cat.label,
+      count: totalEnrolled,
+      color: cat.color
     };
   });
 
@@ -36,7 +36,7 @@ const ProgramPopularityChart = ({ programs = [] }) => {
     <div className="flex flex-col justify-between h-48 pt-4">
       <div className="flex items-end justify-between h-36 px-2 gap-2">
         {counts.map((bar, i) => {
-          const heightPct = bar.count > 0 
+          const heightPct = bar.count > 0
             ? `${Math.max(16, Math.round((bar.count / maxVal) * 100))}%`
             : '4px';
           return (
@@ -206,8 +206,8 @@ const ProgramDetailsModal = ({ isOpen, program, onClose, onEnroll }) => {
         </div>
 
         <div className="flex items-center justify-end pt-2">
-          <button 
-            onClick={onClose} 
+          <button
+            onClick={onClose}
             className="px-5 py-2 text-xs font-bold text-white bg-slate-800 hover:bg-slate-900 rounded-xl shadow-sm transition-all active:scale-95"
           >
             Close
@@ -297,7 +297,7 @@ const EnrollmentsListModal = ({ isOpen, enrollments = [], onClose }) => {
               const progress = Math.max(0, Number(e.progressPct) || 0);
               const enrollDate = e.enrolledAt ? new Date(e.enrolledAt).toLocaleDateString() : 'Active';
 
-              const statusBadge = 
+              const statusBadge =
                 e.status === 'COMPLETED' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
                 e.status === 'IN_PROGRESS' ? 'bg-indigo-50 text-indigo-700 border-indigo-200' :
                 'bg-amber-50 text-amber-700 border-amber-200';
@@ -423,26 +423,26 @@ const TrainingProgramManagement = () => {
   const startedCount = activeCount + completedCount;
   const inProgressCount = activeCount;
   const conversionRateVal = totalUsers > 0 ? ((completedCount / totalUsers) * 100).toFixed(1) + '%' : '0.0%';
-  
+
   const funnelStages = [
     { label: 'Total Employees', count: totalUsers, pct: 100, bg: 'bg-blue-600' },
-    { 
-      label: 'Enrolled / Started', 
-      count: startedCount, 
-      pct: totalUsers > 0 ? Math.max(12, Math.min(100, Math.round((startedCount / totalUsers) * 100))) : (startedCount > 0 ? 100 : 12), 
-      bg: 'bg-blue-500' 
+    {
+      label: 'Enrolled / Started',
+      count: startedCount,
+      pct: totalUsers > 0 ? Math.max(12, Math.min(100, Math.round((startedCount / totalUsers) * 100))) : (startedCount > 0 ? 100 : 12),
+      bg: 'bg-blue-500'
     },
-    { 
-      label: 'In Progress', 
-      count: inProgressCount, 
-      pct: totalUsers > 0 ? Math.max(12, Math.min(100, Math.round((inProgressCount / totalUsers) * 100))) : (inProgressCount > 0 ? 100 : 12), 
-      bg: 'bg-indigo-500' 
+    {
+      label: 'In Progress',
+      count: inProgressCount,
+      pct: totalUsers > 0 ? Math.max(12, Math.min(100, Math.round((inProgressCount / totalUsers) * 100))) : (inProgressCount > 0 ? 100 : 12),
+      bg: 'bg-indigo-500'
     },
-    { 
-      label: 'Completed', 
-      count: completedCount, 
-      pct: totalUsers > 0 ? Math.max(12, Math.min(100, Math.round((completedCount / totalUsers) * 100))) : (completedCount > 0 ? 100 : 12), 
-      bg: 'bg-emerald-500' 
+    {
+      label: 'Completed',
+      count: completedCount,
+      pct: totalUsers > 0 ? Math.max(12, Math.min(100, Math.round((completedCount / totalUsers) * 100))) : (completedCount > 0 ? 100 : 12),
+      bg: 'bg-emerald-500'
     },
   ];
 
@@ -493,8 +493,8 @@ const TrainingProgramManagement = () => {
     };
   });
 
-  const filteredPrograms = programs.filter(p => 
-    p.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+  const filteredPrograms = programs.filter(p =>
+    p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
     p.category.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -588,17 +588,17 @@ const TrainingProgramManagement = () => {
       </div>
       <HRSidebar />
 
-      <div className="flex-1 ml-0 lg:ml-64 pt-20 lg:pt-8 p-4 md:p-8 w-full relative z-10 space-y-8">
+      <main className="flex-1 ml-0 lg:ml-64 pt-20 lg:pt-8 px-3.5 sm:px-6 md:px-8 pb-10 w-full max-w-full overflow-x-hidden relative z-10 space-y-6 sm:space-y-8">
         {/* HEADER */}
-        <header className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl p-6 rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-wrap items-center justify-between gap-4 sticky top-4 z-20">
-          <div className="flex items-center gap-2 text-base text-slate-500 font-medium">
+        <header className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
+          <div className="flex items-center gap-2 text-xs sm:text-base text-slate-500 font-medium">
             <span>Planning</span>
             <span className="text-slate-300">/</span>
             <span className="text-slate-800 font-semibold">Training Programs</span>
           </div>
 
-          <div className="flex items-center gap-4">
-            <div className="relative">
+          <div className="flex items-center gap-3 w-full sm:w-auto">
+            <div className="relative flex-1 sm:flex-initial w-full sm:w-auto">
               <Search className="absolute left-3 top-2.5 text-slate-400" size={16} />
               <input
                 type="text"
@@ -608,7 +608,7 @@ const TrainingProgramManagement = () => {
                   setCurrentPage(1);
                 }}
                 placeholder="Search programs..."
-                className="pl-9 pr-4 py-2 rounded-xl bg-white/80 backdrop-blur-md border border-white/85 text-xs text-[#17233E] outline-none w-64 border border-slate-100 focus:border-slate-200 focus:bg-white transition-all"
+                className="w-full sm:w-64 pl-9 pr-4 py-2 rounded-xl bg-white/80 backdrop-blur-md border border-white/85 text-xs text-[#17233E] outline-none border border-slate-100 focus:border-slate-200 focus:bg-white transition-all"
               />
             </div>
           </div>
@@ -621,22 +621,22 @@ const TrainingProgramManagement = () => {
         ) : (
           <>
         {/* HERO SECTION */}
-        <div className="px-8 py-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div className="px-0 sm:px-4 py-2 sm:py-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
-            <h1 className="text-3xl font-black text-slate-900 tracking-tight">
+            <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
               Training & Development
             </h1>
 
-            <p className="text-base text-slate-500 font-medium mt-1">
+            <p className="text-xs sm:text-base text-slate-500 font-medium mt-1">
               Monitor course performance, track employee progression, and evaluate completion rates.
             </p>
           </div>
 
-          <div className="flex gap-4">
+          <div className="grid grid-cols-3 gap-2 sm:gap-4 w-full md:w-auto">
             {statusSummary.map((status, index) => (
               <div
                 key={index}
-                className="bg-white border border-slate-100 shadow-xs rounded-xl px-4 py-3 flex items-center gap-3.5 w-36"
+                className="bg-white border border-slate-100 shadow-xs rounded-xl px-2.5 sm:px-4 py-2.5 sm:py-3 flex items-center gap-2 sm:gap-3.5 w-full sm:w-36"
               >
                 <div className={`w-9 h-9 rounded-xl ${status.bg} ${status.color} flex items-center justify-center`}>
                   {status.icon}
@@ -657,7 +657,7 @@ const TrainingProgramManagement = () => {
         </div>
 
         {/* PROGRAMS SECTION */}
-        <div ref={programsRef} className="px-8 space-y-4">
+        <div ref={programsRef} className="px-0 sm:px-4 space-y-4">
           <div className="flex justify-between items-center">
             <div>
               <h2 className="text-xl font-black text-slate-900">
@@ -668,7 +668,7 @@ const TrainingProgramManagement = () => {
               </p>
             </div>
 
-            <button 
+            <button
               onClick={handleSeeAllPrograms}
               className="text-xs font-bold text-slate-500 hover:text-indigo-600 flex items-center gap-1 transition-colors active:scale-95 bg-white/70 border border-white/80 px-3 py-1.5 rounded-xl shadow-2xs text-[#17233E]"
             >
@@ -692,10 +692,10 @@ const TrainingProgramManagement = () => {
                   {/* Minimized Thumbnail Header (h-28) */}
                   <div className="relative h-28 bg-gradient-to-br from-slate-100 to-slate-200 overflow-hidden">
                     {prog.img ? (
-                      <img 
-                        src={prog.img} 
-                        alt={prog.title} 
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" 
+                      <img
+                        src={prog.img}
+                        alt={prog.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                         loading="lazy"
                       />
                     ) : (
@@ -718,7 +718,7 @@ const TrainingProgramManagement = () => {
                   {/* Compact Body Content */}
                   <div className="p-3.5 flex-1 flex flex-col justify-between">
                     <div>
-                      <h3 
+                      <h3
                         className="font-bold text-slate-900 text-sm leading-snug line-clamp-1 group-hover:text-indigo-600 transition-colors"
                         title={prog.title}
                       >
@@ -745,7 +745,7 @@ const TrainingProgramManagement = () => {
                       <span className="text-[11px] font-bold text-slate-400">
                         {prog.level || 'Intermediate'}
                       </span>
-                      <button 
+                      <button
                         onClick={() => handleViewDetails(prog)}
                         className="py-1 px-3 border border-slate-200 text-slate-700 font-bold text-xs rounded-lg hover:bg-slate-50 hover:border-slate-300 transition-all active:scale-95 shadow-2xs"
                       >
@@ -813,14 +813,14 @@ const TrainingProgramManagement = () => {
         </div>
 
         {/* MID ANALYTICS SECTION */}
-        <div className="px-8 mt-8 grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 rounded-3xl p-6 lg:col-span-2 flex flex-col justify-between">
-            <div className="flex justify-between items-center">
+        <div className="px-0 sm:px-4 mt-6 sm:mt-8 grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+          <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:col-span-2 flex flex-col justify-between">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
               <div>
-                <h3 className="text-xl font-black text-slate-900">
+                <h3 className="text-lg sm:text-xl font-black text-slate-900">
                   Completion Trends
                 </h3>
-                <p className="text-sm text-slate-500 font-medium mt-1">
+                <p className="text-xs sm:text-sm text-slate-500 font-medium mt-0.5 sm:mt-1">
                   Monthly training completions across all programs from database.
                 </p>
               </div>
@@ -828,10 +828,14 @@ const TrainingProgramManagement = () => {
                 Last 6 months
               </span>
             </div>
-            <CompletionTrendsChart monthlyCompletions={trainingData?.monthlyCompletions} />
+            <div className="overflow-x-auto no-scrollbar pb-2">
+              <div className="min-w-[420px]">
+                <CompletionTrendsChart monthlyCompletions={trainingData?.monthlyCompletions} />
+              </div>
+            </div>
           </div>
 
-          <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 rounded-3xl p-6 flex flex-col justify-between">
+          <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 rounded-2xl sm:rounded-3xl p-4 sm:p-6 flex flex-col justify-between">
             <div>
               <h3 className="text-xl font-black text-slate-900">
                 Program Popularity
@@ -849,9 +853,9 @@ const TrainingProgramManagement = () => {
         </div>
 
         {/* BOTTOM SECTION */}
-        <div className="px-8 mt-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="px-0 sm:px-4 mt-4 sm:mt-6 grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
           {/* Funnel */}
-          <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 rounded-3xl p-6 flex flex-col justify-between">
+          <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 rounded-2xl sm:rounded-3xl p-4 sm:p-6 flex flex-col justify-between">
             <div>
               <h3 className="text-xl font-black text-slate-900 mb-4">
                 Learning Funnel
@@ -884,7 +888,7 @@ const TrainingProgramManagement = () => {
           </div>
 
           {/* Top Performers */}
-          <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 rounded-3xl p-6 flex flex-col justify-between">
+          <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 rounded-2xl sm:rounded-3xl p-4 sm:p-6 flex flex-col justify-between">
             <div>
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-xl font-black text-slate-900">Top Performers</h3>
@@ -933,7 +937,7 @@ const TrainingProgramManagement = () => {
           </div>
 
           {/* Recent Enrollments (Replaced fake mock sessions) */}
-          <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 rounded-3xl p-6 flex flex-col justify-between">
+          <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 rounded-2xl sm:rounded-3xl p-4 sm:p-6 flex flex-col justify-between">
             <div>
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-xl font-black text-slate-900">
@@ -977,7 +981,7 @@ const TrainingProgramManagement = () => {
               )}
             </div>
 
-            <button 
+            <button
               onClick={() => setEnrollmentsModalOpen(true)}
               className="w-full text-center text-xs font-bold text-indigo-600 hover:text-indigo-700 py-2.5 border border-indigo-100 bg-indigo-50/50 hover:bg-indigo-50 transition-all rounded-xl mt-4 active:scale-95 shadow-2xs flex items-center justify-center gap-1.5"
             >
@@ -989,18 +993,18 @@ const TrainingProgramManagement = () => {
         </>
         )}
 
-      </div>
+      </main>
 
-      <ProgramDetailsModal 
-        isOpen={detailsModal.isOpen} 
-        program={detailsModal.program} 
-        onClose={() => setDetailsModal({ isOpen: false, program: null })} 
-        onEnroll={handleEnroll} 
+      <ProgramDetailsModal
+        isOpen={detailsModal.isOpen}
+        program={detailsModal.program}
+        onClose={() => setDetailsModal({ isOpen: false, program: null })}
+        onEnroll={handleEnroll}
       />
-      <EnrollmentsListModal 
-        isOpen={enrollmentsModalOpen} 
-        enrollments={trainingData?.enrollments || []} 
-        onClose={() => setEnrollmentsModalOpen(false)} 
+      <EnrollmentsListModal
+        isOpen={enrollmentsModalOpen}
+        enrollments={trainingData?.enrollments || []}
+        onClose={() => setEnrollmentsModalOpen(false)}
       />
       <ToastNotification toast={toast} onClose={() => setToast((prev) => ({ ...prev, visible: false }))} />
       <ActionModal {...modalConfig} onClose={closeModal} />
