@@ -199,7 +199,7 @@ const AuditTrailLogs = () => {
 
       <SuperadminSidebar activeItem="audit-logs" />
 
-      <main className="flex-1 min-w-0 ml-0 lg:ml-64 pt-20 lg:pt-8 p-4 md:p-8 w-full font-sans relative z-10 space-y-8">
+      <main className="flex-1 min-w-0 ml-0 lg:ml-64 px-3.5 sm:px-6 md:px-8 pt-20 lg:pt-8 pb-10 w-full max-w-full overflow-x-hidden relative z-10 space-y-6 sm:space-y-8 font-sans">
         
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#BEDDF5]/70 pb-6">
@@ -228,16 +228,16 @@ const AuditTrailLogs = () => {
         </div>
 
         {/* Audit Trail Quick Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-5">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-5">
           <motion.div 
             whileHover={{ y: -3 }}
-            className="p-5 rounded-2xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6"
+            className="p-3.5 sm:p-5 rounded-2xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6"
           >
             <div className="flex items-center justify-between">
               <p className="text-xs text-[#5A6D89] font-bold uppercase tracking-wider">Total Database Events</p>
               <Activity className="w-4 h-4 text-[#1988A3]" />
             </div>
-            <p className="text-3xl font-black text-[#17233E] mt-1">
+            <p className="text-2xl sm:text-3xl font-black text-[#17233E] mt-1">
               {totalDbEvents || logs.length} <span className="text-xs font-normal text-[#5A6D89]">Events</span>
             </p>
             <p className="text-[11px] text-[#5A6D89] mt-1">Indexed in Neon PostgreSQL cluster</p>
@@ -245,7 +245,7 @@ const AuditTrailLogs = () => {
 
           <motion.div 
             whileHover={{ y: -3 }}
-            className="p-5 rounded-2xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6"
+            className="p-3.5 sm:p-5 rounded-2xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6"
           >
             <div className="flex items-center justify-between">
               <p className="text-xs text-[#5A6D89] font-bold uppercase tracking-wider">Compliance Stream Status</p>
@@ -259,7 +259,7 @@ const AuditTrailLogs = () => {
 
           <motion.div 
             whileHover={{ y: -3 }}
-            className="p-5 rounded-2xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6"
+            className="p-3.5 sm:p-5 rounded-2xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6"
           >
             <div className="flex items-center justify-between">
               <p className="text-xs text-[#5A6D89] font-bold uppercase tracking-wider">Successful Actions</p>
@@ -275,7 +275,7 @@ const AuditTrailLogs = () => {
 
           <motion.div 
             whileHover={{ y: -3 }}
-            className="p-5 rounded-2xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6"
+            className="p-3.5 sm:p-5 rounded-2xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6"
           >
             <div className="flex items-center justify-between">
               <p className="text-xs text-[#5A6D89] font-bold uppercase tracking-wider">Log Retention Policy</p>
@@ -355,8 +355,8 @@ const AuditTrailLogs = () => {
           </div>
         ) : (
           <div className="bg-white/85 border border-[#BEDDF5] rounded-2xl shadow-sm overflow-hidden flex flex-col justify-between">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs text-[#17233E]">
+            <div className="overflow-x-auto no-scrollbar">
+              <table className="w-full text-left text-xs text-[#17233E] min-w-[700px]">
                 <thead className="bg-[#D8EBF9]/80 text-xs uppercase tracking-wider text-[#17233E] font-bold border-b border-[#BEDDF5]">
                   <tr>
                     <th className="py-4 px-6">Timestamp / ID</th>

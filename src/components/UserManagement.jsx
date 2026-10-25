@@ -374,10 +374,10 @@ const UserManagement = () => {
         )}
       </AnimatePresence>
 
-      <main className="flex-1 min-w-0 ml-0 lg:ml-64 pt-20 lg:pt-8 p-4 md:p-8 relative z-10 space-y-8">
+      <main className="flex-1 min-w-0 ml-0 lg:ml-64 px-3.5 sm:px-6 md:px-8 pt-20 lg:pt-8 pb-10 w-full max-w-full overflow-x-hidden relative z-10 space-y-6 sm:space-y-8">
         
         {/* Header */}
-        <header className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl p-6 md:p-8 rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <header className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-3">
               <div className="p-2.5 rounded-2xl bg-white/70 border border-white/85 text-[#1988A3] shadow-sm">
@@ -390,7 +390,7 @@ const UserManagement = () => {
                 {users.length} Users
               </span>
             </div>
-            <p className="text-[#8A9CB7] text-xs md:text-sm font-medium mt-1.5 ml-12">
+            <p className="text-[#8A9CB7] text-xs md:text-sm font-medium mt-1.5 ml-0 sm:ml-12">
               Cross-tenant identity governance: provision accounts, assign plan-restricted roles, and manage credentials.
             </p>
           </div>
@@ -399,7 +399,7 @@ const UserManagement = () => {
             whileHover={{ scale: 1.04 }}
             whileTap={{ scale: 0.96 }}
             onClick={() => setIsModalOpen(true)}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-gradient-to-r from-[#1988A3] to-[#11C6DE] hover:from-[#157289] hover:to-[#0EB3C9] text-white text-sm font-bold shadow-lg shadow-[#1988A3]/25 transition-all shrink-0 cursor-pointer"
+            className="w-full md:w-auto justify-center flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-xl sm:rounded-2xl bg-gradient-to-r from-[#1988A3] to-[#11C6DE] hover:from-[#157289] hover:to-[#0EB3C9] text-white text-xs sm:text-sm font-bold shadow-lg shadow-[#1988A3]/25 transition-all shrink-0 cursor-pointer"
           >
             <Plus className="w-4 h-4" />
             Provision New User
@@ -407,12 +407,12 @@ const UserManagement = () => {
         </header>
 
         {/* Metrics Overview Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-5">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-5">
           
           {/* Metric 1 */}
           <motion.div 
             whileHover={{ y: -4 }}
-            className="p-6 rounded-3xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 relative overflow-hidden group hover:border-[#1988A3]/40 transition-all"
+            className="p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 relative overflow-hidden group hover:border-[#1988A3]/40 transition-all"
           >
             <div className="flex items-center justify-between mb-2">
               <span className="text-xs font-bold uppercase tracking-wider text-[#8A9CB7]">Total Users</span>
@@ -420,7 +420,7 @@ const UserManagement = () => {
                 <Users className="w-4 h-4" />
               </div>
             </div>
-            <p className="text-3xl font-extrabold text-[#17233E] tracking-tight">{users.length}</p>
+            <p className="text-2xl sm:text-3xl font-extrabold text-[#17233E] tracking-tight">{users.length}</p>
             <p className="text-[11px] text-[#8A9CB7] mt-2 font-semibold">
               Across <span className="text-[#1988A3] font-bold">{tenants.length}</span> registered client organizations
             </p>
@@ -429,7 +429,7 @@ const UserManagement = () => {
           {/* Metric 2 */}
           <motion.div 
             whileHover={{ y: -4 }}
-            className="p-6 rounded-3xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 relative overflow-hidden group hover:border-emerald-500/40 transition-all"
+            className="p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 relative overflow-hidden group hover:border-emerald-500/40 transition-all"
           >
             <div className="flex items-center justify-between mb-2">
               <span className="text-xs font-bold uppercase tracking-wider text-[#8A9CB7]">Active Accounts</span>
@@ -437,7 +437,7 @@ const UserManagement = () => {
                 <UserCheck className="w-4 h-4" />
               </div>
             </div>
-            <p className="text-3xl font-extrabold text-emerald-600 tracking-tight">
+            <p className="text-2xl sm:text-3xl font-extrabold text-emerald-600 tracking-tight">
               {users.filter(u => u.status === 'ACTIVE').length}
             </p>
             <p className="text-[11px] text-[#8A9CB7] mt-2 font-semibold">
@@ -448,7 +448,7 @@ const UserManagement = () => {
           {/* Metric 3 */}
           <motion.div 
             whileHover={{ y: -4 }}
-            className="p-6 rounded-3xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 relative overflow-hidden group hover:border-amber-500/40 transition-all"
+            className="p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 relative overflow-hidden group hover:border-amber-500/40 transition-all"
           >
             <div className="flex items-center justify-between mb-2">
               <span className="text-xs font-bold uppercase tracking-wider text-[#8A9CB7]">Pending Approvals</span>
@@ -467,7 +467,7 @@ const UserManagement = () => {
           {/* Metric 4 */}
           <motion.div 
             whileHover={{ y: -4 }}
-            className="p-6 rounded-3xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 relative overflow-hidden group hover:border-purple-500/40 transition-all"
+            className="p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 relative overflow-hidden group hover:border-purple-500/40 transition-all"
           >
             <div className="flex items-center justify-between mb-2">
               <span className="text-xs font-bold uppercase tracking-wider text-[#8A9CB7]">Administrators</span>
@@ -486,7 +486,7 @@ const UserManagement = () => {
         </div>
 
         {/* Search & Filter Toolbar */}
-        <div className="p-4 rounded-3xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-col md:flex-row items-center justify-between gap-4">
+        <div className="p-3.5 sm:p-4 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-col md:flex-row items-center justify-between gap-3 sm:gap-4">
           <div className="relative w-full md:w-80">
             <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#8A9CB7]" />
             <input 
@@ -554,9 +554,9 @@ const UserManagement = () => {
         {loading ? (
           <SkillPulseLoader message="Loading live user directory from PostgreSQL database..." fullScreen={false} />
         ) : (
-          <div className="rounded-3xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-sm text-[#17233E]">
+          <div className="rounded-2xl sm:rounded-3xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 overflow-hidden">
+            <div className="overflow-x-auto no-scrollbar">
+              <table className="w-full text-left text-sm text-[#17233E] min-w-[700px]">
                 <thead className="bg-[#17233E]/10 text-xs font-bold uppercase tracking-wider text-[#17233E] border-b border-white/60">
                   <tr>
                     <th className="px-6 py-4">User Identity</th>
@@ -804,7 +804,7 @@ const UserManagement = () => {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="w-full max-w-lg bg-gradient-to-br from-[#D8EBF9] via-[#CBE3F7] to-[#BEDDF5] border border-white/85 rounded-3xl shadow-2xl p-6 md:p-8 text-[#17233E]"
+              className="w-full max-w-lg max-h-[90vh] overflow-y-auto no-scrollbar bg-gradient-to-br from-[#D8EBF9] via-[#CBE3F7] to-[#BEDDF5] border border-white/85 rounded-2xl sm:rounded-3xl shadow-2xl p-4 sm:p-6 md:p-8 text-[#17233E]"
             >
               <div className="flex items-center justify-between pb-4 border-b border-white/60">
                 <div className="flex items-center gap-3">
@@ -968,7 +968,7 @@ const UserManagement = () => {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="w-full max-w-lg bg-gradient-to-br from-[#D8EBF9] via-[#CBE3F7] to-[#BEDDF5] border border-white/85 rounded-3xl shadow-2xl p-6 md:p-8 text-[#17233E]"
+              className="w-full max-w-lg max-h-[90vh] overflow-y-auto no-scrollbar bg-gradient-to-br from-[#D8EBF9] via-[#CBE3F7] to-[#BEDDF5] border border-white/85 rounded-2xl sm:rounded-3xl shadow-2xl p-4 sm:p-6 md:p-8 text-[#17233E]"
             >
               <div className="flex items-center justify-between pb-4 border-b border-white/60">
                 <div className="flex items-center gap-3">

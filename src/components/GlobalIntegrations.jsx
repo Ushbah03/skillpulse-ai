@@ -267,7 +267,7 @@ const GlobalIntegrations = () => {
 
       <SuperadminSidebar activeItem="integrations" />
 
-      <main className="flex-1 min-w-0 ml-0 lg:ml-64 pt-20 lg:pt-8 p-4 md:p-8 w-full font-sans relative z-10 space-y-8">
+      <main className="flex-1 min-w-0 ml-0 lg:ml-64 px-3.5 sm:px-6 md:px-8 pt-20 lg:pt-8 pb-10 w-full max-w-full overflow-x-hidden relative z-10 space-y-6 sm:space-y-8 font-sans">
         
         {/* Sync Feedback Toast Banner */}
         <AnimatePresence>
@@ -343,23 +343,23 @@ const GlobalIntegrations = () => {
         </div>
 
         {/* Quick Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-5">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-5">
           <motion.div 
             whileHover={{ y: -3 }}
-            className="p-5 rounded-2xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6"
+            className="p-3.5 sm:p-5 rounded-2xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6"
           >
             <div className="flex items-center justify-between">
               <p className="text-xs text-[#5A6D89] font-bold uppercase tracking-wider">Active Connectors</p>
               <Server className="w-4 h-4 text-[#1988A3]" />
             </div>
-            <p className="text-3xl font-black text-[#17233E] mt-1">
+            <p className="text-2xl sm:text-3xl font-black text-[#17233E] mt-1">
               {activeCount} <span className="text-sm font-normal text-[#5A6D89]">/ {totalCount}</span>
             </p>
           </motion.div>
 
           <motion.div 
             whileHover={{ y: -3 }}
-            className="p-5 rounded-2xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6"
+            className="p-3.5 sm:p-5 rounded-2xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6"
           >
             <div className="flex items-center justify-between">
               <p className="text-xs text-[#5A6D89] font-bold uppercase tracking-wider">Platform Integrations</p>
@@ -372,7 +372,7 @@ const GlobalIntegrations = () => {
 
           <motion.div 
             whileHover={{ y: -3 }}
-            className="p-5 rounded-2xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6"
+            className="p-3.5 sm:p-5 rounded-2xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6"
           >
             <div className="flex items-center justify-between">
               <p className="text-xs text-[#5A6D89] font-bold uppercase tracking-wider">Sync Engine Health</p>
@@ -393,13 +393,13 @@ const GlobalIntegrations = () => {
 
           <motion.div 
             whileHover={{ y: -3 }}
-            className="p-5 rounded-2xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6"
+            className="p-3.5 sm:p-5 rounded-2xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6"
           >
             <div className="flex items-center justify-between">
               <p className="text-xs text-[#5A6D89] font-bold uppercase tracking-wider">Global API Rate Limit</p>
               <Zap className="w-4 h-4 text-[#1988A3]" />
             </div>
-            <p className="text-3xl font-black text-[#17233E] mt-1">
+            <p className="text-2xl sm:text-3xl font-black text-[#17233E] mt-1">
               {rateLimit} <span className="text-sm font-normal text-[#5A6D89]">req/min</span>
             </p>
           </motion.div>
@@ -445,7 +445,7 @@ const GlobalIntegrations = () => {
           </div>
         ) : (
           /* Connector Cards */
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-6">
             {paginatedIntegrations.map((item) => {
               const isPlatform = item.isPlatform || item.type === 'platform';
               const isCurrentlyValidating = validatingId === item.id;

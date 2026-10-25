@@ -255,7 +255,7 @@ const BillingAndSubscriptions = () => {
 
       <SuperadminSidebar activeItem="billing" />
 
-      <main className="flex-1 min-w-0 ml-0 lg:ml-64 pt-20 lg:pt-8 p-4 md:p-8 w-full font-sans relative z-10 space-y-8">
+      <main className="flex-1 min-w-0 ml-0 lg:ml-64 px-3.5 sm:px-6 md:px-8 pt-20 lg:pt-8 pb-10 w-full max-w-full overflow-x-hidden relative z-10 space-y-6 sm:space-y-8 font-sans">
         
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#BEDDF5]/70 pb-6">
@@ -272,7 +272,7 @@ const BillingAndSubscriptions = () => {
           </div>
 
           {/* Tab Navigation */}
-          <div className="flex items-center gap-2 p-1.5 bg-white/70 border border-[#BEDDF5] rounded-2xl shrink-0 shadow-sm">
+          <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 p-1 sm:p-1.5 bg-white/70 border border-[#BEDDF5] rounded-xl sm:rounded-2xl shrink-0 shadow-sm w-full md:w-auto">
             <button
               onClick={() => setActiveTab('subscriptions')}
               className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
@@ -299,16 +299,16 @@ const BillingAndSubscriptions = () => {
         </div>
 
         {/* Financial Metrics Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-5">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-5">
           <motion.div 
             whileHover={{ y: -3 }}
-            className="p-5 rounded-2xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6"
+            className="p-3.5 sm:p-5 rounded-2xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6"
           >
             <div className="flex items-center justify-between">
               <p className="text-xs text-[#5A6D89] font-bold uppercase tracking-wider">Annual Recurring Revenue (ARR)</p>
               <TrendingUp className="w-4 h-4 text-emerald-600" />
             </div>
-            <p className="text-3xl font-black text-emerald-700 mt-1 flex items-center gap-2">
+            <p className="text-2xl sm:text-3xl font-black text-emerald-700 mt-1 flex items-center gap-2">
               ${totalARR.toLocaleString()}
             </p>
             <p className="text-[11px] text-[#5A6D89] mt-1 font-mono">Calculated as Total MRR × 12 months</p>
@@ -316,19 +316,19 @@ const BillingAndSubscriptions = () => {
 
           <motion.div 
             whileHover={{ y: -3 }}
-            className="p-5 rounded-2xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6"
+            className="p-3.5 sm:p-5 rounded-2xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6"
           >
             <div className="flex items-center justify-between">
               <p className="text-xs text-[#5A6D89] font-bold uppercase tracking-wider">Monthly Recurring Revenue (MRR)</p>
               <DollarSign className="w-4 h-4 text-[#1988A3]" />
             </div>
-            <p className="text-3xl font-black text-[#17233E] mt-1">${totalMRR.toLocaleString()}</p>
+            <p className="text-2xl sm:text-3xl font-black text-[#17233E] mt-1">${totalMRR.toLocaleString()}</p>
             <p className="text-[11px] text-[#5A6D89] mt-1">Active client tenant recurring billings</p>
           </motion.div>
 
           <motion.div 
             whileHover={{ y: -3 }}
-            className="p-5 rounded-2xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6"
+            className="p-3.5 sm:p-5 rounded-2xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6"
           >
             <div className="flex items-center justify-between">
               <p className="text-xs text-[#5A6D89] font-bold uppercase tracking-wider">Licensed Seat Volume</p>
@@ -342,7 +342,7 @@ const BillingAndSubscriptions = () => {
 
           <motion.div 
             whileHover={{ y: -3 }}
-            className="p-5 rounded-2xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6"
+            className="p-3.5 sm:p-5 rounded-2xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6"
           >
             <div className="flex items-center justify-between">
               <p className="text-xs text-[#5A6D89] font-bold uppercase tracking-wider">Suspended / Past Due</p>
@@ -601,7 +601,7 @@ const BillingAndSubscriptions = () => {
             </AnimatePresence>
 
             {/* Gateway Status Header */}
-            <div className="p-5 rounded-2xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="p-3.5 sm:p-5 rounded-2xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div className="flex items-center gap-3">
                 <div className="p-3 rounded-xl bg-[#635BFF]/15 border border-[#635BFF]/30 text-[#635BFF]">
                   <CreditCard className="w-6 h-6" />

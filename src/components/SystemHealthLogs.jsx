@@ -189,7 +189,7 @@ const SystemHealthLogs = () => {
 
       <SuperadminSidebar activeItem="settings" />
 
-      <main className="flex-1 min-w-0 ml-0 lg:ml-64 pt-20 lg:pt-8 p-4 md:p-8 w-full font-sans relative z-10 space-y-8">
+      <main className="flex-1 min-w-0 ml-0 lg:ml-64 px-3.5 sm:px-6 md:px-8 pt-20 lg:pt-8 pb-10 w-full max-w-full overflow-x-hidden relative z-10 space-y-6 sm:space-y-8 font-sans">
         
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#BEDDF5]/70 pb-6">
@@ -232,16 +232,16 @@ const SystemHealthLogs = () => {
         </div>
 
         {/* System Health Status Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-5">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-5">
           <motion.div 
             whileHover={{ y: -3 }}
-            className="p-5 rounded-2xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6"
+            className="p-3.5 sm:p-5 rounded-2xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6"
           >
             <div className="flex items-center justify-between">
               <p className="text-xs text-[#5A6D89] font-bold uppercase tracking-wider">Global System Uptime</p>
               <Server className="w-4 h-4 text-emerald-600" />
             </div>
-            <p className="text-2xl font-black text-emerald-700 mt-1 flex items-center gap-2">
+            <p className="text-xl sm:text-2xl font-black text-emerald-700 mt-1 flex items-center gap-2">
               <CheckCircle2 className="w-5 h-5 text-emerald-600" />
               {telemetry ? telemetry.uptime : <Loader2 className="w-5 h-5 animate-spin text-[#8A9CB7]" />}
             </p>
@@ -250,13 +250,13 @@ const SystemHealthLogs = () => {
 
           <motion.div 
             whileHover={{ y: -3 }}
-            className="p-5 rounded-2xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6"
+            className="p-3.5 sm:p-5 rounded-2xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6"
           >
             <div className="flex items-center justify-between">
               <p className="text-xs text-[#5A6D89] font-bold uppercase tracking-wider">Avg. Query Latency</p>
               <Activity className="w-4 h-4 text-[#1988A3]" />
             </div>
-            <p className="text-2xl font-black text-[#17233E] mt-1">
+            <p className="text-xl sm:text-2xl font-black text-[#17233E] mt-1">
               {telemetry ? telemetry.latency : <Loader2 className="w-5 h-5 animate-spin text-[#8A9CB7]" />}
             </p>
             <p className="text-[11px] text-[#5A6D89] mt-1">PostgreSQL database round-trip speed</p>
@@ -264,7 +264,7 @@ const SystemHealthLogs = () => {
 
           <motion.div 
             whileHover={{ y: -3 }}
-            className="p-5 rounded-2xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6"
+            className="p-3.5 sm:p-5 rounded-2xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6"
           >
             <div className="flex items-center justify-between">
               <p className="text-xs text-[#5A6D89] font-bold uppercase tracking-wider">Audit Error Ratio</p>
@@ -278,13 +278,13 @@ const SystemHealthLogs = () => {
 
           <motion.div 
             whileHover={{ y: -3 }}
-            className="p-5 rounded-2xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6"
+            className="p-3.5 sm:p-5 rounded-2xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6"
           >
             <div className="flex items-center justify-between">
               <p className="text-xs text-[#5A6D89] font-bold uppercase tracking-wider">Server Heap Load</p>
               <Cpu className="w-4 h-4 text-[#1988A3]" />
             </div>
-            <p className="text-2xl font-black text-[#17233E] mt-1">
+            <p className="text-xl sm:text-2xl font-black text-[#17233E] mt-1">
               {telemetry ? telemetry.cpuLoad : <Loader2 className="w-5 h-5 animate-spin text-[#8A9CB7]" />}
             </p>
             <p className="text-[11px] text-[#5A6D89] mt-1">Node.js process memory allocation</p>

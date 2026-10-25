@@ -501,7 +501,7 @@ const RoleManagement = () => {
           <SkillPulseLoader message="Loading RBAC policies & system roles..." />
         </div>
       ) : (
-        <main className="flex-1 min-w-0 ml-0 lg:ml-64 pt-20 lg:pt-8 p-4 md:p-8 w-full font-sans relative z-10 space-y-8">
+        <main className="flex-1 min-w-0 ml-0 lg:ml-64 px-3.5 sm:px-6 md:px-8 pt-20 lg:pt-8 pb-10 w-full max-w-full overflow-x-hidden relative z-10 space-y-6 sm:space-y-8 font-sans">
           
           {/* Header */}
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#BEDDF5]/70 pb-6">
@@ -579,34 +579,34 @@ const RoleManagement = () => {
           </AnimatePresence>
 
           {/* Real Metrics Overview Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-5">
             <motion.div 
               whileHover={{ y: -3 }}
-              className="p-5 rounded-2xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6"
+              className="p-3.5 sm:p-5 rounded-2xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6"
             >
               <div className="flex items-center justify-between text-[#5A6D89]">
                 <span className="text-xs font-bold uppercase tracking-wider">Core System Roles</span>
                 <Shield className="w-4 h-4 text-[#1988A3]" />
               </div>
-              <p className="text-3xl font-black text-[#17233E] mt-2">{SYSTEM_ROLES.length}</p>
+              <p className="text-2xl sm:text-3xl font-black text-[#17233E] mt-1.5 sm:mt-2">{SYSTEM_ROLES.length}</p>
               <p className="text-[11px] text-[#5A6D89] mt-1 font-mono">1 Global Root + 4 Workspace Tiers</p>
             </motion.div>
 
             <motion.div 
               whileHover={{ y: -3 }}
-              className="p-5 rounded-2xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6"
+              className="p-3.5 sm:p-5 rounded-2xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6"
             >
               <div className="flex items-center justify-between text-[#5A6D89]">
                 <span className="text-xs font-bold uppercase tracking-wider">Total Enrolled Users</span>
                 <Users className="w-4 h-4 text-emerald-600" />
               </div>
-              <p className="text-3xl font-black text-[#17233E] mt-2">{allUsers.length}</p>
+              <p className="text-2xl sm:text-3xl font-black text-[#17233E] mt-1.5 sm:mt-2">{allUsers.length}</p>
               <p className="text-[11px] text-[#5A6D89] mt-1">Real database users across all tenants</p>
             </motion.div>
 
             <motion.div 
               whileHover={{ y: -3 }}
-              className="p-5 rounded-2xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6"
+              className="p-3.5 sm:p-5 rounded-2xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6"
             >
               <div className="flex items-center justify-between text-[#5A6D89]">
                 <span className="text-xs font-bold uppercase tracking-wider">Active Policy State</span>
@@ -623,7 +623,7 @@ const RoleManagement = () => {
 
             <motion.div 
               whileHover={{ y: -3 }}
-              className="p-5 rounded-2xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6"
+              className="p-3.5 sm:p-5 rounded-2xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6"
             >
               <div className="flex items-center justify-between text-[#5A6D89]">
                 <span className="text-xs font-bold uppercase tracking-wider">SoD Conflicts Detected</span>

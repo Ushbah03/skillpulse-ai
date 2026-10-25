@@ -401,7 +401,7 @@ const SkillTaxonomyManagement = () => {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="w-full max-w-md bg-gradient-to-br from-[#D8EBF9] via-[#CBE3F7] to-[#BEDDF5] border border-white/90 rounded-2xl shadow-2xl p-6"
+              className="w-full max-w-md max-h-[90vh] overflow-y-auto no-scrollbar bg-gradient-to-br from-[#D8EBF9] via-[#CBE3F7] to-[#BEDDF5] border border-white/90 rounded-2xl shadow-2xl p-4 sm:p-6"
             >
               <div className="flex items-center gap-3.5 pb-4 border-b border-[#BEDDF5]">
                 <div className="p-3 rounded-xl bg-amber-100 text-amber-700 border border-amber-300">
@@ -463,7 +463,7 @@ const SkillTaxonomyManagement = () => {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="w-full max-w-md bg-gradient-to-br from-[#D8EBF9] via-[#CBE3F7] to-[#BEDDF5] border border-white/90 rounded-2xl shadow-2xl p-6"
+              className="w-full max-w-md max-h-[90vh] overflow-y-auto no-scrollbar bg-gradient-to-br from-[#D8EBF9] via-[#CBE3F7] to-[#BEDDF5] border border-white/90 rounded-2xl shadow-2xl p-4 sm:p-6"
             >
               <div className="flex items-center gap-3.5 pb-4 border-b border-[#BEDDF5]">
                 <div className="p-3 rounded-xl bg-rose-100 text-rose-700 border border-rose-300">
@@ -508,7 +508,7 @@ const SkillTaxonomyManagement = () => {
         )}
       </AnimatePresence>
 
-      <main className="flex-1 min-w-0 ml-0 lg:ml-64 pt-20 lg:pt-8 p-4 md:p-8 w-full relative z-10 space-y-8">
+      <main className="flex-1 min-w-0 ml-0 lg:ml-64 px-3.5 sm:px-6 md:px-8 pt-20 lg:pt-8 pb-10 w-full max-w-full overflow-x-hidden relative z-10 space-y-6 sm:space-y-8">
         
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#BEDDF5]/70 pb-6">
@@ -550,10 +550,10 @@ const SkillTaxonomyManagement = () => {
         </div>
 
         {/* Taxonomy Quick Stats */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-5">
           <motion.div 
             whileHover={{ y: -3 }}
-            className="p-5 rounded-2xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6"
+            className="p-3.5 sm:p-5 rounded-2xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6"
           >
             <div className="flex items-center justify-between">
               <p className="text-xs text-[#5A6D89] font-bold uppercase tracking-wider">Skill Categories</p>
@@ -561,13 +561,13 @@ const SkillTaxonomyManagement = () => {
                 <Layers className="w-4 h-4" />
               </div>
             </div>
-            <p className="text-3xl font-black text-[#17233E] mt-2">{taxonomy.length}</p>
+            <p className="text-2xl sm:text-3xl font-black text-[#17233E] mt-1.5 sm:mt-2">{taxonomy.length}</p>
             <p className="text-[11px] text-[#5A6D89] mt-1 font-mono">Domain competency groups</p>
           </motion.div>
 
           <motion.div 
             whileHover={{ y: -3 }}
-            className="p-5 rounded-2xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6"
+            className="p-3.5 sm:p-5 rounded-2xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6"
           >
             <div className="flex items-center justify-between">
               <p className="text-xs text-[#5A6D89] font-bold uppercase tracking-wider">Mapped Competencies</p>
@@ -575,7 +575,7 @@ const SkillTaxonomyManagement = () => {
                 <Binary className="w-4 h-4" />
               </div>
             </div>
-            <p className="text-3xl font-black text-[#1988A3] mt-2">
+            <p className="text-2xl sm:text-3xl font-black text-[#1988A3] mt-1.5 sm:mt-2">
               {totalCompetencies}
             </p>
             <p className="text-[11px] text-[#5A6D89] mt-1">Verified platform skill nodes</p>
@@ -583,7 +583,7 @@ const SkillTaxonomyManagement = () => {
 
           <motion.div 
             whileHover={{ y: -3 }}
-            className="p-5 rounded-2xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6"
+            className="p-3.5 sm:p-5 rounded-2xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6"
           >
             <div className="flex items-center justify-between">
               <p className="text-xs text-[#5A6D89] font-bold uppercase tracking-wider">Active In-Use Nodes</p>
@@ -591,7 +591,7 @@ const SkillTaxonomyManagement = () => {
                 <Users className="w-4 h-4" />
               </div>
             </div>
-            <p className="text-3xl font-black text-emerald-700 mt-2">
+            <p className="text-2xl sm:text-3xl font-black text-emerald-700 mt-1.5 sm:mt-2">
               {activeInUseCount}
             </p>
             <p className="text-[11px] text-[#5A6D89] mt-1">Linked to users or gap analyses</p>
@@ -599,7 +599,7 @@ const SkillTaxonomyManagement = () => {
 
           <motion.div 
             whileHover={{ y: -3 }}
-            className="p-5 rounded-2xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6"
+            className="p-3.5 sm:p-5 rounded-2xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6"
           >
             <div className="flex items-center justify-between">
               <p className="text-xs text-[#5A6D89] font-bold uppercase tracking-wider">Taxonomy Status</p>

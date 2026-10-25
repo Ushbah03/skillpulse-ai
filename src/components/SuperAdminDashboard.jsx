@@ -91,10 +91,10 @@ const SuperAdminDashboard = () => {
 
       <SuperadminSidebar activeItem="dashboard" />
 
-      <main className="flex-1 min-w-0 ml-0 lg:ml-64 pt-20 lg:pt-8 p-4 md:p-8 relative z-10 space-y-8">
+      <main className="flex-1 min-w-0 ml-0 lg:ml-64 px-3.5 sm:px-6 md:px-8 pt-20 lg:pt-8 pb-10 w-full max-w-full overflow-x-hidden relative z-10 space-y-6 sm:space-y-8">
         
         {/* Top Header */}
-        <header className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl p-6 md:p-8 rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <header className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-2 mb-2 flex-wrap">
               <span className="px-3 py-1 rounded-xl bg-white/80 text-[#1988A3] border border-white/90 text-xs font-mono font-bold flex items-center gap-1.5 shadow-xs">
@@ -110,7 +110,7 @@ const SuperAdminDashboard = () => {
             </p>
           </div>
 
-          <div className="flex items-center gap-3 shrink-0 flex-wrap">
+          <div className="flex items-center gap-2.5 sm:gap-3 shrink-0 flex-wrap w-full md:w-auto">
             <motion.button
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
@@ -134,12 +134,12 @@ const SuperAdminDashboard = () => {
         ) : (
           <>
           {/* Global Platform Primary KPI Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-5">
             
             {/* Active Tenants Card */}
             <motion.div 
               whileHover={{ y: -4 }} 
-              className="p-6 rounded-3xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 relative overflow-hidden group hover:border-[#1988A3]/40 transition-all flex flex-col justify-between"
+              className="p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 relative overflow-hidden group hover:border-[#1988A3]/40 transition-all flex flex-col justify-between"
             >
               <div>
                 <div className="flex items-center justify-between">
@@ -149,7 +149,7 @@ const SuperAdminDashboard = () => {
                   </div>
                 </div>
                 <div className="mt-3 flex items-baseline justify-between">
-                  <span className="text-3xl font-extrabold text-[#17233E] tracking-tight">{tenantsCount}</span>
+                  <span className="text-2xl sm:text-3xl font-extrabold text-[#17233E] tracking-tight">{tenantsCount}</span>
                   <span className="text-xs font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200 flex items-center gap-0.5">
                     <ArrowUpRight className="w-3.5 h-3.5" /> {activeTenantCount} Active
                   </span>
@@ -171,7 +171,7 @@ const SuperAdminDashboard = () => {
             {/* Provisioned Seat Utilization Card */}
             <motion.div 
               whileHover={{ y: -4 }} 
-              className="p-6 rounded-3xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 relative overflow-hidden group hover:border-[#1988A3]/40 transition-all flex flex-col justify-between"
+              className="p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 relative overflow-hidden group hover:border-[#1988A3]/40 transition-all flex flex-col justify-between"
             >
               <div>
                 <div className="flex items-center justify-between">
@@ -181,7 +181,7 @@ const SuperAdminDashboard = () => {
                   </div>
                 </div>
                 <div className="mt-3 flex items-baseline justify-between">
-                  <span className="text-3xl font-extrabold text-[#17233E] tracking-tight">{totalUsersCount}</span>
+                  <span className="text-2xl sm:text-3xl font-extrabold text-[#17233E] tracking-tight">{totalUsersCount}</span>
                   <span className="text-xs font-extrabold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200 font-mono">
                     {seatUsagePct}% Used
                   </span>
@@ -204,7 +204,7 @@ const SuperAdminDashboard = () => {
             {/* Active LLM Model Engine Card */}
             <motion.div 
               whileHover={{ y: -4 }} 
-              className="p-6 rounded-3xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 relative overflow-hidden group hover:border-[#1988A3]/40 transition-all flex flex-col justify-between"
+              className="p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 relative overflow-hidden group hover:border-[#1988A3]/40 transition-all flex flex-col justify-between"
             >
               <div>
                 <div className="flex items-center justify-between">
@@ -236,7 +236,7 @@ const SuperAdminDashboard = () => {
             {/* Monthly Recurring Revenue (MRR) Card */}
             <motion.div 
               whileHover={{ y: -4 }} 
-              className="p-6 rounded-3xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 relative overflow-hidden group hover:border-[#1988A3]/40 transition-all flex flex-col justify-between"
+              className="p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6 relative overflow-hidden group hover:border-[#1988A3]/40 transition-all flex flex-col justify-between"
             >
               <div>
                 <div className="flex items-center justify-between">
@@ -246,7 +246,7 @@ const SuperAdminDashboard = () => {
                   </div>
                 </div>
                 <div className="mt-3 flex items-baseline justify-between">
-                  <span className="text-3xl font-extrabold text-amber-600 font-mono tracking-tight">
+                  <span className="text-2xl sm:text-3xl font-extrabold text-amber-600 font-mono tracking-tight">
                     ${mrr.toLocaleString()}
                   </span>
                   <span className="text-xs font-bold text-[#8A9CB7]">
@@ -268,11 +268,11 @@ const SuperAdminDashboard = () => {
           </div>
 
           {/* 4 Architecture Pillars Quick-Launch Hub */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
             
             <Link 
               to="/superadmin/taxonomy"
-              className="p-5 rounded-3xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 hover:border-[#1988A3]/50 transition-all flex items-center gap-3.5 group shadow-xl shadow-[#1B3154]/6"
+              className="p-3.5 sm:p-5 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 hover:border-[#1988A3]/50 transition-all flex items-center gap-3.5 group shadow-xl shadow-[#1B3154]/6"
             >
               <div className="p-3 rounded-2xl bg-white/70 text-[#1988A3] border border-white/85 group-hover:scale-105 transition-transform shadow-xs">
                 <BookOpen className="w-5 h-5" />
@@ -286,7 +286,7 @@ const SuperAdminDashboard = () => {
 
             <Link 
               to="/superadmin/roles"
-              className="p-5 rounded-3xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 hover:border-[#1988A3]/50 transition-all flex items-center gap-3.5 group shadow-xl shadow-[#1B3154]/6"
+              className="p-3.5 sm:p-5 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 hover:border-[#1988A3]/50 transition-all flex items-center gap-3.5 group shadow-xl shadow-[#1B3154]/6"
             >
               <div className="p-3 rounded-2xl bg-white/70 text-purple-600 border border-white/85 group-hover:scale-105 transition-transform shadow-xs">
                 <Shield className="w-5 h-5" />
@@ -300,7 +300,7 @@ const SuperAdminDashboard = () => {
 
             <Link 
               to="/superadmin/integrations"
-              className="p-5 rounded-3xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 hover:border-[#1988A3]/50 transition-all flex items-center gap-3.5 group shadow-xl shadow-[#1B3154]/6"
+              className="p-3.5 sm:p-5 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 hover:border-[#1988A3]/50 transition-all flex items-center gap-3.5 group shadow-xl shadow-[#1B3154]/6"
             >
               <div className="p-3 rounded-2xl bg-white/70 text-[#11C6DE] border border-white/85 group-hover:scale-105 transition-transform shadow-xs">
                 <Webhook className="w-5 h-5" />
@@ -314,7 +314,7 @@ const SuperAdminDashboard = () => {
 
             <Link 
               to="/superadmin/settings"
-              className="p-5 rounded-3xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 hover:border-[#1988A3]/50 transition-all flex items-center gap-3.5 group shadow-xl shadow-[#1B3154]/6"
+              className="p-3.5 sm:p-5 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 hover:border-[#1988A3]/50 transition-all flex items-center gap-3.5 group shadow-xl shadow-[#1B3154]/6"
             >
               <div className="p-3 rounded-2xl bg-white/70 text-emerald-600 border border-white/85 group-hover:scale-105 transition-transform shadow-xs">
                 <Server className="w-5 h-5" />
@@ -332,7 +332,7 @@ const SuperAdminDashboard = () => {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             
             {/* Top Tenant Activity Overview (Spans 8 Columns) */}
-            <div className="lg:col-span-8 p-6 md:p-8 rounded-3xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6">
+            <div className="lg:col-span-8 p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6">
               <div>
                 <div className="flex items-center justify-between pb-4 border-b border-white/60 flex-wrap gap-3">
                   <div className="flex items-center gap-3">
@@ -409,7 +409,7 @@ const SuperAdminDashboard = () => {
             </div>
 
             {/* Infrastructure Health & Prisma Telemetry (Spans 4 Columns) */}
-            <div className="lg:col-span-4 p-6 md:p-8 rounded-3xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6">
+            <div className="lg:col-span-4 p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6">
               <div>
                 <div className="flex items-center gap-3 pb-4 border-b border-white/60">
                   <div className="p-2.5 rounded-2xl bg-white/70 text-[#1988A3] border border-white/85 shadow-sm">
@@ -498,7 +498,7 @@ const SuperAdminDashboard = () => {
           </div>
 
           {/* Live Platform Security & Event Stream */}
-          <div className="p-6 md:p-8 rounded-3xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6">
+          <div className="p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl border border-white/85 shadow-xl shadow-[#1B3154]/6">
             <div className="flex items-center justify-between pb-4 border-b border-white/60 flex-wrap gap-3">
               <div className="flex items-center gap-3">
                 <div className="p-2.5 rounded-2xl bg-white/70 text-[#1988A3] border border-white/85 shadow-sm">
