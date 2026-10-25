@@ -166,12 +166,13 @@ const TenantManagement = () => {
 
   // Open Edit Modal
   const openEditModal = (tenant) => {
+    const fixedSeats = tenant.tier === 'Starter' ? 30 : tenant.tier === 'Professional' ? 250 : 1000;
     setEditingTenant(tenant);
     setEditForm({
       name: tenant.name,
       domain: tenant.domain,
       tier: tenant.tier,
-      maxUsers: tenant.totalSeats,
+      maxUsers: fixedSeats,
       status: tenant.rawStatus
     });
   };
@@ -552,7 +553,7 @@ const TenantManagement = () => {
                   />
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4">
                   <div>
                     <label className="block text-xs font-bold uppercase tracking-wider text-[#8A9CB7] mb-1.5">Domain / Subdomain</label>
                     <input
@@ -577,7 +578,7 @@ const TenantManagement = () => {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4">
                   <div>
                     <label className="block text-xs font-bold uppercase tracking-wider text-[#8A9CB7] mb-1.5">SLA Subscription Tier</label>
                     <select
@@ -597,14 +598,10 @@ const TenantManagement = () => {
 
                   <div>
                     <label className="block text-xs font-bold uppercase tracking-wider text-[#8A9CB7] mb-1.5">Max Seat License Limit</label>
-                    <input
-                      type="number"
-                      min={editingTenant.usedSeats}
-                      required
-                      value={editForm.maxUsers}
-                      onChange={(e) => setEditForm({ ...editForm, maxUsers: e.target.value })}
-                      className="w-full px-4 py-2.5 bg-white/80 border border-white/90 rounded-2xl text-xs text-[#17233E] focus:outline-none focus:border-[#1988A3] font-mono font-bold shadow-xs"
-                    />
+                    <div className="w-full px-4 py-2.5 bg-white/80 border border-white/90 rounded-2xl text-xs font-black text-[#1988A3] flex items-center justify-between shadow-xs">
+                      <span>{editForm.maxUsers} Seats</span>
+                      <span className="text-[10px] font-bold text-[#8A9CB7] uppercase tracking-wider">Fixed Tier Limit</span>
+                    </div>
                   </div>
                 </div>
 
@@ -669,7 +666,7 @@ const TenantManagement = () => {
                   />
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4">
                   <div>
                     <label className="block text-xs font-bold uppercase tracking-wider text-[#8A9CB7] mb-1.5">Domain / Subdomain</label>
                     <input
@@ -749,7 +746,7 @@ const TenantManagement = () => {
                   </div>
                 )}
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4">
                   <div>
                     <label className="block text-xs font-bold uppercase tracking-wider text-[#8A9CB7] mb-1.5">SLA Subscription Tier</label>
                     <select
