@@ -242,21 +242,21 @@ const TeamLeaderDashboard = () => {
       <TeamLeaderSidebar />
 
       {/* Main Content Area */}
-      <main className="flex-1 ml-0 lg:ml-64 pt-20 lg:pt-8 p-4 md:p-8 w-full relative z-10 space-y-8">
+      <main className="flex-1 ml-0 lg:ml-64 pt-20 lg:pt-8 px-3.5 sm:px-6 md:px-8 py-4 sm:py-8 w-full relative z-10 space-y-4 sm:space-y-8">
         
         {/* Top Header */}
-        <header className="flex justify-between items-center mb-10">
+        <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-6 mb-4 sm:mb-8">
           <div>
-            <h1 className="text-3xl md:text-4xl font-extrabold text-[#17233E] tracking-tight">Team Leader <span className="bg-gradient-to-r from-[#1988A3] to-[#11C6DE] bg-clip-text text-transparent">Dashboard</span></h1>
-            <p className="text-[#8A9CB7] text-sm md:text-base font-medium mt-1">Monitor squad readiness, capability telemetry, and skill intelligence</p>
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-[#17233E] tracking-tight">Team Leader <span className="bg-gradient-to-r from-[#1988A3] to-[#11C6DE] bg-clip-text text-transparent">Dashboard</span></h1>
+            <p className="text-[#8A9CB7] text-xs sm:text-sm md:text-base font-medium mt-0.5 sm:mt-1">Monitor squad readiness, capability telemetry, and skill intelligence</p>
           </div>
           
-          <div className="flex items-center gap-6">
-            <div className="flex items-center gap-3">
+          <div className="flex items-center justify-between sm:justify-end gap-2.5 sm:gap-4 w-full sm:w-auto">
+            <div className="flex items-center gap-2 flex-1 sm:flex-initial">
               <select 
                 value={selectedTeam} 
                 onChange={(e) => setSelectedTeam(e.target.value)}
-                className="bg-[#F0F5FB]/90 backdrop-blur-md border border-white/85 rounded-xl px-4 py-2.5 text-xs md:text-sm font-semibold text-[#17233E] shadow-sm focus:outline-none focus:border-[#1988A3] cursor-pointer transition-colors"
+                className="flex-1 sm:flex-initial bg-[#F0F5FB]/90 backdrop-blur-md border border-white/85 rounded-xl px-2.5 sm:px-4 py-2 sm:py-2.5 text-xs md:text-sm font-semibold text-[#17233E] shadow-sm focus:outline-none focus:border-[#1988A3] cursor-pointer transition-colors"
               >
                 <option value="ALL">All My Teams (Combined)</option>
                 {leaderTeams.map((t) => (
@@ -269,7 +269,7 @@ const TeamLeaderDashboard = () => {
               <select 
                 value={selectedTimeframe} 
                 onChange={(e) => setSelectedTimeframe(e.target.value)}
-                className="bg-[#F0F5FB]/90 backdrop-blur-md border border-white/85 rounded-xl px-4 py-2.5 text-xs md:text-sm font-semibold text-[#17233E] shadow-sm focus:outline-none focus:border-[#1988A3] cursor-pointer transition-colors"
+                className="flex-1 sm:flex-initial bg-[#F0F5FB]/90 backdrop-blur-md border border-white/85 rounded-xl px-2.5 sm:px-4 py-2 sm:py-2.5 text-xs md:text-sm font-semibold text-[#17233E] shadow-sm focus:outline-none focus:border-[#1988A3] cursor-pointer transition-colors"
               >
                 <option value="This Quarter">This Quarter</option>
                 <option value="Last Month">Last Month</option>
@@ -277,7 +277,7 @@ const TeamLeaderDashboard = () => {
               </select>
             </div>
 
-            <div className="w-10 h-10 rounded-2xl overflow-hidden border border-white/60 bg-white/80 backdrop-blur-md shadow-sm flex-shrink-0">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl overflow-hidden border border-white/60 bg-white/80 backdrop-blur-md shadow-sm flex-shrink-0">
               <div className="w-full h-full bg-gradient-to-br from-[#17233E] via-[#1B3154] to-[#1988A3] flex items-center justify-center text-xs font-black text-white shadow-inner">
                 TL
               </div>
@@ -292,7 +292,7 @@ const TeamLeaderDashboard = () => {
         )}
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-5">
           <StatCard title="Team Readiness" value={stats.readiness} sub="vs last month" icon={<TrendingUp className="text-blue-500" />} color="blue" trend={stats.readinessTrend} />
           <StatCard title="Avg. Skill Level" value={stats.avgSkill} sub="vs last month" icon={<Star className="text-purple-500" />} color="purple" trend={stats.avgSkillTrend} />
           <StatCard title="Training Completion" value={stats.completion} sub="All assigned completed" icon={<Clock className="text-emerald-500" />} color="emerald" trend={stats.completionTrend} />
@@ -303,7 +303,7 @@ const TeamLeaderDashboard = () => {
         <div className="space-y-8">
           
           {/* Team Skill Strength Overview */}
-          <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/85 shadow-xl shadow-[#1B3154]/6">
+          <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 border border-white/85 shadow-xl shadow-[#1B3154]/6">
             <div className="flex justify-between items-center mb-8">
               <h3 className="text-xl md:text-2xl font-extrabold text-[#17233E] tracking-tight">Team Skill Strength Overview</h3>
               <button 
@@ -314,7 +314,8 @@ const TeamLeaderDashboard = () => {
               </button>
             </div>
             
-            <div className="flex items-end justify-between h-64 px-4 gap-6">
+            <div className="overflow-x-auto no-scrollbar -mx-2 px-2 sm:mx-0 sm:px-0">
+              <div className="flex items-end justify-between h-48 sm:h-64 px-2 sm:px-4 gap-3 sm:gap-6 min-w-[340px] sm:min-w-0">
               {skillBars.length > 0 ? (
                 skillBars.map((bar, idx) => (
                   <ChartBar key={idx} label={bar.label} h={bar.h} shadedH={bar.shadedH} shadedColor={bar.shadedColor} mainColor={bar.mainColor} />
@@ -324,13 +325,14 @@ const TeamLeaderDashboard = () => {
                   No team skills recorded yet in database.
                 </div>
               )}
+              </div>
             </div>
           </div>
 
           {/* Row 2: Members & Progress blocks - 50/50 split layout */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
             {/* Top Performing Members */}
-            <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/85 shadow-xl shadow-[#1B3154]/6">
+            <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 border border-white/85 shadow-xl shadow-[#1B3154]/6">
               <div className="flex justify-between items-center mb-6">
                 <h3 className="text-lg md:text-xl font-extrabold text-[#17233E] tracking-tight">Top Performing Members</h3>
                 <button 
@@ -352,7 +354,7 @@ const TeamLeaderDashboard = () => {
             </div>
 
             {/* Team Training Progress */}
-            <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/85 shadow-xl shadow-[#1B3154]/6">
+            <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 border border-white/85 shadow-xl shadow-[#1B3154]/6">
               <div className="flex justify-between items-center mb-6">
                 <h3 className="text-lg md:text-xl font-extrabold text-[#17233E] tracking-tight">Team Training Progress</h3>
                 <button 
@@ -439,29 +441,22 @@ const TeamLeaderDashboard = () => {
 /* --- Sub-components --- */
 
 const StatCard = ({ title, value, sub, icon, color, trend, isRisk=false }) => {
-  const bgMap = {
-    blue: 'bg-blue-50/60',
-    purple: 'bg-purple-50/60',
-    emerald: 'bg-emerald-50/60',
-    amber: 'bg-amber-50/60',
-  };
-  
   return (
-    <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl p-6 rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 relative overflow-hidden group hover:border-[#1988A3]/40 transition-all duration-300">
-      <div className="flex justify-between items-start mb-4">
-        <div>
-          <p className="text-[#8A9CB7] text-xs font-bold mb-1 uppercase tracking-wider">{title}</p>
-          <h4 className={`text-3xl md:text-4xl font-extrabold tracking-tight ${isRisk ? 'text-amber-500' : 'text-[#17233E]'}`}>{value}</h4>
+    <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl p-3 sm:p-5 md:p-6 rounded-2xl sm:rounded-3xl border border-white/85 shadow-lg sm:shadow-xl shadow-[#1B3154]/6 relative overflow-hidden group hover:border-[#1988A3]/40 transition-all duration-300 flex flex-col justify-between">
+      <div className="flex justify-between items-start gap-1 mb-2 sm:mb-4">
+        <div className="min-w-0">
+          <p className="text-[#8A9CB7] text-[10px] sm:text-xs font-bold mb-0.5 sm:mb-1 uppercase tracking-wider truncate">{title}</p>
+          <h4 className={`text-xl sm:text-3xl md:text-4xl font-black tracking-tight ${isRisk ? 'text-amber-500' : 'text-[#17233E]'}`}>{value}</h4>
         </div>
-        <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-[#1988A3]/15 to-[#11C6DE]/15 border border-[#1988A3]/30 flex items-center justify-center text-[#1988A3]">
-          {icon}
+        <div className="w-8 h-8 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl bg-gradient-to-br from-[#1988A3]/15 to-[#11C6DE]/15 border border-[#1988A3]/30 flex items-center justify-center text-[#1988A3] shrink-0">
+          {React.cloneElement(icon, { className: "w-4 h-4 sm:w-5 sm:h-5" })}
         </div>
       </div>
-      <div className="flex items-center gap-2 mt-2">
-        <span className={`text-xs font-bold px-2 py-0.5 rounded-md ${trend.includes('+') || trend.includes('5.2') ? 'bg-emerald-500/10 text-emerald-600 border border-emerald-500/20' : 'bg-white/80 text-[#8A9CB7] border border-white/80'}`}>
+      <div className="flex flex-wrap items-center gap-1.5 mt-1 sm:mt-2">
+        <span className={`text-[9px] sm:text-xs font-bold px-1.5 sm:px-2 py-0.5 rounded-md ${trend.includes('+') || trend.includes('5.2') ? 'bg-emerald-500/10 text-emerald-600 border border-emerald-500/20' : 'bg-white/80 text-[#8A9CB7] border border-white/80'}`}>
           {trend}
         </span>
-        <span className="text-xs font-medium text-[#8A9CB7]">{sub}</span>
+        <span className="text-[9px] sm:text-xs font-medium text-[#8A9CB7] truncate">{sub}</span>
       </div>
       <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-[#1988A3] to-[#11C6DE] opacity-80" />
     </div>
