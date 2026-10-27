@@ -17,6 +17,8 @@
     "test:visitor:ui": "playwright test e2e/visitor-module.spec.js --ui",
     "test:auth": "playwright test e2e/auth-module.spec.js --headed",
     "test:auth:ui": "playwright test e2e/auth-module.spec.js --ui",
+    "test:employee": "playwright test e2e/employee-module.spec.js --headed",
+    "test:employee:ui": "playwright test e2e/employee-module.spec.js --ui",
     "test:report": "playwright show-report"
   },
   "dependencies": {
