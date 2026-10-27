@@ -13,6 +13,8 @@
     "test:backend": "playwright test e2e/backend-api.spec.js",
     "test:backend:headed": "playwright test e2e/backend-api.spec.js --headed",
     "test:backend:ui": "playwright test e2e/backend-api.spec.js --ui",
+    "test:visitor": "playwright test e2e/visitor-module.spec.js --headed",
+    "test:visitor:ui": "playwright test e2e/visitor-module.spec.js --ui",
     "test:report": "playwright show-report"
   },
   "dependencies": {
