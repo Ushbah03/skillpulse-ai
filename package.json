@@ -9,7 +9,11 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "test:e2e": "playwright test",
-    "test:e2e:headed": "playwright test --headed"
+    "test:e2e:headed": "playwright test --headed",
+    "test:backend": "playwright test e2e/backend-api.spec.js",
+    "test:backend:headed": "playwright test e2e/backend-api.spec.js --headed",
+    "test:backend:ui": "playwright test e2e/backend-api.spec.js --ui",
+    "test:report": "playwright show-report"
   },
   "dependencies": {
     "@react-oauth/google": "^0.13.5",
