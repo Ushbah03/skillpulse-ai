@@ -1,0 +1,20 @@
+# SkillPulse AI Robots Policy
+User-agent: *
+Allow: /
+Allow: /features
+Allow: /pricing
+Allow: /about
+Allow: /faq
+Allow: /contact
+Allow: /login
+Allow: /signup
+
+# Disallow private user dashboards and API routes from web crawlers
+Disallow: /employee/
+Disallow: /team-leader/
+Disallow: /hr/
+Disallow: /company-admin/
+Disallow: /super-admin/
+Disallow: /api/
+
+Sitemap: https://skillpulse-ai.vercel.app/sitemap.xml
