@@ -13,6 +13,9 @@ export default defineConfig({
   reporter: [['list'], ['html', { open: 'never' }]],
   use: {
     baseURL: 'http://localhost:5173',
+    extraHTTPHeaders: {
+      'x-playwright-test': 'skillpulse-e2e',
+    },
     headless: false,
     launchOptions: {
       slowMo: 700, // Generous 700ms slowMo so user comfortably watches each action

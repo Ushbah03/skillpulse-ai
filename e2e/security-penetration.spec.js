@@ -166,7 +166,10 @@ test.describe.serial('SkillPulse AI - Production Security & Penetration Testing 
 
     // Send burst of requests until throttled or completed
     for (let i = 0; i < 55; i++) {
-      const res = await request.post(`${BACKEND_URL}/api/auth/login`, { data: payload });
+      const res = await request.post(`${BACKEND_URL}/api/auth/login`, {
+        data: payload,
+        headers: { 'x-playwright-test': 'attacker' }
+      });
       if (res.status() === 429) {
         rateLimited = true;
         const body = await res.json();
