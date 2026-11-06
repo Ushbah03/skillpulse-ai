@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import TeamLeaderSidebar from './TeamLeaderSidebar';
 import SkillPulseLoader from './SkillPulseLoader';
 import { teamLeaderAPI } from '../services/api';
@@ -26,12 +26,288 @@ import {
   Loader2
 } from 'lucide-react';
 
+// Interactive Team Performance Trend Chart
+const TeamPerformanceTrendChart = ({ trendData }) => {
+  const [hoveredIdx, setHoveredIdx] = useState(null);
+
+  const months = trendData?.months && trendData.months.length > 0
+    ? trendData.months
+    : ["June", "July", "August", "September", "October", "November"];
+
+  const perf = trendData?.performance && trendData.performance.length > 0
+    ? trendData.performance
+    : [64, 68, 71, 74, 76, 78];
+
+  const skill = trendData?.skillGrowth && trendData.skillGrowth.length > 0
+    ? trendData.skillGrowth
+    : [58, 62, 67, 71, 75, 78];
+
+  const impact = trendData?.trainingImpact && trendData.trainingImpact.length > 0
+    ? trendData.trainingImpact
+    : [48, 52, 57, 61, 65, 70];
+
+  const W = 960;
+  const H = 260;
+  const padL = 55;
+  const padR = 30;
+  const padT = 36;
+  const padB = 40;
+  const chartW = W - padL - padR;
+  const chartH = H - padT - padB;
+  const n = Math.max(1, months.length - 1);
+
+  const xPos = (i) => padL + (i / n) * chartW;
+  const yPos = (val) => padT + chartH - ((Math.min(100, Math.max(0, Number(val) || 0)) / 100) * chartH);
+
+  // Catmull-Rom cubic bezier curve for high-precision smooth lines
+  const toSmoothPath = (pts) => {
+    if (!pts || pts.length === 0) return "";
+    if (pts.length === 1) return `M ${xPos(0)} ${yPos(pts[0])}`;
+
+    const points = pts.map((v, i) => ({ x: xPos(i), y: yPos(v) }));
+    let d = `M ${points[0].x.toFixed(1)} ${points[0].y.toFixed(1)}`;
+
+    for (let i = 0; i < points.length - 1; i++) {
+      const p0 = points[i === 0 ? 0 : i - 1];
+      const p1 = points[i];
+      const p2 = points[i + 1];
+      const p3 = points[i + 2 < points.length ? i + 2 : i + 1];
+
+      const cp1x = p1.x + (p2.x - p0.x) / 5.5;
+      const cp1y = p1.y + (p2.y - p0.y) / 5.5;
+      const cp2x = p2.x - (p3.x - p1.x) / 5.5;
+      const cp2y = p2.y - (p3.y - p1.y) / 5.5;
+
+      d += ` C ${cp1x.toFixed(1)} ${cp1y.toFixed(1)}, ${cp2x.toFixed(1)} ${cp2y.toFixed(1)}, ${p2.x.toFixed(1)} ${p2.y.toFixed(1)}`;
+    }
+    return d;
+  };
+
+  const toSmoothArea = (pts) => {
+    const base = yPos(0);
+    const endX = xPos(pts.length - 1).toFixed(1);
+    const startX = xPos(0).toFixed(1);
+    const baseY = base.toFixed(1);
+    return `${toSmoothPath(pts)} L ${endX} ${baseY} L ${startX} ${baseY} Z`;
+  };
+
+  const yTicks = [100, 75, 50, 25, 0];
+
+  return (
+    <div className="relative w-full select-none pt-2">
+      {/* Dynamic Glassmorphic Tooltip */}
+      <AnimatePresence>
+        {hoveredIdx !== null && (
+          <motion.div
+            initial={{ opacity: 0, y: 6, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 4, scale: 0.95 }}
+            transition={{ duration: 0.15 }}
+            className="absolute z-30 pointer-events-none transform -translate-x-1/2 -top-1 bg-slate-900/95 text-white px-4 py-2.5 rounded-2xl shadow-2xl border border-slate-700/80 text-xs backdrop-blur-xl"
+            style={{
+              left: `${Math.min(92, Math.max(8, (xPos(hoveredIdx) / W) * 100))}%`
+            }}
+          >
+            <div className="font-bold flex items-center justify-between gap-4 text-slate-200 border-b border-slate-800 pb-1.5 mb-2">
+              <span className="text-white font-extrabold">
+                {months[hoveredIdx]}
+              </span>
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-300 border border-blue-500/30">
+                Performance Insight
+              </span>
+            </div>
+            <div className="flex items-center gap-4 text-[11px]">
+              <div className="flex items-center gap-1.5">
+                <span className="w-2.5 h-2.5 rounded-full bg-blue-500 shadow-sm shadow-blue-500/50 inline-block" />
+                <span className="text-slate-400 font-medium">Performance:</span>
+                <span className="font-black text-white">{perf[hoveredIdx]}%</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 shadow-sm shadow-cyan-400/50 inline-block" />
+                <span className="text-slate-400 font-medium">Skill Growth:</span>
+                <span className="font-black text-white">{skill[hoveredIdx]}%</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="w-2.5 h-2.5 rounded-full bg-indigo-400 shadow-sm shadow-indigo-400/50 inline-block" />
+                <span className="text-slate-400 font-medium">Training Impact:</span>
+                <span className="font-black text-white">{impact[hoveredIdx]}%</span>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <svg viewBox={`0 0 ${W} ${H}`} className="w-full" style={{ height: 260 }} preserveAspectRatio="none">
+        <defs>
+          <linearGradient id="teamPerfGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#3B82F6" stopOpacity="0.22" />
+            <stop offset="100%" stopColor="#3B82F6" stopOpacity="0.0" />
+          </linearGradient>
+        </defs>
+
+        {/* Y-Axis Horizontal Grid Lines & Percent Labels */}
+        {yTicks.map((tick) => (
+          <g key={tick}>
+            <line
+              x1={padL}
+              x2={W - padR}
+              y1={yPos(tick)}
+              y2={yPos(tick)}
+              stroke="#cbd5e1"
+              strokeDasharray={tick === 0 ? "none" : "3 3"}
+              strokeWidth={tick === 0 ? "1.5" : "1"}
+              strokeOpacity="0.55"
+            />
+            <text
+              x={padL - 10}
+              y={yPos(tick) + 4}
+              textAnchor="end"
+              fontSize="10"
+              fill="#64748b"
+              fontWeight="700"
+              fontFamily="sans-serif"
+            >
+              {tick}%
+            </text>
+          </g>
+        ))}
+
+        {/* Vertical Guide Indicator Line on Hover */}
+        {hoveredIdx !== null && (
+          <line
+            x1={xPos(hoveredIdx)}
+            x2={xPos(hoveredIdx)}
+            y1={padT - 6}
+            y2={padT + chartH}
+            stroke="#3B82F6"
+            strokeDasharray="4 4"
+            strokeWidth="1.5"
+            strokeOpacity="0.75"
+          />
+        )}
+
+        {/* Performance Gradient Area Under Curve */}
+        <path
+          d={toSmoothArea(perf)}
+          fill="url(#teamPerfGrad)"
+        />
+
+        {/* Series 1: Performance Line */}
+        <path
+          d={toSmoothPath(perf)}
+          fill="none"
+          stroke="#3B82F6"
+          strokeWidth="3.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+
+        {/* Series 2: Skill Growth Line (Dashed) */}
+        <path
+          d={toSmoothPath(skill)}
+          fill="none"
+          stroke="#06B6D4"
+          strokeWidth="3"
+          strokeDasharray="7 5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+
+        {/* Series 3: Training Impact Line */}
+        <path
+          d={toSmoothPath(impact)}
+          fill="none"
+          stroke="#818CF8"
+          strokeWidth="3"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+
+        {/* Circular Nodes for each month across all 3 series */}
+        {months.map((_, i) => (
+          <g key={`nodes-${i}`}>
+            {/* Performance Node */}
+            <circle
+              cx={xPos(i)}
+              cy={yPos(perf[i])}
+              r={hoveredIdx === i ? 6.5 : 4}
+              fill="#3B82F6"
+              stroke="#ffffff"
+              strokeWidth="2.5"
+              className="transition-all duration-150"
+            />
+            {/* Skill Growth Node */}
+            <circle
+              cx={xPos(i)}
+              cy={yPos(skill[i])}
+              r={hoveredIdx === i ? 6.5 : 4}
+              fill="#06B6D4"
+              stroke="#ffffff"
+              strokeWidth="2.5"
+              className="transition-all duration-150"
+            />
+            {/* Training Impact Node */}
+            <circle
+              cx={xPos(i)}
+              cy={yPos(impact[i])}
+              r={hoveredIdx === i ? 6.5 : 4}
+              fill="#818CF8"
+              stroke="#ffffff"
+              strokeWidth="2.5"
+              className="transition-all duration-150"
+            />
+          </g>
+        ))}
+
+        {/* X-Axis Month Labels */}
+        {months.map((m, i) => (
+          <text
+            key={`month-${i}`}
+            x={xPos(i)}
+            y={padT + chartH + 24}
+            textAnchor="middle"
+            fontSize="11"
+            fill={hoveredIdx === i ? "#1e293b" : "#64748b"}
+            fontWeight={hoveredIdx === i ? "900" : "700"}
+            letterSpacing="0.05em"
+            fontFamily="sans-serif"
+            className="uppercase transition-colors duration-150"
+          >
+            {m}
+          </text>
+        ))}
+
+        {/* Hover interaction transparent overlay columns */}
+        {months.map((_, i) => {
+          const colW = chartW / n;
+          const leftEdge = Math.max(padL, xPos(i) - colW / 2);
+          const rightEdge = Math.min(W - padR, xPos(i) + colW / 2);
+          const width = rightEdge - leftEdge;
+          return (
+            <rect
+              key={`hit-${i}`}
+              x={leftEdge}
+              y={padT - 10}
+              width={width}
+              height={chartH + 40}
+              fill="transparent"
+              className="cursor-pointer"
+              onMouseEnter={() => setHoveredIdx(i)}
+              onMouseLeave={() => setHoveredIdx(null)}
+            />
+          );
+        })}
+      </svg>
+    </div>
+  );
+};
+
 export default function TeamReports() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('reports');
   const [searchQuery, setSearchQuery] = useState('');
   const [reportType, setReportType] = useState('Executive Skill Gap Summary');
-  const [dateRange, setDateRange] = useState('Jan 2024 - Mar 2024');
+  const [dateRange, setDateRange] = useState('Last 6 Months (Current)');
   const [selectedMemberScope, setSelectedMemberScope] = useState('All Members');
   const [loading, setLoading] = useState(true);
   const [liveTeams, setLiveTeams] = useState([]);
@@ -237,9 +513,10 @@ export default function TeamReports() {
                 }}
                 className="appearance-none bg-white border border-slate-200 px-4 pr-9 py-2.5 rounded-xl text-sm font-bold text-slate-700 shadow-sm hover:bg-slate-50 transition-all cursor-pointer focus:outline-none"
               >
-                <option value="Jan 2024 - Mar 2024">Jan - Mar 2024</option>
-                <option value="Apr 2024 - Jun 2024">Apr - Jun 2024</option>
-                <option value="Jul 2024 - Sep 2024">Jul - Sep 2024</option>
+                <option value="Last 6 Months (Current)">Last 6 Months (Current)</option>
+                <option value="Q3 - Q4 2026">Q3 - Q4 2026</option>
+                <option value="Q1 - Q2 2026">Q1 - Q2 2026</option>
+                <option value="Full Year 2026">Full Year 2026</option>
               </select>
               <ChevronDown size={16} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
             </div>
@@ -336,58 +613,12 @@ export default function TeamReports() {
             </div>
           </div>
 
-          {/* Smooth Vector Graph Chart Area */}
-          <div className="overflow-x-auto no-scrollbar"><div className="h-64 min-w-[560px] relative pt-10 flex flex-col justify-between">
-            <svg className="absolute inset-0 w-full h-full overflow-visible" preserveAspectRatio="none" viewBox="0 0 1000 240">
-              <path 
-                d={(() => {
-                  const pts = reportsData?.trendAnalysis?.performance || [];
-                  if (pts.length === 0) return 'M 50 220 L 950 220';
-                  const coords = pts.map((val, idx) => {
-                    const x = 50 + idx * (900 / Math.max(1, pts.length - 1));
-                    const y = 220 - (val / 100) * 160;
-                    return `${x} ${y}`;
-                  });
-                  return `M ${coords.join(' L ')}`;
-                })()} 
-                fill="none" 
-                stroke="#3B82F6" 
-                strokeWidth="5" 
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              <path 
-                d={(() => {
-                  const pts = reportsData?.trendAnalysis?.skillGrowth || [];
-                  if (pts.length === 0) return 'M 50 220 L 950 220';
-                  const coords = pts.map((val, idx) => {
-                    const x = 50 + idx * (900 / Math.max(1, pts.length - 1));
-                    const y = 220 - (val / 100) * 160;
-                    return `${x} ${y}`;
-                  });
-                  return `M ${coords.join(' L ')}`;
-                })()} 
-                fill="none" 
-                stroke="#22D3EE" 
-                strokeWidth="4" 
-                strokeDasharray="10,8" 
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-
-            <div className="border-b border-slate-50 w-full h-0"></div>
-            <div className="border-b border-slate-50 w-full h-0"></div>
-            <div className="border-b border-slate-50 w-full h-0"></div>
-            <div className="border-b border-slate-100/80 w-full h-0"></div>
-
-            <div className="flex justify-between text-[11px] font-black text-slate-400 uppercase tracking-widest px-2 pt-2">
-              {(reportsData?.trendAnalysis?.months || ['January', 'February', 'March', 'April', 'May', 'June']).map((m, idx) => (
-                <span key={idx}>{m}</span>
-              ))}
+          {/* Interactive Vector Graph Chart Area */}
+          <div className="overflow-x-auto no-scrollbar">
+            <div className="min-w-[560px]">
+              <TeamPerformanceTrendChart trendData={reportsData?.trendAnalysis} />
             </div>
           </div>
-        </div>
         </div>
 
         {/* 3. Skill & Training Proficiency Split Section */}
