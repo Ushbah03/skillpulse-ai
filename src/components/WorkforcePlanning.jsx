@@ -39,7 +39,7 @@ const WorkforceLineChart = ({ data }) => {
   const yMax = Math.ceil((maxObserved + 2) / 4) * 4;
   const yTicks = [0, Math.round(yMax * 0.25), Math.round(yMax * 0.5), Math.round(yMax * 0.75), yMax];
 
-  const W = 960, H = 250, padL = 48, padR = 30, padT = 30, padB = 35;
+  const W = 960, H = 260, padL = 48, padR = 30, padT = 38, padB = 35;
   const chartW = W - padL - padR;
   const chartH = H - padT - padB;
 
@@ -51,60 +51,92 @@ const WorkforceLineChart = ({ data }) => {
     return padT + chartH - ((val / yMax) * chartH);
   };
 
-  const toPath = (pts) =>
-    pts.map((v, i) => `${i === 0 ? 'M' : 'L'} ${xPos(i).toFixed(1)} ${yPos(v).toFixed(1)}`).join(' ');
+  // Smooth Catmull-Rom cubic bezier curve for high-end organic flow
+  const toSmoothPath = (pts) => {
+    if (!pts || pts.length === 0) return '';
+    if (pts.length === 1) return `M ${xPos(0)} ${yPos(pts[0])}`;
 
-  const toArea = (pts) => {
+    const points = pts.map((v, i) => ({ x: xPos(i), y: yPos(v) }));
+    let d = `M ${points[0].x.toFixed(1)} ${points[0].y.toFixed(1)}`;
+
+    for (let i = 0; i < points.length - 1; i++) {
+      const p0 = points[i === 0 ? 0 : i - 1];
+      const p1 = points[i];
+      const p2 = points[i + 1];
+      const p3 = points[i + 2 < points.length ? i + 2 : i + 1];
+
+      const cp1x = p1.x + (p2.x - p0.x) / 5.5;
+      const cp1y = p1.y + (p2.y - p0.y) / 5.5;
+      const cp2x = p2.x - (p3.x - p1.x) / 5.5;
+      const cp2y = p2.y - (p3.y - p1.y) / 5.5;
+
+      d += ` C ${cp1x.toFixed(1)} ${cp1y.toFixed(1)}, ${cp2x.toFixed(1)} ${cp2y.toFixed(1)}, ${p2.x.toFixed(1)} ${p2.y.toFixed(1)}`;
+    }
+    return d;
+  };
+
+  const toSmoothArea = (pts) => {
     const base = yPos(0);
     const endX = xPos(pts.length - 1).toFixed(1);
     const startX = xPos(0).toFixed(1);
     const baseY = base.toFixed(1);
-    return `${toPath(pts)} L ${endX} ${baseY} L ${startX} ${baseY} Z`;
+    return `${toSmoothPath(pts)} L ${endX} ${baseY} L ${startX} ${baseY} Z`;
   };
 
-  const currentMonthIdx = 5; // Month at index 5 is the current month
-  const activeHover = hoveredIdx !== null ? hoveredIdx : currentMonthIdx;
+  const currentMonthIdx = 5; // Month at index 5 is current month
 
   return (
-    <div className="relative w-full select-none">
-      {/* Dynamic Hover Tooltip / Live Milestone Indicator */}
-      {activeHover !== null && (
-        <div
-          className="absolute z-20 pointer-events-none transition-all duration-150 transform -translate-x-1/2 -top-4 bg-slate-900/95 text-white px-3.5 py-2 rounded-xl shadow-xl border border-slate-700 text-xs backdrop-blur-md"
-          style={{ left: `${(xPos(activeHover) / W) * 100}%` }}
-        >
-          <div className="font-bold flex items-center justify-between gap-3 text-slate-200 border-b border-slate-800 pb-1 mb-1.5">
-            <span>{months[activeHover]} {activeHover === currentMonthIdx ? '(Current)' : activeHover > currentMonthIdx ? '(Forecast)' : '(Actual)'}</span>
-            <span className="text-[10px] text-slate-400 font-semibold">{data[activeHover]?.isForecast ? 'AI Model' : 'Historical'}</span>
-          </div>
-          <div className="flex items-center gap-4 text-[11px]">
-            <div className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-blue-400 inline-block" />
-              <span className="text-slate-300">Supply:</span>
-              <span className="font-black text-white">{current[activeHover]}</span>
+    <div className="relative w-full select-none pt-2">
+      {/* Dynamic Hover Tooltip (Appears ONLY on user interaction) */}
+      <AnimatePresence>
+        {hoveredIdx !== null && (
+          <motion.div
+            initial={{ opacity: 0, y: 6, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 4, scale: 0.95 }}
+            transition={{ duration: 0.15 }}
+            className="absolute z-30 pointer-events-none transform -translate-x-1/2 -top-1 bg-slate-900/95 text-white px-4 py-2.5 rounded-2xl shadow-2xl border border-slate-700/80 text-xs backdrop-blur-xl"
+            style={{
+              left: `${Math.min(92, Math.max(8, (xPos(hoveredIdx) / W) * 100))}%`
+            }}
+          >
+            <div className="font-bold flex items-center justify-between gap-4 text-slate-200 border-b border-slate-800 pb-1.5 mb-2">
+              <span className="text-white font-extrabold">
+                {months[hoveredIdx]} {hoveredIdx === currentMonthIdx ? '• Current' : hoveredIdx > currentMonthIdx ? '• Forecast' : '• Historical'}
+              </span>
+              <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${data[hoveredIdx]?.isForecast ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30' : 'bg-blue-500/20 text-blue-300 border border-blue-500/30'}`}>
+                {data[hoveredIdx]?.isForecast ? 'AI Model' : 'Historical'}
+              </span>
             </div>
-            <div className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-purple-400 inline-block" />
-              <span className="text-slate-300">Demand:</span>
-              <span className="font-black text-white">{projected[activeHover]}</span>
+            <div className="flex items-center gap-4 text-[11px]">
+              <div className="flex items-center gap-1.5">
+                <span className="w-2.5 h-2.5 rounded-full bg-blue-500 shadow-sm shadow-blue-500/50 inline-block" />
+                <span className="text-slate-400 font-medium">Supply:</span>
+                <span className="font-black text-white">{current[hoveredIdx]}</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="w-2.5 h-2.5 rounded-full bg-purple-500 shadow-sm shadow-purple-500/50 inline-block" />
+                <span className="text-slate-400 font-medium">Demand:</span>
+                <span className="font-black text-white">{projected[hoveredIdx]}</span>
+              </div>
+              <div className="flex items-center gap-1 text-amber-300 font-bold bg-amber-500/10 px-2 py-0.5 rounded-lg border border-amber-500/20">
+                <span>Gap:</span>
+                <span>+{Math.max(0, projected[hoveredIdx] - current[hoveredIdx])}</span>
+              </div>
             </div>
-            <div className="flex items-center gap-1 text-amber-300 font-bold">
-              <span>Gap:</span>
-              <span>+{Math.max(0, projected[activeHover] - current[activeHover])}</span>
-            </div>
-          </div>
-        </div>
-      )}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-      <svg viewBox={`0 0 ${W} ${H}`} className="w-full" style={{ height: 250 }} preserveAspectRatio="none">
+      <svg viewBox={`0 0 ${W} ${H}`} className="w-full" style={{ height: 260 }} preserveAspectRatio="none">
         <defs>
           <linearGradient id="gradCurrent" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.18" />
-            <stop offset="100%" stopColor="#3b82f6" stopOpacity="0.01" />
+            <stop offset="0%" stopColor="#2563eb" stopOpacity="0.22" />
+            <stop offset="100%" stopColor="#2563eb" stopOpacity="0.0" />
           </linearGradient>
           <linearGradient id="gradProjected" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#8b5cf6" stopOpacity="0.14" />
-            <stop offset="100%" stopColor="#8b5cf6" stopOpacity="0.01" />
+            <stop offset="0%" stopColor="#7c3aed" stopOpacity="0.18" />
+            <stop offset="100%" stopColor="#7c3aed" stopOpacity="0.0" />
           </linearGradient>
         </defs>
 
@@ -116,16 +148,17 @@ const WorkforceLineChart = ({ data }) => {
               x2={W - padR}
               y1={yPos(tick)}
               y2={yPos(tick)}
-              stroke="#f1f5f9"
-              strokeDasharray={tick === 0 ? "none" : "4 4"}
-              strokeWidth="1.2"
+              stroke="#cbd5e1"
+              strokeDasharray={tick === 0 ? "none" : "3 3"}
+              strokeWidth={tick === 0 ? "1.5" : "1"}
+              strokeOpacity="0.6"
             />
             <text
               x={padL - 10}
               y={yPos(tick) + 3}
               textAnchor="end"
               fontSize="10"
-              fill="#94a3b8"
+              fill="#64748b"
               fontWeight="700"
               fontFamily="sans-serif"
             >
@@ -134,42 +167,52 @@ const WorkforceLineChart = ({ data }) => {
           </g>
         ))}
 
-        {/* 'NOW' Current Month Vertical Marker */}
+        {/* 'TODAY' Vertical Milestone Marker */}
         <line
           x1={xPos(currentMonthIdx)}
           x2={xPos(currentMonthIdx)}
-          y1={padT}
+          y1={padT - 6}
           y2={padT + chartH}
-          stroke="#64748b"
-          strokeDasharray="3 3"
+          stroke="#2563eb"
+          strokeDasharray="4 4"
           strokeWidth="1.5"
-          strokeOpacity="0.4"
+          strokeOpacity="0.6"
+        />
+        <rect
+          x={xPos(currentMonthIdx) - 26}
+          y={padT - 26}
+          width="52"
+          height="18"
+          rx="9"
+          fill="#dbeafe"
+          stroke="#3b82f6"
+          strokeWidth="1.2"
         />
         <text
           x={xPos(currentMonthIdx)}
-          y={padT - 10}
+          y={padT - 14}
           textAnchor="middle"
           fontSize="9"
-          fill="#64748b"
+          fill="#1d4ed8"
           fontWeight="800"
-          letterSpacing="0.05em"
+          letterSpacing="0.06em"
         >
           TODAY
         </text>
 
         {/* Areas under curve */}
-        <path d={toArea(current)} fill="url(#gradCurrent)" />
-        <path d={toArea(projected)} fill="url(#gradProjected)" />
+        <path d={toSmoothArea(projected)} fill="url(#gradProjected)" />
+        <path d={toSmoothArea(current)} fill="url(#gradCurrent)" />
 
-        {/* Historical + Forecast Lines */}
+        {/* Smooth Historical + Forecast Curves */}
         <motion.path
           initial={{ pathLength: 0 }}
           animate={{ pathLength: 1 }}
           transition={{ duration: 1.2, ease: "easeInOut" }}
-          d={toPath(current)}
+          d={toSmoothPath(projected)}
           fill="none"
-          stroke="#3b82f6"
-          strokeWidth="2.5"
+          stroke="#7c3aed"
+          strokeWidth="2.75"
           strokeLinecap="round"
           strokeLinejoin="round"
         />
@@ -177,26 +220,27 @@ const WorkforceLineChart = ({ data }) => {
           initial={{ pathLength: 0 }}
           animate={{ pathLength: 1 }}
           transition={{ duration: 1.2, ease: "easeInOut" }}
-          d={toPath(projected)}
+          d={toSmoothPath(current)}
           fill="none"
-          stroke="#8b5cf6"
-          strokeWidth="2.5"
+          stroke="#2563eb"
+          strokeWidth="2.75"
           strokeLinecap="round"
           strokeLinejoin="round"
         />
 
         {/* Interactive Point Markers (Circles) & Hover Triggers */}
         {months.map((m, i) => {
-          const isHovered = hoveredIdx === i || (hoveredIdx === null && i === currentMonthIdx);
+          const isHovered = hoveredIdx === i;
+          const isCurrent = i === currentMonthIdx;
           const colW = chartW / n;
           return (
             <g key={m}>
               {/* Invisible wide hover bar for easy cursor interaction */}
               <rect
                 x={xPos(i) - colW / 2}
-                y={padT}
+                y={padT - 20}
                 width={colW}
-                height={chartH}
+                height={chartH + 30}
                 fill="transparent"
                 className="cursor-pointer"
                 onMouseEnter={() => setHoveredIdx(i)}
@@ -207,10 +251,10 @@ const WorkforceLineChart = ({ data }) => {
               <circle
                 cx={xPos(i)}
                 cy={yPos(current[i])}
-                r={isHovered ? 6 : 4}
-                fill="#3b82f6"
+                r={isHovered ? 6.5 : isCurrent ? 5.5 : 4}
+                fill="#2563eb"
                 stroke="#ffffff"
-                strokeWidth={isHovered ? 2.5 : 1.5}
+                strokeWidth={isHovered ? 3 : 2}
                 className="transition-all duration-150"
               />
 
@@ -218,10 +262,10 @@ const WorkforceLineChart = ({ data }) => {
               <circle
                 cx={xPos(i)}
                 cy={yPos(projected[i])}
-                r={isHovered ? 6 : 4}
-                fill="#8b5cf6"
+                r={isHovered ? 6.5 : isCurrent ? 5.5 : 4}
+                fill="#7c3aed"
                 stroke="#ffffff"
-                strokeWidth={isHovered ? 2.5 : 1.5}
+                strokeWidth={isHovered ? 3 : 2}
                 className="transition-all duration-150"
               />
 
@@ -230,9 +274,9 @@ const WorkforceLineChart = ({ data }) => {
                 x={xPos(i)}
                 y={H - 10}
                 textAnchor="middle"
-                fontSize="11"
-                fill={isHovered ? "#1e293b" : "#94a3b8"}
-                fontWeight={isHovered ? "800" : "600"}
+                fontSize={isCurrent ? "12" : "11"}
+                fill={isCurrent ? "#1e293b" : isHovered ? "#0f172a" : "#64748b"}
+                fontWeight={isCurrent || isHovered ? "800" : "600"}
                 fontFamily="sans-serif"
               >
                 {m}
