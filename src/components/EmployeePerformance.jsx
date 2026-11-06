@@ -13,22 +13,27 @@ const PerformanceDistribution = ({ data }) => {
   const maxCount = Math.max(...data.map(d => d.count), 1);
 
   return (
-    <div className="w-full pt-6">
-      <div className="flex items-end justify-between h-56 px-4 border-b border-slate-100">
+    <div className="w-full pt-8 pb-2">
+      <div className="flex items-end justify-between h-56 px-4 border-b border-slate-200/60">
         {data.map((bar, i) => {
-          const heightPct = `${(bar.count / maxCount) * 100}%`;
+          // Cap maximum height at 70% so tooltip badge has abundant headroom and is NEVER clipped
+          const heightPct = bar.count > 0 ? `${Math.round((bar.count / maxCount) * 70)}%` : '8px';
           return (
             <div key={i} className="flex flex-col items-center flex-1 group mx-2">
-              <div className="w-full flex items-end h-48 relative">
-                <div className="absolute opacity-0 group-hover:opacity-100 bottom-full left-1/2 transform -translate-x-1/2 bg-slate-800 text-white text-[10px] font-bold px-2 py-1 rounded mb-1 transition-opacity whitespace-nowrap z-10">
-                  {bar.count} Employees
-                </div>
+              <div className="w-full flex items-end h-44 relative justify-center">
                 <div
-                  className={`w-full ${bar.color} rounded-t-xl transition-all duration-500 ease-out`}
+                  className={`w-full ${bar.color} rounded-t-xl transition-all duration-500 ease-out relative group/bar hover:brightness-105 shadow-sm`}
                   style={{ height: heightPct }}
-                />
+                >
+                  {/* Floating Tooltip Pill - Fully visible with generous top headroom */}
+                  <div className="absolute opacity-0 group-hover:opacity-100 -top-10 left-1/2 transform -translate-x-1/2 bg-slate-900/95 backdrop-blur-md text-white text-[11px] font-bold px-3 py-1.5 rounded-lg transition-all duration-200 whitespace-nowrap z-30 shadow-xl border border-slate-700/70 pointer-events-none flex items-center gap-1.5">
+                    <span className="text-[#11C6DE] font-black">{bar.count}</span>
+                    <span className="text-slate-200 font-medium">{bar.count === 1 ? 'Employee' : 'Employees'}</span>
+                    <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-slate-900/95" />
+                  </div>
+                </div>
               </div>
-              <span className="text-xs font-bold text-slate-400 my-3 tracking-wider">{bar.range}</span>
+              <span className="text-xs font-bold text-slate-500 my-3 tracking-wider">{bar.range}</span>
             </div>
           );
         })}
@@ -510,7 +515,7 @@ const EmployeePerformance = () => {
               </div>
             </div>
             <div className="overflow-x-auto no-scrollbar pb-2">
-              <div className="min-w-[450px]">
+              <div className="min-w-[360px] sm:min-w-0 w-full">
                 <PerformanceDistribution data={histogramData} />
               </div>
             </div>

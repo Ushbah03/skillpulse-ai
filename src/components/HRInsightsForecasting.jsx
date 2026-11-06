@@ -415,7 +415,7 @@ const HRInsightsForecasting = () => {
             </div>
 
             <div className="overflow-x-auto no-scrollbar pb-2">
-            <div className="min-w-[500px] h-56 flex items-end justify-between border-b border-slate-100 pb-2 px-1 gap-1 overflow-visible">
+            <div className="w-full min-w-[360px] sm:min-w-0 h-56 flex items-end justify-between border-b border-slate-100 pb-2 px-1 gap-1 overflow-visible">
               {gapForecastData.length > 0 ? (
                 gapForecastData.map((data, idx) => {
                   const currentVal = Math.max(0, Math.min(100, Math.round(data.current ?? 0)));
@@ -618,7 +618,7 @@ const HRInsightsForecasting = () => {
                 </h3>
                 <span className="text-[10px] font-black px-2 py-0.5 rounded bg-rose-50 text-rose-700 border border-rose-200 uppercase">Live DB Risk</span>
               </div>
-              <div className="divide-y divide-slate-100 max-h-[220px] overflow-y-auto">
+              <div className="divide-y divide-slate-100/70 no-scrollbar">
                 {filteredAttrition.length > 0 ? (
                   filteredAttrition.slice(0, 5).map((risk) => (
                     <div key={risk.id} className="p-3 px-4 flex items-center justify-between hover:bg-slate-50 transition-colors cursor-pointer" onClick={() => triggerToast(`Viewing ${risk.dept} Attrition Risk Details`)}>
@@ -713,7 +713,7 @@ const HRInsightsForecasting = () => {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-gradient-to-br from-[#D8EBF9] to-[#BEDDF5] backdrop-blur-2xl rounded-2xl sm:rounded-3xl p-4 sm:p-6 max-w-md w-full max-h-[90vh] overflow-y-auto shadow-2xl relative border border-white/90"
+              className="bg-gradient-to-br from-[#D8EBF9] to-[#BEDDF5] backdrop-blur-2xl rounded-2xl sm:rounded-3xl p-4 sm:p-6 max-w-md w-full max-h-[90vh] overflow-y-auto no-scrollbar shadow-2xl relative border border-white/90"
             >
               <button
                 onClick={() => setActiveModalAction(null)}
