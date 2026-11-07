@@ -78,7 +78,9 @@ const ContactPage = () => {
                 </div>
                 <h3 className="text-xl sm:text-2xl font-extrabold text-[#17233E] mb-3 tracking-tight">Direct Hotline</h3>
                 <div className="space-y-1.5 mb-6 sm:mb-8">
-                  <p className="text-[#17233E] font-extrabold text-lg sm:text-xl tracking-tight">+1 (555) 000-0000</p>
+                  <a href="tel:+15550000000" className="text-[#17233E] hover:text-[#1988A3] font-extrabold text-lg sm:text-xl tracking-tight transition-colors block">
+                    +1 (555) 000-0000
+                  </a>
                   <p className="text-[#5A6D89] text-xs font-normal">
                     Mon-Fri: 9:00 AM - 6:00 PM EST
                   </p>

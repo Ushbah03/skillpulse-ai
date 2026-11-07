@@ -15,6 +15,7 @@ import Login from './components/Login';
 import RoleSelection from './components/RoleSelection';
 import ProtectedRoute from './components/ProtectedRoute';
 import CheckoutPage from './components/CheckoutPage';
+import NotFoundPage from './components/NotFoundPage';
 
 // Employee Dashboard Components
 import DashboardLayout from './components/Layout';
@@ -221,6 +222,9 @@ function App() {
               <Route path="audit-logs" element={<AuditTrailLogs />} />
             </Route>
           </Route>
+
+          {/* Fallback Custom 404 Route */}
+          <Route path="*" element={<NotFoundPage />} />
 
         </Routes>
       </LayoutWrapper>

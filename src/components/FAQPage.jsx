@@ -1,19 +1,21 @@
 import React, { useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useSearchParams } from 'react-router-dom';
 import { Search, ChevronDown, ChevronUp, Mail, Sparkles, HelpCircle, ArrowRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const FAQPage = () => {
   const { tenantId } = useParams();
+  const [searchParams] = useSearchParams();
   const tenantBaseRoute = tenantId ? `/${tenantId}` : '';
 
-  const [activeTab, setActiveTab] = useState('All');
+  const initialTab = searchParams.get('tab') || 'All';
+  const [activeTab, setActiveTab] = useState(initialTab);
   const [searchQuery, setSearchQuery] = useState('');
   const [openQuestion, setOpenQuestion] = useState('What is SkillPulse AI?');
 
   const categories = [
     "All", "General", "Platform Features", "AI & Analytics", 
-    "Security & RBAC", "Pricing & Seats", "Integrations"
+    "Security & RBAC", "Pricing & Seats", "Integrations", "Privacy & Terms"
   ];
 
   const faqs = [
@@ -77,6 +79,17 @@ const FAQPage = () => {
       category: "Integrations",
       question: "Which integrations are available in the Integrations Hub?",
       answer: "The Integrations Hub provides API connectors for PostgreSQL Data Hub, HRIS systems (Workday, BambooHR), LMS platforms (Coursera, Udemy), and custom webhooks."
+    },
+    // Privacy & Terms
+    {
+      category: "Privacy & Terms",
+      question: "How does SkillPulse AI ensure enterprise data privacy and GDPR/SOC2 compliance?",
+      answer: "SkillPulse AI implements strict logical multi-tenant database partitioning, TLS 1.3 encryption in transit, AES-256 at rest, and role-based access control. Enterprise workforce data is never shared across tenants or used to train public third-party models."
+    },
+    {
+      category: "Privacy & Terms",
+      question: "What are the enterprise Terms of Service and data ownership guarantees?",
+      answer: "Customers retain 100% intellectual property and ownership of all employee skill records, performance evaluations, and internal competency benchmarks. Organizations can request complete data export or cryptographic purge at any time."
     }
   ];
 

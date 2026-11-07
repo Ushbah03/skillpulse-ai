@@ -20,8 +20,8 @@ export function Footer() {
   const companyLinks = [
     { name: 'About SkillPulse', shortName: 'About', path: '/about' },
     { name: 'Executive Contact', shortName: 'Enterprise', path: '/contact' },
-    { name: 'Privacy Policy', shortName: 'Privacy', path: '/faq' },
-    { name: 'Terms of Service', shortName: 'Terms', path: '/faq' },
+    { name: 'Privacy Policy', shortName: 'Privacy', path: '/faq?tab=Privacy%20%26%20Terms' },
+    { name: 'Terms of Service', shortName: 'Terms', path: '/faq?tab=Privacy%20%26%20Terms' },
   ];
 
   return (
@@ -210,9 +210,9 @@ export function Footer() {
         <div className="mt-3 sm:mt-8 pt-3 sm:pt-6 border-t border-white/10 flex flex-col sm:flex-row justify-between items-center text-[10px] sm:text-xs text-[#8A9CB7] font-normal gap-2 sm:gap-4 text-center sm:text-left">
           <p>© {new Date().getFullYear()} SkillPulse-AI Enterprise Systems.</p>
           <div className="flex items-center gap-3 sm:gap-5 text-[#BEDDF5]/80">
-            <Link to="/faq" className="hover:text-white transition-colors">Privacy</Link>
+            <Link to="/faq?tab=Privacy%20%26%20Terms" className="hover:text-white transition-colors">Privacy</Link>
             <span className="text-white/20 select-none">•</span>
-            <Link to="/faq" className="hover:text-white transition-colors">Terms</Link>
+            <Link to="/faq?tab=Privacy%20%26%20Terms" className="hover:text-white transition-colors">Terms</Link>
             <span className="text-white/20 select-none">•</span>
             <Link to="/features" className="hover:text-white transition-colors">Security</Link>
           </div>
