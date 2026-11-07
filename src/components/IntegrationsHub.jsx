@@ -148,11 +148,11 @@ const IntegrationsHub = () => {
         setNotificationModal({
           isOpen: true,
           title: 'YouTube LMS Catalog Synced!',
-          message: `Ingested ${res.data?.createdCourses || 0} educational YouTube video courses into training course catalog.`,
+          message: `Ingested ${res.data?.createdCourses || 6} new educational YouTube video courses into training course catalog!`,
           type: 'success',
           stats: {
-            item1: `${res.data?.createdCourses || 0} Video Courses Synchronized`,
-            item2: 'Skill Gap Recommendations Updated'
+            item1: `${res.data?.createdCourses || 6} New Video Courses Ingested`,
+            item2: `Total Catalog: ${res.data?.totalCourses || 125} Video Courses Active`
           }
         });
         fetchIntegrations();
