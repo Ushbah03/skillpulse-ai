@@ -27,6 +27,7 @@ import {
 
 import SuperadminSidebar from './SuperadminSidebar';
 import SkillPulseLoader from './SkillPulseLoader';
+import DashboardRevealWrapper from './DashboardRevealWrapper';
 import { adminAPI } from '../services/api';
 
 const SuperAdminDashboard = () => {
@@ -91,10 +92,16 @@ const SuperAdminDashboard = () => {
 
       <SuperadminSidebar activeItem="dashboard" />
 
-      <main className="flex-1 min-w-0 ml-0 lg:ml-64 px-3.5 sm:px-6 md:px-8 pt-20 lg:pt-8 pb-10 w-full max-w-full overflow-x-hidden relative z-10 space-y-6 sm:space-y-8">
-        
-        {/* Top Header */}
-        <header className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <main className="flex-1 min-w-0 ml-0 lg:ml-64 px-3.5 sm:px-6 md:px-8 pt-20 lg:pt-8 pb-10 w-full max-w-full overflow-x-hidden relative z-10">
+        <DashboardRevealWrapper
+          loading={loading}
+          loadingMessage="Querying platform telemetries from Neon PostgreSQL database..."
+          workspaceName="SuperAdmin Control Tower"
+          origin="top-left"
+        >
+          <div className="space-y-6 sm:space-y-8">
+            {/* Top Header */}
+            <header className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-2 mb-2 flex-wrap">
               <span className="px-3 py-1 rounded-xl bg-white/80 text-[#1988A3] border border-white/90 text-xs font-mono font-bold flex items-center gap-1.5 shadow-xs">
@@ -129,10 +136,6 @@ const SuperAdminDashboard = () => {
           </div>
         </header>
 
-        {loading ? (
-          <SkillPulseLoader message="Querying platform telemetries from Neon PostgreSQL database..." fullScreen={false} />
-        ) : (
-          <>
           {/* Global Platform Primary KPI Cards */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-5">
             
@@ -544,9 +547,9 @@ const SuperAdminDashboard = () => {
               )}
             </div>
           </div>
-          </>
-        )}
-      </main>
+        </div>
+      </DashboardRevealWrapper>
+    </main>
     </div>
   );
 };

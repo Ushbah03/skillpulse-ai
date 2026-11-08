@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import HRSidebar from './HRSidebar';
 import SkillPulseLoader from './SkillPulseLoader';
+import DashboardRevealWrapper, { staggerItem } from './DashboardRevealWrapper';
 import { motion, AnimatePresence } from 'framer-motion';
 import { hrAPI } from '../services/api';
 import { useNavigate } from 'react-router-dom';
@@ -125,41 +126,42 @@ const HRDashboard = () => {
           )}
         </AnimatePresence>
 
-        {/* Global Header */}
-        <header className="flex flex-wrap justify-between items-center bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 gap-4">
-          <div>
-            <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-[#17233E] tracking-tight flex items-center gap-2 sm:gap-2.5 flex-wrap">
-              <span>HR <span className="bg-gradient-to-r from-[#1988A3] to-[#11C6DE] bg-clip-text text-transparent">Dashboard</span></span>
-              <span className="flex items-center gap-1 px-2.5 py-1 bg-[#1988A3]/10 border border-[#1988A3]/25 rounded-xl text-[10px] sm:text-[11px] font-bold text-[#1988A3]">
-                <Building size={12} className="text-indigo-500" />
-                {displayTenantName}
-              </span>
-            </h1>
-            <p className="text-[#8A9CB7] text-xs sm:text-sm font-medium mt-1">Workforce intelligence overview & real-time analytics</p>
-          </div>
-          
-          <div className="flex items-center gap-3 w-full sm:w-auto">
-            <div className="relative w-full sm:w-64">
-              <Search className="absolute left-3.5 top-2.5 text-slate-400" size={15} />
-              <input 
-                type="text" 
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search departments, skills..." 
-                className="w-full pl-9 pr-3 py-2 bg-white/80 backdrop-blur-md rounded-xl text-xs font-semibold text-[#17233E] outline-none border border-white/85 focus:border-[#1988A3] shadow-sm transition-all placeholder:text-[#8A9CB7]"
-              />
-            </div>
-          </div>
-        </header>
+        <DashboardRevealWrapper
+          loading={loading}
+          loadingMessage="Synthesizing Enterprise Workforce Telemetry..."
+          workspaceName={displayTenantName}
+          origin="top-left"
+        >
+          <div className="space-y-4 sm:space-y-8">
+            {/* Global Header */}
+            <motion.header variants={staggerItem} className="flex flex-wrap justify-between items-center bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 gap-4">
+              <div>
+                <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-[#17233E] tracking-tight flex items-center gap-2 sm:gap-2.5 flex-wrap">
+                  <span>HR <span className="bg-gradient-to-r from-[#1988A3] to-[#11C6DE] bg-clip-text text-transparent">Dashboard</span></span>
+                  <span className="flex items-center gap-1 px-2.5 py-1 bg-[#1988A3]/10 border border-[#1988A3]/25 rounded-xl text-[10px] sm:text-[11px] font-bold text-[#1988A3]">
+                    <Building size={12} className="text-indigo-500" />
+                    {displayTenantName}
+                  </span>
+                </h1>
+                <p className="text-[#8A9CB7] text-xs sm:text-sm font-medium mt-1">Workforce intelligence overview & real-time analytics</p>
+              </div>
+              
+              <div className="flex items-center gap-3 w-full sm:w-auto">
+                <div className="relative w-full sm:w-64">
+                  <Search className="absolute left-3.5 top-2.5 text-slate-400" size={15} />
+                  <input 
+                    type="text" 
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Search departments, skills..." 
+                    className="w-full pl-9 pr-3 py-2 bg-white/80 backdrop-blur-md rounded-xl text-xs font-semibold text-[#17233E] outline-none border border-white/85 focus:border-[#1988A3] shadow-sm transition-all placeholder:text-[#8A9CB7]"
+                  />
+                </div>
+              </div>
+            </motion.header>
 
-        {loading ? (
-          <div className="my-8">
-            <SkillPulseLoader message="Synthesizing Enterprise Workforce Telemetry..." fullScreen={false} />
-          </div>
-        ) : (
-          <>
             {/* 3. Core Metrics Grid */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
+            <motion.div variants={staggerItem} className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
               <MetricCard 
                 title="Total Employees" 
                 value={`${analyticsData?.totalEmployees || 0}`} 
@@ -207,7 +209,7 @@ const HRDashboard = () => {
                   </p>
                 </div>
               </div>
-            </div>
+            </motion.div>
 
             {/* 4. Interactive Alert Strip */}
             <AnimatePresence>
@@ -343,9 +345,8 @@ const HRDashboard = () => {
                 <QuickActionButton onClick={() => navigate("/hr-dashboard/skill-gap-reports")} label="View Gap Reports" colorBg="bg-emerald-50 text-emerald-600" />
               </div>
             </div>
-          </>
-        )}
-
+          </div>
+        </DashboardRevealWrapper>
       </main>
 
       {/* AI Modal Portal Context */}
@@ -557,7 +558,10 @@ const HRDashboard = () => {
 
 /* Sub-components for cleaner rendering */
 const MetricCard = ({ title, value, icon, iconColor = "", iconBg = "", subtext, subtextColor = "", subtextStyle = "" }) => (
-  <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-col justify-between hover:border-[#1988A3]/40 transition-all duration-300">
+  <motion.div 
+    whileHover={{ y: -5, transition: { duration: 0.2, ease: "easeOut" } }}
+    className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-col justify-between hover:border-[#1988A3]/40 cursor-pointer transition-all duration-300"
+  >
     <div className="flex justify-between items-start gap-1 mb-2">
       <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-[#8A9CB7] truncate">{title}</span>
       <div className={`w-7 h-7 sm:w-8 sm:h-8 ${iconBg} ${iconColor} rounded-lg flex items-center justify-center shrink-0`}>{icon}</div>
@@ -570,7 +574,7 @@ const MetricCard = ({ title, value, icon, iconColor = "", iconBg = "", subtext, 
         </div>
       )}
     </div>
-  </div>
+  </motion.div>
 );
 
 const StackedBar = ({ label, segments = [0, 0, 0], hasSkills = false, totalSkills = 0, avgProficiency = 0, expertCount = 0, proficientCount = 0, noviceCount = 0, onClick }) => {

@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, ResponsiveContainer } from 'recharts';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Search, Bell, PlayCircle, TrendingUp, Layers, Zap, Star, Target, Sparkles, ChevronRight, X, CheckCircle2, AlertCircle, BookOpen
 } from 'lucide-react';
 import { employeeAPI } from '../services/api';
 import SkillPulseLoader from './SkillPulseLoader';
+import DashboardRevealWrapper, { staggerItem } from './DashboardRevealWrapper';
 
 const EmployeeDashboard = () => {
   const navigate = useNavigate();
@@ -149,19 +151,17 @@ const EmployeeDashboard = () => {
     }
   ];
 
-  if (loading) {
-    return (
-      <div className="p-8 min-h-[70vh] flex items-center justify-center">
-        <SkillPulseLoader message="Loading Employee Skill Intelligence..." fullScreen={false} />
-      </div>
-    );
-  }
-
   return (
-    <div className="font-sans text-[#17233E] pb-12">
-      
-      {/* 1. Header Section */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 sm:gap-6 mb-6 sm:mb-10">
+    <DashboardRevealWrapper
+      loading={loading}
+      loadingMessage="Loading Employee Skill Intelligence..."
+      workspaceName={workspaceName}
+      origin="top-left"
+    >
+      <div className="font-sans text-[#17233E] pb-12">
+        
+        {/* 1. Header Section */}
+        <motion.div variants={staggerItem} className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 sm:gap-6 mb-6 sm:mb-10">
         <div>
           <div className="flex items-center gap-2 mb-2">
             <span className="text-[10px] font-mono font-bold uppercase tracking-wider bg-[#1988A3]/10 text-[#1988A3] px-3 py-1 rounded-full border border-[#1988A3]/20 flex items-center gap-1.5">
@@ -321,48 +321,48 @@ const EmployeeDashboard = () => {
             </div>
           </div>
         </div>
-      </div>
+      </motion.div>
 
-      {/* 2. Top Stats Row - Frosted Glass Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-6 mb-6 sm:mb-8">
-        <StatCard 
-          title="Skill Readiness" 
-          value={`${readinessPct}%`} 
-          trend={`${validatedSkillsCount}/${totalSkillsCount} Verified`} 
-          icon={TrendingUp} 
-          iconColor="text-[#1988A3]" 
-          iconBg="bg-[#1988A3]/10 border border-[#1988A3]/20" 
-        />
-        <StatCard 
-          title="Total Skills" 
-          value={totalSkillsCount} 
-          sub={`${validatedSkillsCount} Validated in DB`} 
-          icon={Layers} 
-          iconColor="text-[#17233E]" 
-          iconBg="bg-[#17233E]/10 border border-[#17233E]/20" 
-        />
-        <StatCard 
-          title="Active Gaps" 
-          value={activeGapsList.length} 
-          sub={activeGapsList.length > 0 ? "Resolution Needed" : "Optimal"} 
-          highlight="amber" 
-          icon={Zap} 
-          iconColor="text-amber-500" 
-          iconBg="bg-amber-500/10 border border-amber-500/20" 
-        />
-        <StatCard 
-          title="Competency Index" 
-          value={`${avgProf.toFixed(1)}/5`} 
-          sub="Role Alignment" 
-          highlight="cyan" 
-          icon={Star} 
-          iconColor="text-[#11C6DE]" 
-          iconBg="bg-[#1988A3]/10 border border-[#1988A3]/25" 
-        />
-      </div>
+        {/* 2. Top Stats Row - Frosted Glass Cards */}
+        <motion.div variants={staggerItem} className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-6 mb-6 sm:mb-8">
+          <StatCard 
+            title="Skill Readiness" 
+            value={`${readinessPct}%`} 
+            trend={`${validatedSkillsCount}/${totalSkillsCount} Verified`} 
+            icon={TrendingUp} 
+            iconColor="text-[#1988A3]" 
+            iconBg="bg-[#1988A3]/10 border border-[#1988A3]/20" 
+          />
+          <StatCard 
+            title="Total Skills" 
+            value={totalSkillsCount} 
+            sub={`${validatedSkillsCount} Validated in DB`} 
+            icon={Layers} 
+            iconColor="text-[#17233E]" 
+            iconBg="bg-[#17233E]/10 border border-[#17233E]/20" 
+          />
+          <StatCard 
+            title="Active Gaps" 
+            value={activeGapsList.length} 
+            sub={activeGapsList.length > 0 ? "Resolution Needed" : "Optimal"} 
+            highlight="amber" 
+            icon={Zap} 
+            iconColor="text-amber-500" 
+            iconBg="bg-amber-500/10 border border-amber-500/20" 
+          />
+          <StatCard 
+            title="Competency Index" 
+            value={`${avgProf.toFixed(1)}/5`} 
+            sub="Role Alignment" 
+            highlight="cyan" 
+            icon={Star} 
+            iconColor="text-[#11C6DE]" 
+            iconBg="bg-[#1988A3]/10 border border-[#1988A3]/25" 
+          />
+        </motion.div>
 
-      {/* 3. Matrix and Gap Summary Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-8 mb-6 sm:mb-8">
+        {/* 3. Matrix and Gap Summary Row */}
+        <motion.div variants={staggerItem} className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-8 mb-6 sm:mb-8">
         <div className="lg:col-span-2 glass-panel p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-[2.5rem] relative overflow-hidden">
           <div className="flex justify-between items-center mb-4 sm:mb-6">
             <div className="flex items-center gap-2.5 sm:gap-3">
@@ -428,89 +428,93 @@ const EmployeeDashboard = () => {
             <ChevronRight className="w-4 h-4 text-[#1988A3]" />
           </button>
         </div>
-      </div>
+        </motion.div>
 
-      {/* 4. Progress and Insights Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-8">
-        <div className="lg:col-span-2 glass-panel p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-[2.5rem]">
-          <div className="flex justify-between items-center mb-4 sm:mb-6">
-            <h3 className="text-xs sm:text-sm font-bold text-[#17233E] uppercase tracking-wider font-mono flex items-center gap-2.5">
-              <PlayCircle className="w-4 h-4 sm:w-5 sm:h-5 text-[#1988A3]" /> 
-              <span>Live Courses & Learning Progress</span>
-            </h3>
+        {/* 4. Progress and Insights Row */}
+        <motion.div variants={staggerItem} className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-8">
+          <div className="lg:col-span-2 glass-panel p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-[2.5rem]">
+            <div className="flex justify-between items-center mb-4 sm:mb-6">
+              <h3 className="text-xs sm:text-sm font-bold text-[#17233E] uppercase tracking-wider font-mono flex items-center gap-2.5">
+                <PlayCircle className="w-4 h-4 sm:w-5 sm:h-5 text-[#1988A3]" /> 
+                <span>Live Courses & Learning Progress</span>
+              </h3>
+              <button 
+                onClick={() => navigate('/dashboard/learning')}
+                className="text-[#1988A3] text-xs font-bold hover:underline cursor-pointer"
+              >
+                View All Courses
+              </button>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-5">
+              {filteredCourses.length > 0 ? (
+                filteredCourses.slice(0, 2).map((c, idx) => (
+                  <CourseCard 
+                    key={c.id || idx}
+                    title={c.title} 
+                    skill={c.provider || 'Internal LMS'} 
+                    time={`${c.durationHours || 10}h total`} 
+                    progress={c.progressPct || 0} 
+                    onClick={() => navigate('/dashboard/courses')}
+                  />
+                ))
+              ) : (
+                <div className="col-span-2 text-center py-6 text-[#5A6D89] text-sm">
+                  {searchQuery ? 'No matching courses found.' : 'No active courses enrolled. Visit Learning Recommendations to enroll.'}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* AI Insight Card - Executive Frosted Navy Glass */}
+          <div className="bg-gradient-to-br from-[#17233E] via-[#1B3154] to-[#121E33] p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-[2.5rem] text-white shadow-xl relative overflow-hidden flex flex-col justify-between border border-white/20">
+            <div>
+              <div className="flex items-center gap-2 mb-3 sm:mb-4">
+                <Sparkles className="w-4 h-4 text-[#11C6DE]" />
+                <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-[#11C6DE]">
+                  AI Recommendation
+                </span>
+              </div>
+              <h4 className="text-lg sm:text-xl font-extrabold mb-2 sm:mb-3 leading-tight tracking-tight text-white">
+                {topGap ? `Target Skill: ${topGap.skill?.name}` : 'Skill Development Track'}
+              </h4>
+              <p className="text-[#8A9CB7] text-xs leading-relaxed mb-4 sm:mb-6">
+                {topGap 
+                  ? `Focus on bridging your ${topGap.severity} priority gap in ${topGap.skill?.name} to reach target proficiency level ${topGap.requiredLevel}.`
+                  : `Your verified skill inventory meets current role requirements. Explore new catalog tracks.`}
+              </p>
+              
+              <div className="flex gap-2.5 sm:gap-3 mb-4 sm:mb-6">
+                 <div className="bg-white/5 p-2.5 sm:p-3.5 rounded-xl sm:rounded-2xl flex-1 border border-white/10 text-center">
+                    <p className="text-[9px] sm:text-[10px] text-[#8A9CB7] uppercase font-mono font-bold mb-0.5">Impact</p>
+                    <p className="font-extrabold text-[#11C6DE] text-base sm:text-lg">{estimatedImpact}</p>
+                 </div>
+                 <div className="bg-white/5 p-2.5 sm:p-3.5 rounded-xl sm:rounded-2xl flex-1 border border-white/10 text-center">
+                    <p className="text-[9px] sm:text-[10px] text-[#8A9CB7] uppercase font-mono font-bold mb-0.5">Priority</p>
+                    <p className="font-extrabold text-white text-base sm:text-lg">{topGap ? topGap.severity : 'Active'}</p>
+                 </div>
+              </div>
+            </div>
+
             <button 
               onClick={() => navigate('/dashboard/learning')}
-              className="text-[#1988A3] text-xs font-bold hover:underline cursor-pointer"
+              className="w-full py-3 sm:py-3.5 bg-[#1988A3] hover:bg-[#157289] text-white rounded-xl sm:rounded-2xl text-xs font-mono font-bold uppercase tracking-wider transition-all shadow-lg shadow-[#1988A3]/30 cursor-pointer"
             >
-              View All Courses
+              Enroll in AI Track
             </button>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-5">
-            {filteredCourses.length > 0 ? (
-              filteredCourses.slice(0, 2).map((c, idx) => (
-                <CourseCard 
-                  key={c.id || idx}
-                  title={c.title} 
-                  skill={c.provider || 'Internal LMS'} 
-                  time={`${c.durationHours || 10}h total`} 
-                  progress={c.progressPct || 0} 
-                  onClick={() => navigate('/dashboard/courses')}
-                />
-              ))
-            ) : (
-              <div className="col-span-2 text-center py-6 text-[#5A6D89] text-sm">
-                {searchQuery ? 'No matching courses found.' : 'No active courses enrolled. Visit Learning Recommendations to enroll.'}
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* AI Insight Card - Executive Frosted Navy Glass */}
-        <div className="bg-gradient-to-br from-[#17233E] via-[#1B3154] to-[#121E33] p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-[2.5rem] text-white shadow-xl relative overflow-hidden flex flex-col justify-between border border-white/20">
-          <div>
-            <div className="flex items-center gap-2 mb-3 sm:mb-4">
-              <Sparkles className="w-4 h-4 text-[#11C6DE]" />
-              <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-[#11C6DE]">
-                AI Recommendation
-              </span>
-            </div>
-            <h4 className="text-lg sm:text-xl font-extrabold mb-2 sm:mb-3 leading-tight tracking-tight text-white">
-              {topGap ? `Target Skill: ${topGap.skill?.name}` : 'Skill Development Track'}
-            </h4>
-            <p className="text-[#8A9CB7] text-xs leading-relaxed mb-4 sm:mb-6">
-              {topGap 
-                ? `Focus on bridging your ${topGap.severity} priority gap in ${topGap.skill?.name} to reach target proficiency level ${topGap.requiredLevel}.`
-                : `Your verified skill inventory meets current role requirements. Explore new catalog tracks.`}
-            </p>
-            
-            <div className="flex gap-2.5 sm:gap-3 mb-4 sm:mb-6">
-               <div className="bg-white/5 p-2.5 sm:p-3.5 rounded-xl sm:rounded-2xl flex-1 border border-white/10 text-center">
-                  <p className="text-[9px] sm:text-[10px] text-[#8A9CB7] uppercase font-mono font-bold mb-0.5">Impact</p>
-                  <p className="font-extrabold text-[#11C6DE] text-base sm:text-lg">{estimatedImpact}</p>
-               </div>
-               <div className="bg-white/5 p-2.5 sm:p-3.5 rounded-xl sm:rounded-2xl flex-1 border border-white/10 text-center">
-                  <p className="text-[9px] sm:text-[10px] text-[#8A9CB7] uppercase font-mono font-bold mb-0.5">Priority</p>
-                  <p className="font-extrabold text-white text-base sm:text-lg">{topGap ? topGap.severity : 'Active'}</p>
-               </div>
-            </div>
-          </div>
-
-          <button 
-            onClick={() => navigate('/dashboard/learning')}
-            className="w-full py-3 sm:py-3.5 bg-[#1988A3] hover:bg-[#157289] text-white rounded-xl sm:rounded-2xl text-xs font-mono font-bold uppercase tracking-wider transition-all shadow-lg shadow-[#1988A3]/30 cursor-pointer"
-          >
-            Enroll in AI Track
-          </button>
-        </div>
+        </motion.div>
       </div>
-    </div>
+    </DashboardRevealWrapper>
   );
 };
 
 // --- Helper Components with Frosted Glass Styling ---
 
 const StatCard = ({ title, value, trend, sub, icon: Icon, iconBg, iconColor, highlight }) => (
-  <div className="glass-panel p-3.5 sm:p-6 rounded-2xl sm:rounded-[2rem] hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between">
+  <motion.div 
+    whileHover={{ y: -5, transition: { duration: 0.2, ease: "easeOut" } }}
+    className="glass-panel p-3.5 sm:p-6 rounded-2xl sm:rounded-[2rem] transition-all duration-300 flex flex-col justify-between cursor-pointer hover:shadow-xl hover:border-[#1988A3]/40"
+  >
     <div className="flex justify-between items-start gap-1 mb-2.5 sm:mb-4">
       <div className={`p-2 sm:p-3 rounded-xl sm:rounded-2xl ${iconBg} shrink-0`}>
         <Icon className={`w-4 h-4 sm:w-5 sm:h-5 ${iconColor}`} />
@@ -530,7 +534,7 @@ const StatCard = ({ title, value, trend, sub, icon: Icon, iconBg, iconColor, hig
         </p>
       )}
     </div>
-  </div>
+  </motion.div>
 );
 
 const GapItem = ({ title, status, color, progress, target, current }) => (

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import TeamLeaderSidebar from './TeamLeaderSidebar';
 import SkillPulseLoader from './SkillPulseLoader';
+import DashboardRevealWrapper, { staggerItem } from './DashboardRevealWrapper';
 import { teamLeaderAPI } from '../services/api';
 import { 
   TrendingUp, 
@@ -242,65 +243,65 @@ const TeamLeaderDashboard = () => {
       <TeamLeaderSidebar />
 
       {/* Main Content Area */}
-      <main className="flex-1 ml-0 lg:ml-64 pt-20 lg:pt-8 px-3.5 sm:px-6 md:px-8 py-4 sm:py-8 w-full relative z-10 space-y-4 sm:space-y-8">
-        
-        {/* Top Header */}
-        <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-6 mb-4 sm:mb-8">
-          <div>
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-[#17233E] tracking-tight">Team Leader <span className="bg-gradient-to-r from-[#1988A3] to-[#11C6DE] bg-clip-text text-transparent">Dashboard</span></h1>
-            <p className="text-[#8A9CB7] text-xs sm:text-sm md:text-base font-medium mt-0.5 sm:mt-1">Monitor squad readiness, capability telemetry, and skill intelligence</p>
-          </div>
-          
-          <div className="flex items-center justify-between sm:justify-end gap-2.5 sm:gap-4 w-full sm:w-auto">
-            <div className="flex items-center gap-2 flex-1 sm:flex-initial">
-              <select 
-                value={selectedTeam} 
-                onChange={(e) => setSelectedTeam(e.target.value)}
-                className="flex-1 sm:flex-initial bg-[#F0F5FB]/90 backdrop-blur-md border border-white/85 rounded-xl px-2.5 sm:px-4 py-2 sm:py-2.5 text-xs md:text-sm font-semibold text-[#17233E] shadow-sm focus:outline-none focus:border-[#1988A3] cursor-pointer transition-colors"
-              >
-                <option value="ALL">All My Teams (Combined)</option>
-                {leaderTeams.map((t) => (
-                  <option key={t.id} value={t.id}>
-                    {t.name}
-                  </option>
-                ))}
-              </select>
-
-              <select 
-                value={selectedTimeframe} 
-                onChange={(e) => setSelectedTimeframe(e.target.value)}
-                className="flex-1 sm:flex-initial bg-[#F0F5FB]/90 backdrop-blur-md border border-white/85 rounded-xl px-2.5 sm:px-4 py-2 sm:py-2.5 text-xs md:text-sm font-semibold text-[#17233E] shadow-sm focus:outline-none focus:border-[#1988A3] cursor-pointer transition-colors"
-              >
-                <option value="This Quarter">This Quarter</option>
-                <option value="Last Month">Last Month</option>
-                <option value="This Year">This Year</option>
-              </select>
-            </div>
-
-            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl overflow-hidden border border-white/60 bg-white/80 backdrop-blur-md shadow-sm flex-shrink-0">
-              <div className="w-full h-full bg-gradient-to-br from-[#17233E] via-[#1B3154] to-[#1988A3] flex items-center justify-center text-xs font-black text-white shadow-inner">
-                TL
+      <main className="flex-1 ml-0 lg:ml-64 pt-20 lg:pt-8 px-3.5 sm:px-6 md:px-8 py-4 sm:py-8 w-full relative z-10">
+        <DashboardRevealWrapper
+          loading={loading}
+          loadingMessage="Synchronizing Team Intelligence Telemetry..."
+          workspaceName="Team Intelligence Workspace"
+          origin="top-left"
+        >
+          <div className="space-y-4 sm:space-y-8">
+            {/* Top Header */}
+            <motion.header variants={staggerItem} className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-6 mb-4 sm:mb-8">
+              <div>
+                <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-[#17233E] tracking-tight">Team Leader <span className="bg-gradient-to-r from-[#1988A3] to-[#11C6DE] bg-clip-text text-transparent">Dashboard</span></h1>
+                <p className="text-[#8A9CB7] text-xs sm:text-sm md:text-base font-medium mt-0.5 sm:mt-1">Monitor squad readiness, capability telemetry, and skill intelligence</p>
               </div>
-            </div>
-          </div>
-        </header>
+              
+              <div className="flex items-center justify-between sm:justify-end gap-2.5 sm:gap-4 w-full sm:w-auto">
+                <div className="flex items-center gap-2 flex-1 sm:flex-initial">
+                  <select 
+                    value={selectedTeam} 
+                    onChange={(e) => setSelectedTeam(e.target.value)}
+                    className="flex-1 sm:flex-initial bg-[#F0F5FB]/90 backdrop-blur-md border border-white/85 rounded-xl px-2.5 sm:px-4 py-2 sm:py-2.5 text-xs md:text-sm font-semibold text-[#17233E] shadow-sm focus:outline-none focus:border-[#1988A3] cursor-pointer transition-colors"
+                  >
+                    <option value="ALL">All My Teams (Combined)</option>
+                    {leaderTeams.map((t) => (
+                      <option key={t.id} value={t.id}>
+                        {t.name}
+                      </option>
+                    ))}
+                  </select>
 
-        {loading && (
-          <div className="my-6">
-            <SkillPulseLoader message="Synchronizing Team Intelligence Telemetry..." fullScreen={false} />
-          </div>
-        )}
+                  <select 
+                    value={selectedTimeframe} 
+                    onChange={(e) => setSelectedTimeframe(e.target.value)}
+                    className="flex-1 sm:flex-initial bg-[#F0F5FB]/90 backdrop-blur-md border border-white/85 rounded-xl px-2.5 sm:px-4 py-2 sm:py-2.5 text-xs md:text-sm font-semibold text-[#17233E] shadow-sm focus:outline-none focus:border-[#1988A3] cursor-pointer transition-colors"
+                  >
+                    <option value="This Quarter">This Quarter</option>
+                    <option value="Last Month">Last Month</option>
+                    <option value="This Year">This Year</option>
+                  </select>
+                </div>
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-5">
-          <StatCard title="Team Readiness" value={stats.readiness} sub="vs last month" icon={<TrendingUp className="text-blue-500" />} color="blue" trend={stats.readinessTrend} />
-          <StatCard title="Avg. Skill Level" value={stats.avgSkill} sub="vs last month" icon={<Star className="text-purple-500" />} color="purple" trend={stats.avgSkillTrend} />
-          <StatCard title="Training Completion" value={stats.completion} sub="All assigned completed" icon={<Clock className="text-emerald-500" />} color="emerald" trend={stats.completionTrend} />
-          <StatCard title="Skill Gap Risk" value={stats.risk} sub="Critical Skills" icon={<AlertTriangle className="text-amber-500" />} color="amber" trend={stats.riskTrend} isRisk={true} />
-        </div>
+                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl overflow-hidden border border-white/60 bg-white/80 backdrop-blur-md shadow-sm flex-shrink-0">
+                  <div className="w-full h-full bg-gradient-to-br from-[#17233E] via-[#1B3154] to-[#1988A3] flex items-center justify-center text-xs font-black text-white shadow-inner">
+                    TL
+                  </div>
+                </div>
+              </div>
+            </motion.header>
 
-        {/* Dashboard Main layout grid */}
-        <div className="space-y-8">
+            {/* Stats Grid */}
+            <motion.div variants={staggerItem} className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-5">
+              <StatCard title="Team Readiness" value={stats.readiness} sub="vs last month" icon={<TrendingUp className="text-blue-500" />} color="blue" trend={stats.readinessTrend} />
+              <StatCard title="Avg. Skill Level" value={stats.avgSkill} sub="vs last month" icon={<Star className="text-purple-500" />} color="purple" trend={stats.avgSkillTrend} />
+              <StatCard title="Training Completion" value={stats.completion} sub="All assigned completed" icon={<Clock className="text-emerald-500" />} color="emerald" trend={stats.completionTrend} />
+              <StatCard title="Skill Gap Risk" value={stats.risk} sub="Critical Skills" icon={<AlertTriangle className="text-amber-500" />} color="amber" trend={stats.riskTrend} isRisk={true} />
+            </motion.div>
+
+            {/* Dashboard Main layout grid */}
+            <motion.div variants={staggerItem} className="space-y-8">
           
           {/* Team Skill Strength Overview */}
           <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 border border-white/85 shadow-xl shadow-[#1B3154]/6">
@@ -431,18 +432,22 @@ const TeamLeaderDashboard = () => {
               </div>
             </div>
           </div>
-
+        </motion.div>
         </div>
-      </main>
-    </div>
-  );
+      </DashboardRevealWrapper>
+    </main>
+  </div>
+);
 };
 
 /* --- Sub-components --- */
 
 const StatCard = ({ title, value, sub, icon, color, trend, isRisk=false }) => {
   return (
-    <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl p-3 sm:p-5 md:p-6 rounded-2xl sm:rounded-3xl border border-white/85 shadow-lg sm:shadow-xl shadow-[#1B3154]/6 relative overflow-hidden group hover:border-[#1988A3]/40 transition-all duration-300 flex flex-col justify-between">
+    <motion.div 
+      whileHover={{ y: -5, transition: { duration: 0.2, ease: "easeOut" } }}
+      className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl p-3 sm:p-5 md:p-6 rounded-2xl sm:rounded-3xl border border-white/85 shadow-lg sm:shadow-xl shadow-[#1B3154]/6 relative overflow-hidden group hover:border-[#1988A3]/40 cursor-pointer transition-all duration-300 flex flex-col justify-between"
+    >
       <div className="flex justify-between items-start gap-1 mb-2 sm:mb-4">
         <div className="min-w-0">
           <p className="text-[#8A9CB7] text-[10px] sm:text-xs font-bold mb-0.5 sm:mb-1 uppercase tracking-wider truncate">{title}</p>
@@ -459,7 +464,7 @@ const StatCard = ({ title, value, sub, icon, color, trend, isRisk=false }) => {
         <span className="text-[9px] sm:text-xs font-medium text-[#8A9CB7] truncate">{sub}</span>
       </div>
       <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-[#1988A3] to-[#11C6DE] opacity-80" />
-    </div>
+    </motion.div>
   );
 };
 

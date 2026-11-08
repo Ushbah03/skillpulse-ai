@@ -33,6 +33,7 @@ import {
 
 import CompanyAdminSidebar from './CompanyAdminSidebar';
 import SkillPulseLoader from './SkillPulseLoader';
+import DashboardRevealWrapper from './DashboardRevealWrapper';
 import { adminAPI } from '../services/api';
 
 const CompanyAdminDashboard = () => {
@@ -123,9 +124,16 @@ const CompanyAdminDashboard = () => {
       <CompanyAdminSidebar />
 
       {/* Main Content Area */}
-      <main className="flex-1 ml-0 lg:ml-64 pt-20 lg:pt-8 px-3.5 sm:px-6 md:px-8 pb-10 w-full max-w-full overflow-x-hidden relative z-10 space-y-6 sm:space-y-8">
-        {/* Header Banner */}
-        <header className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+      <main className="flex-1 ml-0 lg:ml-64 pt-20 lg:pt-8 px-3.5 sm:px-6 md:px-8 pb-10 w-full max-w-full overflow-x-hidden relative z-10">
+        <DashboardRevealWrapper
+          loading={loading}
+          loadingMessage="Querying Enterprise Tenant Telemetry..."
+          workspaceName={dashboardData?.tenantName || "Company Admin Workspace"}
+          origin="top-left"
+        >
+          <div className="space-y-6 sm:space-y-8">
+            {/* Header Banner */}
+            <header className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
           <div>
             <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-1">
               <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold tracking-tight text-[#17233E] flex flex-wrap items-center gap-2 sm:gap-2.5">
@@ -201,15 +209,12 @@ const CompanyAdminDashboard = () => {
           )}
         </AnimatePresence>
 
-        {loading ? (
-          <SkillPulseLoader message="Querying Enterprise Tenant Telemetry..." fullScreen={false} />
-        ) : (
-          <motion.div
-            initial="hidden"
-            animate="visible"
-            variants={containerVariants}
-            className="space-y-8"
-          >
+        <motion.div
+          initial="hidden"
+          animate="visible"
+          variants={containerVariants}
+          className="space-y-8"
+        >
             {/* Metric Cards Grid */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-5">
 
@@ -494,8 +499,9 @@ const CompanyAdminDashboard = () => {
 
             </div>
           </motion.div>
-        )}
-      </main>
+        </div>
+      </DashboardRevealWrapper>
+    </main>
     </div>
   );
 };
