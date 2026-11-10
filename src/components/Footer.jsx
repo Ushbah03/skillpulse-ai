@@ -1,224 +1,316 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ShieldCheck, ArrowUpRight } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  ArrowUpRight, 
+  Check, 
+  Sparkles, 
+  ShieldCheck, 
+  Activity, 
+  Globe2, 
+  SlidersHorizontal, 
+  Layers, 
+  Terminal,
+  Send
+} from 'lucide-react';
 
 export function Footer() {
-  const solutions = [
-    { name: 'Skill Gap Engine', shortName: 'Skill Gaps', path: '/features' },
-    { name: 'Readiness Scoring', shortName: 'Readiness', path: '/features' },
-    { name: 'Role Dashboards', shortName: 'Dashboards', path: '/dashboard' },
-    { name: 'Enterprise Partitioning', shortName: 'Multi-Tenant', path: '/features' },
-  ];
+  const [email, setEmail] = useState('');
+  const [isSubscribed, setIsSubscribed] = useState(false);
+  const [activeTelemetryPill, setActiveTelemetryPill] = useState('normal');
 
-  const platformLinks = [
-    { name: 'Platform Features', shortName: 'Features', path: '/features' },
-    { name: 'Pricing & Plans', shortName: 'Pricing', path: '/pricing' },
-    { name: 'Architecture & FAQ', shortName: 'FAQ', path: '/faq' },
-    { name: 'Contact Engineering', shortName: 'Contact', path: '/contact' },
-  ];
+  const handleSubscribe = (e) => {
+    e.preventDefault();
+    if (!email || !email.includes('@')) return;
+    setIsSubscribed(true);
+    setTimeout(() => {
+      setEmail('');
+      setTimeout(() => setIsSubscribed(false), 4000);
+    }, 600);
+  };
 
-  const companyLinks = [
-    { name: 'About SkillPulse', shortName: 'About', path: '/about' },
-    { name: 'Executive Contact', shortName: 'Enterprise', path: '/contact' },
-    { name: 'Privacy Policy', shortName: 'Privacy', path: '/faq?tab=Privacy%20%26%20Terms' },
-    { name: 'Terms of Service', shortName: 'Terms', path: '/faq?tab=Privacy%20%26%20Terms' },
+  const navColumns = [
+    {
+      title: 'Product',
+      links: [
+        { label: 'Overview', path: '/features' },
+        { label: 'Skill Matrix', path: '/features' },
+        { label: 'Readiness Index', path: '/features' },
+        { label: 'Team Formation', path: '/features' },
+        { label: 'YouTube LMS', path: '/features' },
+      ],
+    },
+    {
+      title: 'Company',
+      links: [
+        { label: 'About', path: '/about' },
+        { label: 'Careers', path: '/about', badge: 'Hiring' },
+        { label: 'Contact', path: '/contact' },
+        { label: 'Partners', path: '/contact' },
+        { label: 'Press Kit', path: '/about' },
+      ],
+    },
+    {
+      title: 'Resources',
+      links: [
+        { label: 'Help Center', path: '/faq' },
+        { label: 'API & Webhooks', path: '/faq' },
+        { label: 'Changelog', path: '/features', badge: 'v2.5' },
+        { label: 'Security & RLS', path: '/features' },
+        { label: 'Status & Logs', path: '/faq' },
+      ],
+    },
+    {
+      title: 'Legal',
+      links: [
+        { label: 'Privacy Policy', path: '/faq?tab=Privacy%20%26%20Terms' },
+        { label: 'Terms of Service', path: '/faq?tab=Privacy%20%26%20Terms' },
+        { label: 'Cookies & Consent', path: '/faq?tab=Privacy%20%26%20Terms' },
+        { label: 'SOC 2 Type II', path: '/faq?tab=Privacy%20%26%20Terms' },
+      ],
+    },
   ];
 
   return (
-    <footer className="relative bg-gradient-to-b from-[#17233E] via-[#1B3154] to-[#121E33] text-white py-5 sm:py-12 md:py-16 px-4 sm:px-8 md:px-12 border-t border-white/10 overflow-hidden font-sans">
-      {/* Top Ambient Glow Edge */}
-      <div className="absolute top-0 left-0 right-0 h-[1.5px] bg-gradient-to-r from-transparent via-[#1988A3] to-transparent opacity-80 pointer-events-none" />
+    <footer className="relative w-full py-10 sm:py-16 md:py-20 px-3 sm:px-6 lg:px-10 overflow-hidden font-sans select-none bg-gradient-to-b from-transparent via-[#D8EBF9]/30 to-[#BEDDF5]/50">
       
-      {/* Subtle Background Glow Orbs */}
-      <div className="absolute top-0 left-1/4 w-[400px] h-[200px] bg-[#1988A3]/10 blur-[90px] pointer-events-none rounded-full" />
-      <div className="absolute bottom-0 right-1/4 w-[350px] h-[160px] bg-[#11C6DE]/08 blur-[80px] pointer-events-none rounded-full" />
-
-      <div className="relative z-10 max-w-7xl mx-auto">
-        
-        {/* DESKTOP LAYOUT (>= lg) */}
-        <div className="hidden lg:grid grid-cols-12 gap-12 items-start pb-10 border-b border-white/10">
-          {/* Brand & Mission Column */}
-          <div className="col-span-5 text-left">
-            <Link to="/" className="inline-flex items-center gap-2.5 mb-4 group">
-              <div className="w-9 h-9 rounded-xl flex items-center justify-center bg-white/10 border border-white/20 backdrop-blur-md group-hover:border-[#1988A3]/60 transition-all shadow-sm">
-                <svg className="w-5 h-5 text-[#11C6DE]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                </svg>
-              </div>
-              <span className="text-xl font-extrabold text-white tracking-tight">
-                SkillPulse <span className="text-[#11C6DE]">-AI</span>
-              </span>
-            </Link>
-            
-            <p className="text-[#BEDDF5]/80 text-sm leading-relaxed mb-6 font-normal max-w-md">
-              Enterprise multi-tenant workforce intelligence platform delivering automated skill gap analysis, predictive career paths, and live organizational readiness benchmarks.
-            </p>
-
-            <div className="flex items-center gap-2.5 flex-wrap">
-              {['Twitter', 'LinkedIn', 'GitHub'].map((social, i) => (
-                <Link 
-                  key={i} 
-                  to="/contact"
-                  className="px-3.5 py-1.5 rounded-xl bg-white/8 hover:bg-[#1988A3]/25 border border-white/15 hover:border-[#1988A3]/50 text-xs text-[#BEDDF5] hover:text-white transition-all font-semibold backdrop-blur-sm shadow-sm inline-flex items-center gap-1.5 cursor-pointer"
-                >
-                  {social}
-                  <ArrowUpRight className="w-3 h-3 text-[#11C6DE]" />
-                </Link>
-              ))}
-            </div>
-          </div>
-
-          {/* Links 3 Columns on Desktop */}
-          <div className="col-span-7 grid grid-cols-3 gap-8">
-            <div className="text-left">
-              <h4 className="font-bold mb-4 text-white text-xs uppercase tracking-wider font-mono flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#1988A3]" /> Solutions
-              </h4>
-              <ul className="space-y-2.5 text-[#BEDDF5]/80 text-sm font-normal">
-                {solutions.map((item) => (
-                  <li key={item.name}>
-                    <Link to={item.path} className="hover:text-white hover:translate-x-0.5 transition-all inline-block py-0.5">
-                      {item.name}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="text-left">
-              <h4 className="font-bold mb-4 text-white text-xs uppercase tracking-wider font-mono flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#11C6DE]" /> Platform
-              </h4>
-              <ul className="space-y-2.5 text-[#BEDDF5]/80 text-sm font-normal">
-                {platformLinks.map((item) => (
-                  <li key={item.name}>
-                    <Link to={item.path} className="hover:text-white hover:translate-x-0.5 transition-all inline-block py-0.5">
-                      {item.name}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="text-left">
-              <h4 className="font-bold mb-4 text-white text-xs uppercase tracking-wider font-mono flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#8A9CB7]" /> Company
-              </h4>
-              <ul className="space-y-2.5 text-[#BEDDF5]/80 text-sm font-normal mb-5">
-                {companyLinks.map((item) => (
-                  <li key={item.name}>
-                    <Link to={item.path} className="hover:text-white hover:translate-x-0.5 transition-all inline-block py-0.5">
-                      {item.name}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-[11px] text-[#BEDDF5] font-mono">
-                <ShieldCheck className="w-3.5 h-3.5 text-[#1988A3]" />
-                <span>Multi-Tenant Isolated</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* COMPACT SLEEK MOBILE & TABLET LAYOUT (< lg) */}
-        <div className="lg:hidden flex flex-col gap-4 text-left">
-          
-          {/* Header Row: Logo on Left + Compact Social Icons on Right */}
-          <div className="flex items-center justify-between pb-3 border-b border-white/10">
-            <Link to="/" className="inline-flex items-center gap-2">
-              <div className="w-7 h-7 rounded-lg flex items-center justify-center bg-white/10 border border-white/20">
-                <svg className="w-3.5 h-3.5 text-[#11C6DE]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                </svg>
-              </div>
-              <span className="text-base font-extrabold text-white tracking-tight">
-                SkillPulse <span className="text-[#11C6DE]">-AI</span>
-              </span>
-            </Link>
-
-            {/* Compact Socials */}
-            <div className="flex items-center gap-1.5">
-              {['Twitter', 'LinkedIn', 'GitHub'].map((social, i) => (
-                <Link 
-                  key={i} 
-                  to="/contact"
-                  className="px-2.5 py-1 rounded-lg bg-white/8 hover:bg-[#1988A3]/25 border border-white/10 text-[10px] text-[#BEDDF5] hover:text-white font-medium inline-flex items-center gap-1"
-                >
-                  {social}
-                  <ArrowUpRight className="w-2.5 h-2.5 text-[#11C6DE]" />
-                </Link>
-              ))}
-            </div>
-          </div>
-
-          {/* Compact 3-Column Links Row */}
-          <div className="grid grid-cols-3 gap-2 py-1">
-            {/* Solutions */}
-            <div>
-              <h5 className="font-bold text-white text-[10px] uppercase tracking-wider font-mono mb-2 flex items-center gap-1">
-                <span className="w-1 h-1 rounded-full bg-[#1988A3]" /> Solutions
-              </h5>
-              <ul className="space-y-1.5 text-[11px] text-[#BEDDF5]/75 font-normal">
-                {solutions.map((item) => (
-                  <li key={item.name} className="truncate">
-                    <Link to={item.path} className="hover:text-white transition-colors block py-0.5">
-                      {item.shortName}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Platform */}
-            <div>
-              <h5 className="font-bold text-white text-[10px] uppercase tracking-wider font-mono mb-2 flex items-center gap-1">
-                <span className="w-1 h-1 rounded-full bg-[#11C6DE]" /> Platform
-              </h5>
-              <ul className="space-y-1.5 text-[11px] text-[#BEDDF5]/75 font-normal">
-                {platformLinks.map((item) => (
-                  <li key={item.name} className="truncate">
-                    <Link to={item.path} className="hover:text-white transition-colors block py-0.5">
-                      {item.shortName}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Company */}
-            <div>
-              <h5 className="font-bold text-white text-[10px] uppercase tracking-wider font-mono mb-2 flex items-center gap-1">
-                <span className="w-1 h-1 rounded-full bg-[#8A9CB7]" /> Company
-              </h5>
-              <ul className="space-y-1.5 text-[11px] text-[#BEDDF5]/75 font-normal">
-                {companyLinks.map((item) => (
-                  <li key={item.name} className="truncate">
-                    <Link to={item.path} className="hover:text-white transition-colors block py-0.5">
-                      {item.shortName}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-
-        </div>
-
-        {/* Bottom Bar: Copyright & Compliance */}
-        <div className="mt-3 sm:mt-8 pt-3 sm:pt-6 border-t border-white/10 flex flex-col sm:flex-row justify-between items-center text-[10px] sm:text-xs text-[#8A9CB7] font-normal gap-2 sm:gap-4 text-center sm:text-left">
-          <p>© {new Date().getFullYear()} SkillPulse-AI Enterprise Systems.</p>
-          <div className="flex items-center gap-3 sm:gap-5 text-[#BEDDF5]/80">
-            <Link to="/faq?tab=Privacy%20%26%20Terms" className="hover:text-white transition-colors">Privacy</Link>
-            <span className="text-white/20 select-none">•</span>
-            <Link to="/faq?tab=Privacy%20%26%20Terms" className="hover:text-white transition-colors">Terms</Link>
-            <span className="text-white/20 select-none">•</span>
-            <Link to="/features" className="hover:text-white transition-colors">Security</Link>
-          </div>
-        </div>
-
+      {/* 1. Ambient Background Glowing Mesh Orbs & Light Refraction Layer */}
+      <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
+        <div className="absolute -top-12 left-1/4 w-[500px] h-[350px] bg-[#1988A3]/22 blur-[130px] rounded-full animate-pulse" />
+        <div className="absolute top-1/3 -right-20 w-[450px] h-[350px] bg-[#11C6DE]/18 blur-[120px] rounded-full" />
+        <div className="absolute -bottom-10 left-10 w-[550px] h-[350px] bg-[#1B3154]/18 blur-[140px] rounded-full" />
+        <div className="absolute bottom-4 right-1/4 w-[480px] h-[300px] bg-[#8A9CB7]/25 blur-[120px] rounded-full" />
+        <div className="absolute inset-0 bg-[radial-gradient(rgba(27,49,84,0.06)_1px,transparent_1px)] [background-size:24px_24px] opacity-40" />
       </div>
+
+      {/* 2. Giant Refractive 3D Sculpted Watermark Behind Liquid Glass (Matches Vertix Effect) */}
+      <div className="absolute bottom-2 sm:bottom-6 left-0 right-0 flex items-center justify-center pointer-events-none z-0 overflow-hidden">
+        <span className="text-[14vw] sm:text-[13vw] font-black tracking-[0.2em] sm:tracking-[0.28em] text-[#17233E]/10 uppercase bg-gradient-to-b from-[#17233E]/15 via-[#1988A3]/12 to-transparent bg-clip-text text-transparent transform translate-y-4 sm:translate-y-6 blur-[1.5px] scale-105">
+          SKILLPULSE
+        </span>
+      </div>
+
+      {/* 3. The Floating Liquid Glass Slab */}
+      <div className="relative z-10 max-w-7xl mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          className="relative rounded-[2.5rem] sm:rounded-[3.5rem] p-6 sm:p-10 md:p-14 bg-gradient-to-br from-white/80 via-[#E4EEF8]/70 to-[#D0E4F5]/75 backdrop-blur-2xl sm:backdrop-blur-3xl border border-white/85 shadow-[0_25px_60px_-15px_rgba(23,35,62,0.18),inset_0_1px_2px_rgba(255,255,255,0.95)] overflow-hidden"
+        >
+          {/* Liquid Specular Top Rim Highlight */}
+          <div className="absolute top-0 left-8 right-8 h-[1.5px] bg-gradient-to-r from-transparent via-white to-transparent opacity-90 pointer-events-none" />
+          <div className="absolute top-0 left-0 w-32 h-32 bg-white/40 blur-2xl rounded-full pointer-events-none" />
+
+          {/* Main Grid: Left Hook & Newsletter + Right Recessed Nav Pod */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start mb-10 sm:mb-14">
+            
+            {/* Left Brand & Newsletter Column (Col 5) */}
+            <div className="lg:col-span-5 flex flex-col justify-between h-full space-y-6">
+              
+              {/* Brand Header */}
+              <div>
+                <Link to="/" className="inline-flex items-center gap-3 group">
+                  <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-[#17233E] via-[#1B3154] to-[#1988A3] p-0.5 shadow-md shadow-[#17233E]/20 flex items-center justify-center border border-white/40 group-hover:scale-105 transition-transform duration-300">
+                    <div className="w-full h-full rounded-[14px] bg-[#17233E]/40 backdrop-blur-sm flex items-center justify-center">
+                      <svg className="w-5 h-5 text-[#11C6DE]" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                      </svg>
+                    </div>
+                  </div>
+                  <div>
+                    <span className="text-xl sm:text-2xl font-black text-[#17233E] tracking-tight">
+                      SkillPulse<span className="text-[#1988A3]">-AI</span>
+                    </span>
+                    <span className="block text-[10px] font-mono font-bold tracking-widest text-[#5A6D89] uppercase">
+                      Workforce Intelligence
+                    </span>
+                  </div>
+                </Link>
+
+                <h3 className="text-2xl sm:text-3xl font-extrabold text-[#17233E] tracking-tight mt-5 leading-tight">
+                  One unified talent matrix,{' '}
+                  <span className="bg-gradient-to-r from-[#1988A3] to-[#11C6DE] bg-clip-text text-transparent">
+                    calibrated daily.
+                  </span>
+                </h3>
+                <p className="text-[#5A6D89] text-xs sm:text-sm mt-2 leading-relaxed max-w-sm">
+                  Subscribe to weekly talent intelligence telemetry, AI squad orchestration case studies, and corporate workforce benchmarks.
+                </p>
+              </div>
+
+              {/* Liquid Pill Newsletter Input */}
+              <div className="w-full max-w-md pt-2">
+                <form onSubmit={handleSubscribe} className="relative">
+                  <div className="p-1 sm:p-1.5 rounded-full bg-white/70 backdrop-blur-md border border-white/90 shadow-[inset_0_2px_4px_rgba(27,49,84,0.06),0_8px_20px_rgba(23,35,62,0.08)] flex items-center transition-all focus-within:border-[#1988A3]/60 focus-within:ring-2 focus-within:ring-[#1988A3]/20">
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="work.email@company.com"
+                      disabled={isSubscribed}
+                      className="flex-1 bg-transparent px-4 py-2 text-xs sm:text-sm text-[#17233E] placeholder:text-[#8A9CB7] focus:outline-none font-medium min-w-0"
+                      required
+                    />
+                    <motion.button
+                      type="submit"
+                      whileHover={{ scale: 1.03 }}
+                      whileTap={{ scale: 0.97 }}
+                      disabled={isSubscribed}
+                      className="px-5 sm:px-6 py-2.5 rounded-full bg-[#17233E] hover:bg-[#1988A3] text-white text-xs font-bold transition-colors shadow-md shadow-[#17233E]/20 flex items-center gap-1.5 shrink-0 cursor-pointer"
+                    >
+                      {isSubscribed ? (
+                        <>
+                          <Check className="w-3.5 h-3.5 text-[#11C6DE]" />
+                          <span>Joined!</span>
+                        </>
+                      ) : (
+                        <>
+                          <span>Subscribe</span>
+                          <ArrowUpRight className="w-3.5 h-3.5 text-[#11C6DE]" />
+                        </>
+                      )}
+                    </motion.button>
+                  </div>
+                </form>
+
+                <p className="text-[10px] font-medium text-[#8A9CB7] mt-2.5 px-3 flex items-center gap-1.5">
+                  <ShieldCheck className="w-3 h-3 text-[#1988A3]" />
+                  <span>Zero spam. Unsubscribe anytime. SOC 2 Type II compliant.</span>
+                </p>
+
+                {/* Frosted Glass Social Pills */}
+                <div className="flex items-center gap-2 pt-2">
+                  {['Twitter', 'LinkedIn', 'GitHub'].map((social, i) => (
+                    <Link
+                      key={i}
+                      to="/contact"
+                      className="px-3.5 py-1.5 rounded-full bg-white/70 hover:bg-[#1988A3]/15 border border-white/85 text-[11px] text-[#5A6D89] hover:text-[#17233E] font-semibold transition-all inline-flex items-center gap-1.5 shadow-2xs backdrop-blur-md cursor-pointer"
+                    >
+                      <span>{social}</span>
+                      <ArrowUpRight className="w-3 h-3 text-[#1988A3]" />
+                    </Link>
+                  ))}
+                </div>
+              </div>
+
+            </div>
+
+            {/* Right Recessed Glass Nav Pod (Col 7 - Matches Image Recessed Frosted Panel) */}
+            <div className="lg:col-span-7">
+              <div className="p-6 sm:p-8 rounded-[2rem] bg-white/55 backdrop-blur-xl border border-white/80 shadow-[inset_0_1px_2px_rgba(255,255,255,0.9),0_10px_30px_rgba(23,35,62,0.06)]">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 sm:gap-8">
+                  {navColumns.map((col, idx) => (
+                    <div key={idx} className="space-y-3">
+                      <h4 className="text-[11px] font-mono font-bold uppercase tracking-wider text-[#17233E] flex items-center gap-1.5">
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#1988A3]" />
+                        {col.title}
+                      </h4>
+                      <ul className="space-y-2">
+                        {col.links.map((link, lIdx) => (
+                          <li key={lIdx}>
+                            <Link
+                              to={link.path}
+                              className="group inline-flex items-center gap-1.5 text-xs text-[#5A6D89] hover:text-[#17233E] font-medium transition-colors"
+                            >
+                              <span className="group-hover:translate-x-0.5 transition-transform">
+                                {link.label}
+                              </span>
+                              {link.badge && (
+                                <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded-md bg-[#1988A3]/10 text-[#1988A3] border border-[#1988A3]/25 uppercase leading-none">
+                                  {link.badge}
+                                </span>
+                              )}
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          {/* 4. Bottom Horizontal Action & Status Bar (Exact Mirror of Bottom Bar in Image) */}
+          <div className="pt-6 sm:pt-8 border-t border-white/60 flex flex-col md:flex-row items-center justify-between gap-4 text-xs">
+            
+            {/* Left: Copyright, Legal Links & Live Status Indicator */}
+            <div className="flex items-center gap-4 flex-wrap justify-center md:justify-start">
+              <span className="text-[#5A6D89] font-medium">
+                © {new Date().getFullYear()} SkillPulse-AI Enterprise Systems.
+              </span>
+
+              <div className="flex items-center gap-2.5 text-[#5A6D89] text-[11px] font-medium">
+                <Link to="/faq?tab=Privacy%20%26%20Terms" className="hover:text-[#17233E] transition-colors">Privacy</Link>
+                <span className="text-[#8A9CB7]/50 select-none">•</span>
+                <Link to="/faq?tab=Privacy%20%26%20Terms" className="hover:text-[#17233E] transition-colors">Terms</Link>
+                <span className="text-[#8A9CB7]/50 select-none">•</span>
+                <Link to="/features" className="hover:text-[#17233E] transition-colors">Security</Link>
+              </div>
+              
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-emerald-700 text-[11px] font-semibold backdrop-blur-sm shadow-2xs">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                <span>All systems normal</span>
+              </div>
+            </div>
+
+            {/* Right: Tactile Liquid Telemetry Control Pills (Matches Pill Controls in Image) */}
+            <div className="flex items-center gap-2">
+              <div className="p-1 rounded-full bg-white/65 backdrop-blur-md border border-white/80 shadow-xs flex items-center gap-1">
+                
+                {/* Cluster Node Status */}
+                <button
+                  onClick={() => setActiveTelemetryPill('normal')}
+                  title="Cluster Node Health"
+                  className={`p-1.5 sm:px-2.5 sm:py-1 rounded-full text-[11px] font-mono font-semibold transition-all flex items-center gap-1.5 cursor-pointer ${
+                    activeTelemetryPill === 'normal'
+                      ? 'bg-[#17233E] text-white shadow-xs'
+                      : 'text-[#5A6D89] hover:text-[#17233E]'
+                  }`}
+                >
+                  <Activity className="w-3.5 h-3.5 text-[#11C6DE]" />
+                  <span className="hidden sm:inline">Neon HA</span>
+                </button>
+
+                {/* Multi-Tenant RLS Status */}
+                <button
+                  onClick={() => setActiveTelemetryPill('rls')}
+                  title="Multi-Tenant Row-Level Security Enforced"
+                  className={`p-1.5 sm:px-2.5 sm:py-1 rounded-full text-[11px] font-mono font-semibold transition-all flex items-center gap-1.5 cursor-pointer ${
+                    activeTelemetryPill === 'rls'
+                      ? 'bg-[#17233E] text-white shadow-xs'
+                      : 'text-[#5A6D89] hover:text-[#17233E]'
+                  }`}
+                >
+                  <ShieldCheck className="w-3.5 h-3.5 text-[#1988A3]" />
+                  <span className="hidden sm:inline">RLS Active</span>
+                </button>
+
+                {/* AI Gateway Node */}
+                <button
+                  onClick={() => setActiveTelemetryPill('ai')}
+                  title="Multi-Cloud AI Inference Active"
+                  className={`p-1.5 sm:px-2.5 sm:py-1 rounded-full text-[11px] font-mono font-semibold transition-all flex items-center gap-1.5 cursor-pointer ${
+                    activeTelemetryPill === 'ai'
+                      ? 'bg-[#17233E] text-white shadow-xs'
+                      : 'text-[#5A6D89] hover:text-[#17233E]'
+                  }`}
+                >
+                  <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+                  <span className="hidden sm:inline">GenAI 4.0</span>
+                </button>
+
+              </div>
+            </div>
+
+          </div>
+
+        </motion.div>
+      </div>
+
     </footer>
   );
 }
