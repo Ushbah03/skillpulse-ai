@@ -1,12 +1,12 @@
 import React, { useEffect, useRef } from 'react';
 
 /**
- * High-FPS 3D Parametric Liquid Metallic Silk Ribbon Canvas
- * Tuned to SkillPulse-AI's signature blue & electric cyan palette:
- * Deep Navy (#17233E), Dark Royal Blue (#1B3154), Cyan Teal (#1988A3),
- * Electric Cyan (#11C6DE), and Ice Blue Highlights (#E9EAF7).
+ * High-FPS 3D Parametric Liquid Glass Silk Ribbon Canvas
+ * Designed for SkillPulse-AI's signature Light Ice-Blue (#E9EAF7) frosted theme:
+ * Translucent cyan (#11C6DE), teal (#1988A3), sky-sapphire (#6AAEE0),
+ * soft navy depth (#1B3154), and crystalline white specular rims (#FFFFFF).
  */
-const LiquidRibbonWave = ({ mouseOffset = { x: 0, y: 0 } }) => {
+const LiquidRibbonWave = ({ mouseOffset = { x: 0, y: 0 }, intensity = 1 }) => {
   const canvasRef = useRef(null);
   const mouseRef = useRef(mouseOffset);
 
@@ -86,7 +86,7 @@ const LiquidRibbonWave = ({ mouseOffset = { x: 0, y: 0 } }) => {
       const { top, bot } = buildWavePoints(config);
       const revBot = [...bot].reverse();
 
-      // 1. Continuous Smooth Metallic Blue-Cyan Silk Body
+      // 1. Continuous Translucent Iridescent Blue-Cyan Silk Body
       ctx.save();
       ctx.beginPath();
       drawSmoothCurve(top, true);
@@ -103,7 +103,7 @@ const LiquidRibbonWave = ({ mouseOffset = { x: 0, y: 0 } }) => {
       ctx.fillStyle = bodyGrad;
       ctx.fill();
 
-      // 2. Clip inside ribbon & paint luminous ice-cyan gleam + deep navy royal fold shading
+      // 2. Clip inside ribbon & paint crystalline white/cyan gleam + airy blue depth
       ctx.clip();
 
       const gleamX = (0.34 + Math.sin(config.t * 0.45 + config.phase) * 0.18) * width;
@@ -113,45 +113,45 @@ const LiquidRibbonWave = ({ mouseOffset = { x: 0, y: 0 } }) => {
         width * 0.02,
         gleamX,
         config.baseY,
-        width * 0.5
+        width * 0.52
       );
-      gleamGrad.addColorStop(0, 'rgba(233, 234, 247, 0.44)');
-      gleamGrad.addColorStop(0.35, 'rgba(17, 198, 222, 0.30)');
-      gleamGrad.addColorStop(1, 'rgba(27, 49, 84, 0)');
+      gleamGrad.addColorStop(0, `rgba(255, 255, 255, ${(0.55 * intensity).toFixed(2)})`);
+      gleamGrad.addColorStop(0.38, `rgba(17, 198, 222, ${(0.28 * intensity).toFixed(2)})`);
+      gleamGrad.addColorStop(1, 'rgba(25, 136, 163, 0)');
       ctx.fillStyle = gleamGrad;
       ctx.fillRect(0, 0, width, height);
 
-      // Soft Deep-Navy 3D volume shading (No black!)
+      // Soft translucent cobalt volume shading (Light-Mode Glass Refraction)
       const shadowGrad = ctx.createLinearGradient(0, config.baseY - config.thickness, 0, config.baseY + config.thickness * 1.2);
-      shadowGrad.addColorStop(0, 'rgba(233, 234, 247, 0.16)');
-      shadowGrad.addColorStop(0.5, 'rgba(25, 136, 163, 0.05)');
-      shadowGrad.addColorStop(1, 'rgba(23, 35, 62, 0.72)');
+      shadowGrad.addColorStop(0, 'rgba(255, 255, 255, 0.35)');
+      shadowGrad.addColorStop(0.5, 'rgba(17, 198, 222, 0.05)');
+      shadowGrad.addColorStop(1, 'rgba(27, 49, 84, 0.18)');
       ctx.fillStyle = shadowGrad;
       ctx.fillRect(0, 0, width, height);
 
       ctx.restore();
 
-      // 3. Crisp Glowing Specular Rim Edge along top fold
+      // 3. Crisp Luminous White & Cyan Specular Rim Edge along top fold
       ctx.save();
       ctx.beginPath();
       drawSmoothCurve(top, true);
       const rimGrad = ctx.createLinearGradient(0, 0, width, 0);
-      rimGrad.addColorStop(0.0, 'rgba(233, 234, 247, 0.75)');
-      rimGrad.addColorStop(0.3, 'rgba(17, 198, 222, 0.92)');
+      rimGrad.addColorStop(0.0, 'rgba(255, 255, 255, 0.92)');
+      rimGrad.addColorStop(0.32, 'rgba(17, 198, 222, 0.78)');
       rimGrad.addColorStop(0.68, 'rgba(25, 136, 163, 0.55)');
-      rimGrad.addColorStop(1.0, 'rgba(138, 156, 183, 0.35)');
+      rimGrad.addColorStop(1.0, 'rgba(255, 255, 255, 0.75)');
       ctx.strokeStyle = rimGrad;
       ctx.lineWidth = config.rimWidth || 2.2;
-      ctx.shadowColor = '#11C6DE';
-      ctx.shadowBlur = 16;
+      ctx.shadowColor = 'rgba(17, 198, 222, 0.65)';
+      ctx.shadowBlur = 12;
       ctx.stroke();
       ctx.restore();
 
-      // 4. Secondary Soft Ice-Blue Specular Lip
+      // 4. Secondary Subtle Specular Bottom Lip
       ctx.save();
       ctx.beginPath();
       drawSmoothCurve(bot, true);
-      ctx.strokeStyle = 'rgba(17, 198, 222, 0.28)';
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.55)';
       ctx.lineWidth = 1.2;
       ctx.stroke();
       ctx.restore();
@@ -166,22 +166,22 @@ const LiquidRibbonWave = ({ mouseOffset = { x: 0, y: 0 } }) => {
       ctx.clearRect(0, 0, width, height);
       time += 0.01;
 
-      // Ambient Cyan-Blue Glow Mist (Project Signature Colors)
+      // Ambient Ice-Cyan Mist
       const mist = ctx.createRadialGradient(
-        width * 0.45,
-        height * 0.55,
+        width * 0.48,
+        height * 0.54,
         10,
-        width * 0.45,
-        height * 0.55,
-        width * 0.65
+        width * 0.48,
+        height * 0.54,
+        width * 0.62
       );
-      mist.addColorStop(0, 'rgba(17, 198, 222, 0.22)');
-      mist.addColorStop(0.5, 'rgba(25, 136, 163, 0.14)');
-      mist.addColorStop(1, 'rgba(27, 49, 84, 0)');
+      mist.addColorStop(0, `rgba(17, 198, 222, ${(0.18 * intensity).toFixed(2)})`);
+      mist.addColorStop(0.5, `rgba(25, 136, 163, ${(0.10 * intensity).toFixed(2)})`);
+      mist.addColorStop(1, 'rgba(233, 234, 247, 0)');
       ctx.fillStyle = mist;
       ctx.fillRect(0, 0, width, height);
 
-      // Layer 1: Royal Blue Background Silk Ribbon (#1B3154 -> #1988A3)
+      // Layer 1: Soft Sapphire-Slate Blue Glass Ribbon
       drawSilkBand({
         t: time * 0.8,
         amp1: height * 0.14,
@@ -192,15 +192,15 @@ const LiquidRibbonWave = ({ mouseOffset = { x: 0, y: 0 } }) => {
         baseY: height * 0.52,
         thickness: height * 0.30,
         twistSpeed: 0.7,
-        rimWidth: 1.5,
-        cStart: 'rgba(27, 49, 84, 0.72)',
-        cBright: 'rgba(25, 136, 163, 0.75)',
-        cMid: 'rgba(34, 88, 148, 0.72)',
-        cDeep: 'rgba(23, 45, 86, 0.82)',
-        cEnd: 'rgba(23, 35, 62, 0.78)'
+        rimWidth: 1.6,
+        cStart: `rgba(138, 156, 183, ${(0.32 * intensity).toFixed(2)})`,
+        cBright: `rgba(17, 198, 222, ${(0.30 * intensity).toFixed(2)})`,
+        cMid: `rgba(25, 136, 163, ${(0.28 * intensity).toFixed(2)})`,
+        cDeep: `rgba(27, 49, 84, ${(0.22 * intensity).toFixed(2)})`,
+        cEnd: `rgba(138, 156, 183, ${(0.25 * intensity).toFixed(2)})`
       });
 
-      // Layer 2: Primary Sculptural Electric Cyan Metallic Wave (#1988A3 -> #11C6DE)
+      // Layer 2: Primary Sculptural Electric Cyan & Ocean Teal Glass Wave
       drawSilkBand({
         t: time,
         amp1: height * 0.17,
@@ -212,14 +212,14 @@ const LiquidRibbonWave = ({ mouseOffset = { x: 0, y: 0 } }) => {
         thickness: height * 0.34,
         twistSpeed: 1.0,
         rimWidth: 2.4,
-        cStart: 'rgba(25, 136, 163, 0.86)',
-        cBright: 'rgba(17, 198, 222, 0.88)',
-        cMid: 'rgba(25, 136, 163, 0.84)',
-        cDeep: 'rgba(27, 68, 128, 0.88)',
-        cEnd: 'rgba(23, 35, 62, 0.85)'
+        cStart: `rgba(25, 136, 163, ${(0.42 * intensity).toFixed(2)})`,
+        cBright: `rgba(17, 198, 222, ${(0.48 * intensity).toFixed(2)})`,
+        cMid: `rgba(88, 186, 218, ${(0.38 * intensity).toFixed(2)})`,
+        cDeep: `rgba(25, 136, 163, ${(0.36 * intensity).toFixed(2)})`,
+        cEnd: `rgba(27, 49, 84, ${(0.28 * intensity).toFixed(2)})`
       });
 
-      // Layer 3: Sharp Luminous Ice-Cyan Top Silk Fold
+      // Layer 3: Sharp Luminous Crystalline White-Cyan Silk Fold
       drawSilkBand({
         t: time * 1.15,
         amp1: height * 0.11,
@@ -231,11 +231,11 @@ const LiquidRibbonWave = ({ mouseOffset = { x: 0, y: 0 } }) => {
         thickness: height * 0.16,
         twistSpeed: 1.25,
         rimWidth: 1.8,
-        cStart: 'rgba(17, 198, 222, 0.36)',
-        cBright: 'rgba(233, 234, 247, 0.45)',
-        cMid: 'rgba(17, 198, 222, 0.40)',
-        cDeep: 'rgba(25, 136, 163, 0.30)',
-        cEnd: 'rgba(27, 49, 84, 0.22)'
+        cStart: `rgba(255, 255, 255, ${(0.42 * intensity).toFixed(2)})`,
+        cBright: `rgba(17, 198, 222, ${(0.35 * intensity).toFixed(2)})`,
+        cMid: `rgba(210, 243, 252, ${(0.38 * intensity).toFixed(2)})`,
+        cDeep: `rgba(25, 136, 163, ${(0.24 * intensity).toFixed(2)})`,
+        cEnd: `rgba(255, 255, 255, ${(0.28 * intensity).toFixed(2)})`
       });
 
       animationFrameId = requestAnimationFrame(render);
@@ -253,7 +253,7 @@ const LiquidRibbonWave = ({ mouseOffset = { x: 0, y: 0 } }) => {
       cancelAnimationFrame(animationFrameId);
       ro.disconnect();
     };
-  }, []);
+  }, [intensity]);
 
   return (
     <canvas
