@@ -1,9 +1,10 @@
 import React, { useEffect, useRef } from 'react';
 
 /**
- * Ultra-Smooth Continuous 3D Liquid Metallic Silk Ribbon Canvas
- * Uses continuous multi-layered path fills & radial lighting gradients
- * with zero segment seams for Apple/Spline-grade fluid wave fidelity.
+ * High-FPS 3D Parametric Liquid Metallic Silk Ribbon Canvas
+ * Tuned to SkillPulse-AI's signature blue & electric cyan palette:
+ * Deep Navy (#17233E), Dark Royal Blue (#1B3154), Cyan Teal (#1988A3),
+ * Electric Cyan (#11C6DE), and Ice Blue Highlights (#E9EAF7).
  */
 const LiquidRibbonWave = ({ mouseOffset = { x: 0, y: 0 } }) => {
   const canvasRef = useRef(null);
@@ -40,7 +41,7 @@ const LiquidRibbonWave = ({ mouseOffset = { x: 0, y: 0 } }) => {
     if (canvas.parentElement) ro.observe(canvas.parentElement);
 
     const buildWavePoints = ({ t, amp1, amp2, freq1, freq2, phase, baseY, thickness, twistSpeed }) => {
-      const count = 90;
+      const count = 96;
       const mx = (mouseRef.current?.x || 0) * 26;
       const my = (mouseRef.current?.y || 0) * 16;
 
@@ -85,7 +86,7 @@ const LiquidRibbonWave = ({ mouseOffset = { x: 0, y: 0 } }) => {
       const { top, bot } = buildWavePoints(config);
       const revBot = [...bot].reverse();
 
-      // 1. Continuous Smooth Metallic Ribbon Body (Zero Seams)
+      // 1. Continuous Smooth Metallic Blue-Cyan Silk Body
       ctx.save();
       ctx.beginPath();
       drawSmoothCurve(top, true);
@@ -102,29 +103,29 @@ const LiquidRibbonWave = ({ mouseOffset = { x: 0, y: 0 } }) => {
       ctx.fillStyle = bodyGrad;
       ctx.fill();
 
-      // 2. Clip inside ribbon & paint subtle diagonal brushed-light gleam + depth shadow
+      // 2. Clip inside ribbon & paint luminous ice-cyan gleam + deep navy royal fold shading
       ctx.clip();
 
-      const gleamX = (0.32 + Math.sin(config.t * 0.45 + config.phase) * 0.18) * width;
+      const gleamX = (0.34 + Math.sin(config.t * 0.45 + config.phase) * 0.18) * width;
       const gleamGrad = ctx.createRadialGradient(
         gleamX,
-        config.baseY - config.thickness * 0.15,
+        config.baseY - config.thickness * 0.12,
         width * 0.02,
         gleamX,
         config.baseY,
-        width * 0.48
+        width * 0.5
       );
-      gleamGrad.addColorStop(0, 'rgba(218, 250, 255, 0.48)');
-      gleamGrad.addColorStop(0.35, 'rgba(17, 198, 222, 0.28)');
-      gleamGrad.addColorStop(1, 'rgba(6, 12, 26, 0)');
+      gleamGrad.addColorStop(0, 'rgba(233, 234, 247, 0.44)');
+      gleamGrad.addColorStop(0.35, 'rgba(17, 198, 222, 0.30)');
+      gleamGrad.addColorStop(1, 'rgba(27, 49, 84, 0)');
       ctx.fillStyle = gleamGrad;
       ctx.fillRect(0, 0, width, height);
 
-      // Soft bottom shadow fold for 3D cylindrical volume
+      // Soft Deep-Navy 3D volume shading (No black!)
       const shadowGrad = ctx.createLinearGradient(0, config.baseY - config.thickness, 0, config.baseY + config.thickness * 1.2);
-      shadowGrad.addColorStop(0, 'rgba(255, 255, 255, 0.14)');
-      shadowGrad.addColorStop(0.5, 'rgba(0, 0, 0, 0)');
-      shadowGrad.addColorStop(1, 'rgba(3, 7, 18, 0.85)');
+      shadowGrad.addColorStop(0, 'rgba(233, 234, 247, 0.16)');
+      shadowGrad.addColorStop(0.5, 'rgba(25, 136, 163, 0.05)');
+      shadowGrad.addColorStop(1, 'rgba(23, 35, 62, 0.72)');
       ctx.fillStyle = shadowGrad;
       ctx.fillRect(0, 0, width, height);
 
@@ -135,10 +136,10 @@ const LiquidRibbonWave = ({ mouseOffset = { x: 0, y: 0 } }) => {
       ctx.beginPath();
       drawSmoothCurve(top, true);
       const rimGrad = ctx.createLinearGradient(0, 0, width, 0);
-      rimGrad.addColorStop(0.0, 'rgba(255, 255, 255, 0.72)');
-      rimGrad.addColorStop(0.28, 'rgba(17, 198, 222, 0.92)');
-      rimGrad.addColorStop(0.65, 'rgba(25, 136, 163, 0.45)');
-      rimGrad.addColorStop(1.0, 'rgba(17, 198, 222, 0.2)');
+      rimGrad.addColorStop(0.0, 'rgba(233, 234, 247, 0.75)');
+      rimGrad.addColorStop(0.3, 'rgba(17, 198, 222, 0.92)');
+      rimGrad.addColorStop(0.68, 'rgba(25, 136, 163, 0.55)');
+      rimGrad.addColorStop(1.0, 'rgba(138, 156, 183, 0.35)');
       ctx.strokeStyle = rimGrad;
       ctx.lineWidth = config.rimWidth || 2.2;
       ctx.shadowColor = '#11C6DE';
@@ -146,11 +147,11 @@ const LiquidRibbonWave = ({ mouseOffset = { x: 0, y: 0 } }) => {
       ctx.stroke();
       ctx.restore();
 
-      // 4. Secondary Subtle Specular Bottom Lip
+      // 4. Secondary Soft Ice-Blue Specular Lip
       ctx.save();
       ctx.beginPath();
       drawSmoothCurve(bot, true);
-      ctx.strokeStyle = 'rgba(17, 198, 222, 0.25)';
+      ctx.strokeStyle = 'rgba(17, 198, 222, 0.28)';
       ctx.lineWidth = 1.2;
       ctx.stroke();
       ctx.restore();
@@ -165,22 +166,22 @@ const LiquidRibbonWave = ({ mouseOffset = { x: 0, y: 0 } }) => {
       ctx.clearRect(0, 0, width, height);
       time += 0.01;
 
-      // Ambient Cyan-Blue Mist Behind Ribbons
+      // Ambient Cyan-Blue Glow Mist (Project Signature Colors)
       const mist = ctx.createRadialGradient(
         width * 0.45,
         height * 0.55,
         10,
         width * 0.45,
         height * 0.55,
-        width * 0.6
+        width * 0.65
       );
-      mist.addColorStop(0, 'rgba(17, 198, 222, 0.16)');
-      mist.addColorStop(0.5, 'rgba(25, 136, 163, 0.09)');
-      mist.addColorStop(1, 'rgba(6, 11, 24, 0)');
+      mist.addColorStop(0, 'rgba(17, 198, 222, 0.22)');
+      mist.addColorStop(0.5, 'rgba(25, 136, 163, 0.14)');
+      mist.addColorStop(1, 'rgba(27, 49, 84, 0)');
       ctx.fillStyle = mist;
       ctx.fillRect(0, 0, width, height);
 
-      // Layer 1: Deep Sweeping Background Ribbon
+      // Layer 1: Royal Blue Background Silk Ribbon (#1B3154 -> #1988A3)
       drawSilkBand({
         t: time * 0.8,
         amp1: height * 0.14,
@@ -192,14 +193,14 @@ const LiquidRibbonWave = ({ mouseOffset = { x: 0, y: 0 } }) => {
         thickness: height * 0.30,
         twistSpeed: 0.7,
         rimWidth: 1.5,
-        cStart: 'rgba(12, 34, 84, 0.75)',
-        cBright: 'rgba(25, 136, 163, 0.65)',
-        cMid: 'rgba(16, 62, 136, 0.72)',
-        cDeep: 'rgba(9, 25, 64, 0.85)',
-        cEnd: 'rgba(6, 14, 36, 0.85)'
+        cStart: 'rgba(27, 49, 84, 0.72)',
+        cBright: 'rgba(25, 136, 163, 0.75)',
+        cMid: 'rgba(34, 88, 148, 0.72)',
+        cDeep: 'rgba(23, 45, 86, 0.82)',
+        cEnd: 'rgba(23, 35, 62, 0.78)'
       });
 
-      // Layer 2: Primary Sculptural Electric Cyan Metallic Wave
+      // Layer 2: Primary Sculptural Electric Cyan Metallic Wave (#1988A3 -> #11C6DE)
       drawSilkBand({
         t: time,
         amp1: height * 0.17,
@@ -210,15 +211,15 @@ const LiquidRibbonWave = ({ mouseOffset = { x: 0, y: 0 } }) => {
         baseY: height * 0.56,
         thickness: height * 0.34,
         twistSpeed: 1.0,
-        rimWidth: 2.5,
-        cStart: 'rgba(22, 112, 168, 0.90)',
-        cBright: 'rgba(17, 198, 222, 0.86)',
-        cMid: 'rgba(25, 136, 163, 0.85)',
-        cDeep: 'rgba(15, 52, 118, 0.92)',
-        cEnd: 'rgba(8, 20, 52, 0.92)'
+        rimWidth: 2.4,
+        cStart: 'rgba(25, 136, 163, 0.86)',
+        cBright: 'rgba(17, 198, 222, 0.88)',
+        cMid: 'rgba(25, 136, 163, 0.84)',
+        cDeep: 'rgba(27, 68, 128, 0.88)',
+        cEnd: 'rgba(23, 35, 62, 0.85)'
       });
 
-      // Layer 3: Sharp Luminous Top Silk Fold
+      // Layer 3: Sharp Luminous Ice-Cyan Top Silk Fold
       drawSilkBand({
         t: time * 1.15,
         amp1: height * 0.11,
@@ -230,11 +231,11 @@ const LiquidRibbonWave = ({ mouseOffset = { x: 0, y: 0 } }) => {
         thickness: height * 0.16,
         twistSpeed: 1.25,
         rimWidth: 1.8,
-        cStart: 'rgba(17, 198, 222, 0.32)',
-        cBright: 'rgba(180, 244, 255, 0.45)',
-        cMid: 'rgba(17, 198, 222, 0.38)',
-        cDeep: 'rgba(25, 136, 163, 0.25)',
-        cEnd: 'rgba(10, 22, 52, 0.20)'
+        cStart: 'rgba(17, 198, 222, 0.36)',
+        cBright: 'rgba(233, 234, 247, 0.45)',
+        cMid: 'rgba(17, 198, 222, 0.40)',
+        cDeep: 'rgba(25, 136, 163, 0.30)',
+        cEnd: 'rgba(27, 49, 84, 0.22)'
       });
 
       animationFrameId = requestAnimationFrame(render);
