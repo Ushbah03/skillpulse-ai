@@ -1,11 +1,45 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useState, useRef } from 'react';
+import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { Link, useParams } from 'react-router-dom';
-import { Building2, ShieldCheck, Cpu, Zap, ArrowRight, Activity, Sparkles, CheckCircle2, BrainCircuit, Lock } from 'lucide-react';
+import { Building2, ShieldCheck, Cpu, Zap, ArrowRight, Activity, Sparkles, CheckCircle2, BrainCircuit, Lock, Layers } from 'lucide-react';
 import dashboardImg from '../assets/images/intro-image.jpg';
 
 const SkillPulseLanding = () => {
   const { tenantId } = useParams();
+
+  // 3D Perspective Tilt Physics using Framer Motion Springs
+  const containerRef = useRef(null);
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+
+  const springConfig = { damping: 25, stiffness: 180, mass: 0.6 };
+  const smoothMouseX = useSpring(mouseX, springConfig);
+  const smoothMouseY = useSpring(mouseY, springConfig);
+
+  const rotateX = useTransform(smoothMouseY, [-0.5, 0.5], [14, -14]);
+  const rotateY = useTransform(smoothMouseX, [-0.5, 0.5], [-16, 16]);
+
+  const [sheen, setSheen] = useState({ x: 50, y: 50, opacity: 0 });
+
+  const handleMouseMove = (e) => {
+    if (!containerRef.current) return;
+    const rect = containerRef.current.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width - 0.5; // -0.5 to 0.5
+    const y = (e.clientY - rect.top) / rect.height - 0.5; // -0.5 to 0.5
+    mouseX.set(x);
+    mouseY.set(y);
+    setSheen({
+      x: ((x + 0.5) * 100).toFixed(1),
+      y: ((y + 0.5) * 100).toFixed(1),
+      opacity: 1
+    });
+  };
+
+  const handleMouseLeave = () => {
+    mouseX.set(0);
+    mouseY.set(0);
+    setSheen(prev => ({ ...prev, opacity: 0 }));
+  };
 
   const intenseUp = {
     hidden: { opacity: 0, y: 25 },
@@ -32,9 +66,37 @@ const SkillPulseLanding = () => {
         <div className="absolute inset-0 bg-[radial-gradient(rgba(27,49,84,0.10)_1px,transparent_1px)] [background-size:24px_24px] sm:[background-size:28px_28px] opacity-35" />
       </div>
 
-      {/* 1. HERO SECTION WITH EXECUTIVE FROSTED CONTAINER */}
+      {/* 1. HERO SECTION WITH 3D KINETIC PERSPECTIVE STAGE */}
       <section className="pt-2 sm:pt-6 pb-6 sm:pb-14 px-3 sm:px-6 md:px-10 relative z-10">
         <div className="max-w-7xl mx-auto rounded-2xl sm:rounded-3xl md:rounded-[3rem] py-6 sm:py-12 md:py-18 px-3.5 sm:px-8 md:px-14 overflow-hidden glass-hero-dark text-white relative">
+          
+          {/* Subtle 3D Geometric Atmospheric Particles */}
+          <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
+            <motion.div 
+              animate={{ 
+                y: [0, -18, 0],
+                rotate: [0, 90, 180, 270, 360],
+                opacity: [0.35, 0.65, 0.35]
+              }}
+              transition={{ duration: 18, repeat: Infinity, ease: "linear" }}
+              className="absolute top-8 right-[18%] w-16 h-16 border border-[#11C6DE]/30 rounded-2xl rotate-45 backdrop-blur-3xs"
+            />
+            <motion.div 
+              animate={{ 
+                y: [0, 15, 0],
+                rotate: [360, 270, 180, 90, 0],
+                opacity: [0.25, 0.5, 0.25]
+              }}
+              transition={{ duration: 14, repeat: Infinity, ease: "linear" }}
+              className="absolute bottom-12 left-[12%] w-12 h-12 border border-[#1988A3]/30 rounded-full"
+            />
+            <motion.div 
+              animate={{ scale: [1, 1.25, 1], opacity: [0.2, 0.45, 0.2] }}
+              transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
+              className="absolute -top-10 right-1/3 w-64 h-64 bg-[#11C6DE]/15 blur-3xl rounded-full"
+            />
+          </div>
+
           <div className="grid lg:grid-cols-2 items-center gap-6 sm:gap-10 md:gap-12 relative z-10">
             <motion.div 
               initial="hidden"
@@ -42,7 +104,7 @@ const SkillPulseLanding = () => {
               variants={staggerContainer}
               className="max-w-2xl text-left"
             >
-              {/* Context-Aware Badge */}
+              {/* Context-Aware Badge with Hologram AI Status */}
               <motion.div 
                 variants={intenseUp}
                 className="inline-flex items-center gap-2 bg-white/10 border border-white/20 px-2.5 py-1 sm:px-3.5 sm:py-1.5 rounded-full mb-3 sm:mb-5 backdrop-blur-md shadow-sm"
@@ -50,6 +112,9 @@ const SkillPulseLanding = () => {
                 <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-[#11C6DE] rounded-full animate-ping"></span>
                 <span className="text-[#E9EAF7] text-[9px] sm:text-[11px] font-bold uppercase tracking-wider font-mono">
                   {tenantId ? `${tenantId} Enterprise Workspace` : "SkillPulse-AI Multi-Tenant Platform"}
+                </span>
+                <span className="text-[#11C6DE] text-[9px] sm:text-[10px] font-mono font-medium pl-1 hidden sm:inline">
+                  • 3D Neural Engine
                 </span>
               </motion.div>
 
@@ -74,9 +139,9 @@ const SkillPulseLanding = () => {
               <motion.div variants={intenseUp} className="flex flex-row items-center justify-start gap-2 sm:gap-3.5 w-full">
                 <Link 
                   to="/signup" 
-                  className="bg-white text-[#17233E] hover:bg-[#E9EAF7] px-4 sm:px-8 py-2.5 sm:py-3.5 rounded-full font-bold text-xs sm:text-sm transition-all shadow-md shadow-[#17233E]/30 inline-flex items-center justify-center gap-1.5 text-center shrink-0 cursor-pointer"
+                  className="bg-white text-[#17233E] hover:bg-[#E9EAF7] hover:shadow-[0_12px_28px_-6px_rgba(17,198,222,0.45)] px-4 sm:px-8 py-2.5 sm:py-3.5 rounded-full font-bold text-xs sm:text-sm transition-all shadow-md shadow-[#17233E]/30 inline-flex items-center justify-center gap-1.5 text-center shrink-0 cursor-pointer group"
                 >
-                  Get Started <ArrowRight className="w-3.5 h-3.5 text-[#1988A3]" />
+                  Get Started <ArrowRight className="w-3.5 h-3.5 text-[#1988A3] group-hover:translate-x-1 transition-transform" />
                 </Link>
                 <Link 
                   to="/contact" 
@@ -87,38 +152,132 @@ const SkillPulseLanding = () => {
               </motion.div>
             </motion.div>
             
-            {/* Dashboard Preview with Live Floating Glass Micro-Widgets */}
-            <div className="relative group mt-2 lg:mt-0">
-               <div className="absolute -inset-3 sm:-inset-6 bg-[#1988A3]/25 blur-[50px] sm:blur-[80px] rounded-full opacity-60 pointer-events-none"></div>
-               <div className="relative bg-white/10 backdrop-blur-2xl border border-white/25 rounded-xl sm:rounded-[2rem] p-1.5 sm:p-3.5 shadow-xl sm:shadow-[0_25px_60px_-15px_rgba(23,35,62,0.6)]">
-                  <img 
-                    src={dashboardImg} 
-                    alt="SkillPulse Dashboard Preview" 
-                    className="rounded-lg sm:rounded-[1.2rem] w-full opacity-95 shadow-inner" 
+            {/* 3D INTERACTIVE HERO STAGE WITH GYROSCOPIC AI CORE & PERSPECTIVE TILT */}
+            <div 
+              ref={containerRef}
+              onMouseMove={handleMouseMove}
+              onMouseLeave={handleMouseLeave}
+              className="relative mt-2 lg:mt-0 [perspective:1400px] select-none"
+            >
+              <motion.div
+                style={{
+                  rotateX,
+                  rotateY,
+                  transformStyle: 'preserve-3d'
+                }}
+                transition={{ type: 'spring', damping: 25, stiffness: 180 }}
+                className="relative rounded-xl sm:rounded-[2.2rem] transition-shadow duration-300 group"
+              >
+                {/* 3D Kinetic Gyroscopic Hologram AI Orbit (Floating Top-Center) */}
+                <div 
+                  className="absolute -top-7 sm:-top-10 left-1/2 -translate-x-1/2 z-40 pointer-events-none"
+                  style={{ transform: 'translateZ(65px)' }}
+                >
+                  <div className="relative flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20">
+                    {/* Outer Gyroscopic Ring */}
+                    <div 
+                      className="absolute inset-0 rounded-full border border-[#11C6DE]/50 animate-spin"
+                      style={{ 
+                        animationDuration: '10s',
+                        transform: 'rotateX(68deg) rotateY(15deg)'
+                      }}
+                    />
+                    {/* Middle Counter-Rotating Ring */}
+                    <div 
+                      className="absolute inset-1.5 rounded-full border border-dashed border-white/60 animate-spin"
+                      style={{ 
+                        animationDuration: '6s',
+                        animationDirection: 'reverse',
+                        transform: 'rotateX(55deg) rotateY(-25deg)'
+                      }}
+                    />
+                    {/* Inner Glowing AI Nucleus */}
+                    <div className="relative w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-tr from-[#1988A3] to-[#11C6DE] p-0.5 shadow-[0_0_25px_rgba(17,198,222,0.7)] flex items-center justify-center">
+                      <div className="w-full h-full rounded-full bg-[#17233E]/90 backdrop-blur-md flex items-center justify-center">
+                        <BrainCircuit className="w-4 h-4 sm:w-5 sm:h-5 text-[#11C6DE] animate-pulse" />
+                      </div>
+                    </div>
+                    {/* Orbiting Satellite Particle */}
+                    <div 
+                      className="absolute w-2 h-2 rounded-full bg-[#11C6DE] shadow-[0_0_8px_#11C6DE] animate-spin"
+                      style={{ 
+                        animationDuration: '3.5s',
+                        transformOrigin: '40px 40px' 
+                      }}
+                    />
+                  </div>
+                </div>
+
+                {/* Glowing Ambient Aura Behind Stage */}
+                <div className="absolute -inset-4 sm:-inset-8 bg-gradient-to-tr from-[#1988A3]/35 via-[#11C6DE]/25 to-[#17233E]/20 blur-[50px] sm:blur-[75px] rounded-full opacity-70 pointer-events-none" />
+
+                {/* Main 3D Card Vessel with Specular Frosted Sheen */}
+                <div 
+                  className="relative bg-white/12 backdrop-blur-2xl border border-white/30 rounded-xl sm:rounded-[2.2rem] p-1.5 sm:p-3.5 shadow-2xl sm:shadow-[0_30px_70px_-15px_rgba(23,35,62,0.7)] overflow-hidden"
+                  style={{ transformStyle: 'preserve-3d' }}
+                >
+                  {/* Dynamic Specular Light Cursor-Follower (Physical Glass Reflection) */}
+                  <div 
+                    className="pointer-events-none absolute inset-0 rounded-xl sm:rounded-[2.2rem] transition-opacity duration-300 z-30"
+                    style={{
+                      background: `radial-gradient(circle 380px at ${sheen.x}% ${sheen.y}%, rgba(17, 198, 222, 0.28), rgba(255,255,255,0.08) 35%, transparent 70%)`,
+                      opacity: sheen.opacity
+                    }}
                   />
 
-                  {/* Desktop Floating Micro-Widgets (Hidden on Mobile) */}
-                  <div className="hidden sm:flex absolute -top-3 sm:-top-5 right-2 sm:-right-4 bg-white/95 border border-white backdrop-blur-xl px-3.5 py-2 rounded-2xl shadow-xl items-center gap-2.5 text-[#17233E]">
-                    <div className="p-1.5 rounded-xl bg-[#1988A3]/10 text-[#1988A3]">
-                      <Zap className="w-3.5 h-3.5" />
+                  {/* Dashboard Image Canvas (Base 3D Layer) */}
+                  <div style={{ transform: 'translateZ(0px)' }} className="relative z-10 overflow-hidden rounded-lg sm:rounded-[1.4rem]">
+                    <img 
+                      src={dashboardImg} 
+                      alt="SkillPulse Dashboard Preview" 
+                      className="rounded-lg sm:rounded-[1.4rem] w-full opacity-95 shadow-inner transition-transform duration-500 group-hover:scale-[1.01]" 
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#17233E]/40 via-transparent to-transparent pointer-events-none" />
+                  </div>
+
+                  {/* Floating 3D Telemetry Micro-Widget: Top-Right (Accuracy Model) */}
+                  <div 
+                    className="hidden sm:flex absolute -top-4 right-3 bg-white/95 border border-white/80 backdrop-blur-2xl px-4 py-2.5 rounded-2xl shadow-[0_15px_35px_-5px_rgba(23,35,62,0.35)] items-center gap-3 text-[#17233E] z-40 transition-all hover:scale-105"
+                    style={{ transform: 'translateZ(50px)' }}
+                  >
+                    <div className="p-2 rounded-xl bg-[#1988A3]/10 text-[#1988A3] shadow-inner">
+                      <Zap className="w-4 h-4 text-[#1988A3]" />
                     </div>
                     <div className="text-left">
-                      <div className="text-[9px] text-[#5A6D89] uppercase font-mono font-bold">Accuracy Model</div>
-                      <div className="text-[11px] font-extrabold text-[#1988A3]">98.4% Precision</div>
+                      <div className="text-[9px] text-[#5A6D89] uppercase font-mono font-bold tracking-wider">Accuracy Model</div>
+                      <div className="text-xs font-black text-[#1988A3] flex items-center gap-1.5">
+                        98.4% Precision
+                        <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
+                      </div>
                     </div>
                   </div>
 
-                  <div className="hidden sm:flex absolute -bottom-3 sm:-bottom-5 left-2 sm:-left-4 bg-white/95 border border-white backdrop-blur-xl px-3.5 py-2 rounded-2xl shadow-xl items-center gap-2.5 text-[#17233E]">
-                    <div className="p-1.5 rounded-xl bg-[#17233E]/10 text-[#17233E]">
-                      <Building2 className="w-3.5 h-3.5 text-[#1988A3]" />
+                  {/* Floating 3D Telemetry Micro-Widget: Bottom-Left (PostgreSQL Multi-Tenant) */}
+                  <div 
+                    className="hidden sm:flex absolute -bottom-4 left-3 bg-white/95 border border-white/80 backdrop-blur-2xl px-4 py-2.5 rounded-2xl shadow-[0_15px_35px_-5px_rgba(23,35,62,0.35)] items-center gap-3 text-[#17233E] z-40 transition-all hover:scale-105"
+                    style={{ transform: 'translateZ(55px)' }}
+                  >
+                    <div className="p-2 rounded-xl bg-[#17233E]/10 text-[#17233E] shadow-inner">
+                      <Building2 className="w-4 h-4 text-[#1988A3]" />
                     </div>
                     <div className="text-left">
-                      <div className="text-[9px] text-[#5A6D89] uppercase font-mono font-bold">PostgreSQL Multi-Tenant</div>
-                      <div className="text-[11px] font-extrabold text-[#17233E]">Live Partition Active</div>
+                      <div className="text-[9px] text-[#5A6D89] uppercase font-mono font-bold tracking-wider">PostgreSQL Multi-Tenant</div>
+                      <div className="text-xs font-black text-[#17233E]">Live Partition Active</div>
                     </div>
                   </div>
 
-                  {/* Compact Mobile Mini-Status Bar (Sleek, Not Oversized) */}
+                  {/* Floating 3D Micro-Chip: Center-Right Orbital Index Badge */}
+                  <span 
+                    className="hidden md:flex absolute top-1/2 -right-6 -translate-y-1/2 bg-[#17233E]/90 border border-[#11C6DE]/40 backdrop-blur-xl px-3 py-1.5 rounded-full shadow-xl items-center gap-2 text-white z-40"
+                    style={{ transform: 'translateZ(60px)' }}
+                  >
+                    <Activity className="w-3.5 h-3.5 text-[#11C6DE] animate-pulse" />
+                    <span className="text-[10px] font-mono font-bold text-[#E9EAF7]">
+                      RLS Isolated • +34% Velocity
+                    </span>
+                  </span>
+
+                  {/* Compact Mobile Mini-Status Bar */}
                   <div className="sm:hidden flex items-center justify-between gap-2 mt-2 px-1">
                     <div className="flex items-center gap-1.5 bg-white/10 backdrop-blur-md px-2 py-1 rounded-md border border-white/15 text-[9px] font-medium text-white">
                       <Zap className="w-2.5 h-2.5 text-[#11C6DE]" />
@@ -130,13 +289,14 @@ const SkillPulseLanding = () => {
                     </div>
                   </div>
 
-               </div>
+                </div>
+              </motion.div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* 2. FEATURES SECTION WITH FROSTED GLASS CARDS */}
+      {/* 2. FEATURES SECTION WITH FROSTED GLASS CARDS & 3D HOVER DEPTH */}
       <section className="py-6 sm:py-14 md:py-20 px-3.5 sm:px-6 md:px-14 text-center relative z-10">
         <div className="max-w-3xl mx-auto mb-5 sm:mb-10">
           <span className="px-2.5 py-0.5 rounded-full bg-[#1988A3]/10 border border-[#1988A3]/25 text-[#1988A3] text-[9px] sm:text-xs font-mono font-bold uppercase tracking-wider inline-block mb-1.5 sm:mb-3">
@@ -170,12 +330,14 @@ const SkillPulseLanding = () => {
               tag: "Data Partition" 
             }
           ].map((item, i) => (
-            <div 
+            <motion.div 
               key={i} 
-              className="p-3.5 sm:p-6 md:p-8 rounded-xl sm:rounded-2xl md:rounded-3xl glass-panel transition-all duration-300 group cursor-pointer relative overflow-hidden hover:border-[#1988A3]/50 shadow-xs"
+              whileHover={{ y: -6, scale: 1.015 }}
+              transition={{ duration: 0.25, ease: "easeOut" }}
+              className="p-3.5 sm:p-6 md:p-8 rounded-xl sm:rounded-2xl md:rounded-3xl glass-panel transition-all duration-300 group cursor-pointer relative overflow-hidden hover:border-[#1988A3]/60 hover:shadow-[0_20px_45px_-12px_rgba(25,136,163,0.25)] shadow-xs"
             >
               <div className="flex items-center justify-between mb-2.5 sm:mb-4">
-                <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-2xl border flex items-center justify-center ${item.color} shadow-xs group-hover:scale-105 transition-transform`}>
+                <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-2xl border flex items-center justify-center ${item.color} shadow-xs group-hover:scale-110 transition-transform`}>
                   <item.icon className="w-4 h-4 sm:w-5 sm:h-5" />
                 </div>
                 <span className="text-[8px] sm:text-[10px] font-mono font-bold text-[#5A6D89] bg-[#E9EAF7] px-2 py-0.5 sm:px-3 sm:py-1 rounded-full border border-[#8A9CB7]/30 shadow-2xs">
@@ -184,7 +346,7 @@ const SkillPulseLanding = () => {
               </div>
               <h3 className="font-bold sm:font-extrabold text-sm sm:text-lg md:text-xl mb-1 sm:mb-1.5 text-[#17233E] group-hover:text-[#1988A3] transition-colors">{item.title}</h3>
               <p className="text-[#5A6D89] text-[11px] sm:text-xs leading-relaxed font-normal">{item.desc}</p>
-            </div>
+            </motion.div>
           ))}
         </div>
       </section>
@@ -207,7 +369,7 @@ const SkillPulseLanding = () => {
               { num: "03", t: "Recommend Learning", d: "Targeted course programs." },
               { num: "04", t: "Improve Readiness", d: "Live telemetry index tracking." }
             ].map((step, i) => (
-              <div key={i} className="glass-panel p-3 sm:p-5 rounded-xl sm:rounded-2xl flex flex-col items-center text-center group transition-all duration-300">
+              <div key={i} className="glass-panel p-3 sm:p-5 rounded-xl sm:rounded-2xl flex flex-col items-center text-center group transition-all duration-300 hover:-translate-y-1">
                 <div className="w-8 h-8 sm:w-11 sm:h-11 bg-[#17233E] text-white rounded-full flex items-center justify-center text-xs sm:text-sm font-extrabold mb-2 sm:mb-3 shadow-sm group-hover:bg-[#1988A3] transition-all">
                   {step.num}
                 </div>
@@ -249,7 +411,7 @@ const SkillPulseLanding = () => {
           ].map((item, i) => (
             <div 
               key={i} 
-              className="p-4 sm:p-6 md:p-7 glass-panel rounded-xl sm:rounded-2xl md:rounded-[2rem] transition-all duration-300 group flex flex-col justify-between"
+              className="p-4 sm:p-6 md:p-7 glass-panel rounded-xl sm:rounded-2xl md:rounded-[2rem] transition-all duration-300 group flex flex-col justify-between hover:-translate-y-1.5"
             >
               <div>
                 <div className="w-8 h-8 sm:w-11 sm:h-11 bg-[#17233E]/10 border border-[#17233E]/20 rounded-lg sm:rounded-xl mb-3 sm:mb-5 flex items-center justify-center group-hover:bg-[#1988A3] transition-colors">
