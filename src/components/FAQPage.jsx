@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useParams, useSearchParams } from 'react-router-dom';
 import { Search, ChevronDown, ChevronUp, Mail, Sparkles, HelpCircle, ArrowRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import VisitorBackdrop from './VisitorBackdrop';
 
 const FAQPage = () => {
   const { tenantId } = useParams();
@@ -102,15 +103,8 @@ const FAQPage = () => {
   });
 
   return (
-    <div className="bg-[#E9EAF7] font-sans text-[#17233E] overflow-x-hidden selection:bg-[#1988A3] selection:text-white relative min-h-screen">
-      {/* Ambient Gradient Depth */}
-      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-        <div className="absolute top-10 left-1/4 w-[600px] h-[600px] bg-[#1988A3]/18 blur-[160px] rounded-full" />
-        <div className="absolute top-1/3 right-10 w-[550px] h-[550px] bg-[#8A9CB7]/35 blur-[160px] rounded-full" />
-        <div className="absolute top-2/3 left-10 w-[650px] h-[650px] bg-[#1988A3]/15 blur-[170px] rounded-full" />
-        <div className="absolute bottom-10 right-1/4 w-[600px] h-[600px] bg-[#1B3154]/12 blur-[170px] rounded-full" />
-        <div className="absolute inset-0 bg-[radial-gradient(rgba(90,109,137,0.15)_1px,transparent_1px)] [background-size:32px_32px] opacity-30" />
-      </div>
+    <div className="bg-[#E9EAF7] bg-gradient-to-b from-[#E9EAF7] via-[#E2EEFA] to-[#DCEAF8] font-sans text-[#17233E] overflow-x-hidden selection:bg-[#1988A3] selection:text-white relative min-h-screen">
+      <VisitorBackdrop />
 
       {/* 1. HERO HEADER */}
       <section className="relative pt-16 sm:pt-20 pb-16 px-6 text-center overflow-hidden z-10">
