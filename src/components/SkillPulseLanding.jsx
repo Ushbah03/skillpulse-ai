@@ -98,24 +98,23 @@ const SkillPulseLanding = () => {
         <div className="absolute inset-0 bg-[radial-gradient(rgba(27,49,84,0.10)_1px,transparent_1px)] [background-size:24px_24px] sm:[background-size:28px_28px] opacity-35" />
       </div>
 
-      {/* 1. HERO SECTION - CENTERED OBSIDIAN-NAVY STAGE WITH 3D LIQUID WAVE & SHOWCASE */}
-      <section className="pt-2 sm:pt-5 pb-6 sm:pb-14 px-2.5 sm:px-6 md:px-10 relative z-10">
-        <div
-          onMouseMove={handleHeroMouseMove}
-          className="max-w-7xl mx-auto rounded-2xl sm:rounded-3xl md:rounded-[2.8rem] bg-gradient-to-b from-[#060B18] via-[#0A1326] to-[#081022] border border-white/15 shadow-[0_35px_90px_-20px_rgba(23,35,62,0.55)] text-white relative overflow-hidden"
-        >
-          {/* Top Subtle Ambient Radial Backlight */}
-          <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-[550px] sm:w-[780px] h-[320px] bg-[radial-gradient(ellipse_at_center,rgba(17,198,222,0.14)_0%,rgba(25,136,163,0.06)_45%,transparent_75%)] pointer-events-none" />
+      {/* 1. HERO SECTION - FULL-BLEED OBSIDIAN-NAVY BACKGROUND WITH 3D LIQUID WAVE */}
+      <section
+        onMouseMove={handleHeroMouseMove}
+        className="relative z-10 w-full bg-gradient-to-b from-[#060B18] via-[#0A1326] to-[#081022] border-b border-[#1988A3]/35 shadow-[0_25px_70px_-15px_rgba(23,35,62,0.45)] text-white overflow-hidden"
+      >
+        {/* Top Subtle Ambient Radial Backlight */}
+        <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-[550px] sm:w-[900px] h-[340px] bg-[radial-gradient(ellipse_at_center,rgba(17,198,222,0.14)_0%,rgba(25,136,163,0.06)_45%,transparent_75%)] pointer-events-none" />
 
-          {/* Sweeping Animated 3D Metallic Liquid Silk Ribbon Canvas */}
-          <div className="absolute inset-x-0 bottom-8 sm:bottom-10 h-[310px] sm:h-[380px] md:h-[420px] pointer-events-none z-0 opacity-95">
-            <LiquidRibbonWave mouseOffset={waveMouse} />
-            {/* Smooth vertical vignette blending top edge into obsidian background */}
-            <div className="absolute inset-0 bg-gradient-to-b from-[#070E1F] via-transparent to-[#070E1F]/90 pointer-events-none" />
-          </div>
+        {/* Full-Width Sweeping Animated 3D Metallic Liquid Silk Ribbon Canvas */}
+        <div className="absolute inset-x-0 bottom-8 sm:bottom-10 h-[320px] sm:h-[400px] md:h-[440px] pointer-events-none z-0 opacity-95">
+          <LiquidRibbonWave mouseOffset={waveMouse} />
+          {/* Smooth vertical vignette blending top edge into obsidian background */}
+          <div className="absolute inset-0 bg-gradient-to-b from-[#070E1F] via-transparent to-[#070E1F]/90 pointer-events-none" />
+        </div>
 
-          {/* TOP CENTERED HERO TYPOGRAPHY & ACTIONS */}
-          <div className="relative z-10 pt-6 sm:pt-9 md:pt-11 px-4 sm:px-8 md:px-14 text-center">
+        {/* TOP CENTERED HERO TYPOGRAPHY & ACTIONS */}
+        <div className="max-w-7xl mx-auto relative z-10 pt-8 sm:pt-11 md:pt-14 px-4 sm:px-8 md:px-14 text-center">
             <motion.div
               initial="hidden"
               animate="visible"
@@ -291,33 +290,34 @@ const SkillPulseLanding = () => {
             </div>
           </div>
 
-          {/* BOTTOM ENTERPRISE MARQUEE STRIP (Modeled after Reference Video Bottom Bar) */}
-          <div className="relative z-10 border-t border-white/10 bg-[#050A14]/75 backdrop-blur-md px-4 sm:px-8 py-3.5 flex flex-col sm:flex-row items-center gap-3 sm:gap-6">
-            <span className="text-[10px] sm:text-xs text-[#8A9CB7] font-medium shrink-0 leading-tight text-center sm:text-left">
-              Relied on for enterprise <br className="hidden sm:inline" /> workforce intelligence
-            </span>
+          {/* BOTTOM ENTERPRISE MARQUEE STRIP (Full-Width Reference Bottom Bar) */}
+          <div className="relative z-10 border-t border-white/10 bg-[#050A14]/80 backdrop-blur-md">
+            <div className="max-w-7xl mx-auto px-4 sm:px-8 md:px-14 py-3.5 flex flex-col sm:flex-row items-center gap-3 sm:gap-6">
+              <span className="text-[10px] sm:text-xs text-[#8A9CB7] font-medium shrink-0 leading-tight text-center sm:text-left">
+                Relied on for enterprise <br className="hidden sm:inline" /> workforce intelligence
+              </span>
 
-            <div className="flex-1 overflow-hidden w-full [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
-              <motion.div
-                animate={{ x: ['0%', '-50%'] }}
-                transition={{ duration: 22, repeat: Infinity, ease: 'linear' }}
-                className="flex items-center gap-8 sm:gap-12 w-max"
-              >
-                {[...marqueeItems, ...marqueeItems].map((m, idx) => (
-                  <div
-                    key={idx}
-                    className="flex items-center gap-2 text-[#B8C7DF] hover:text-[#11C6DE] transition-colors text-xs sm:text-sm font-semibold whitespace-nowrap"
-                  >
-                    <span className="w-5 h-5 rounded-full bg-white/10 border border-white/15 flex items-center justify-center">
-                      <m.icon className="w-3 h-3 text-[#11C6DE]" />
-                    </span>
-                    <span>{m.label}</span>
-                  </div>
-                ))}
-              </motion.div>
+              <div className="flex-1 overflow-hidden w-full [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
+                <motion.div
+                  animate={{ x: ['0%', '-50%'] }}
+                  transition={{ duration: 22, repeat: Infinity, ease: 'linear' }}
+                  className="flex items-center gap-8 sm:gap-12 w-max"
+                >
+                  {[...marqueeItems, ...marqueeItems].map((m, idx) => (
+                    <div
+                      key={idx}
+                      className="flex items-center gap-2 text-[#B8C7DF] hover:text-[#11C6DE] transition-colors text-xs sm:text-sm font-semibold whitespace-nowrap"
+                    >
+                      <span className="w-5 h-5 rounded-full bg-white/10 border border-white/15 flex items-center justify-center">
+                        <m.icon className="w-3 h-3 text-[#11C6DE]" />
+                      </span>
+                      <span>{m.label}</span>
+                    </div>
+                  ))}
+                </motion.div>
+              </div>
             </div>
           </div>
-        </div>
       </section>
 
       {/* 2. FEATURES SECTION WITH FROSTED GLASS CARDS */}
