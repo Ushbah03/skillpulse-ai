@@ -74,21 +74,21 @@ const Navbar = () => {
             <Link 
               key={item.label}
               to={item.path} 
-              className={`relative px-4 py-1.5 rounded-full text-xs font-bold transition-colors duration-200 flex items-center gap-2 select-none group cursor-pointer ${
-                isActive ? 'text-[#17233E]' : 'text-[#8A9CB7] hover:text-white'
+              className={`relative px-4 py-1.5 rounded-full text-xs font-bold transition-all duration-300 flex items-center gap-2 select-none group cursor-pointer ${
+                isActive ? 'text-white' : 'text-[#8A9CB7] hover:text-white'
               }`}
             >
-              {/* Sliding Raised Frosted Active Pill Pod */}
+              {/* Translucent Liquid Glass Active Pill Pod */}
               {isActive && (
                 <motion.div
                   layoutId="activeNavPill"
-                  className="absolute inset-0 bg-white rounded-full shadow-[0_2px_12px_rgba(0,0,0,0.2)] -z-0"
+                  className="absolute inset-0 rounded-full bg-gradient-to-b from-white/28 via-white/16 to-white/08 backdrop-blur-xl border border-white/40 shadow-[inset_0_1px_2px_rgba(255,255,255,0.7),0_4px_16px_rgba(17,198,222,0.25),0_2px_8px_rgba(0,0,0,0.35)] -z-0"
                   transition={{ type: "spring", stiffness: 380, damping: 30 }}
                 />
               )}
               
-              <span className={`relative z-10 transition-colors ${
-                isActive ? 'text-[#1988A3]' : 'text-[#8A9CB7] group-hover:text-[#11C6DE]'
+              <span className={`relative z-10 transition-colors duration-200 ${
+                isActive ? 'text-[#11C6DE] drop-shadow-[0_0_8px_rgba(17,198,222,0.6)]' : 'text-[#8A9CB7] group-hover:text-[#11C6DE]'
               }`}>
                 {item.icon}
               </span>
@@ -174,18 +174,18 @@ const Navbar = () => {
                     onClick={() => setIsOpen(false)}
                     className={`flex items-center justify-between px-4 py-2.5 rounded-xl transition-all ${
                       isActive 
-                        ? 'bg-white text-[#17233E] font-bold shadow-md' 
+                        ? 'bg-gradient-to-r from-white/22 via-white/12 to-white/05 backdrop-blur-xl border border-white/30 text-white font-bold shadow-[inset_0_1px_1px_rgba(255,255,255,0.5)]' 
                         : 'text-[#8A9CB7] hover:text-white hover:bg-white/5 font-semibold'
                     }`}
                   >
                     <div className="flex items-center gap-2.5">
-                      <span className={isActive ? 'text-[#1988A3]' : 'text-[#8A9CB7]'}>
+                      <span className={isActive ? 'text-[#11C6DE]' : 'text-[#8A9CB7]'}>
                         {item.icon}
                       </span>
                       <span>{item.label}</span>
                     </div>
                     {isActive && (
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#1988A3]" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#11C6DE] shadow-[0_0_8px_rgba(17,198,222,0.8)]" />
                     )}
                   </Link>
                 );
