@@ -1,8 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useGoogleLogin } from '@react-oauth/google';
 import { authAPI } from '../services/api';
+import VisitorBackdrop from './VisitorBackdrop';
 
 const Icons = {
   Mail: () => <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>,
@@ -141,43 +142,57 @@ const Login = () => {
   });
 
   const intenseUp = {
-    hidden: { opacity: 0, y: 35 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] } }
+    hidden: { opacity: 0, y: 26 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] } }
   };
 
   const staggerContainer = {
     hidden: { opacity: 0 },
-    visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
+    visible: { opacity: 1, transition: { staggerChildren: 0.09 } }
   };
 
+  const readinessPct = Math.round(
+    (([formData.email, formData.password].filter((v) => String(v || '').trim().length > 0).length) / 2) * 100
+  );
+
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 sm:p-6 md:p-10 font-sans text-[#17233E] bg-[#E9EAF7] relative overflow-hidden selection:bg-[#1988A3] selection:text-white">
-      {/* Ambient Gradient Depth - Vibrant glowing mesh lights behind frosted glass */}
-      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-        <div className="absolute -top-20 left-1/4 w-[550px] h-[550px] bg-[#1988A3]/25 blur-[100px] rounded-full" />
-        <div className="absolute top-1/3 -right-20 w-[500px] h-[500px] bg-[#11C6DE]/20 blur-[110px] rounded-full" />
-        <div className="absolute -bottom-20 -left-20 w-[600px] h-[600px] bg-[#1B3154]/20 blur-[110px] rounded-full" />
-        <div className="absolute bottom-10 right-1/4 w-[550px] h-[550px] bg-[#8A9CB7]/35 blur-[100px] rounded-full" />
-        <div className="absolute inset-0 bg-[radial-gradient(rgba(27,49,84,0.10)_1px,transparent_1px)] [background-size:28px_28px] opacity-40" />
-      </div>
+    <div className="min-h-screen flex items-center justify-center p-4 sm:p-6 md:p-10 font-sans text-[#17233E] bg-[#E9EAF7] bg-gradient-to-b from-[#E9EAF7] via-[#E2EEFA] to-[#DCEAF8] relative overflow-hidden selection:bg-[#1988A3] selection:text-white">
+      {/* Unified Light Ice-Blue Ambient Depth & Animated 3D Liquid Silk Wave */}
+      <VisitorBackdrop waveIntensity={0.95} waveOpacityClass="opacity-85" />
 
       <div className="container mx-auto max-w-6xl grid lg:grid-cols-2 gap-10 items-center relative z-10 py-6 sm:py-10">
         
-        {/* LEFT SIDE: Content & Branding */}
+        {/* LEFT SIDE: Content, Live Session Preview & Branding */}
         <motion.div 
           initial="hidden"
           animate="visible"
           variants={staggerContainer}
           className="hidden lg:block space-y-6 text-left"
         >
-          <motion.div variants={intenseUp} className="flex items-center gap-2.5 group cursor-pointer">
-            <div className="w-10 h-10 bg-[#17233E] rounded-xl flex items-center justify-center shadow-lg shadow-[#17233E]/30 group-hover:scale-105 transition-all duration-300 border border-white/40">
-              <svg className="w-5 h-5 text-[#11C6DE]" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5">
-                <path d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-              </svg>
-            </div>
-            <span className="text-2xl font-extrabold tracking-tight text-[#17233E]">
-              SkillPulse <span className="text-[#1988A3]">-AI</span>
+          <motion.div variants={intenseUp}>
+            <Link to="/" className="inline-flex items-center gap-2.5 group">
+              <motion.div
+                whileHover={{ rotate: 10, scale: 1.08 }}
+                whileTap={{ scale: 0.95 }}
+                className="w-10 h-10 bg-[#17233E] rounded-xl flex items-center justify-center shadow-lg shadow-[#17233E]/30 transition-all duration-300 border border-white/40"
+              >
+                <svg className="w-5 h-5 text-[#11C6DE]" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5">
+                  <path d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                </svg>
+              </motion.div>
+              <span className="text-2xl font-extrabold tracking-tight text-[#17233E]">
+                SkillPulse <span className="text-[#1988A3]">-AI</span>
+              </span>
+            </Link>
+          </motion.div>
+
+          <motion.div
+            variants={intenseUp}
+            className="inline-flex items-center gap-2 bg-white/75 border border-[#1988A3]/25 px-3.5 py-1.5 rounded-full backdrop-blur-xl shadow-xs"
+          >
+            <span className="w-2 h-2 rounded-full bg-[#11C6DE] animate-ping" />
+            <span className="text-[11px] font-mono font-bold text-[#17233E] uppercase tracking-wider">
+              {formData.workspace ? `${formData.workspace}.skillpulse.ai` : 'RLS Session Guard Active'}
             </span>
           </motion.div>
 
@@ -213,20 +228,26 @@ const Login = () => {
             ))}
           </motion.ul>
 
-          {/* Metric Preview Card */}
+          {/* Animated Metric Preview Card */}
           <motion.div 
             variants={intenseUp}
             whileHover={{ y: -4 }}
-            className="p-6 rounded-3xl max-w-sm glass-panel transition-all duration-300"
+            transition={{ type: 'spring', stiffness: 260, damping: 22 }}
+            className="p-6 rounded-3xl max-w-sm glass-panel transition-all duration-300 relative overflow-hidden"
           >
             <div className="flex justify-between items-start mb-6">
               <div>
                 <p className="text-[10px] uppercase tracking-widest text-[#5A6D89] font-mono font-bold mb-1">Team Readiness</p>
                 <h4 className="text-2xl font-extrabold text-[#17233E]">84% Optimal</h4>
               </div>
-              <span className="bg-[#1988A3]/10 text-[#1988A3] border border-[#1988A3]/25 text-[10px] font-bold px-2.5 py-1 rounded-full font-mono">
+              <motion.span
+                animate={{ scale: [1, 1.05, 1] }}
+                transition={{ duration: 2.6, repeat: Infinity, ease: 'easeInOut' }}
+                className="bg-[#1988A3]/10 text-[#1988A3] border border-[#1988A3]/25 text-[10px] font-bold px-2.5 py-1 rounded-full font-mono flex items-center gap-1.5"
+              >
+                <span className="w-1.5 h-1.5 rounded-full bg-[#11C6DE] animate-pulse" />
                 +12% Live
-              </span>
+              </motion.span>
             </div>
             <div className="flex items-end gap-2.5 h-20">
               {[40, 60, 90, 50, 100].map((h, i) => (
@@ -234,9 +255,10 @@ const Login = () => {
                   key={i} 
                   initial={{ height: 0 }}
                   animate={{ height: `${h}%` }}
-                  transition={{ type: "spring", stiffness: 80, damping: 12, delay: 0.3 + (i * 0.1) }}
-                  className={`flex-1 rounded-t-lg transition-all duration-500 ${
-                    i === 4 ? 'bg-[#1988A3] shadow-md shadow-[#1988A3]/40' : 'bg-[#17233E]/20'
+                  whileHover={{ scaleY: 1.08 }}
+                  transition={{ type: "spring", stiffness: 90, damping: 14, delay: 0.25 + (i * 0.09) }}
+                  className={`flex-1 rounded-t-lg origin-bottom transition-colors duration-300 ${
+                    i === 4 ? 'bg-gradient-to-t from-[#1988A3] to-[#11C6DE] shadow-md shadow-[#1988A3]/40' : 'bg-[#17233E]/20 hover:bg-[#1988A3]/45'
                   }`} 
                 />
               ))}
@@ -244,42 +266,79 @@ const Login = () => {
           </motion.div>
         </motion.div>
 
-        {/* RIGHT SIDE: Login Form Card */}
+        {/* RIGHT SIDE: Animated Frosted Login Form Card */}
         <motion.div 
-          initial={{ opacity: 0, y: 50, scale: 0.97 }}
+          initial={{ opacity: 0, y: 36, scale: 0.97 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ duration: 0.8, cubicBezier: [0.16, 1, 0.3, 1] }}
-          className="bg-white/70 backdrop-blur-3xl border border-white/90 rounded-3xl md:rounded-[2.5rem] p-5 sm:p-10 md:p-12 shadow-[0_30px_70px_rgba(23,35,62,0.12),inset_0_1.5px_2px_rgba(255,255,255,1)] w-full max-w-lg mx-auto transition-all duration-300"
+          transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
+          className="bg-white/75 backdrop-blur-3xl border border-white/95 rounded-3xl md:rounded-[2.5rem] p-5 sm:p-10 md:p-12 shadow-[0_30px_70px_rgba(23,35,62,0.12),inset_0_1.5px_2px_rgba(255,255,255,1)] w-full max-w-lg mx-auto relative overflow-hidden"
         >
+          {/* Animated Top Credential Readiness Bar */}
+          <div className="absolute top-0 left-0 right-0 h-1 bg-[#E9EAF7]/80">
+            <motion.div
+              className="h-full bg-gradient-to-r from-[#1988A3] via-[#11C6DE] to-[#17233E]"
+              initial={{ width: 0 }}
+              animate={{ width: `${readinessPct}%` }}
+              transition={{ type: 'spring', stiffness: 180, damping: 24 }}
+            />
+          </div>
+
           {/* Mobile-Only Brand Header */}
           <Link to="/" className="lg:hidden flex items-center justify-center gap-2.5 mb-6 group">
-            <div className="w-9 h-9 bg-[#17233E] rounded-xl flex items-center justify-center shadow-md border border-white/40 group-hover:scale-105 transition-all">
+            <motion.div
+              whileHover={{ rotate: 10, scale: 1.05 }}
+              className="w-9 h-9 bg-[#17233E] rounded-xl flex items-center justify-center shadow-md border border-white/40"
+            >
               <svg className="w-5 h-5 text-[#11C6DE]" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
               </svg>
-            </div>
+            </motion.div>
             <span className="text-xl font-extrabold tracking-tight text-[#17233E]">
               SkillPulse <span className="text-[#1988A3]">-AI</span>
             </span>
           </Link>
 
-          <div className="mb-6 sm:mb-8 text-left">
-            <h2 className="text-2xl sm:text-3xl font-extrabold mb-1.5 text-[#17233E] tracking-tight">Sign in to your account</h2>
-            <p className="text-[#5A6D89] text-xs sm:text-sm font-medium">Enter your credentials to continue</p>
+          <div className="mb-6 sm:mb-8 text-left flex items-start justify-between gap-3">
+            <div>
+              <h2 className="text-2xl sm:text-3xl font-extrabold mb-1.5 text-[#17233E] tracking-tight">Sign in to your account</h2>
+              <p className="text-[#5A6D89] text-xs sm:text-sm font-medium">Enter your credentials to continue</p>
+            </div>
+            <motion.span
+              key={readinessPct}
+              initial={{ scale: 0.85 }}
+              animate={{ scale: 1 }}
+              className="shrink-0 px-2.5 py-1 rounded-full bg-[#1988A3]/10 border border-[#1988A3]/25 text-[#1988A3] text-[10px] font-mono font-bold mt-1 flex items-center gap-1"
+            >
+              <Icons.Shield />
+              {readinessPct === 100 ? 'Ready' : 'TLS 1.3'}
+            </motion.span>
           </div>
 
           <form className="space-y-5" onSubmit={handleLogin}>
             
             {/* Workspace / Tenant Domain Input */}
-            <div className="space-y-2 text-left group">
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.45, delay: 0.05 }}
+              className="space-y-2 text-left group"
+            >
               <div className="flex justify-between items-center ml-1">
-                <label className="text-[#5A6D89] text-xs font-bold uppercase tracking-wider group-focus-within:text-[#1988A3] transition-colors">
-                  Workspace / Organization
+                <label className="text-[#5A6D89] text-xs font-bold uppercase tracking-wider group-focus-within:text-[#1988A3] transition-colors flex items-center gap-2">
+                  <span>Workspace / Organization</span>
+                  {formData.workspace && (
+                    <motion.span
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      className="w-1.5 h-1.5 rounded-full bg-[#11C6DE]"
+                    />
+                  )}
                 </label>
                 <span className="text-[10px] text-[#8A9CB7] font-medium">(Optional for global accounts)</span>
               </div>
-              <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#8A9CB7] group-focus-within:text-[#1988A3] transition-colors">
+              <div className="relative rounded-2xl transition-transform duration-200 group-focus-within:-translate-y-0.5">
+                <div className="absolute -inset-[1px] rounded-2xl bg-gradient-to-r from-[#1988A3]/35 via-[#11C6DE]/45 to-[#1988A3]/35 blur-[2px] opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 pointer-events-none" />
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#8A9CB7] group-focus-within:text-[#1988A3] group-focus-within:scale-110 transition-all duration-200 z-10 pointer-events-none">
                   <Icons.Building />
                 </span>
                 <input 
@@ -288,21 +347,35 @@ const Login = () => {
                   value={formData.workspace}
                   onChange={handleChange}
                   placeholder="acme-corp (or leave blank)" 
-                  className="w-full bg-white/60 border border-[#8A9CB7]/30 rounded-2xl py-3.5 pl-12 pr-28 text-sm text-[#17233E] placeholder:text-[#8A9CB7] focus:outline-none focus:ring-2 focus:ring-[#1988A3]/25 focus:border-[#1988A3] transition-all shadow-inner hover:border-[#8A9CB7]/50"
+                  className="relative w-full bg-white/70 focus:bg-white/95 border border-[#8A9CB7]/30 rounded-2xl py-3.5 pl-12 pr-[7.5rem] text-sm text-[#17233E] placeholder:text-[#8A9CB7] focus:outline-none focus:ring-2 focus:ring-[#1988A3]/20 focus:border-[#1988A3] transition-all shadow-inner hover:border-[#8A9CB7]/55"
                 />
-                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-semibold text-[#8A9CB7] pointer-events-none">
+                <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[11px] font-semibold text-[#8A9CB7] pointer-events-none z-10">
                   .skillpulse.ai
                 </span>
+                <span className="pointer-events-none absolute bottom-0 left-4 right-4 h-[2px] rounded-full bg-gradient-to-r from-[#1988A3] to-[#11C6DE] scale-x-0 group-focus-within:scale-x-100 transition-transform duration-300 origin-center" />
               </div>
-            </div>
+            </motion.div>
 
             {/* Email Address */}
-            <div className="space-y-2 text-left group">
-              <label className="text-[#5A6D89] text-xs font-bold uppercase tracking-wider ml-1 group-focus-within:text-[#1988A3] transition-colors">
-                Email Address
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.45, delay: 0.1 }}
+              className="space-y-2 text-left group"
+            >
+              <label className="text-[#5A6D89] text-xs font-bold uppercase tracking-wider ml-1 group-focus-within:text-[#1988A3] transition-colors flex items-center justify-between">
+                <span>Email Address</span>
+                {formData.email && (
+                  <motion.span
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    className="w-1.5 h-1.5 rounded-full bg-[#11C6DE]"
+                  />
+                )}
               </label>
-              <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#8A9CB7] group-focus-within:text-[#1988A3] transition-colors">
+              <div className="relative rounded-2xl transition-transform duration-200 group-focus-within:-translate-y-0.5">
+                <div className="absolute -inset-[1px] rounded-2xl bg-gradient-to-r from-[#1988A3]/35 via-[#11C6DE]/45 to-[#1988A3]/35 blur-[2px] opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 pointer-events-none" />
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#8A9CB7] group-focus-within:text-[#1988A3] group-focus-within:scale-110 transition-all duration-200 z-10 pointer-events-none">
                   <Icons.Mail />
                 </span>
                 <input 
@@ -312,18 +385,32 @@ const Login = () => {
                   onChange={handleChange}
                   required
                   placeholder="name@company.com" 
-                  className="w-full bg-white/60 border border-[#8A9CB7]/30 rounded-2xl py-3.5 pl-12 pr-4 text-sm text-[#17233E] placeholder:text-[#8A9CB7] focus:outline-none focus:ring-2 focus:ring-[#1988A3]/25 focus:border-[#1988A3] transition-all shadow-inner hover:border-[#8A9CB7]/50"
+                  className="relative w-full bg-white/70 focus:bg-white/95 border border-[#8A9CB7]/30 rounded-2xl py-3.5 pl-12 pr-4 text-sm text-[#17233E] placeholder:text-[#8A9CB7] focus:outline-none focus:ring-2 focus:ring-[#1988A3]/20 focus:border-[#1988A3] transition-all shadow-inner hover:border-[#8A9CB7]/55"
                 />
+                <span className="pointer-events-none absolute bottom-0 left-4 right-4 h-[2px] rounded-full bg-gradient-to-r from-[#1988A3] to-[#11C6DE] scale-x-0 group-focus-within:scale-x-100 transition-transform duration-300 origin-center" />
               </div>
-            </div>
+            </motion.div>
 
             {/* Password */}
-            <div className="space-y-2 text-left group">
-              <label className="text-[#5A6D89] text-xs font-bold uppercase tracking-wider ml-1 group-focus-within:text-[#1988A3] transition-colors">
-                Password
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.45, delay: 0.15 }}
+              className="space-y-2 text-left group"
+            >
+              <label className="text-[#5A6D89] text-xs font-bold uppercase tracking-wider ml-1 group-focus-within:text-[#1988A3] transition-colors flex items-center justify-between">
+                <span>Password</span>
+                {formData.password && (
+                  <motion.span
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    className="w-1.5 h-1.5 rounded-full bg-[#11C6DE]"
+                  />
+                )}
               </label>
-              <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#8A9CB7] group-focus-within:text-[#1988A3] transition-colors">
+              <div className="relative rounded-2xl transition-transform duration-200 group-focus-within:-translate-y-0.5">
+                <div className="absolute -inset-[1px] rounded-2xl bg-gradient-to-r from-[#1988A3]/35 via-[#11C6DE]/45 to-[#1988A3]/35 blur-[2px] opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 pointer-events-none" />
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#8A9CB7] group-focus-within:text-[#1988A3] group-focus-within:scale-110 transition-all duration-200 z-10 pointer-events-none">
                   <Icons.Lock />
                 </span>
                 <input 
@@ -333,20 +420,26 @@ const Login = () => {
                   onChange={handleChange}
                   required
                   placeholder="Enter your password" 
-                  className="w-full bg-white/60 border border-[#8A9CB7]/30 rounded-2xl py-3.5 pl-12 pr-12 text-sm text-[#17233E] placeholder:text-[#8A9CB7] focus:outline-none focus:ring-2 focus:ring-[#1988A3]/25 focus:border-[#1988A3] transition-all shadow-inner hover:border-[#8A9CB7]/50"
+                  className="relative w-full bg-white/70 focus:bg-white/95 border border-[#8A9CB7]/30 rounded-2xl py-3.5 pl-12 pr-12 text-sm text-[#17233E] placeholder:text-[#8A9CB7] focus:outline-none focus:ring-2 focus:ring-[#1988A3]/20 focus:border-[#1988A3] transition-all shadow-inner hover:border-[#8A9CB7]/55"
                 />
                 <button 
                   type="button" 
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-[#8A9CB7] hover:text-[#17233E] transition-colors"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-[#8A9CB7] hover:text-[#17233E] transition-colors z-10 cursor-pointer"
                 >
                   {showPassword ? <Icons.EyeOff /> : <Icons.Eye />}
                 </button>
+                <span className="pointer-events-none absolute bottom-0 left-4 right-4 h-[2px] rounded-full bg-gradient-to-r from-[#1988A3] to-[#11C6DE] scale-x-0 group-focus-within:scale-x-100 transition-transform duration-300 origin-center" />
               </div>
-            </div>
+            </motion.div>
 
             {/* Remember Me & Forgot Password */}
-            <div className="flex items-center justify-between text-xs font-semibold pt-1">
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.45, delay: 0.2 }}
+              className="flex items-center justify-between text-xs font-semibold pt-1"
+            >
               <label className="flex items-center gap-2 cursor-pointer text-[#5A6D89] hover:text-[#17233E] transition-colors select-none">
                 <input 
                   type="checkbox" 
@@ -361,24 +454,33 @@ const Login = () => {
               <Link to="/forgot-password" className="text-[#1988A3] hover:text-[#157289] font-bold transition-colors hover:underline">
                 Forgot Password?
               </Link>
-            </div>
+            </motion.div>
 
-            {errorMsg && (
-              <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-xl text-xs flex items-center gap-2">
-                <svg className="w-4 h-4 shrink-0 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                <span>{errorMsg}</span>
-              </div>
-            )}
+            <AnimatePresence>
+              {errorMsg && (
+                <motion.div
+                  initial={{ opacity: 0, y: -8, x: -6 }}
+                  animate={{ opacity: 1, y: 0, x: [0, -6, 6, -4, 4, 0] }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.35 }}
+                  className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-xl text-xs flex items-center gap-2"
+                >
+                  <svg className="w-4 h-4 shrink-0 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                  <span>{errorMsg}</span>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             <motion.button 
-              whileHover={{ scale: isLoading ? 1 : 1.01, y: isLoading ? 0 : -1 }}
-              whileTap={{ scale: isLoading ? 1 : 0.99 }}
+              whileHover={{ scale: isLoading ? 1 : 1.015, y: isLoading ? 0 : -2 }}
+              whileTap={{ scale: isLoading ? 1 : 0.985 }}
               type="submit"
               disabled={isLoading}
-              className={`w-full bg-[#17233E] hover:bg-[#1988A3] active:bg-[#157289] text-white py-3.5 sm:py-4 rounded-full font-extrabold transition-all duration-300 flex items-center justify-center gap-2 shadow-xl shadow-[#17233E]/20 hover:shadow-[#1988A3]/30 text-sm mt-2 ${
-                isLoading ? 'opacity-70 cursor-not-allowed' : ''
+              className={`relative overflow-hidden w-full bg-gradient-to-r from-[#17233E] via-[#1B3154] to-[#1988A3] hover:from-[#1988A3] hover:to-[#11C6DE] text-white py-3.5 sm:py-4 rounded-full font-extrabold transition-all duration-300 flex items-center justify-center gap-2 shadow-xl shadow-[#17233E]/20 hover:shadow-[#1988A3]/35 text-sm mt-2 group ${
+                isLoading ? 'opacity-70 cursor-not-allowed' : 'cursor-pointer'
               }`}
             >
+              <span className="pointer-events-none absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/25 to-transparent" />
               {isLoading ? (
                 <>
                   <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/></svg>
@@ -394,17 +496,17 @@ const Login = () => {
 
           <div className="relative my-6 text-center select-none">
             <div className="absolute inset-0 flex items-center px-4"><div className="w-full border-t border-[#8A9CB7]/20"></div></div>
-            <span className="relative bg-white/80 px-4 text-[10px] font-bold text-[#8A9CB7] uppercase tracking-widest rounded-full">Or continue with</span>
+            <span className="relative bg-white/85 px-4 text-[10px] font-bold text-[#8A9CB7] uppercase tracking-widest rounded-full">Or continue with</span>
           </div>
 
           <div className="mt-6 flex flex-col gap-4">
             <motion.button
-              whileHover={{ scale: 1.01, y: -1 }}
-              whileTap={{ scale: 0.99 }}
+              whileHover={{ scale: 1.015, y: -1 }}
+              whileTap={{ scale: 0.985 }}
               type="button"
               onClick={() => handleGoogleLogin()}
               disabled={isGoogleLoading}
-              className="w-full flex items-center justify-center gap-2.5 bg-white/80 hover:bg-white border border-[#8A9CB7]/30 py-3 rounded-2xl text-xs sm:text-sm font-bold text-[#17233E] transition-all shadow-sm disabled:opacity-50"
+              className="w-full flex items-center justify-center gap-2.5 bg-white/85 hover:bg-white border border-[#8A9CB7]/30 py-3 rounded-2xl text-xs sm:text-sm font-bold text-[#17233E] transition-all shadow-sm disabled:opacity-50 cursor-pointer"
             >
               {isGoogleLoading ? (
                 <span className="w-4 h-4 border-2 border-[#1988A3] border-t-transparent rounded-full animate-spin" />
