@@ -98,9 +98,9 @@ const SkillPulseLanding = () => {
         <div className="absolute top-1/2 -left-20 w-[350px] sm:w-[600px] h-[350px] sm:h-[600px] bg-[#1B3154]/12 blur-[90px] sm:blur-[110px] rounded-full" />
         <div className="absolute bottom-10 right-1/4 w-[350px] sm:w-[550px] h-[350px] sm:h-[550px] bg-[#8A9CB7]/28 blur-[90px] sm:blur-[110px] rounded-full" />
 
-        {/* Full-Viewport Seamless 3D Topographic Contour & Dot-Matrix Terrain */}
-        <div className="absolute inset-0 opacity-70 [mask-image:linear-gradient(to_bottom,transparent_0%,black_16%,black_88%,transparent_100%)]">
-          <LiquidRibbonWave mouseOffset={waveMouse} intensity={0.75} />
+        {/* Full-Viewport Seamless 3D Ribbons & AI Neural Constellation */}
+        <div className="absolute inset-0 opacity-90 [mask-image:linear-gradient(to_bottom,transparent_0%,black_6%,black_96%,transparent_100%)]">
+          <LiquidRibbonWave mouseOffset={waveMouse} intensity={0.95} />
         </div>
       </div>
 

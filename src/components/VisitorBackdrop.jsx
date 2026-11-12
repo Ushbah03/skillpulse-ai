@@ -6,7 +6,7 @@ import LiquidRibbonWave from './LiquidRibbonWave';
  * ribbon backdrop for visitor pages, tracking pointer parallax cleanly without
  * duplicating backdrop markup or listeners across routes.
  */
-const VisitorBackdrop = ({ waveIntensity = 0.9, waveOpacityClass = 'opacity-80' }) => {
+const VisitorBackdrop = ({ waveIntensity = 0.95, waveOpacityClass = 'opacity-90' }) => {
   const [waveMouse, setWaveMouse] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
@@ -28,9 +28,9 @@ const VisitorBackdrop = ({ waveIntensity = 0.9, waveOpacityClass = 'opacity-80' 
       <div className="absolute top-1/2 -left-20 w-[350px] sm:w-[600px] h-[350px] sm:h-[600px] bg-[#1B3154]/12 blur-[90px] sm:blur-[110px] rounded-full" />
       <div className="absolute bottom-10 right-1/4 w-[350px] sm:w-[550px] h-[350px] sm:h-[550px] bg-[#8A9CB7]/28 blur-[90px] sm:blur-[110px] rounded-full" />
 
-      {/* Full-Viewport Seamless 3D Topographic Contour & Dot-Matrix Terrain */}
+      {/* Full-Viewport Seamless 3D Ribbons & AI Neural Constellation */}
       <div
-        className={`absolute inset-0 ${waveOpacityClass} [mask-image:linear-gradient(to_bottom,transparent_0%,black_16%,black_88%,transparent_100%)]`}
+        className={`absolute inset-0 ${waveOpacityClass} [mask-image:linear-gradient(to_bottom,transparent_0%,black_6%,black_96%,transparent_100%)]`}
       >
         <LiquidRibbonWave mouseOffset={waveMouse} intensity={waveIntensity} />
       </div>
