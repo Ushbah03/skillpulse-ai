@@ -27,9 +27,8 @@ const VisitorBackdrop = ({ waveIntensity = 0.9, waveOpacityClass = 'opacity-80' 
       <div className="absolute top-1/4 -right-20 w-[300px] sm:w-[500px] h-[300px] sm:h-[500px] bg-[#11C6DE]/18 blur-[90px] sm:blur-[110px] rounded-full" />
       <div className="absolute top-1/2 -left-20 w-[350px] sm:w-[600px] h-[350px] sm:h-[600px] bg-[#1B3154]/12 blur-[90px] sm:blur-[110px] rounded-full" />
       <div className="absolute bottom-10 right-1/4 w-[350px] sm:w-[550px] h-[350px] sm:h-[550px] bg-[#8A9CB7]/28 blur-[90px] sm:blur-[110px] rounded-full" />
-      <div className="absolute inset-0 bg-[radial-gradient(rgba(27,49,84,0.10)_1px,transparent_1px)] [background-size:24px_24px] sm:[background-size:28px_28px] opacity-35" />
 
-      {/* Full-Viewport Seamless 3D Liquid Ice-Cyan Glass Silk Wave */}
+      {/* Full-Viewport Seamless 3D Topographic Contour & Dot-Matrix Terrain */}
       <div
         className={`absolute inset-0 ${waveOpacityClass} [mask-image:linear-gradient(to_bottom,transparent_0%,black_16%,black_88%,transparent_100%)]`}
       >

@@ -1,10 +1,10 @@
 import React, { useEffect, useRef } from 'react';
 
 /**
- * High-FPS 3D Parametric Liquid Glass Silk Ribbon Canvas
- * Designed for SkillPulse-AI's signature Light Ice-Blue (#E9EAF7) frosted theme:
- * Translucent cyan (#11C6DE), teal (#1988A3), sky-sapphire (#6AAEE0),
- * soft navy depth (#1B3154), and crystalline white specular rims (#FFFFFF).
+ * Architectural 3D Topographic Contour & Perspective Dot-Matrix Terrain Canvas
+ * Designed for SkillPulse-AI's Light Ice-Blue (#E9EAF7) frosted theme:
+ * Combines smooth undulating 3D elevation contours, perspective-scaled dot-matrix
+ * lattice nodes, and cursor depth parallax without harsh wave bands.
  */
 const LiquidRibbonWave = ({ mouseOffset = { x: 0, y: 0 }, intensity = 1 }) => {
   const canvasRef = useRef(null);
@@ -24,6 +24,15 @@ const LiquidRibbonWave = ({ mouseOffset = { x: 0, y: 0 }, intensity = 1 }) => {
     let width = 0;
     let height = 0;
     let time = 0;
+    let smoothMouseX = 0;
+    let smoothMouseY = 0;
+
+    // Grid resolution tuned for 60fps smoothness across desktop & mobile
+    const COLS = 44;
+    const ROWS = 28;
+    const projected = Array.from({ length: ROWS }, () =>
+      Array.from({ length: COLS }, () => ({ sx: 0, sy: 0, elev: 0, depthFade: 0, scale: 1 }))
+    );
 
     const resize = () => {
       const parent = canvas.parentElement;
@@ -31,227 +40,166 @@ const LiquidRibbonWave = ({ mouseOffset = { x: 0, y: 0 }, intensity = 1 }) => {
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
       width = parent.clientWidth;
       height = parent.clientHeight;
-      canvas.width = width * dpr;
-      canvas.height = height * dpr;
+      canvas.width = Math.max(1, Math.floor(width * dpr));
+      canvas.height = Math.max(1, Math.floor(height * dpr));
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     };
 
     resize();
-    const ro = new ResizeObserver(resize);
-    if (canvas.parentElement) ro.observe(canvas.parentElement);
+    window.addEventListener('resize', resize);
 
-    const buildWavePoints = ({ t, amp1, amp2, freq1, freq2, phase, baseY, thickness, twistSpeed }) => {
-      const count = 96;
-      const mx = (mouseRef.current?.x || 0) * 26;
-      const my = (mouseRef.current?.y || 0) * 16;
+    const draw = () => {
+      time += 0.011;
 
-      const top = [];
-      const bot = [];
-
-      for (let i = 0; i <= count; i++) {
-        const nx = i / count;
-        const x = nx * width;
-
-        const spineY =
-          baseY +
-          my * Math.sin(nx * Math.PI) +
-          Math.sin(nx * freq1 + t + phase) * amp1 +
-          Math.cos(nx * freq2 - t * 0.65 + phase * 1.2) * amp2;
-
-        const twistAngle = nx * 3.8 + t * twistSpeed + phase + mx * 0.008;
-        const halfH = thickness * (0.34 + 0.66 * Math.abs(Math.cos(twistAngle)));
-        const foldY = Math.sin(twistAngle) * (thickness * 0.25);
-
-        top.push({ x, y: spineY - halfH + foldY });
-        bot.push({ x, y: spineY + halfH + foldY });
-      }
-
-      return { top, bot };
-    };
-
-    const drawSmoothCurve = (pts, moveFirst = true) => {
-      if (moveFirst) ctx.moveTo(pts[0].x, pts[0].y);
-      else ctx.lineTo(pts[0].x, pts[0].y);
-
-      for (let i = 1; i < pts.length - 1; i++) {
-        const xc = (pts[i].x + pts[i + 1].x) * 0.5;
-        const yc = (pts[i].y + pts[i + 1].y) * 0.5;
-        ctx.quadraticCurveTo(pts[i].x, pts[i].y, xc, yc);
-      }
-      const last = pts[pts.length - 1];
-      ctx.lineTo(last.x, last.y);
-    };
-
-    const drawSilkBand = (config) => {
-      const { top, bot } = buildWavePoints(config);
-      const revBot = [...bot].reverse();
-
-      // 1. Continuous Translucent Iridescent Blue-Cyan Silk Body
-      ctx.save();
-      ctx.beginPath();
-      drawSmoothCurve(top, true);
-      drawSmoothCurve(revBot, false);
-      ctx.closePath();
-
-      const bodyGrad = ctx.createLinearGradient(0, config.baseY - config.thickness, width, config.baseY + config.thickness);
-      bodyGrad.addColorStop(0.0, config.cStart);
-      bodyGrad.addColorStop(0.28, config.cBright);
-      bodyGrad.addColorStop(0.55, config.cMid);
-      bodyGrad.addColorStop(0.82, config.cDeep);
-      bodyGrad.addColorStop(1.0, config.cEnd);
-
-      ctx.fillStyle = bodyGrad;
-      ctx.fill();
-
-      // 2. Clip inside ribbon & paint crystalline white/cyan gleam + airy blue depth
-      ctx.clip();
-
-      const gleamX = (0.34 + Math.sin(config.t * 0.45 + config.phase) * 0.18) * width;
-      const gleamGrad = ctx.createRadialGradient(
-        gleamX,
-        config.baseY - config.thickness * 0.12,
-        width * 0.02,
-        gleamX,
-        config.baseY,
-        width * 0.52
-      );
-      gleamGrad.addColorStop(0, `rgba(255, 255, 255, ${(0.55 * intensity).toFixed(2)})`);
-      gleamGrad.addColorStop(0.38, `rgba(17, 198, 222, ${(0.28 * intensity).toFixed(2)})`);
-      gleamGrad.addColorStop(1, 'rgba(25, 136, 163, 0)');
-      ctx.fillStyle = gleamGrad;
-      ctx.fillRect(0, 0, width, height);
-
-      // Soft translucent cobalt volume shading (Light-Mode Glass Refraction)
-      const shadowGrad = ctx.createLinearGradient(0, config.baseY - config.thickness, 0, config.baseY + config.thickness * 1.2);
-      shadowGrad.addColorStop(0, 'rgba(255, 255, 255, 0.35)');
-      shadowGrad.addColorStop(0.5, 'rgba(17, 198, 222, 0.05)');
-      shadowGrad.addColorStop(1, 'rgba(27, 49, 84, 0.18)');
-      ctx.fillStyle = shadowGrad;
-      ctx.fillRect(0, 0, width, height);
-
-      ctx.restore();
-
-      // 3. Crisp Luminous White & Cyan Specular Rim Edge along top fold
-      ctx.save();
-      ctx.beginPath();
-      drawSmoothCurve(top, true);
-      const rimGrad = ctx.createLinearGradient(0, 0, width, 0);
-      rimGrad.addColorStop(0.0, 'rgba(255, 255, 255, 0.92)');
-      rimGrad.addColorStop(0.32, 'rgba(17, 198, 222, 0.78)');
-      rimGrad.addColorStop(0.68, 'rgba(25, 136, 163, 0.55)');
-      rimGrad.addColorStop(1.0, 'rgba(255, 255, 255, 0.75)');
-      ctx.strokeStyle = rimGrad;
-      ctx.lineWidth = config.rimWidth || 2.2;
-      ctx.shadowColor = 'rgba(17, 198, 222, 0.65)';
-      ctx.shadowBlur = 12;
-      ctx.stroke();
-      ctx.restore();
-
-      // 4. Secondary Subtle Specular Bottom Lip
-      ctx.save();
-      ctx.beginPath();
-      drawSmoothCurve(bot, true);
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.55)';
-      ctx.lineWidth = 1.2;
-      ctx.stroke();
-      ctx.restore();
-    };
-
-    const render = () => {
-      if (width === 0 || height === 0) {
-        animationFrameId = requestAnimationFrame(render);
-        return;
-      }
+      const targetX = mouseRef.current?.x || 0;
+      const targetY = mouseRef.current?.y || 0;
+      smoothMouseX += (targetX - smoothMouseX) * 0.06;
+      smoothMouseY += (targetY - smoothMouseY) * 0.06;
 
       ctx.clearRect(0, 0, width, height);
-      time += 0.01;
 
-      // Ambient Ice-Cyan Mist
-      const mist = ctx.createRadialGradient(
-        width * 0.48,
-        height * 0.54,
-        10,
-        width * 0.48,
-        height * 0.54,
-        width * 0.62
-      );
-      mist.addColorStop(0, `rgba(17, 198, 222, ${(0.18 * intensity).toFixed(2)})`);
-      mist.addColorStop(0.5, `rgba(25, 136, 163, ${(0.10 * intensity).toFixed(2)})`);
-      mist.addColorStop(1, 'rgba(233, 234, 247, 0)');
-      ctx.fillStyle = mist;
-      ctx.fillRect(0, 0, width, height);
+      const fov = Math.max(width, height) * 0.72;
+      const viewerDist = 5.6;
+      const camPitch = 0.48 + smoothMouseY * 0.14;
+      const cosPitch = Math.cos(camPitch);
+      const sinPitch = Math.sin(camPitch);
 
-      // Layer 1: Soft Sapphire-Slate Blue Glass Ribbon
-      drawSilkBand({
-        t: time * 0.8,
-        amp1: height * 0.14,
-        amp2: height * 0.07,
-        freq1: 2.8,
-        freq2: 4.5,
-        phase: 1.9,
-        baseY: height * 0.52,
-        thickness: height * 0.30,
-        twistSpeed: 0.7,
-        rimWidth: 1.6,
-        cStart: `rgba(138, 156, 183, ${(0.32 * intensity).toFixed(2)})`,
-        cBright: `rgba(17, 198, 222, ${(0.30 * intensity).toFixed(2)})`,
-        cMid: `rgba(25, 136, 163, ${(0.28 * intensity).toFixed(2)})`,
-        cDeep: `rgba(27, 49, 84, ${(0.22 * intensity).toFixed(2)})`,
-        cEnd: `rgba(138, 156, 183, ${(0.25 * intensity).toFixed(2)})`
-      });
+      const terrainWidth = 18.0;
+      const terrainDepth = 11.0;
+      const elevAmp = 0.72 * Math.min(1.25, Math.max(0.75, intensity));
 
-      // Layer 2: Primary Sculptural Electric Cyan & Ocean Teal Glass Wave
-      drawSilkBand({
-        t: time,
-        amp1: height * 0.17,
-        amp2: height * 0.08,
-        freq1: 2.3,
-        freq2: 3.9,
-        phase: 0.15,
-        baseY: height * 0.56,
-        thickness: height * 0.34,
-        twistSpeed: 1.0,
-        rimWidth: 2.4,
-        cStart: `rgba(25, 136, 163, ${(0.42 * intensity).toFixed(2)})`,
-        cBright: `rgba(17, 198, 222, ${(0.48 * intensity).toFixed(2)})`,
-        cMid: `rgba(88, 186, 218, ${(0.38 * intensity).toFixed(2)})`,
-        cDeep: `rgba(25, 136, 163, ${(0.36 * intensity).toFixed(2)})`,
-        cEnd: `rgba(27, 49, 84, ${(0.28 * intensity).toFixed(2)})`
-      });
+      // 1. Compute 3D undulating elevation + full-viewport perspective projection
+      for (let r = 0; r < ROWS; r++) {
+        const nz = r / (ROWS - 1); // 0 (far) -> 1 (near)
+        const zWorld = (0.5 - nz) * terrainDepth + 1.2;
 
-      // Layer 3: Sharp Luminous Crystalline White-Cyan Silk Fold
-      drawSilkBand({
-        t: time * 1.15,
-        amp1: height * 0.11,
-        amp2: height * 0.05,
-        freq1: 3.2,
-        freq2: 5.0,
-        phase: 3.6,
-        baseY: height * 0.63,
-        thickness: height * 0.16,
-        twistSpeed: 1.25,
-        rimWidth: 1.8,
-        cStart: `rgba(255, 255, 255, ${(0.42 * intensity).toFixed(2)})`,
-        cBright: `rgba(17, 198, 222, ${(0.35 * intensity).toFixed(2)})`,
-        cMid: `rgba(210, 243, 252, ${(0.38 * intensity).toFixed(2)})`,
-        cDeep: `rgba(25, 136, 163, ${(0.24 * intensity).toFixed(2)})`,
-        cEnd: `rgba(255, 255, 255, ${(0.28 * intensity).toFixed(2)})`
-      });
+        for (let c = 0; c < COLS; c++) {
+          const nx = c / (COLS - 1); // 0 -> 1
+          const xWorld = (nx - 0.5) * terrainWidth + smoothMouseX * 1.1;
 
-      animationFrameId = requestAnimationFrame(render);
+          // Multi-harmonic organic topographic swell
+          const waveA = Math.sin(xWorld * 0.48 + time * 0.85) * Math.cos(zWorld * 0.45 - time * 0.65);
+          const waveB = Math.sin((xWorld * 0.34 - zWorld * 0.42) + time * 0.55) * 0.62;
+          const waveC = Math.cos((xWorld * 0.78 + zWorld * 0.72) - time * 0.4) * 0.25;
+
+          // Subtle pointer proximity ridge lift
+          const dx = nx - 0.5 - smoothMouseX * 0.65;
+          const dz = nz - 0.52 - smoothMouseY * 0.45;
+          const distSq = dx * dx + dz * dz;
+          const pointerLift = Math.exp(-distSq * 8.0) * 0.52;
+
+          const yWorld = (waveA + waveB + waveC) * elevAmp + pointerLift * elevAmp - 0.75;
+
+          // Pitch rotation around X-axis
+          const ry = yWorld * cosPitch - zWorld * sinPitch;
+          const rz = yWorld * sinPitch + zWorld * cosPitch + viewerDist;
+
+          const safeZ = Math.max(1.1, rz);
+          const scale = fov / safeZ;
+          const sx = width * 0.5 + xWorld * scale * 0.38;
+          const sy = height * 0.54 - ry * scale * 0.38;
+
+          const elev = Math.max(0, Math.min(1, (yWorld + 1.55) / 2.2));
+          const depthFade = Math.sin(nz * Math.PI) * (0.35 + 0.65 * nz);
+
+          const pt = projected[r][c];
+          pt.sx = sx;
+          pt.sy = sy;
+          pt.elev = elev;
+          pt.depthFade = Math.max(0, Math.min(1, depthFade));
+          pt.scale = scale / fov;
+        }
+      }
+
+      const alphaScale = Math.min(1.2, Math.max(0.7, intensity));
+
+      // 2. Draw smooth architectural topographic contour curves (back-to-front)
+      for (let r = 1; r < ROWS - 1; r++) {
+        const row = projected[r];
+        const rowAlpha = row[Math.floor(COLS / 2)].depthFade;
+        if (rowAlpha < 0.03) continue;
+
+        ctx.beginPath();
+        ctx.moveTo(row[0].sx, row[0].sy);
+        for (let c = 1; c < COLS - 1; c++) {
+          const xc = (row[c].sx + row[c + 1].sx) * 0.5;
+          const yc = (row[c].sy + row[c + 1].sy) * 0.5;
+          ctx.quadraticCurveTo(row[c].sx, row[c].sy, xc, yc);
+        }
+        const last = row[COLS - 1];
+        ctx.lineTo(last.sx, last.sy);
+
+        // Highlight every 3rd contour line in crisp cyan-teal, others in refined slate-blue
+        const isMajorContour = r % 3 === 0;
+        const grad = ctx.createLinearGradient(0, 0, width, 0);
+        if (isMajorContour) {
+          grad.addColorStop(0, `rgba(25, 136, 163, 0.02)`);
+          grad.addColorStop(0.22, `rgba(25, 136, 163, ${(0.28 * rowAlpha * alphaScale).toFixed(3)})`);
+          grad.addColorStop(0.5, `rgba(17, 198, 222, ${(0.42 * rowAlpha * alphaScale).toFixed(3)})`);
+          grad.addColorStop(0.78, `rgba(25, 136, 163, ${(0.28 * rowAlpha * alphaScale).toFixed(3)})`);
+          grad.addColorStop(1, `rgba(25, 136, 163, 0.02)`);
+          ctx.lineWidth = 1.15;
+        } else {
+          grad.addColorStop(0, `rgba(90, 109, 137, 0.01)`);
+          grad.addColorStop(0.28, `rgba(90, 109, 137, ${(0.15 * rowAlpha * alphaScale).toFixed(3)})`);
+          grad.addColorStop(0.5, `rgba(25, 136, 163, ${(0.20 * rowAlpha * alphaScale).toFixed(3)})`);
+          grad.addColorStop(0.72, `rgba(90, 109, 137, ${(0.15 * rowAlpha * alphaScale).toFixed(3)})`);
+          grad.addColorStop(1, `rgba(90, 109, 137, 0.01)`);
+          ctx.lineWidth = 0.75;
+        }
+        ctx.strokeStyle = grad;
+        ctx.stroke();
+      }
+
+      // 3. Draw subtle cross-meridian architectural hairlines (every 4th column)
+      for (let c = 2; c < COLS - 2; c += 4) {
+        ctx.beginPath();
+        ctx.moveTo(projected[0][c].sx, projected[0][c].sy);
+        for (let r = 1; r < ROWS - 1; r++) {
+          const xc = (projected[r][c].sx + projected[r + 1][c].sx) * 0.5;
+          const yc = (projected[r][c].sy + projected[r + 1][c].sy) * 0.5;
+          ctx.quadraticCurveTo(projected[r][c].sx, projected[r][c].sy, xc, yc);
+        }
+        ctx.strokeStyle = `rgba(23, 35, 62, ${(0.075 * alphaScale).toFixed(3)})`;
+        ctx.lineWidth = 0.65;
+        ctx.stroke();
+      }
+
+      // 4. Draw perspective-scaled 3D dot-matrix lattice nodes on intersections
+      for (let r = 1; r < ROWS - 1; r++) {
+        for (let c = 1; c < COLS - 1; c++) {
+          const pt = projected[r][c];
+          if (pt.sx < -10 || pt.sx > width + 10 || pt.sy < -10 || pt.sy > height + 10) continue;
+
+          // Gentle horizontal edge fade
+          const edgeX = 1 - Math.pow(Math.abs(pt.sx / width - 0.5) * 2, 2.6);
+          const nodeAlpha = Math.max(0, edgeX) * pt.depthFade * alphaScale;
+          if (nodeAlpha < 0.04) continue;
+
+          const dotRadius = (1.1 + pt.elev * 1.3) * (0.7 + pt.scale * 1.7);
+
+          if (pt.elev > 0.60) {
+            ctx.fillStyle = `rgba(17, 198, 222, ${(0.62 * nodeAlpha).toFixed(3)})`;
+            ctx.beginPath();
+            ctx.arc(pt.sx, pt.sy, dotRadius * 1.25, 0, Math.PI * 2);
+            ctx.fill();
+          } else {
+            ctx.fillStyle = `rgba(27, 49, 84, ${(0.28 * nodeAlpha).toFixed(3)})`;
+            ctx.beginPath();
+            ctx.arc(pt.sx, pt.sy, dotRadius, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        }
+      }
+
+      animationFrameId = requestAnimationFrame(draw);
     };
 
-    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-    if (mediaQuery.matches) {
-      render();
-      cancelAnimationFrame(animationFrameId);
-    } else {
-      render();
-    }
+    animationFrameId = requestAnimationFrame(draw);
 
     return () => {
       cancelAnimationFrame(animationFrameId);
-      ro.disconnect();
+      window.removeEventListener('resize', resize);
     };
   }, [intensity]);
 
@@ -259,7 +207,7 @@ const LiquidRibbonWave = ({ mouseOffset = { x: 0, y: 0 }, intensity = 1 }) => {
     <canvas
       ref={canvasRef}
       aria-hidden="true"
-      className="w-full h-full block pointer-events-none select-none"
+      className="w-full h-full pointer-events-none block"
     />
   );
 };
