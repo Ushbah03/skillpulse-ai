@@ -106,11 +106,6 @@ const SkillPulseLanding = () => {
 
       {/* 1. HERO SECTION - CENTERED REFERENCE COMPOSITION IN SIGNATURE LIGHT ICE-BLUE THEME */}
       <section className="relative z-10 w-full text-[#17233E] overflow-hidden">
-        {/* Foreground Vivid Hero 3D Iridescent Ice-Cyan Liquid Wave */}
-        <div className="absolute inset-x-0 bottom-8 sm:bottom-12 h-[330px] sm:h-[400px] md:h-[440px] pointer-events-none z-0 opacity-95 [mask-image:linear-gradient(to_bottom,transparent_0%,black_25%,black_85%,transparent_100%)]">
-          <LiquidRibbonWave mouseOffset={waveMouse} intensity={1.15} />
-        </div>
-
         {/* TOP CENTERED HERO TYPOGRAPHY & ACTIONS */}
         <div className="max-w-7xl mx-auto relative z-10 pt-8 sm:pt-11 md:pt-14 px-4 sm:px-8 md:px-14 text-center">
           <motion.div
