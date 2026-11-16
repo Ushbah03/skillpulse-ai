@@ -91,16 +91,16 @@ const SkillPulseLanding = () => {
       onMouseMove={handlePageMouseMove}
       className="bg-[#E9EAF7] bg-gradient-to-b from-[#E9EAF7] via-[#E2EEFA] to-[#DCEAF8] font-sans text-[#17233E] overflow-x-hidden selection:bg-[#1988A3] selection:text-white relative min-h-screen"
     >
-      {/* GLOBAL SIGNATURE LIGHT ICE-BLUE BACKDROP + ANIMATED 3D LIQUID GLASS SILK WAVES */}
+      {/* GLOBAL SIGNATURE ENTERPRISE ARCHITECTURAL TELEMETRY BACKDROP */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-        <div className="absolute -top-20 left-1/4 w-[350px] sm:w-[550px] h-[350px] sm:h-[550px] bg-[#1988A3]/20 blur-[90px] sm:blur-[110px] rounded-full" />
-        <div className="absolute top-1/4 -right-20 w-[300px] sm:w-[500px] h-[300px] sm:h-[500px] bg-[#11C6DE]/18 blur-[90px] sm:blur-[110px] rounded-full" />
-        <div className="absolute top-1/2 -left-20 w-[350px] sm:w-[600px] h-[350px] sm:h-[600px] bg-[#1B3154]/12 blur-[90px] sm:blur-[110px] rounded-full" />
-        <div className="absolute bottom-10 right-1/4 w-[350px] sm:w-[550px] h-[350px] sm:h-[550px] bg-[#8A9CB7]/28 blur-[90px] sm:blur-[110px] rounded-full" />
+        <div className="absolute -top-20 left-1/4 w-[380px] sm:w-[580px] h-[380px] sm:h-[580px] bg-[#1988A3]/28 blur-[95px] sm:blur-[115px] rounded-full" />
+        <div className="absolute top-1/4 -right-20 w-[340px] sm:w-[520px] h-[340px] sm:h-[520px] bg-[#1B3154]/22 blur-[95px] sm:blur-[115px] rounded-full" />
+        <div className="absolute top-1/2 -left-20 w-[380px] sm:w-[620px] h-[380px] sm:h-[620px] bg-[#17233E]/20 blur-[95px] sm:blur-[115px] rounded-full" />
+        <div className="absolute bottom-10 right-1/4 w-[380px] sm:w-[560px] h-[380px] sm:h-[560px] bg-[#1988A3]/26 blur-[95px] sm:blur-[115px] rounded-full" />
 
-        {/* Full-Viewport Seamless 3D Ribbons & AI Neural Constellation */}
-        <div className="absolute inset-0 opacity-90 [mask-image:linear-gradient(to_bottom,transparent_0%,black_6%,black_96%,transparent_100%)]">
-          <LiquidRibbonWave mouseOffset={waveMouse} intensity={0.95} />
+        {/* Full-Viewport Enterprise Architectural Grid & Scroll-Reactive AI Constellation */}
+        <div className="absolute inset-0 opacity-100">
+          <LiquidRibbonWave mouseOffset={waveMouse} intensity={1.08} />
         </div>
       </div>
 

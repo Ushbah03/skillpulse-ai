@@ -2,11 +2,10 @@ import React, { useState, useEffect } from 'react';
 import LiquidRibbonWave from './LiquidRibbonWave';
 
 /**
- * Shared full-viewport Light Ice-Blue (#E9EAF7) ambient gradient & 3D liquid silk
- * ribbon backdrop for visitor pages, tracking pointer parallax cleanly without
- * duplicating backdrop markup or listeners across routes.
+ * Shared full-viewport Light Ice-Blue (#E9EAF7) & Deep Sapphire/Teal
+ * architectural telemetry backdrop for visitor and authentication pages.
  */
-const VisitorBackdrop = ({ waveIntensity = 0.95, waveOpacityClass = 'opacity-90' }) => {
+const VisitorBackdrop = ({ waveIntensity = 1.05, waveOpacityClass = 'opacity-100' }) => {
   const [waveMouse, setWaveMouse] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
@@ -23,15 +22,13 @@ const VisitorBackdrop = ({ waveIntensity = 0.95, waveOpacityClass = 'opacity-90'
 
   return (
     <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-      <div className="absolute -top-20 left-1/4 w-[350px] sm:w-[550px] h-[350px] sm:h-[550px] bg-[#1988A3]/20 blur-[90px] sm:blur-[110px] rounded-full" />
-      <div className="absolute top-1/4 -right-20 w-[300px] sm:w-[500px] h-[300px] sm:h-[500px] bg-[#11C6DE]/18 blur-[90px] sm:blur-[110px] rounded-full" />
-      <div className="absolute top-1/2 -left-20 w-[350px] sm:w-[600px] h-[350px] sm:h-[600px] bg-[#1B3154]/12 blur-[90px] sm:blur-[110px] rounded-full" />
-      <div className="absolute bottom-10 right-1/4 w-[350px] sm:w-[550px] h-[350px] sm:h-[550px] bg-[#8A9CB7]/28 blur-[90px] sm:blur-[110px] rounded-full" />
+      <div className="absolute -top-20 left-1/4 w-[380px] sm:w-[580px] h-[380px] sm:h-[580px] bg-[#1988A3]/28 blur-[95px] sm:blur-[115px] rounded-full" />
+      <div className="absolute top-1/4 -right-20 w-[340px] sm:w-[520px] h-[340px] sm:h-[520px] bg-[#1B3154]/22 blur-[95px] sm:blur-[115px] rounded-full" />
+      <div className="absolute top-1/2 -left-20 w-[380px] sm:w-[620px] h-[380px] sm:h-[620px] bg-[#17233E]/20 blur-[95px] sm:blur-[115px] rounded-full" />
+      <div className="absolute bottom-10 right-1/4 w-[380px] sm:w-[560px] h-[380px] sm:h-[560px] bg-[#1988A3]/26 blur-[95px] sm:blur-[115px] rounded-full" />
 
-      {/* Full-Viewport Seamless 3D Ribbons & AI Neural Constellation */}
-      <div
-        className={`absolute inset-0 ${waveOpacityClass} [mask-image:linear-gradient(to_bottom,transparent_0%,black_6%,black_96%,transparent_100%)]`}
-      >
+      {/* Full-Viewport Enterprise Architectural Telemetry Grid & AI Constellation */}
+      <div className={`absolute inset-0 ${waveOpacityClass}`}>
         <LiquidRibbonWave mouseOffset={waveMouse} intensity={waveIntensity} />
       </div>
     </div>
