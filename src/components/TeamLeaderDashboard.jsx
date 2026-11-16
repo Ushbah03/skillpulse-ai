@@ -20,8 +20,7 @@ import {
 
 const TeamLeaderDashboard = () => {
   const navigate = useNavigate();
-  const [selectedTeam, setSelectedTeam] = useState('ALL');
-  const [selectedTimeframe, setSelectedTimeframe] = useState('This Quarter');
+  const selectedTeam = 'ALL';
   const [loading, setLoading] = useState(true);
   const [overviewData, setOverviewData] = useState(null);
   const [readinessData, setReadinessData] = useState(null);
@@ -62,7 +61,7 @@ const TeamLeaderDashboard = () => {
     };
     fetchDashboardData();
     return () => { isMounted = false; };
-  }, [selectedTimeframe]);
+  }, []);
 
   // Extract teams from backend response
   const leaderTeams = React.useMemo(() => {
@@ -258,37 +257,24 @@ const TeamLeaderDashboard = () => {
                 <p className="text-[#8A9CB7] text-xs sm:text-sm md:text-base font-medium mt-0.5 sm:mt-1">Monitor squad readiness, capability telemetry, and skill intelligence</p>
               </div>
               
-              <div className="flex items-center justify-between sm:justify-end gap-2.5 sm:gap-4 w-full sm:w-auto">
-                <div className="flex items-center gap-2 flex-1 sm:flex-initial">
-                  <select 
-                    value={selectedTeam} 
-                    onChange={(e) => setSelectedTeam(e.target.value)}
-                    className="flex-1 sm:flex-initial bg-[#F0F5FB]/90 backdrop-blur-md border border-white/85 rounded-xl px-2.5 sm:px-4 py-2 sm:py-2.5 text-xs md:text-sm font-semibold text-[#17233E] shadow-sm focus:outline-none focus:border-[#1988A3] cursor-pointer transition-colors"
-                  >
-                    <option value="ALL">All My Teams (Combined)</option>
-                    {leaderTeams.map((t) => (
-                      <option key={t.id} value={t.id}>
-                        {t.name}
-                      </option>
-                    ))}
-                  </select>
-
-                  <select 
-                    value={selectedTimeframe} 
-                    onChange={(e) => setSelectedTimeframe(e.target.value)}
-                    className="flex-1 sm:flex-initial bg-[#F0F5FB]/90 backdrop-blur-md border border-white/85 rounded-xl px-2.5 sm:px-4 py-2 sm:py-2.5 text-xs md:text-sm font-semibold text-[#17233E] shadow-sm focus:outline-none focus:border-[#1988A3] cursor-pointer transition-colors"
-                  >
-                    <option value="This Quarter">This Quarter</option>
-                    <option value="Last Month">Last Month</option>
-                    <option value="This Year">This Year</option>
-                  </select>
+              <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
+                <div className="inline-flex items-center gap-2 px-3 sm:px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 backdrop-blur-md text-emerald-700 text-xs font-bold tracking-wide shadow-sm">
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                  </span>
+                  Squad Telemetry Live
                 </div>
 
-                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl overflow-hidden border border-white/60 bg-white/80 backdrop-blur-md shadow-sm flex-shrink-0">
+                <motion.div 
+                  whileHover={{ scale: 1.05, rotate: 2 }} 
+                  transition={{ type: "spring", stiffness: 400, damping: 20 }}
+                  className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl overflow-hidden border border-white/70 bg-white/80 backdrop-blur-md shadow-sm flex-shrink-0 cursor-pointer"
+                >
                   <div className="w-full h-full bg-gradient-to-br from-[#17233E] via-[#1B3154] to-[#1988A3] flex items-center justify-center text-xs font-black text-white shadow-inner">
                     TL
                   </div>
-                </div>
+                </motion.div>
               </div>
             </motion.header>
 
@@ -319,7 +305,7 @@ const TeamLeaderDashboard = () => {
               <div className="flex items-end justify-between h-48 sm:h-64 px-2 sm:px-4 gap-3 sm:gap-6 min-w-[340px] sm:min-w-0">
               {skillBars.length > 0 ? (
                 skillBars.map((bar, idx) => (
-                  <ChartBar key={idx} label={bar.label} h={bar.h} shadedH={bar.shadedH} shadedColor={bar.shadedColor} mainColor={bar.mainColor} />
+                  <ChartBar key={idx} delay={idx} label={bar.label} h={bar.h} shadedH={bar.shadedH} shadedColor={bar.shadedColor} mainColor={bar.mainColor} />
                 ))
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-slate-400 font-medium text-sm">
@@ -368,7 +354,7 @@ const TeamLeaderDashboard = () => {
               <div className="space-y-5">
                 {trainingProgress.length > 0 ? (
                   trainingProgress.map((tp, i) => (
-                    <ProgressBar key={i} label={tp.label} percent={tp.percent} color={tp.color} />
+                    <ProgressBar key={i} delay={i} label={tp.label} percent={tp.percent} color={tp.color} />
                   ))
                 ) : (
                   <p className="text-xs text-slate-400 font-medium py-8 text-center">No active training courses in progress.</p>
@@ -381,8 +367,8 @@ const TeamLeaderDashboard = () => {
           <div className="bg-gradient-to-br from-[#17233E]/95 via-[#1B3154]/95 to-[#121E33]/95 backdrop-blur-2xl p-6 md:p-8 rounded-3xl text-white relative overflow-hidden shadow-2xl border border-white/15 mt-8">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-indigo-500/10 rounded-xl flex items-center justify-center">
-                  <BrainCircuit className="text-indigo-400" size={22} />
+                <div className="w-10 h-10 bg-indigo-500/20 border border-indigo-400/30 rounded-xl flex items-center justify-center relative shadow-sm">
+                  <BrainCircuit className="text-indigo-400 animate-pulse" size={22} />
                 </div>
                 <div>
                   <h4 className="text-2xl font-bold tracking-tight">AI Team Insights</h4>
@@ -392,10 +378,10 @@ const TeamLeaderDashboard = () => {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-              <div className="bg-white/[0.03] border border-white/5 rounded-2xl p-6 flex flex-col justify-between">
+              <div className="bg-white/[0.03] hover:bg-white/[0.06] border border-white/5 hover:border-white/15 transition-all duration-300 rounded-2xl p-6 flex flex-col justify-between group">
                 <div className="flex justify-between items-center mb-4">
                   <span className="text-base font-bold text-slate-200">Squad Synergy & Resilience</span>
-                  <span className="text-xs font-black uppercase tracking-wider text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-lg border border-emerald-500/20">
+                  <span className="text-xs font-black uppercase tracking-wider text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-lg border border-emerald-500/20 shadow-sm">
                     Synergy: {overviewData?.aiInsights?.synergyScore || (overviewData?.stats?.synergyScore || '100%')}
                   </span>
                 </div>
@@ -406,10 +392,10 @@ const TeamLeaderDashboard = () => {
                 </p>
               </div>
 
-              <div className="bg-white/[0.03] border border-white/5 rounded-2xl p-6 flex flex-col justify-between">
+              <div className="bg-white/[0.03] hover:bg-white/[0.06] border border-white/5 hover:border-white/15 transition-all duration-300 rounded-2xl p-6 flex flex-col justify-between group">
                 <div className="flex justify-between items-center mb-4">
                   <span className="text-base font-bold text-slate-200">Predictive Velocity Uplift</span>
-                  <span className="text-xs font-black uppercase tracking-wider text-sky-400 bg-sky-500/10 px-3 py-1 rounded-lg border border-sky-500/20">
+                  <span className="text-xs font-black uppercase tracking-wider text-sky-400 bg-sky-500/10 px-3 py-1 rounded-lg border border-sky-500/20 shadow-sm">
                     +{perfData?.aiPredictive?.velocityIncreasePct || (filteredMembers.length > 0 ? 8 : 0)}% Lift
                   </span>
                 </div>
@@ -445,15 +431,16 @@ const TeamLeaderDashboard = () => {
 const StatCard = ({ title, value, sub, icon, color, trend, isRisk=false }) => {
   return (
     <motion.div 
-      whileHover={{ y: -5, transition: { duration: 0.2, ease: "easeOut" } }}
-      className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl p-3 sm:p-5 md:p-6 rounded-2xl sm:rounded-3xl border border-white/85 shadow-lg sm:shadow-xl shadow-[#1B3154]/6 relative overflow-hidden group hover:border-[#1988A3]/40 cursor-pointer transition-all duration-300 flex flex-col justify-between"
+      whileHover={{ y: -6, scale: 1.02 }}
+      transition={{ type: "spring", stiffness: 350, damping: 20 }}
+      className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl p-3 sm:p-5 md:p-6 rounded-2xl sm:rounded-3xl border border-white/85 shadow-lg sm:shadow-xl shadow-[#1B3154]/6 relative overflow-hidden group hover:border-[#1988A3]/50 cursor-pointer flex flex-col justify-between transition-colors"
     >
       <div className="flex justify-between items-start gap-1 mb-2 sm:mb-4">
         <div className="min-w-0">
           <p className="text-[#8A9CB7] text-[10px] sm:text-xs font-bold mb-0.5 sm:mb-1 uppercase tracking-wider truncate">{title}</p>
           <h4 className={`text-xl sm:text-3xl md:text-4xl font-black tracking-tight ${isRisk ? 'text-amber-500' : 'text-[#17233E]'}`}>{value}</h4>
         </div>
-        <div className="w-8 h-8 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl bg-gradient-to-br from-[#1988A3]/15 to-[#11C6DE]/15 border border-[#1988A3]/30 flex items-center justify-center text-[#1988A3] shrink-0">
+        <div className="w-8 h-8 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl bg-gradient-to-br from-[#1988A3]/15 to-[#11C6DE]/15 border border-[#1988A3]/30 flex items-center justify-center text-[#1988A3] shrink-0 group-hover:scale-110 group-hover:rotate-6 transition-transform duration-300 shadow-sm">
           {React.cloneElement(icon, { className: "w-4 h-4 sm:w-5 sm:h-5" })}
         </div>
       </div>
@@ -463,25 +450,43 @@ const StatCard = ({ title, value, sub, icon, color, trend, isRisk=false }) => {
         </span>
         <span className="text-[9px] sm:text-xs font-medium text-[#8A9CB7] truncate">{sub}</span>
       </div>
-      <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-[#1988A3] to-[#11C6DE] opacity-80" />
+      <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-[#1988A3] via-[#11C6DE] to-[#1988A3] group-hover:h-1.5 transition-all duration-300 opacity-80" />
     </motion.div>
   );
 };
 
-const ChartBar = ({ label, h, shadedH, shadedColor, mainColor }) => (
-  <div className="flex-1 flex flex-col items-center gap-3 h-full justify-end">
-    <div className="w-full rounded-xl overflow-hidden relative group cursor-pointer transition-all flex flex-col justify-end" style={{ height: h }}>
+const ChartBar = ({ label, h, shadedH, shadedColor, mainColor, delay = 0 }) => (
+  <div className="flex-1 flex flex-col items-center gap-2.5 h-full justify-end group cursor-pointer">
+    <div className="text-[10px] sm:text-xs font-bold text-[#1988A3] opacity-0 group-hover:opacity-100 transform translate-y-1 group-hover:translate-y-0 transition-all duration-200">
+      {h}
+    </div>
+    <motion.div 
+      initial={{ height: 0, opacity: 0 }}
+      animate={{ height: h, opacity: 1 }}
+      transition={{ duration: 0.7, delay: delay * 0.08, ease: [0.16, 1, 0.3, 1] }}
+      whileHover={{ scaleY: 1.04, filter: 'brightness(1.08)' }}
+      style={{ originY: 1 }}
+      className="w-full rounded-xl overflow-hidden relative shadow-md shadow-[#1988A3]/10 flex flex-col justify-end transition-shadow group-hover:shadow-lg group-hover:shadow-[#11C6DE]/25"
+    >
       <div className={`w-full rounded-t-xl ${shadedColor}`} style={{ height: shadedH }}></div>
       <div className={`w-full flex-1 ${mainColor}`}></div>
-    </div>
-    <span className="text-xs font-semibold text-[#8A9CB7] tracking-tight mt-1 text-center truncate max-w-full">{label}</span>
+    </motion.div>
+    <span className="text-[11px] sm:text-xs font-semibold text-[#8A9CB7] group-hover:text-[#17233E] tracking-tight mt-1 text-center truncate max-w-full transition-colors">
+      {label}
+    </span>
   </div>
 );
 
 const TeamMemberRow = ({ initials, name, role, score, status, onClick }) => (
-  <div onClick={onClick} className="flex justify-between items-center p-3.5 bg-[#E4EEF8]/60 backdrop-blur-md rounded-2xl border border-white/85 hover:border-[#1988A3]/50 hover:bg-[#E4EEF8]/90 transition-all group cursor-pointer shadow-sm">
+  <motion.div 
+    whileHover={{ x: 6, scale: 1.015 }}
+    whileTap={{ scale: 0.99 }}
+    transition={{ type: "spring", stiffness: 400, damping: 25 }}
+    onClick={onClick} 
+    className="flex justify-between items-center p-3.5 bg-[#E4EEF8]/60 backdrop-blur-md rounded-2xl border border-white/85 hover:border-[#1988A3]/50 hover:bg-[#E4EEF8]/90 transition-all group cursor-pointer shadow-sm"
+  >
     <div className="flex items-center gap-3">
-      <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-[#17233E] to-[#1B3154] text-[#11C6DE] border border-white/20 font-bold text-xs flex items-center justify-center tracking-tight transition-colors shadow-sm">
+      <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-[#17233E] to-[#1B3154] text-[#11C6DE] border border-white/20 font-bold text-xs flex items-center justify-center tracking-tight group-hover:scale-105 transition-transform shadow-sm">
         {initials}
       </div>
       <div>
@@ -493,29 +498,39 @@ const TeamMemberRow = ({ initials, name, role, score, status, onClick }) => (
       <p className="text-sm font-extrabold text-[#17233E] leading-none">{score}</p>
       <p className="text-[10px] font-extrabold text-[#1988A3] mt-1 uppercase tracking-wider">{status}</p>
     </div>
-  </div>
+  </motion.div>
 );
 
-const ProgressBar = ({ label, percent, color }) => (
-  <div className="space-y-2">
+const ProgressBar = ({ label, percent, color, delay = 0 }) => (
+  <div className="space-y-2 group">
     <div className="flex justify-between items-center text-xs font-bold">
-      <span className="text-[#17233E] font-semibold">{label}</span>
+      <span className="text-[#17233E] font-semibold group-hover:text-[#1988A3] transition-colors">{label}</span>
       <span className="text-[#1988A3] font-extrabold">{percent}</span>
     </div>
-    <div className="h-2.5 w-full bg-[#BEDDF5] rounded-full overflow-hidden p-0.5 border border-white/80">
-      <div className="h-full bg-gradient-to-r from-[#1988A3] to-[#11C6DE] rounded-full transition-all duration-500 shadow-sm" style={{ width: percent }} />
+    <div className="h-2.5 w-full bg-[#BEDDF5] rounded-full overflow-hidden p-0.5 border border-white/80 shadow-inner">
+      <motion.div 
+        initial={{ width: 0 }}
+        animate={{ width: percent }}
+        transition={{ duration: 0.9, delay: delay * 0.12, ease: [0.16, 1, 0.3, 1] }}
+        className="h-full bg-gradient-to-r from-[#1988A3] via-[#11C6DE] to-[#1988A3] rounded-full shadow-sm relative overflow-hidden"
+      >
+        <div className="absolute inset-0 bg-white/20 animate-pulse" />
+      </motion.div>
     </div>
   </div>
 );
 
 const ActionBtn = ({ icon, text, onClick }) => (
-  <button 
+  <motion.button 
+    whileHover={{ scale: 1.04, y: -2 }}
+    whileTap={{ scale: 0.96 }}
+    transition={{ type: "spring", stiffness: 400, damping: 25 }}
     onClick={onClick}
-    className="flex items-center justify-center gap-1.5 bg-white/[0.04] border border-white/5 hover:bg-white/[0.08] text-white font-semibold text-[10px] py-2 px-2.5 rounded-lg transition-all flex-1 whitespace-nowrap cursor-pointer"
+    className="flex items-center justify-center gap-1.5 bg-white/[0.06] border border-white/10 hover:border-[#11C6DE]/50 hover:bg-white/[0.12] text-white font-semibold text-[10px] py-2.5 px-3 rounded-xl transition-all flex-1 whitespace-nowrap cursor-pointer shadow-sm"
   >
     {icon}
     <span>{text}</span>
-  </button>
+  </motion.button>
 );
 
 export default TeamLeaderDashboard;
