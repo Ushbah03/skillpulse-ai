@@ -214,6 +214,9 @@ const SignUp = () => {
         organizationName: value,
         workspaceSubdomain: autoSlug,
       }));
+    } else if (name === 'workspaceSubdomain') {
+      const cleanSlug = value.toLowerCase().replace(/[^a-z0-9]/g, '');
+      setFormData((prev) => ({ ...prev, [name]: cleanSlug }));
     } else {
       setFormData((prev) => ({ ...prev, [name]: value }));
     }
@@ -268,8 +271,10 @@ const SignUp = () => {
         lastName,
         isNewWorkspace: signupType === 'create',
         organizationName: signupType === 'create' ? formData.organizationName : undefined,
+        tenantSlug: signupType === 'create' ? formData.workspaceSubdomain : formData.inviteCode,
         workspaceSubdomain: signupType === 'create' ? formData.workspaceSubdomain : undefined,
         inviteCode: signupType === 'join' ? formData.inviteCode : undefined,
+        role: signupType === 'create' ? 'COMPANY_ADMIN' : (roleMap[formData.requestedRole] || 'EMPLOYEE'),
         requestedRole: signupType === 'create' ? 'COMPANY_ADMIN' : (roleMap[formData.requestedRole] || 'EMPLOYEE'),
         plan: signupType === 'create' ? formData.selectedPlan : undefined,
       };
@@ -278,10 +283,21 @@ const SignUp = () => {
 
       if (res?.success) {
         setShowPopup(true);
+
+        const token = res.token;
+        const userData = res.user || res.data;
+        if (token) {
+          localStorage.setItem('token', token);
+        }
+        if (userData) {
+          localStorage.setItem('user', JSON.stringify(userData));
+        }
+
         if (signupType === 'create') {
           try {
             const seats = formData.selectedPlan === 'Enterprise AI' ? 1000 : formData.selectedPlan === 'Professional' ? 250 : 30;
-            const checkoutRes = await import('../services/api').then(m => m.paymentAPI.createCheckoutSession(res.user?.tenant?.id || res.tenant?.id, formData.selectedPlan, seats));
+            const tenantId = userData?.tenant?.id || res.user?.tenant?.id || res.tenant?.id || res.data?.tenant?.id;
+            const checkoutRes = await import('../services/api').then(m => m.paymentAPI.createCheckoutSession(tenantId, formData.selectedPlan, seats));
             if (checkoutRes?.success && checkoutRes.url) {
               window.location.href = checkoutRes.url;
               return;
