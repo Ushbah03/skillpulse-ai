@@ -69,6 +69,7 @@ const TenantManagement = () => {
   });
   const [updatingTenant, setUpdatingTenant] = useState(false);
   const [editError, setEditError] = useState('');
+  const [createError, setCreateError] = useState('');
 
   // Form State for Onboarding Tenant
   const [newTenant, setNewTenant] = useState({
@@ -123,13 +124,20 @@ const TenantManagement = () => {
   const handleCreateTenant = async (e) => {
     e.preventDefault();
     setSaving(true);
+    setCreateError('');
     try {
+      const cleanSlug = (newTenant.domain || newTenant.name || '')
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9-]/g, '');
+
       const payload = {
-        name: newTenant.name,
-        domain: newTenant.domain,
+        name: newTenant.name.trim(),
+        slug: cleanSlug,
+        domain: (newTenant.domain && newTenant.domain.includes('.')) ? newTenant.domain.trim().toLowerCase() : null,
         plan: PLAN_REVERSE[newTenant.tier] || 'ENTERPRISE',
         maxUsers: Number(newTenant.allocatedSeats),
-        adminEmail: newTenant.adminEmail,
+        adminEmail: newTenant.adminEmail?.trim(),
         adminPassword: newTenant.adminPassword,
         authMethod: newTenant.authMethod,
         adminFirstName: newTenant.adminFirstName || 'Company',
@@ -159,9 +167,12 @@ const TenantManagement = () => {
           adminLastName: 'Admin'
         });
         fetchTenants();
+      } else {
+        setCreateError(res?.message || 'Failed to onboard new tenant.');
       }
     } catch (err) {
       console.warn('Failed to onboard new tenant in database:', err);
+      setCreateError(err.message || 'Failed to onboard new tenant in database.');
     } finally {
       setSaving(false);
     }
@@ -285,7 +296,7 @@ const TenantManagement = () => {
           <motion.button
             whileHover={{ scale: 1.04 }}
             whileTap={{ scale: 0.96 }}
-            onClick={() => setIsModalOpen(true)}
+            onClick={() => { setCreateError(''); setIsModalOpen(true); }}
             className="w-full md:w-auto justify-center flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-xl sm:rounded-2xl bg-gradient-to-r from-[#1988A3] to-[#11C6DE] hover:from-[#157289] hover:to-[#0EB3C9] text-white text-xs sm:text-sm font-bold shadow-lg shadow-[#1988A3]/25 transition-all shrink-0 cursor-pointer"
           >
             <Plus className="w-4 h-4" />
@@ -674,6 +685,11 @@ const TenantManagement = () => {
               </div>
 
               <form onSubmit={handleCreateTenant} className="mt-5 space-y-4">
+                {createError && (
+                  <div className="p-3 bg-rose-50 border border-rose-200 text-rose-700 text-xs rounded-xl font-medium">
+                    {createError}
+                  </div>
+                )}
                 <div>
                   <label className="block text-xs font-bold uppercase tracking-wider text-[#8A9CB7] mb-1.5">Company Legal Name</label>
                   <input

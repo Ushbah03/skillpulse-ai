@@ -179,12 +179,14 @@ const UserManagement = () => {
     setSaving(true);
     try {
       const payload = {
-        firstName: newUser.firstName,
-        lastName: newUser.lastName,
-        email: newUser.email,
+        name: `${newUser.firstName} ${newUser.lastName}`.trim(),
+        firstName: newUser.firstName.trim(),
+        lastName: newUser.lastName.trim(),
+        email: newUser.email.trim(),
         password: newUser.password,
         role: newUser.role,
         tenantId: newUser.tenantId,
+        dept: newUser.dept || 'General',
         department: newUser.dept || 'General'
       };
 
