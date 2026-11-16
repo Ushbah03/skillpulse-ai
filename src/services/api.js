@@ -300,6 +300,11 @@ export const adminAPI = {
       method: 'POST',
       body: JSON.stringify(userData),
     }),
+  updateUser: (userId, updateData) =>
+    apiRequest(`/admin/users/${userId}`, {
+      method: 'PATCH',
+      body: JSON.stringify(updateData),
+    }),
   updateUserRole: (userId, updateData) =>
     apiRequest(`/admin/users/${userId}`, {
       method: 'PATCH',

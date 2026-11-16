@@ -68,6 +68,7 @@ const TenantManagement = () => {
     status: 'ACTIVE'
   });
   const [updatingTenant, setUpdatingTenant] = useState(false);
+  const [editError, setEditError] = useState('');
 
   // Form State for Onboarding Tenant
   const [newTenant, setNewTenant] = useState({
@@ -90,7 +91,9 @@ const TenantManagement = () => {
         const mapped = res.data.map(t => ({
           id: t.id,
           name: t.name,
-          domain: t.domain || 'enterprise.com',
+          slug: t.slug,
+          domain: t.domain || (t.slug ? `${t.slug}.skillpulse.ai` : ''),
+          rawDomain: t.domain || null,
           tier: PLAN_MAP[t.plan] || t.plan,
           rawPlan: t.plan,
           status: STATUS_MAP[t.status] || t.status,
@@ -168,9 +171,10 @@ const TenantManagement = () => {
   const openEditModal = (tenant) => {
     const fixedSeats = tenant.tier === 'Starter' ? 30 : tenant.tier === 'Professional' ? 250 : 1000;
     setEditingTenant(tenant);
+    setEditError('');
     setEditForm({
       name: tenant.name,
-      domain: tenant.domain,
+      domain: tenant.rawDomain || (tenant.slug ? `${tenant.slug}.skillpulse.ai` : ''),
       tier: tenant.tier,
       maxUsers: fixedSeats,
       status: tenant.rawStatus
@@ -182,10 +186,20 @@ const TenantManagement = () => {
     e.preventDefault();
     if (!editingTenant) return;
     setUpdatingTenant(true);
+    setEditError('');
     try {
+      const trimmedDomain = editForm.domain ? editForm.domain.trim().toLowerCase() : '';
+      let domainValue = undefined;
+      // If user typed empty or left default tenant subdomain, don't set a conflicting custom domain
+      if (trimmedDomain === '' || trimmedDomain === `${editingTenant.slug}.skillpulse.ai` || trimmedDomain === editingTenant.slug) {
+        domainValue = editingTenant.rawDomain ? editingTenant.rawDomain : null;
+      } else {
+        domainValue = trimmedDomain;
+      }
+
       const payload = {
-        name: editForm.name,
-        domain: editForm.domain,
+        name: editForm.name.trim(),
+        domain: domainValue,
         plan: PLAN_REVERSE[editForm.tier] || 'PRO',
         maxUsers: Number(editForm.maxUsers),
         status: editForm.status
@@ -198,6 +212,7 @@ const TenantManagement = () => {
       }
     } catch (err) {
       console.warn('Failed to update tenant configuration:', err);
+      setEditError(err.message || 'Failed to update tenant configuration.');
     } finally {
       setUpdatingTenant(false);
     }
@@ -542,6 +557,11 @@ const TenantManagement = () => {
               </div>
 
               <form onSubmit={handleSaveTenantEdits} className="mt-5 space-y-4">
+                {editError && (
+                  <div className="p-3 bg-rose-50 border border-rose-200 text-rose-700 text-xs rounded-xl font-medium">
+                    {editError}
+                  </div>
+                )}
                 <div>
                   <label className="block text-xs font-bold uppercase tracking-wider text-[#8A9CB7] mb-1.5">Company Legal Name</label>
                   <input
