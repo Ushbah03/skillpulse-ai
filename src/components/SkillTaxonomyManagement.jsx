@@ -287,6 +287,26 @@ const SkillTaxonomyManagement = () => {
     }
   };
 
+  const handleForceDeleteSkill = async (skill) => {
+    if (!skill) return;
+    setDeleting(true);
+    try {
+      const res = await adminAPI.deleteSkill(skill.id, { force: true });
+      if (res?.success) {
+        showToast(`Competency '${skill.name}' forcefully unlinked and removed from taxonomy.`, 'success');
+        setBlockedDeleteSkill(null);
+        await fetchTaxonomy();
+      } else {
+        showToast(res?.message || 'Failed to force delete skill.', 'error');
+      }
+    } catch (err) {
+      const errorMsg = err?.response?.data?.message || err?.message || 'Failed to force delete skill.';
+      showToast(errorMsg, 'error');
+    } finally {
+      setDeleting(false);
+    }
+  };
+
   // Indexed Keywords count
   const totalInferredKeywords = useMemo(() => {
     const keywordSet = new Set();
@@ -442,12 +462,23 @@ const SkillTaxonomyManagement = () => {
                 </p>
               </div>
 
-              <div className="mt-6 flex justify-end">
+              <div className="mt-6 flex justify-end gap-2.5">
                 <button
+                  type="button"
                   onClick={() => setBlockedDeleteSkill(null)}
-                  className="px-5 py-2.5 rounded-xl bg-white hover:bg-slate-50 text-[#17233E] text-xs font-semibold transition-colors border border-[#BEDDF5] shadow-sm"
+                  disabled={deleting}
+                  className="px-5 py-2.5 rounded-xl bg-white hover:bg-slate-50 text-[#17233E] text-xs font-semibold transition-colors border border-[#BEDDF5] shadow-sm cursor-pointer disabled:opacity-50"
                 >
                   Understood & Close
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleForceDeleteSkill(blockedDeleteSkill)}
+                  disabled={deleting}
+                  className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-rose-600 to-rose-700 hover:from-rose-700 hover:to-rose-800 text-white text-xs font-bold transition-all flex items-center gap-2 shadow-sm cursor-pointer disabled:opacity-50"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                  {deleting ? 'Unlinking & Deleting...' : 'Force Unlink & Delete'}
                 </button>
               </div>
             </motion.div>

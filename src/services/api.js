@@ -325,8 +325,8 @@ export const adminAPI = {
       method: 'PATCH',
       body: JSON.stringify(skillData),
     }),
-  deleteSkill: (id) =>
-    apiRequest(`/admin/taxonomy/skills/${id}`, {
+  deleteSkill: (id, options = {}) =>
+    apiRequest(`/admin/taxonomy/skills/${id}${options?.force ? '?force=true' : ''}`, {
       method: 'DELETE',
     }),
   aiSyncTaxonomy: () =>
