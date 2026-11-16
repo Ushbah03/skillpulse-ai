@@ -232,7 +232,7 @@ export const hrAPI = {
   getAnalytics: () => apiRequest('/hr/analytics'),
   getForecast: () => apiRequest('/hr/forecast'),
   getSuccession: () => apiRequest('/hr/succession'),
-  getCompliance: () => apiRequest('/hr/compliance'),
+  getCompliance: () => apiRequest(`/hr/compliance?clientDate=${encodeURIComponent(new Date().toISOString())}`),
   sendComplianceReminders: () =>
     apiRequest('/hr/compliance/reminders', {
       method: 'POST'

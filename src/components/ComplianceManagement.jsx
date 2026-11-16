@@ -168,14 +168,37 @@ const ComplianceManagement = () => {
     return () => { isMounted = false; };
   }, []);
 
+  // --- SYNCHRONIZE RECORDS WITH LIVE CURRENT DATE ---
+  const syncedRecords = React.useMemo(() => {
+    if (!complianceState?.data || complianceState.data.length === 0) return [];
+    const now = new Date();
+    return complianceState.data.map((item) => {
+      const rawDate = item.dueDate || item.expiryDate;
+      let diffDays = item.daysRemaining;
+      let effectiveStatus = item.status;
+      if (rawDate) {
+        const due = new Date(rawDate);
+        if (!isNaN(due.getTime())) {
+          diffDays = Math.ceil((due - now) / (1000 * 60 * 60 * 24));
+          effectiveStatus = diffDays < 0 ? 'EXPIRED' : diffDays <= 30 ? 'PENDING' : 'COMPLIANT';
+        }
+      }
+      return { ...item, effectiveStatus, diffDays };
+    });
+  }, [complianceState]);
+
   // --- DERIVED FROM DB: certification timeline from compliance items ---
   const certTimeline = React.useMemo(() => {
-    if (!complianceState?.data || complianceState.data.length === 0) return [];
-    return complianceState.data.slice(0, 5).map((item) => {
-      const isExpired  = item.status === 'EXPIRED' || item.status === 'NON_COMPLIANT';
-      const isPending  = item.status === 'PENDING';
+    if (syncedRecords.length === 0) return [];
+    return syncedRecords.slice(0, 5).map((item) => {
+      const isExpired  = item.effectiveStatus === 'EXPIRED' || item.effectiveStatus === 'NON_COMPLIANT';
+      const isPending  = item.effectiveStatus === 'PENDING';
       const dotColor   = isExpired ? '#ef4444' : isPending ? '#f59e0b' : '#10b981';
-      const statusText = isExpired ? 'Renew Certification' : isPending ? 'Expires soon' : 'Status: Valid';
+      const statusText = isExpired
+        ? (typeof item.diffDays === 'number' && item.diffDays < 0 ? `Expired (${Math.abs(item.diffDays)}d overdue)` : 'Renew Certification')
+        : isPending
+        ? (typeof item.diffDays === 'number' ? `Expires soon (${item.diffDays}d left)` : 'Expires soon')
+        : 'Status: Valid';
       const certName   = item.regulationType || item.certificationName || item.type || 'Mandatory Regulation';
       const rawDate    = item.dueDate || item.expiryDate;
       return {
@@ -191,14 +214,14 @@ const ComplianceManagement = () => {
         titleColor:   isExpired ? 'text-red-600'     : isPending ? 'text-amber-600'  : 'text-emerald-700',
       };
     });
-  }, [complianceState]);
+  }, [syncedRecords]);
 
   // --- DERIVED FROM DB: employee compliance rows ---
   const employeeData = React.useMemo(() => {
-    if (!complianceState?.data || complianceState.data.length === 0) return [];
-    return complianceState.data.map((item, idx) => {
-      const isExpired  = item.status === 'EXPIRED' || item.status === 'NON_COMPLIANT';
-      const isPending  = item.status === 'PENDING';
+    if (syncedRecords.length === 0) return [];
+    return syncedRecords.map((item, idx) => {
+      const isExpired  = item.effectiveStatus === 'EXPIRED' || item.effectiveStatus === 'NON_COMPLIANT';
+      const isPending  = item.effectiveStatus === 'PENDING';
       const statusLabel    = isExpired ? 'Non-Compliant' : isPending ? 'Expiring Soon' : 'Compliant';
       const statusStyle    = isExpired
         ? 'bg-red-50 text-red-600 border border-red-200'
@@ -208,7 +231,12 @@ const ComplianceManagement = () => {
       const dotColor       = isExpired ? '#ef4444' : isPending ? '#f59e0b' : '#10b981';
       const certName       = item.regulationType || item.certificationName || item.type || 'Mandatory Regulation';
       const rawDate        = item.dueDate || item.expiryDate;
-      const score          = isExpired ? 45 : isPending ? 72 : 98;
+      const dDays          = typeof item.diffDays === 'number' ? item.diffDays : 0;
+      const score          = isExpired
+        ? Math.max(25, 60 - Math.min(35, Math.abs(dDays)))
+        : isPending
+        ? Math.round(70 + (Math.max(0, dDays) / 30) * 18)
+        : Math.min(100, Math.round(92 + Math.min(8, Math.max(0, dDays - 30) / 20)));
       const initials       = item.user?.firstName ? `${item.user.firstName[0]}${item.user.lastName ? item.user.lastName[0] : ''}` : 'EM';
 
       return {
@@ -219,27 +247,27 @@ const ComplianceManagement = () => {
         status:      statusLabel,
         statusStyle,
         dotColor,
-        expiry:      rawDate ? new Date(rawDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : 'N/A',
+        expiry:      rawDate ? new Date(rawDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'N/A',
         score,
         scoreColor:  isExpired ? 'text-red-500' : 'text-slate-800',
         initials,
       };
     });
-  }, [complianceState]);
+  }, [syncedRecords]);
 
   // Unique departments for filter dropdown
   const uniqueDepartments = React.useMemo(() => {
     return Array.from(new Set(employeeData.map(e => e.dept).filter(Boolean)));
   }, [employeeData]);
 
-  // --- COMPUTE STATISTICS DYNAMICALLY FROM DATABASE VALUES ---
-  const totalRecords = complianceState?.data?.length || 0;
-  const compliantCount = complianceState?.data ? complianceState.data.filter(r => r.status === 'COMPLIANT').length : 0;
-  const expiringCount = complianceState?.data ? complianceState.data.filter(r => r.status === 'PENDING').length : 0;
-  const nonCompliantCount = complianceState?.data ? complianceState.data.filter(r => r.status === 'EXPIRED' || r.status === 'NON_COMPLIANT').length : 0;
+  // --- COMPUTE STATISTICS DYNAMICALLY FROM DATE-SYNCED DATABASE VALUES ---
+  const totalRecords = syncedRecords.length;
+  const compliantCount = syncedRecords.filter(r => r.effectiveStatus === 'COMPLIANT').length;
+  const expiringCount = syncedRecords.filter(r => r.effectiveStatus === 'PENDING').length;
+  const nonCompliantCount = syncedRecords.filter(r => r.effectiveStatus === 'EXPIRED' || r.effectiveStatus === 'NON_COMPLIANT').length;
 
   const overallComplianceRate = totalRecords > 0
-    ? (complianceState?.summary?.overallCompliancePct ?? Math.round((compliantCount / totalRecords) * 100))
+    ? Math.round((compliantCount / totalRecords) * 100)
     : 0;
   const compliantPct = totalRecords ? Math.round((compliantCount / totalRecords) * 100) : 0;
   const expiringPct = totalRecords ? Math.round((expiringCount / totalRecords) * 100) : 0;
