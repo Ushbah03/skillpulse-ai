@@ -34,6 +34,12 @@ const OrganizationSkillAnalytics = () => {
   const [isAIModalOpen, setIsAIModalOpen] = useState(false);
   const [isDispatching, setIsDispatching] = useState(false);
   const [toastMessage, setToastMessage] = useState(null);
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [isSortOpen, setIsSortOpen] = useState(false);
+  const [severityFilter, setSeverityFilter] = useState('ALL');
+  const [deptFilter, setDeptFilter] = useState('ALL');
+  const [statusFilter, setStatusFilter] = useState('ALL');
+  const [sortBy, setSortBy] = useState('SEVERITY_DESC');
 
   const itemsPerPage = 5;
 
@@ -62,18 +68,33 @@ const OrganizationSkillAnalytics = () => {
   // Derive employee gaps from backend skillGaps data
   const employeeGaps = useMemo(() => {
     if (!analyticsData?.skillGaps) return [];
-    return analyticsData.skillGaps.map(g => ({
-      id: g.id,
-      name: `${g.user?.firstName || 'Employee'} ${g.user?.lastName || ''}`.trim(),
-      dept: g.user?.department ? g.user.department.name : 'Unassigned',
-      skill: g.skill?.name || 'General Skill',
-      score: `${g.currentLevel || 1} / ${g.requiredLevel || 3}`,
-      severity: g.severity || 'MODERATE',
-      isAssigned: Boolean(g.assignedCourseId),
-      assignedCourseTitle: g.courseTitle || g.assignedCourse?.title || null,
-      rec: g.courseTitle || g.assignedCourse?.title || (g.severity === 'CRITICAL' ? `${g.skill?.name || 'Technical'} Remedial Track` : `${g.skill?.name || 'Skill'} Fundamentals Module`)
-    }));
+    return analyticsData.skillGaps.map(g => {
+      const currentVal = Number(g.currentLevel ?? 1);
+      const reqVal = Number(g.requiredLevel ?? g.targetLevel ?? 3);
+      const sev = (g.severity || 'MODERATE').toUpperCase();
+      const sevWeight = sev === 'CRITICAL' ? 4 : sev === 'HIGH' ? 3 : sev === 'MODERATE' ? 2 : 1;
+      return {
+        id: g.id,
+        name: `${g.user?.firstName || 'Employee'} ${g.user?.lastName || ''}`.trim(),
+        dept: g.user?.department ? g.user.department.name : 'Unassigned',
+        skill: g.skill?.name || 'General Skill',
+        score: `${currentVal} / ${reqVal}`,
+        currentVal,
+        reqVal,
+        gapDelta: reqVal - currentVal,
+        severity: sev,
+        sevWeight,
+        isAssigned: Boolean(g.assignedCourseId),
+        assignedCourseTitle: g.courseTitle || g.assignedCourse?.title || null,
+        rec: g.courseTitle || g.assignedCourse?.title || (sev === 'CRITICAL' ? `${g.skill?.name || 'Technical'} Remedial Track` : `${g.skill?.name || 'Skill'} Fundamentals Module`)
+      };
+    });
   }, [analyticsData]);
+
+  // Unique departments & severities for Filter menu
+  const uniqueDepts = useMemo(() => Array.from(new Set(employeeGaps.map(e => e.dept).filter(Boolean))), [employeeGaps]);
+  const uniqueSeverities = useMemo(() => Array.from(new Set(employeeGaps.map(e => e.severity).filter(Boolean))), [employeeGaps]);
+  const activeFilterCount = (severityFilter !== 'ALL' ? 1 : 0) + (deptFilter !== 'ALL' ? 1 : 0) + (statusFilter !== 'ALL' ? 1 : 0);
 
   // Track assigned vs unassigned gaps
   const unassignedGaps = useMemo(() => {
@@ -106,12 +127,47 @@ const OrganizationSkillAnalytics = () => {
   }, [analyticsData]);
 
 
-  // Filtered & Paginated Data
-  const filteredEmployees = employeeGaps.filter(emp =>
-    emp.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    emp.dept.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    emp.skill.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // Filtered, Sorted & Paginated Data
+  const filteredEmployees = useMemo(() => {
+    let list = employeeGaps.filter(emp =>
+      emp.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      emp.dept.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      emp.skill.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+    if (severityFilter !== 'ALL') {
+      list = list.filter(emp => emp.severity === severityFilter);
+    }
+    if (deptFilter !== 'ALL') {
+      list = list.filter(emp => emp.dept === deptFilter);
+    }
+    if (statusFilter !== 'ALL') {
+      list = list.filter(emp => statusFilter === 'ASSIGNED' ? emp.isAssigned : !emp.isAssigned);
+    }
+
+    const sorted = [...list];
+    sorted.sort((a, b) => {
+      switch (sortBy) {
+        case 'SEVERITY_DESC':
+          return b.sevWeight - a.sevWeight || b.gapDelta - a.gapDelta;
+        case 'SEVERITY_ASC':
+          return a.sevWeight - b.sevWeight || a.gapDelta - b.gapDelta;
+        case 'GAP_DESC':
+          return b.gapDelta - a.gapDelta || a.currentVal - b.currentVal;
+        case 'CURRENT_ASC':
+          return a.currentVal - b.currentVal;
+        case 'CURRENT_DESC':
+          return b.currentVal - a.currentVal;
+        case 'NAME_ASC':
+          return a.name.localeCompare(b.name);
+        case 'SKILL_ASC':
+          return a.skill.localeCompare(b.skill);
+        default:
+          return 0;
+      }
+    });
+    return sorted;
+  }, [employeeGaps, searchQuery, severityFilter, deptFilter, statusFilter, sortBy]);
 
   const totalPages = Math.ceil(filteredEmployees.length / itemsPerPage);
   const currentItems = filteredEmployees.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
@@ -359,12 +415,207 @@ const OrganizationSkillAnalytics = () => {
         )}
 
         {/* --- SECTION 5: EMPLOYEE GAPS TABLE --- */}
-        <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-2xl sm:rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 overflow-hidden">
+        <div className="bg-gradient-to-br from-[#D8EBF9]/95 via-[#CBE3F7]/90 to-[#BEDDF5]/85 backdrop-blur-xl rounded-2xl sm:rounded-3xl border border-white/85 shadow-xl shadow-[#1B3154]/6 relative">
           <div className="p-4 sm:p-8 border-b border-slate-200/50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-            <h3 className="text-lg sm:text-xl font-black text-slate-900">Employee Skill Gap Details</h3>
-            <div className="flex gap-2 sm:gap-3 w-full sm:w-auto">
-              <button onClick={() => triggerAction("Filter Menu")} className="flex-1 sm:flex-initial flex items-center justify-center gap-2 px-3 sm:px-4 py-2 border border-slate-200/80 rounded-xl text-xs font-bold text-slate-600 hover:bg-white/50 transition-colors"><Filter size={14}/> Filter</button>
-              <button onClick={() => triggerAction("Sort Options")} className="flex-1 sm:flex-initial flex items-center justify-center gap-2 px-3 sm:px-4 py-2 border border-slate-200/80 rounded-xl text-xs font-bold text-slate-600 hover:bg-white/50 transition-colors"><SlidersHorizontal size={14}/> Sort</button>
+            <div className="flex flex-wrap items-center gap-2.5">
+              <h3 className="text-lg sm:text-xl font-black text-slate-900">Employee Skill Gap Details</h3>
+              {activeFilterCount > 0 && (
+                <button
+                  onClick={() => {
+                    setSeverityFilter('ALL');
+                    setDeptFilter('ALL');
+                    setStatusFilter('ALL');
+                    setCurrentPage(1);
+                  }}
+                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#1988A3]/15 text-[#17233E] text-[11px] font-bold hover:bg-[#1988A3]/25 transition cursor-pointer"
+                >
+                  Clear Filters ({activeFilterCount}) <X size={12} />
+                </button>
+              )}
+            </div>
+
+            <div className="flex gap-2 sm:gap-3 w-full sm:w-auto relative">
+              {/* Filter Button & Dropdown */}
+              <div className="relative flex-1 sm:flex-initial">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsFilterOpen(!isFilterOpen);
+                    setIsSortOpen(false);
+                  }}
+                  className={`w-full flex items-center justify-center gap-2 px-3.5 sm:px-4 py-2 border rounded-xl text-xs font-bold transition-colors cursor-pointer ${
+                    activeFilterCount > 0 || isFilterOpen
+                      ? 'bg-[#17233E] text-white border-[#1988A3] shadow-sm'
+                      : 'border-slate-200/80 text-slate-700 bg-white/60 hover:bg-white'
+                  }`}
+                >
+                  <Filter size={14} />
+                  <span>Filter</span>
+                  {activeFilterCount > 0 && (
+                    <span className="px-1.5 py-0.2 rounded-full bg-[#11C6DE] text-[#17233E] text-[10px] font-black">
+                      {activeFilterCount}
+                    </span>
+                  )}
+                </button>
+
+                {isFilterOpen && (
+                  <div className="absolute right-0 mt-2 w-72 bg-white/95 backdrop-blur-2xl rounded-2xl shadow-2xl border border-white p-4 z-40 space-y-4 text-left">
+                    <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+                      <span className="text-xs font-black text-[#17233E] uppercase tracking-wider">Filter Skill Gaps</span>
+                      {activeFilterCount > 0 && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSeverityFilter('ALL');
+                            setDeptFilter('ALL');
+                            setStatusFilter('ALL');
+                            setCurrentPage(1);
+                          }}
+                          className="text-[11px] font-bold text-[#1988A3] hover:underline cursor-pointer"
+                        >
+                          Reset All
+                        </button>
+                      )}
+                    </div>
+
+                    {/* Severity Filter */}
+                    <div>
+                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Gap Severity</p>
+                      <div className="flex flex-wrap gap-1.5">
+                        {['ALL', ...uniqueSeverities].map((sev) => (
+                          <button
+                            key={sev}
+                            type="button"
+                            onClick={() => {
+                              setSeverityFilter(sev);
+                              setCurrentPage(1);
+                            }}
+                            className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition cursor-pointer ${
+                              severityFilter === sev
+                                ? 'bg-[#17233E] text-white'
+                                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                            }`}
+                          >
+                            {sev === 'ALL' ? 'All' : sev}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Department Filter */}
+                    <div>
+                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Department</p>
+                      <div className="flex flex-col gap-1 max-h-36 overflow-y-auto">
+                        {['ALL', ...uniqueDepts].map((dept) => (
+                          <button
+                            key={dept}
+                            type="button"
+                            onClick={() => {
+                              setDeptFilter(dept);
+                              setCurrentPage(1);
+                            }}
+                            className={`w-full text-left px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer ${
+                              deptFilter === dept
+                                ? 'bg-[#1988A3]/15 text-[#17233E]'
+                                : 'hover:bg-slate-100 text-slate-600'
+                            }`}
+                          >
+                            {dept === 'ALL' ? 'All Departments' : dept}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Training Status Filter */}
+                    <div>
+                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Training Status</p>
+                      <div className="grid grid-cols-3 gap-1.5">
+                        {[
+                          { id: 'ALL', label: 'All' },
+                          { id: 'ASSIGNED', label: 'Enrolled' },
+                          { id: 'PENDING', label: 'Pending' }
+                        ].map((st) => (
+                          <button
+                            key={st.id}
+                            type="button"
+                            onClick={() => {
+                              setStatusFilter(st.id);
+                              setCurrentPage(1);
+                            }}
+                            className={`px-2 py-1.5 rounded-lg text-[11px] font-bold transition cursor-pointer ${
+                              statusFilter === st.id
+                                ? 'bg-[#17233E] text-white'
+                                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                            }`}
+                          >
+                            {st.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => setIsFilterOpen(false)}
+                      className="w-full py-2 rounded-xl bg-[#1988A3] hover:bg-[#17233E] text-white text-xs font-bold transition cursor-pointer"
+                    >
+                      Apply Filters
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Sort Button & Dropdown */}
+              <div className="relative flex-1 sm:flex-initial">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsSortOpen(!isSortOpen);
+                    setIsFilterOpen(false);
+                  }}
+                  className={`w-full flex items-center justify-center gap-2 px-3.5 sm:px-4 py-2 border rounded-xl text-xs font-bold transition-colors cursor-pointer ${
+                    isSortOpen
+                      ? 'bg-[#17233E] text-white border-[#1988A3] shadow-sm'
+                      : 'border-slate-200/80 text-slate-700 bg-white/60 hover:bg-white'
+                  }`}
+                >
+                  <SlidersHorizontal size={14} />
+                  <span>Sort</span>
+                </button>
+
+                {isSortOpen && (
+                  <div className="absolute right-0 mt-2 w-60 bg-white/95 backdrop-blur-2xl rounded-2xl shadow-2xl border border-white p-2.5 z-40 space-y-1 text-left">
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-3 py-1">Sort Table By</p>
+                    {[
+                      { id: 'SEVERITY_DESC', label: 'Severity (Critical First)' },
+                      { id: 'SEVERITY_ASC', label: 'Severity (Low First)' },
+                      { id: 'GAP_DESC', label: 'Largest Skill Gap First' },
+                      { id: 'CURRENT_ASC', label: 'Lowest Current Score' },
+                      { id: 'CURRENT_DESC', label: 'Highest Current Score' },
+                      { id: 'NAME_ASC', label: 'Employee Name (A → Z)' },
+                      { id: 'SKILL_ASC', label: 'Skill Name (A → Z)' }
+                    ].map((opt) => (
+                      <button
+                        key={opt.id}
+                        type="button"
+                        onClick={() => {
+                          setSortBy(opt.id);
+                          setIsSortOpen(false);
+                          setCurrentPage(1);
+                        }}
+                        className={`w-full text-left px-3 py-2 rounded-xl text-xs font-bold flex items-center justify-between transition cursor-pointer ${
+                          sortBy === opt.id
+                            ? 'bg-[#17233E] text-white'
+                            : 'hover:bg-slate-100 text-slate-700'
+                        }`}
+                      >
+                        <span>{opt.label}</span>
+                        {sortBy === opt.id && <CheckCircle2 size={14} className="text-[#11C6DE]" />}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
