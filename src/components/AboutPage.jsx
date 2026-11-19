@@ -19,7 +19,7 @@ const AboutPage = () => {
           <div>
             <div className="inline-flex items-center gap-2 bg-[#1988A3]/10 border border-[#1988A3]/25 px-4 py-1.5 rounded-full mb-6 backdrop-blur-md">
               <Sparkles className="w-4 h-4 text-[#1988A3] animate-pulse" />
-              <span className="text-[#1988A3] text-xs font-bold uppercase tracking-widest font-mono">
+              <span className="text-[#1988A3] text-sm font-bold uppercase tracking-widest font-mono">
                 ABOUT SKILLPULSE AI
               </span>
             </div>
@@ -30,10 +30,10 @@ const AboutPage = () => {
                 Intelligence with AI
               </span>
             </h1>
-            <p className="text-[#5A6D89] text-xs sm:text-base mb-3 sm:mb-5 font-normal leading-relaxed">
+            <p className="text-[#243656] text-base sm:text-lg mb-3 sm:mb-5 font-medium leading-relaxed">
               SkillPulse AI bridges the gap between talent potential and organizational growth using real-time skill analytics and PostgreSQL-backed workforce telemetry.
             </p>
-            <p className="text-[#17233E] text-xs border-l-2 border-[#1988A3] pl-4 py-1 font-mono font-medium">
+            <p className="text-[#17233E] text-sm border-l-2 border-[#1988A3] pl-4 py-1 font-mono font-medium">
               Our mission is empowering organizations with data-driven insights to build resilient, high-performing engineering and enterprise teams.
             </p>
           </div>
@@ -54,11 +54,11 @@ const AboutPage = () => {
       {/* 2. THE CHALLENGES WE SOLVE */}
       <section className="py-10 sm:py-16 md:py-20 px-4 sm:px-6 md:px-12 relative z-10">
         <div className="container mx-auto text-center mb-14 max-w-3xl">
-          <span className="px-3.5 py-1.5 rounded-full bg-[#17233E]/10 border border-[#17233E]/20 text-[#17233E] text-xs font-mono font-bold uppercase tracking-wider inline-block mb-3.5">
+          <span className="px-3.5 py-1.5 rounded-full bg-[#17233E]/10 border border-[#17233E]/20 text-[#17233E] text-sm font-mono font-bold uppercase tracking-wider inline-block mb-3.5">
             WORKFORCE DISCONNECTS
           </span>
           <h2 className="text-xl sm:text-3xl md:text-5xl font-extrabold text-[#17233E] mb-2 sm:mb-3 tracking-tight">The Challenges Modern Organizations Face</h2>
-          <p className="text-[#5A6D89] text-xs sm:text-base font-normal">Traditional performance reviews are static and manual. SkillPulse AI makes talent management predictive and continuous.</p>
+          <p className="text-[#243656] text-base sm:text-lg font-medium">Traditional performance reviews are static and manual. SkillPulse AI makes talent management predictive and continuous.</p>
         </div>
 
         <div className="container mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-6 max-w-7xl text-left">
@@ -76,7 +76,7 @@ const AboutPage = () => {
                 0{i+1}
               </div>
               <h3 className="text-base sm:text-lg font-bold mb-1.5 text-[#17233E] group-hover:text-[#1988A3] transition-colors">{item.title}</h3>
-              <p className="text-[#5A6D89] text-xs leading-relaxed font-normal">{item.desc}</p>
+              <p className="text-[#243656] text-sm leading-relaxed font-medium">{item.desc}</p>
             </div>
           ))}
         </div>
@@ -86,11 +86,11 @@ const AboutPage = () => {
       <section className="py-10 sm:py-16 md:py-20 px-4 sm:px-6 md:px-12 relative z-10">
         <div className="container mx-auto max-w-7xl grid md:grid-cols-2 gap-14 items-center text-left">
           <div>
-            <span className="px-3.5 py-1.5 rounded-full bg-[#1988A3]/10 border border-[#1988A3]/25 text-[#1988A3] text-xs font-mono font-bold uppercase tracking-wider inline-block mb-3.5">
+            <span className="px-3.5 py-1.5 rounded-full bg-[#1988A3]/10 border border-[#1988A3]/25 text-[#1988A3] text-sm font-mono font-bold uppercase tracking-wider inline-block mb-3.5">
               PLATFORM ARCHITECTURE
             </span>
             <h2 className="text-xl sm:text-3xl md:text-5xl font-extrabold text-[#17233E] mb-3 sm:mb-5 tracking-tight">Our Intelligent Approach</h2>
-            <p className="text-[#5A6D89] text-xs sm:text-base mb-5 sm:mb-8 leading-relaxed font-normal">
+            <p className="text-[#243656] text-base sm:text-lg mb-5 sm:mb-8 leading-relaxed font-medium">
               SkillPulse AI connects live PostgreSQL databases with specialized AI inference engines to provide real-time skill intelligence across all enterprise levels.
             </p>
             
@@ -110,7 +110,7 @@ const AboutPage = () => {
                   </div>
                   <div>
                     <h4 className="font-extrabold text-[#17233E] text-sm mb-0.5">{item.title}</h4>
-                    <p className="text-[#5A6D89] text-xs font-normal">{item.desc}</p>
+                    <p className="text-[#243656] text-sm font-medium">{item.desc}</p>
                   </div>
                 </div>
               ))}
@@ -130,7 +130,7 @@ const AboutPage = () => {
             {/* Live Metrics Badge */}
             <div className="mt-3 sm:mt-0 sm:absolute sm:-bottom-5 sm:-left-5 z-20 bg-[#17233E] text-white p-3.5 sm:p-5 rounded-xl sm:rounded-2xl shadow-xl select-none border border-white/20 text-center sm:text-left">
                <div className="text-2xl sm:text-3xl font-black font-mono text-[#1988A3]">100%</div>
-               <div className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#8A9CB7] mt-0.5">
+               <div className="text-xs sm:text-sm font-mono font-bold uppercase tracking-wider text-[#8A9CB7] mt-0.5">
                  PostgreSQL Telemetry Sync
                </div>
             </div>
@@ -154,7 +154,7 @@ const AboutPage = () => {
                <div className="text-xl sm:text-3xl md:text-4xl font-black text-[#17233E] mb-0.5 sm:mb-1 font-mono">
                  {stat.val}
                </div>
-               <div className="text-[10px] font-mono font-bold text-[#5A6D89] uppercase tracking-widest">{stat.label}</div>
+               <div className="text-xs sm:text-sm font-mono font-bold text-[#243656] uppercase tracking-widest">{stat.label}</div>
              </div>
            ))}
         </div>
@@ -164,19 +164,19 @@ const AboutPage = () => {
       <section className="relative text-white py-10 sm:py-20 px-4 sm:px-6 text-center overflow-hidden z-10 mb-8">
         <div className="container mx-auto max-w-4xl relative z-10 rounded-2xl sm:rounded-[2.5rem] py-8 sm:py-16 px-4 sm:px-8 glass-hero-dark shadow-2xl">
           <h2 className="text-xl sm:text-3xl md:text-5xl font-extrabold mb-3 sm:mb-4 tracking-tight leading-tight">Ready to Elevate Your Workforce Intelligence?</h2>
-          <p className="text-[#E9EAF7]/85 text-xs sm:text-base mb-6 sm:mb-8 max-w-xl mx-auto font-light">
+          <p className="text-[#E9EAF7]/85 text-base sm:text-lg mb-6 sm:mb-8 max-w-xl mx-auto font-medium">
             Discover how SkillPulse AI transforms skills tracking, gap detection, and workforce readiness across your enterprise.
           </p>
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 max-w-xs sm:max-w-none mx-auto">
             <Link 
               to="/features"
-              className="bg-white text-[#17233E] px-6 sm:px-8 py-3 sm:py-3.5 rounded-full font-extrabold text-xs sm:text-sm transition-all shadow-xl hover:bg-[#E9EAF7] text-center"
+              className="bg-white text-[#17233E] px-6 sm:px-8 py-3 sm:py-3.5 rounded-full font-extrabold text-sm sm:text-base transition-all shadow-xl hover:bg-[#E9EAF7] text-center"
             >
               Explore All Features
             </Link>
             <Link 
               to="/pricing"
-              className="bg-white/10 hover:bg-white/20 text-white border border-white/30 px-6 sm:px-8 py-3 sm:py-3.5 rounded-full font-bold text-xs sm:text-sm transition-all text-center"
+              className="bg-white/10 hover:bg-white/20 text-white border border-white/30 px-6 sm:px-8 py-3 sm:py-3.5 rounded-full font-bold text-sm sm:text-base transition-all text-center"
             >
               View Pricing Tiers
             </Link>

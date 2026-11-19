@@ -37,36 +37,36 @@ const Navbar = () => {
   const dashboardPath = currentUser?.role ? getRoleDefaultPath(currentUser.role) : '/dashboard';
 
   const navItems = [
-    { label: 'Features', path: '/features', icon: <Sparkles className="w-3.5 h-3.5" /> },
-    { label: 'Pricing', path: '/pricing', icon: <Zap className="w-3.5 h-3.5" /> },
-    { label: 'About', path: '/about', icon: <Building2 className="w-3.5 h-3.5" /> },
-    { label: 'FAQ', path: '/faq', icon: <HelpCircle className="w-3.5 h-3.5" /> },
-    { label: 'Contact', path: '/contact', icon: <Send className="w-3.5 h-3.5" /> },
+    { label: 'Features', path: '/features', icon: <Sparkles className="w-4 h-4 lg:w-4.5 lg:h-4.5" /> },
+    { label: 'Pricing', path: '/pricing', icon: <Zap className="w-4 h-4 lg:w-4.5 lg:h-4.5" /> },
+    { label: 'About', path: '/about', icon: <Building2 className="w-4 h-4 lg:w-4.5 lg:h-4.5" /> },
+    { label: 'FAQ', path: '/faq', icon: <HelpCircle className="w-4 h-4 lg:w-4.5 lg:h-4.5" /> },
+    { label: 'Contact', path: '/contact', icon: <Send className="w-4 h-4 lg:w-4.5 lg:h-4.5" /> },
   ];
 
   return (
-    <nav className="flex justify-between items-center px-4 sm:px-8 md:px-12 py-3 glass-nav sticky top-0 z-50 select-none">      
+    <nav className="flex justify-between items-center px-4 sm:px-8 md:px-12 py-3.5 sm:py-4 glass-nav sticky top-0 z-50 select-none">      
       {/* Bottom Subtle Cyan-Ice Accent Edge */}
-      <div className="absolute bottom-0 left-0 right-0 h-[1.5px] bg-gradient-to-r from-transparent via-[#1988A3]/45 to-transparent opacity-90 pointer-events-none" />
+      <div className="absolute bottom-0 left-0 right-0 h-[1.5px] bg-gradient-to-r from-transparent via-[#1988A3]/55 to-transparent opacity-90 pointer-events-none" />
 
       {/* Logo Section */}
-      <Link to="/" className="flex items-center gap-2.5 cursor-pointer group relative z-50">
+      <Link to="/" className="flex items-center gap-3 cursor-pointer group relative z-50">
         <motion.div 
           whileHover={{ rotate: 10, scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          className="w-8 h-8 bg-white/80 backdrop-blur-md rounded-xl flex items-center justify-center shadow-[0_4px_12px_rgba(23,35,62,0.08)] border border-white group-hover:border-[#1988A3]/50 transition-all"
+          className="w-10 h-10 bg-white/90 backdrop-blur-md rounded-xl flex items-center justify-center shadow-[0_4px_12px_rgba(23,35,62,0.10)] border border-white group-hover:border-[#1988A3]/50 transition-all"
         >
-          <svg className="w-4.5 h-4.5 text-[#1988A3]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-5 h-5 text-[#1988A3]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
           </svg>
         </motion.div>
-        <div className="text-xl font-extrabold text-[#17233E] tracking-tight">
+        <div className="text-xl sm:text-2xl font-black text-[#17233E] tracking-tight">
           SkillPulse <span className="text-[#1988A3] transition-colors duration-300 group-hover:text-[#11C6DE]">-AI</span>
         </div>
       </Link>
 
       {/* Glassy Navigation Tabs Capsule Dock */}
-      <div className="hidden md:flex items-center gap-1 p-1.5 rounded-full bg-white/55 backdrop-blur-2xl border border-white/90 shadow-[0_8px_24px_rgba(23,35,62,0.07),inset_0_1px_1px_rgba(255,255,255,1)]">
+      <div className="hidden md:flex items-center gap-1.5 p-1.5 rounded-full bg-white/75 backdrop-blur-2xl border border-white shadow-[0_8px_24px_rgba(23,35,62,0.08),inset_0_1px_1px_rgba(255,255,255,1)]">
         {navItems.map((item) => {
           const isActive = location.pathname === item.path || (item.path !== '/' && location.pathname.startsWith(item.path));
 
@@ -74,26 +74,26 @@ const Navbar = () => {
             <Link 
               key={item.label}
               to={item.path} 
-              className={`relative px-4 py-1.5 rounded-full text-xs font-bold transition-all duration-300 flex items-center gap-2 select-none group cursor-pointer ${
-                isActive ? 'text-[#17233E]' : 'text-[#5A6D89] hover:text-[#17233E]'
+              className={`relative px-5 py-2 rounded-full text-sm lg:text-[15px] font-extrabold transition-all duration-300 flex items-center gap-2 select-none group cursor-pointer ${
+                isActive ? 'text-[#17233E]' : 'text-[#243656] hover:text-[#17233E]'
               }`}
             >
               {/* Translucent Light Ice-Glass Active Pill Pod */}
               {isActive && (
                 <motion.div
                   layoutId="activeNavPill"
-                  className="absolute inset-0 rounded-full bg-gradient-to-b from-white via-[#F4FAFD] to-[#E3F4FA] backdrop-blur-xl border border-[#1988A3]/30 shadow-[inset_0_1px_2px_rgba(255,255,255,1),0_4px_14px_rgba(25,136,163,0.16)] -z-0"
+                  className="absolute inset-0 rounded-full bg-gradient-to-b from-white via-[#F4FAFD] to-[#E3F4FA] backdrop-blur-xl border border-[#1988A3]/35 shadow-[inset_0_1px_2px_rgba(255,255,255,1),0_4px_14px_rgba(25,136,163,0.18)] -z-0"
                   transition={{ type: "spring", stiffness: 380, damping: 30 }}
                 />
               )}
               
               <span className={`relative z-10 transition-colors duration-200 ${
-                isActive ? 'text-[#1988A3]' : 'text-[#5A6D89] group-hover:text-[#1988A3]'
+                isActive ? 'text-[#1988A3]' : 'text-[#1988A3]/80 group-hover:text-[#1988A3]'
               }`}>
                 {item.icon}
               </span>
               
-              <span className="relative z-10 font-bold tracking-wide">
+              <span className="relative z-10 font-extrabold tracking-wide">
                 {item.label}
               </span>
             </Link>
@@ -104,16 +104,16 @@ const Navbar = () => {
       {/* Auth Buttons - Desktop & Tablet Layout */}
       <div className="hidden sm:flex items-center gap-3 relative z-50">
         {currentUser ? (
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-3">
             <Link
               to={dashboardPath}
-              className="px-5 py-2 rounded-full text-xs font-bold text-white bg-gradient-to-r from-[#1988A3] to-[#11C6DE] hover:from-[#157289] hover:to-[#0FB5CB] transition shadow-md shadow-[#1988A3]/25"
+              className="px-6 py-2.5 rounded-full text-sm lg:text-[15px] font-extrabold text-white bg-gradient-to-r from-[#1988A3] to-[#11C6DE] hover:from-[#157289] hover:to-[#0FB5CB] transition shadow-md shadow-[#1988A3]/25"
             >
               Dashboard
             </Link>
             <button
               onClick={handleLogout}
-              className="px-4 py-2 rounded-full text-xs font-bold text-[#5A6D89] hover:text-[#17233E] transition cursor-pointer"
+              className="px-4 py-2.5 rounded-full text-sm lg:text-[15px] font-extrabold text-[#243656] hover:text-[#17233E] transition cursor-pointer"
             >
               Logout
             </button>
@@ -124,7 +124,7 @@ const Navbar = () => {
             <motion.div whileHover={{ y: -1 }} whileTap={{ scale: 0.98 }}>
               <Link 
                 to="/login" 
-                className="px-4.5 py-1.5 rounded-full text-xs font-bold text-[#17233E] bg-white/70 hover:bg-white border border-white/95 transition-all backdrop-blur-md shadow-[0_4px_12px_rgba(23,35,62,0.06)] inline-block"
+                className="px-6 py-2.5 rounded-full text-sm lg:text-[15px] font-extrabold text-[#17233E] bg-white/85 hover:bg-white border border-white transition-all backdrop-blur-md shadow-[0_4px_12px_rgba(23,35,62,0.08)] inline-block"
               >
                 Login
               </Link>
@@ -134,7 +134,7 @@ const Navbar = () => {
             <motion.div whileHover={{ y: -1, scale: 1.02 }} whileTap={{ scale: 0.95 }}>
               <Link 
                 to="/signup" 
-                className="bg-gradient-to-r from-[#1988A3] to-[#11C6DE] hover:from-[#157289] hover:to-[#0FB5CB] px-5 py-1.5 rounded-full text-xs font-extrabold text-white transition shadow-md shadow-[#1988A3]/25 hover:shadow-[#1988A3]/40 block"
+                className="bg-gradient-to-r from-[#17233E] via-[#1B3154] to-[#1988A3] hover:from-[#1988A3] hover:to-[#11C6DE] px-6 py-2.5 rounded-full text-sm lg:text-[15px] font-extrabold text-white transition shadow-md shadow-[#17233E]/25 hover:shadow-[#1988A3]/40 block"
               >
                 Sign Up
               </Link>
@@ -172,20 +172,20 @@ const Navbar = () => {
                     key={item.label}
                     to={item.path} 
                     onClick={() => setIsOpen(false)}
-                    className={`flex items-center justify-between px-4 py-2.5 rounded-xl transition-all ${
+                    className={`flex items-center justify-between px-4 py-3 rounded-xl text-base transition-all ${
                       isActive 
-                        ? 'bg-white/85 backdrop-blur-xl border border-[#1988A3]/30 text-[#17233E] font-bold shadow-[0_4px_14px_rgba(25,136,163,0.12),inset_0_1px_1px_rgba(255,255,255,1)]' 
-                        : 'text-[#5A6D89] hover:text-[#17233E] hover:bg-white/55 font-semibold'
+                        ? 'bg-white/90 backdrop-blur-xl border border-[#1988A3]/30 text-[#17233E] font-extrabold shadow-[0_4px_14px_rgba(25,136,163,0.12),inset_0_1px_1px_rgba(255,255,255,1)]' 
+                        : 'text-[#243656] hover:text-[#17233E] hover:bg-white/55 font-bold'
                     }`}
                   >
-                    <div className="flex items-center gap-2.5">
-                      <span className={isActive ? 'text-[#1988A3]' : 'text-[#5A6D89]'}>
+                    <div className="flex items-center gap-3">
+                      <span className={isActive ? 'text-[#1988A3]' : 'text-[#243656]'}>
                         {item.icon}
                       </span>
                       <span>{item.label}</span>
                     </div>
                     {isActive && (
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#1988A3] shadow-[0_0_8px_rgba(25,136,163,0.6)]" />
+                      <span className="w-2 h-2 rounded-full bg-[#1988A3] shadow-[0_0_8px_rgba(25,136,163,0.6)]" />
                     )}
                   </Link>
                 );
@@ -198,13 +198,13 @@ const Navbar = () => {
                 <Link 
                   to={dashboardPath}
                   onClick={() => setIsOpen(false)}
-                  className="flex-1 text-center py-2.5 rounded-full text-xs font-bold text-white bg-gradient-to-r from-[#1988A3] to-[#11C6DE] hover:from-[#157289] hover:to-[#0FB5CB] transition shadow-md shadow-[#1988A3]/25"
+                  className="flex-1 text-center py-3 rounded-full text-sm font-extrabold text-white bg-gradient-to-r from-[#1988A3] to-[#11C6DE] hover:from-[#157289] hover:to-[#0FB5CB] transition shadow-md shadow-[#1988A3]/25"
                 >
                   Dashboard
                 </Link>
                 <button 
                   onClick={() => { setIsOpen(false); handleLogout(); }}
-                  className="flex-1 text-center py-2.5 rounded-full text-xs font-bold text-[#5A6D89] border border-white/80 bg-white/60 hover:text-[#17233E] transition-all shadow-sm backdrop-blur-md cursor-pointer"
+                  className="flex-1 text-center py-3 rounded-full text-sm font-extrabold text-[#243656] border border-white/80 bg-white/60 hover:text-[#17233E] transition-all shadow-sm backdrop-blur-md cursor-pointer"
                 >
                   Logout
                 </button>
@@ -214,14 +214,14 @@ const Navbar = () => {
                 <Link 
                   to="/login" 
                   onClick={() => setIsOpen(false)}
-                  className="flex-1 text-center py-2.5 rounded-full text-xs font-bold text-[#17233E] border border-white bg-white/75 hover:bg-white transition-all shadow-sm backdrop-blur-md"
+                  className="flex-1 text-center py-3 rounded-full text-sm font-extrabold text-[#17233E] border border-white bg-white/85 hover:bg-white transition-all shadow-sm backdrop-blur-md"
                 >
                   Login
                 </Link>
                 <Link 
                   to="/signup" 
                   onClick={() => setIsOpen(false)}
-                  className="flex-1 text-center py-2.5 rounded-full text-xs font-bold text-white bg-gradient-to-r from-[#1988A3] to-[#11C6DE] hover:from-[#157289] hover:to-[#0FB5CB] transition shadow-md shadow-[#1988A3]/25"
+                  className="flex-1 text-center py-3 rounded-full text-sm font-extrabold text-white bg-gradient-to-r from-[#17233E] to-[#1988A3] hover:from-[#157289] hover:to-[#0FB5CB] transition shadow-md shadow-[#1988A3]/25"
                 >
                   Sign Up
                 </Link>

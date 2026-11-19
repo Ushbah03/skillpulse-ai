@@ -120,13 +120,13 @@ const SkillPulseLanding = () => {
               className="inline-flex items-center gap-2 bg-white/75 border border-[#1988A3]/25 px-3 py-1 sm:px-4 sm:py-1.5 rounded-full mb-4 sm:mb-5 backdrop-blur-xl shadow-xs"
             >
               <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-[#11C6DE] rounded-full animate-ping" />
-              <span className="text-[#17233E] text-[10px] sm:text-xs font-bold tracking-wide font-mono">
+              <span className="text-[#17233E] text-sm sm:text-base font-bold tracking-wide font-mono">
                 {tenantId ? `${tenantId} Enterprise Workspace` : 'SkillPulse-AI Multi-Tenant Platform'}
               </span>
               <span className="h-3 w-[1px] bg-[#8A9CB7]/40 mx-0.5 hidden sm:inline-block" />
               <Link
                 to="/features"
-                className="hidden sm:inline-flex items-center gap-0.5 text-[11px] font-bold text-[#1988A3] hover:text-[#17233E] transition-colors"
+                className="hidden sm:inline-flex items-center gap-0.5 text-sm font-bold text-[#1988A3] hover:text-[#17233E] transition-colors"
               >
                 Explore <ChevronRight className="w-3 h-3" />
               </Link>
@@ -146,7 +146,7 @@ const SkillPulseLanding = () => {
             {/* Centered Subtitle */}
             <motion.p
               variants={intenseUp}
-              className="text-[#5A6D89] text-xs sm:text-base leading-relaxed max-w-xl mb-5 sm:mb-6 font-normal"
+              className="text-[#243656] text-base sm:text-lg leading-relaxed max-w-xl mb-5 sm:mb-6 font-medium"
             >
               Measure readiness. Close skill gaps. Accelerate workforce growth with enterprise tenant-isolated data insights.
             </motion.p>
@@ -158,13 +158,13 @@ const SkillPulseLanding = () => {
             >
               <Link
                 to="/signup"
-                className="bg-gradient-to-r from-[#17233E] via-[#1B3154] to-[#1988A3] hover:from-[#1988A3] hover:to-[#11C6DE] text-white px-5 sm:px-8 py-2.5 sm:py-3 rounded-full font-bold text-xs sm:text-sm transition-all shadow-[0_10px_28px_-6px_rgba(23,35,62,0.4)] hover:shadow-[0_12px_32px_-4px_rgba(25,136,163,0.5)] hover:-translate-y-0.5 inline-flex items-center justify-center gap-1.5 shrink-0 cursor-pointer group"
+                className="bg-gradient-to-r from-[#17233E] via-[#1B3154] to-[#1988A3] hover:from-[#1988A3] hover:to-[#11C6DE] text-white px-5 sm:px-8 py-2.5 sm:py-3 rounded-full font-bold text-sm sm:text-base transition-all shadow-[0_10px_28px_-6px_rgba(23,35,62,0.4)] hover:shadow-[0_12px_32px_-4px_rgba(25,136,163,0.5)] hover:-translate-y-0.5 inline-flex items-center justify-center gap-1.5 shrink-0 cursor-pointer group"
               >
                 Get Started <ArrowRight className="w-3.5 h-3.5 text-[#11C6DE] group-hover:text-white group-hover:translate-x-0.5 transition-all" />
               </Link>
               <Link
                 to="/contact"
-                className="glass-pill hover:bg-white text-[#17233E] px-5 sm:px-8 py-2.5 sm:py-3 rounded-full font-bold text-xs sm:text-sm transition-all inline-flex items-center justify-center shrink-0 cursor-pointer"
+                className="glass-pill hover:bg-white text-[#17233E] px-5 sm:px-8 py-2.5 sm:py-3 rounded-full font-bold text-sm sm:text-base transition-all inline-flex items-center justify-center shrink-0 cursor-pointer"
               >
                 Request Demo
               </Link>
@@ -173,7 +173,7 @@ const SkillPulseLanding = () => {
             {/* 3 Minimal Inline Assurance Badges */}
             <motion.div
               variants={intenseUp}
-              className="flex flex-wrap items-center justify-center gap-x-5 sm:gap-x-8 gap-y-2 text-[10px] sm:text-xs text-[#5A6D89] font-medium mb-5 sm:mb-7"
+              className="flex flex-wrap items-center justify-center gap-x-5 sm:gap-x-8 gap-y-2 text-sm sm:text-base text-[#243656] font-medium mb-5 sm:mb-7"
             >
               <span className="inline-flex items-center gap-1.5">
                 <span className="w-4 h-4 rounded-full bg-white/80 border border-[#1988A3]/25 flex items-center justify-center shadow-2xs">
@@ -245,8 +245,8 @@ const SkillPulseLanding = () => {
                     <Zap className="w-3.5 h-3.5" />
                   </div>
                   <div className="text-left">
-                    <div className="text-[8px] text-[#5A6D89] uppercase font-mono font-bold">Accuracy Model</div>
-                    <div className="text-[11px] font-black text-[#1988A3] flex items-center gap-1">
+                    <div className="text-sm text-[#243656] uppercase font-mono font-bold">Accuracy Model</div>
+                    <div className="text-sm font-black text-[#1988A3] flex items-center gap-1">
                       98.4% Precision
                       <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
                     </div>
@@ -262,18 +262,18 @@ const SkillPulseLanding = () => {
                     <Building2 className="w-3.5 h-3.5 text-[#1988A3]" />
                   </div>
                   <div className="text-left">
-                    <div className="text-[8px] text-[#5A6D89] uppercase font-mono font-bold">PostgreSQL Multi-Tenant</div>
-                    <div className="text-[11px] font-black text-[#17233E]">Live Partition Active</div>
+                    <div className="text-sm text-[#243656] uppercase font-mono font-bold">PostgreSQL Multi-Tenant</div>
+                    <div className="text-sm font-black text-[#17233E]">Live Partition Active</div>
                   </div>
                 </div>
 
                 {/* Compact Mobile Status Row */}
                 <div className="sm:hidden flex items-center justify-between gap-2 mt-2 px-1 relative z-20">
-                  <div className="flex items-center gap-1.5 bg-white/15 backdrop-blur-md px-2 py-1 rounded-md border border-white/20 text-[9px] font-medium text-white">
+                  <div className="flex items-center gap-1.5 bg-white/15 backdrop-blur-md px-2 py-1 rounded-md border border-white/20 text-sm font-medium text-white">
                     <Zap className="w-2.5 h-2.5 text-[#11C6DE]" />
                     <span>98.4% Model Precision</span>
                   </div>
-                  <div className="flex items-center gap-1.5 bg-white/15 backdrop-blur-md px-2 py-1 rounded-md border border-white/20 text-[9px] font-medium text-white">
+                  <div className="flex items-center gap-1.5 bg-white/15 backdrop-blur-md px-2 py-1 rounded-md border border-white/20 text-sm font-medium text-white">
                     <Building2 className="w-2.5 h-2.5 text-[#11C6DE]" />
                     <span>RLS Partition Active</span>
                   </div>
@@ -286,7 +286,7 @@ const SkillPulseLanding = () => {
         {/* BOTTOM FROSTED ICE-GLASS MARQUEE STRIP */}
         <div className="relative z-10 border-y border-white/85 bg-white/55 backdrop-blur-xl shadow-[0_4px_20px_rgba(23,35,62,0.04)]">
           <div className="max-w-7xl mx-auto px-4 sm:px-8 md:px-14 py-3.5 flex flex-col sm:flex-row items-center gap-3 sm:gap-6">
-            <span className="text-[10px] sm:text-xs text-[#5A6D89] font-semibold shrink-0 leading-tight text-center sm:text-left">
+            <span className="text-sm sm:text-base text-[#243656] font-semibold shrink-0 leading-tight text-center sm:text-left">
               Relied on for enterprise <br className="hidden sm:inline" /> workforce intelligence
             </span>
 
@@ -299,7 +299,7 @@ const SkillPulseLanding = () => {
                 {[...marqueeItems, ...marqueeItems].map((m, idx) => (
                   <div
                     key={idx}
-                    className="flex items-center gap-2 text-[#17233E] hover:text-[#1988A3] transition-colors text-xs sm:text-sm font-bold whitespace-nowrap"
+                    className="flex items-center gap-2 text-[#17233E] hover:text-[#1988A3] transition-colors text-sm sm:text-base font-bold whitespace-nowrap"
                   >
                     <span className="w-5 h-5 rounded-full bg-[#1988A3]/10 border border-[#1988A3]/25 flex items-center justify-center">
                       <m.icon className="w-3 h-3 text-[#1988A3]" />
@@ -316,11 +316,11 @@ const SkillPulseLanding = () => {
       {/* 2. FEATURES SECTION WITH FROSTED LIGHT-BLUE GLASS CARDS */}
       <section className="py-10 sm:py-16 md:py-22 px-3.5 sm:px-6 md:px-14 text-center relative z-10">
         <div className="max-w-3xl mx-auto mb-7 sm:mb-12">
-          <span className="px-3 py-1 rounded-full bg-[#1988A3]/10 border border-[#1988A3]/25 text-[#1988A3] text-[9px] sm:text-xs font-mono font-bold uppercase tracking-wider inline-block mb-2 sm:mb-3 backdrop-blur-md">
+          <span className="px-3 py-1 rounded-full bg-[#1988A3]/10 border border-[#1988A3]/25 text-[#1988A3] text-sm sm:text-base font-mono font-bold uppercase tracking-wider inline-block mb-2 sm:mb-3 backdrop-blur-md">
             PLATFORM CAPABILITIES
           </span>
           <h2 className="text-lg sm:text-2xl md:text-4xl font-extrabold text-[#17233E] mb-2 sm:mb-3 tracking-tight">Unlock Your Workforce Potential</h2>
-          <p className="text-[#5A6D89] text-[11px] sm:text-base font-normal">Actionable intelligence to align your team's capabilities with strategic goals.</p>
+          <p className="text-[#243656] text-base sm:text-lg font-medium">Actionable intelligence to align your team's capabilities with strategic goals.</p>
         </div>
 
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 md:gap-8 text-left">
@@ -357,12 +357,12 @@ const SkillPulseLanding = () => {
                 <div className={`w-9 h-9 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl border flex items-center justify-center ${item.color} shadow-xs group-hover:scale-110 transition-transform`}>
                   <item.icon className="w-4 h-4 sm:w-5 sm:h-5" />
                 </div>
-                <span className="text-[8px] sm:text-[10px] font-mono font-bold text-[#5A6D89] bg-[#E9EAF7] px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full border border-[#8A9CB7]/30 shadow-2xs">
+                <span className="text-sm sm:text-base font-mono font-bold text-[#243656] bg-[#E9EAF7] px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full border border-[#8A9CB7]/30 shadow-2xs">
                   {item.tag}
                 </span>
               </div>
               <h3 className="font-bold sm:font-extrabold text-sm sm:text-lg md:text-xl mb-1.5 sm:mb-2 text-[#17233E] group-hover:text-[#1988A3] transition-colors">{item.title}</h3>
-              <p className="text-[#5A6D89] text-[11px] sm:text-xs leading-relaxed font-normal">{item.desc}</p>
+              <p className="text-[#243656] text-sm sm:text-base leading-relaxed font-medium">{item.desc}</p>
             </motion.div>
           ))}
         </div>
@@ -371,11 +371,11 @@ const SkillPulseLanding = () => {
       {/* 3. HOW IT WORKS STEPPER */}
       <section className="py-10 sm:py-14 md:py-20 px-3.5 sm:px-6 md:px-14 relative z-10">
         <div className="text-center mb-7 sm:mb-12">
-          <span className="px-3 py-1 rounded-full bg-[#17233E]/10 border border-[#17233E]/20 text-[#17233E] text-[9px] sm:text-xs font-mono font-bold uppercase tracking-wider inline-block mb-2 sm:mb-3 backdrop-blur-md">
+          <span className="px-3 py-1 rounded-full bg-[#17233E]/10 border border-[#17233E]/20 text-[#17233E] text-sm sm:text-base font-mono font-bold uppercase tracking-wider inline-block mb-2 sm:mb-3 backdrop-blur-md">
             SYSTEM WORKFLOW
           </span>
           <h2 className="text-lg sm:text-2xl md:text-4xl font-extrabold text-[#17233E] mb-2 sm:mb-3 tracking-tight">How SkillPulse Works</h2>
-          <p className="text-[#5A6D89] text-[11px] sm:text-base font-normal">A streamlined process to continuously elevate your organizational capabilities.</p>
+          <p className="text-[#243656] text-base sm:text-lg font-medium">A streamlined process to continuously elevate your organizational capabilities.</p>
         </div>
 
         <div className="max-w-7xl mx-auto">
@@ -390,11 +390,11 @@ const SkillPulseLanding = () => {
                 key={i}
                 className="glass-panel p-4 sm:p-6 rounded-2xl flex flex-col items-center text-center group transition-all duration-300 hover:-translate-y-1"
               >
-                <div className="w-9 h-9 sm:w-11 sm:h-11 bg-[#17233E] text-white rounded-full flex items-center justify-center text-xs sm:text-sm font-extrabold mb-2.5 sm:mb-3.5 shadow-sm group-hover:bg-[#1988A3] transition-all">
+                <div className="w-9 h-9 sm:w-11 sm:h-11 bg-[#17233E] text-white rounded-full flex items-center justify-center text-sm sm:text-base font-extrabold mb-2.5 sm:mb-3.5 shadow-sm group-hover:bg-[#1988A3] transition-all">
                   {step.num}
                 </div>
-                <h4 className="font-bold sm:font-extrabold text-xs sm:text-sm text-[#17233E] mb-1 group-hover:text-[#1988A3] transition-colors">{step.t}</h4>
-                <p className="text-[#5A6D89] text-[10px] sm:text-xs font-normal leading-tight sm:leading-relaxed">{step.d}</p>
+                <h4 className="font-bold sm:font-extrabold text-sm sm:text-base text-[#17233E] mb-1 group-hover:text-[#1988A3] transition-colors">{step.t}</h4>
+                <p className="text-[#243656] text-sm sm:text-base font-medium leading-tight sm:leading-relaxed">{step.d}</p>
               </div>
             ))}
           </div>
@@ -404,11 +404,11 @@ const SkillPulseLanding = () => {
       {/* 4. EMPOWERING EVERY ROLE */}
       <section className="py-10 sm:py-14 md:py-20 px-3.5 sm:px-6 md:px-14 relative z-10">
         <div className="text-center mb-7 sm:mb-12">
-          <span className="px-3 py-1 rounded-full bg-[#1988A3]/10 border border-[#1988A3]/25 text-[#1988A3] text-[9px] sm:text-xs font-mono font-bold uppercase tracking-wider inline-block mb-2 sm:mb-3 backdrop-blur-md">
+          <span className="px-3 py-1 rounded-full bg-[#1988A3]/10 border border-[#1988A3]/25 text-[#1988A3] text-sm sm:text-base font-mono font-bold uppercase tracking-wider inline-block mb-2 sm:mb-3 backdrop-blur-md">
             ROLE DASHBOARDS
           </span>
           <h2 className="text-lg sm:text-2xl md:text-4xl font-extrabold text-[#17233E] mb-2 sm:mb-3 tracking-tight">Empowering Every Role</h2>
-          <p className="text-[#5A6D89] text-[11px] sm:text-base font-normal">Role-scoped dashboards tailored for individual and organizational success.</p>
+          <p className="text-[#243656] text-base sm:text-lg font-medium">Role-scoped dashboards tailored for individual and organizational success.</p>
         </div>
 
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 md:gap-8 text-left">
@@ -438,16 +438,16 @@ const SkillPulseLanding = () => {
                   <div className="w-2 h-2 rounded-full bg-[#17233E] group-hover:bg-white" />
                 </div>
                 <h3 className="font-bold sm:font-extrabold text-base sm:text-xl mb-1.5 sm:mb-2 text-[#17233E] group-hover:text-[#1988A3] transition-colors">{item.role}</h3>
-                <p className="text-[#5A6D89] text-[11px] sm:text-xs mb-3 sm:mb-5 leading-relaxed font-normal">Dedicated role-based analytics and workforce management tools.</p>
+                <p className="text-[#243656] text-sm sm:text-base mb-3 sm:mb-5 leading-relaxed font-medium">Dedicated role-based analytics and workforce management tools.</p>
                 <ul className="space-y-1.5 sm:space-y-2 mb-4 sm:mb-6">
                   {item.points.map((p, idx) => (
-                    <li key={idx} className="text-[#17233E] text-[11px] sm:text-xs flex items-center gap-2 font-medium">
+                    <li key={idx} className="text-[#17233E] text-sm sm:text-base flex items-center gap-2 font-medium">
                       <span className="w-1.5 h-1.5 bg-[#1988A3] rounded-full flex-shrink-0" /> {p}
                     </li>
                   ))}
                 </ul>
               </div>
-              <Link to={item.path} className="text-[#1988A3] hover:text-[#157289] font-bold text-[11px] sm:text-xs inline-flex items-center gap-1 transition-all">
+              <Link to={item.path} className="text-[#1988A3] hover:text-[#157289] font-bold text-sm sm:text-base inline-flex items-center gap-1 transition-all">
                 Access Workspace <ArrowRight className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
               </Link>
             </div>
@@ -473,7 +473,7 @@ const SkillPulseLanding = () => {
                 ].map((chip, idx) => (
                   <div
                     key={idx}
-                    className="px-2.5 py-1 rounded-full bg-white/10 border border-white/20 text-[#E9EAF7] text-[9px] sm:text-[11px] font-semibold flex items-center gap-1.5 backdrop-blur-md"
+                    className="px-2.5 py-1 rounded-full bg-white/10 border border-white/20 text-[#E9EAF7] text-sm sm:text-base font-semibold flex items-center gap-1.5 backdrop-blur-md"
                   >
                     <chip.icon className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-[#11C6DE]" />
                     <span>{chip.label}</span>
@@ -490,10 +490,10 @@ const SkillPulseLanding = () => {
                   <div key={i} className="flex gap-2.5 sm:gap-3 group cursor-default">
                     <div className="w-3 h-3 sm:w-3.5 sm:h-3.5 rounded-full border-2 border-[#11C6DE] mt-1 flex-shrink-0 group-hover:bg-[#11C6DE] transition-colors"></div>
                     <div>
-                      <h4 className="font-bold sm:font-extrabold text-xs sm:text-base mb-0.5 text-white group-hover:text-[#11C6DE] transition-colors">
+                      <h4 className="font-bold sm:font-extrabold text-base sm:text-lg mb-0.5 text-white group-hover:text-[#11C6DE] transition-colors">
                         {item.t}
                       </h4>
-                      <p className="text-[#E9EAF7]/75 text-[11px] sm:text-xs leading-relaxed font-light">
+                      <p className="text-[#E9EAF7]/75 text-sm sm:text-base leading-relaxed font-medium">
                         {item.d}
                       </p>
                     </div>
@@ -508,16 +508,16 @@ const SkillPulseLanding = () => {
                 <div className="flex items-center justify-between border-b border-white/15 pb-2.5 mb-3">
                   <div className="flex items-center gap-2">
                     <Cpu className="w-4 h-4 text-[#11C6DE]" />
-                    <span className="text-xs font-bold text-white tracking-wide">Neural Telemetry Engine</span>
+                    <span className="text-sm font-bold text-white tracking-wide">Neural Telemetry Engine</span>
                   </div>
-                  <span className="text-[9px] font-mono font-bold text-[#11C6DE] bg-[#1988A3]/20 border border-[#11C6DE]/30 px-2 py-0.5 rounded-full">
+                  <span className="text-sm font-mono font-bold text-[#11C6DE] bg-[#1988A3]/20 border border-[#11C6DE]/30 px-2 py-0.5 rounded-full">
                     Live Synced
                   </span>
                 </div>
 
                 <div className="space-y-3">
                   <div>
-                    <div className="flex justify-between text-[11px] font-medium text-[#E9EAF7] mb-1">
+                    <div className="flex justify-between text-sm font-medium text-[#E9EAF7] mb-1">
                       <span>Model Precision Rate</span>
                       <span className="font-mono text-[#11C6DE] font-bold">98.4%</span>
                     </div>
@@ -527,7 +527,7 @@ const SkillPulseLanding = () => {
                   </div>
 
                   <div>
-                    <div className="flex justify-between text-[11px] font-medium text-[#E9EAF7] mb-1">
+                    <div className="flex justify-between text-sm font-medium text-[#E9EAF7] mb-1">
                       <span>Workforce Readiness Index</span>
                       <span className="font-mono text-emerald-400 font-bold">84% Optimal</span>
                     </div>
@@ -536,7 +536,7 @@ const SkillPulseLanding = () => {
                     </div>
                   </div>
 
-                  <div className="pt-2 border-t border-white/10 flex items-center justify-between text-[10px] font-mono text-[#E9EAF7]/70">
+                  <div className="pt-2 border-t border-white/10 flex items-center justify-between text-xs sm:text-sm font-mono text-[#E9EAF7]/70">
                     <span className="flex items-center gap-1.5">
                       <Lock className="w-3 h-3 text-[#11C6DE]" /> RLS Row-Level Security
                     </span>
@@ -553,14 +553,14 @@ const SkillPulseLanding = () => {
       <section className="py-8 sm:py-14 md:py-20 px-3 sm:px-6 md:px-10 relative z-10 pb-10 sm:pb-16">
         <div className="max-w-5xl mx-auto rounded-2xl sm:rounded-3xl md:rounded-[3rem] py-8 sm:py-12 md:py-16 px-4 sm:px-8 text-center glass-hero-dark text-white relative overflow-hidden">
           <h2 className="text-lg sm:text-2xl md:text-4xl font-extrabold mb-2.5 sm:mb-3.5 tracking-tight text-white">Transform Workforce Skills with AI</h2>
-          <p className="text-[#E9EAF7]/80 text-[11px] sm:text-base mb-5 sm:mb-8 max-w-xl mx-auto font-light">
+          <p className="text-[#E9EAF7]/80 text-base sm:text-lg mb-5 sm:mb-8 max-w-xl mx-auto font-medium">
             Join leading enterprise teams building future-ready organizations with isolated, data-driven platforms.
           </p>
           <div className="flex flex-row items-center justify-center gap-3 sm:gap-4 relative z-10 mx-auto">
-            <Link to="/signup" className="bg-white text-[#17233E] hover:bg-[#E9EAF7] px-5 sm:px-8 py-2.5 sm:py-3.5 rounded-full font-bold text-xs sm:text-sm transition-all shadow-md inline-flex items-center justify-center gap-1.5 cursor-pointer">
+            <Link to="/signup" className="bg-white text-[#17233E] hover:bg-[#E9EAF7] px-5 sm:px-8 py-2.5 sm:py-3.5 rounded-full font-bold text-sm sm:text-base transition-all shadow-md inline-flex items-center justify-center gap-1.5 cursor-pointer">
               Start Free Trial <ArrowRight className="w-3.5 h-3.5 text-[#1988A3]" />
             </Link>
-            <Link to="/contact" className="bg-white/10 border border-white/25 text-white hover:bg-white/20 px-4 sm:px-7 py-2.5 sm:py-3.5 rounded-full font-semibold text-xs sm:text-sm transition-all inline-flex items-center justify-center backdrop-blur-md cursor-pointer">
+            <Link to="/contact" className="bg-white/10 border border-white/25 text-white hover:bg-white/20 px-4 sm:px-7 py-2.5 sm:py-3.5 rounded-full font-semibold text-sm sm:text-base transition-all inline-flex items-center justify-center backdrop-blur-md cursor-pointer">
               Contact Sales
             </Link>
           </div>

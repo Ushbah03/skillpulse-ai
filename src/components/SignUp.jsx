@@ -67,7 +67,7 @@ const AuthInput = ({ label, name, type = 'text', placeholder, value, onChange, i
     transition={{ duration: 0.45, delay, ease: [0.16, 1, 0.3, 1] }}
     className="flex flex-col gap-1.5 w-full text-left group"
   >
-    <label className="text-[#5A6D89] text-[11px] font-bold ml-1 uppercase tracking-wider group-focus-within:text-[#1988A3] transition-colors duration-200 flex items-center justify-between">
+    <label className="text-[#243656] text-sm font-bold ml-1 uppercase tracking-wider group-focus-within:text-[#1988A3] transition-colors duration-200 flex items-center justify-between">
       <span>{label}</span>
       {value && (
         <motion.span
@@ -94,7 +94,7 @@ const AuthInput = ({ label, name, type = 'text', placeholder, value, onChange, i
         }`}
       />
       {suffix && (
-        <span className="absolute right-3.5 text-[#8A9CB7] text-[11px] font-semibold z-10 flex items-center">
+        <span className="absolute right-3.5 text-[#8A9CB7] text-sm font-semibold z-10 flex items-center">
           {suffix}
         </span>
       )}
@@ -375,7 +375,7 @@ const SignUp = () => {
               <span className="inline-block w-2 h-2 rounded-full bg-[#11C6DE] animate-ping" />
               Registration Submitted!
             </p>
-            <p className="text-xs text-[#E9EAF7] mt-1 font-medium">
+            <p className="text-sm text-[#E9EAF7] mt-1 font-medium">
               {signupType === 'create'
                 ? `Workspace '${formData.workspaceSubdomain}.skillpulse.ai' is initialized. Redirecting...`
                 : `Account created for role ${formData.requestedRole}. Redirecting to login...`}
@@ -410,7 +410,7 @@ const SignUp = () => {
             className="inline-flex items-center gap-2 bg-white/75 border border-[#1988A3]/25 px-3.5 py-1.5 rounded-full backdrop-blur-xl shadow-xs"
           >
             <span className="w-2 h-2 rounded-full bg-[#11C6DE] animate-ping" />
-            <span className="text-[11px] font-mono font-bold text-[#17233E] uppercase tracking-wider">
+            <span className="text-sm font-mono font-bold text-[#17233E] uppercase tracking-wider">
               {signupType === 'create' ? 'Tenant Provisioning Engine Ready' : 'Organization Directory Synced'}
             </span>
           </motion.div>
@@ -422,7 +422,7 @@ const SignUp = () => {
             </span>
           </motion.h1>
 
-          <motion.p variants={fadeInUp} className="text-[#5A6D89] text-sm max-w-md leading-relaxed font-normal">
+          <motion.p variants={fadeInUp} className="text-[#243656] text-sm max-w-md leading-relaxed font-medium">
             Provision isolated multi-tenant organization workspaces, bridge skill gaps with AI models, and construct optimized career pathways.
           </motion.p>
 
@@ -435,7 +435,7 @@ const SignUp = () => {
           >
             <div className="flex items-center justify-between pb-3 border-b border-white/70">
               <div>
-                <p className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#1988A3]">
+                <p className="text-xs sm:text-sm font-mono font-bold uppercase tracking-wider text-[#1988A3]">
                   Live Provision Preview
                 </p>
                 <p className="text-sm font-extrabold text-[#17233E] truncate max-w-[210px]">
@@ -446,15 +446,15 @@ const SignUp = () => {
                 key={signupType}
                 initial={{ scale: 0.85, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
-                className="px-2.5 py-1 rounded-full bg-[#17233E] text-[#11C6DE] text-[10px] font-mono font-bold"
+                className="px-2.5 py-1 rounded-full bg-[#17233E] text-[#11C6DE] text-xs sm:text-sm font-mono font-bold"
               >
                 {signupType === 'create' ? formData.selectedPlan : formData.requestedRole}
               </motion.span>
             </div>
 
             {signupType === 'create' && (
-              <div className="px-3 py-2 rounded-xl bg-white/70 border border-white text-[11px] font-mono text-[#17233E] flex items-center justify-between">
-                <span className="truncate text-[#5A6D89]">
+              <div className="px-3 py-2 rounded-xl bg-white/70 border border-white text-sm font-mono text-[#17233E] flex items-center justify-between">
+                <span className="truncate text-[#243656]">
                   https://<strong className="text-[#1988A3]">{formData.workspaceSubdomain || 'workspace'}</strong>.skillpulse.ai
                 </span>
                 <span className="w-2 h-2 rounded-full bg-[#11C6DE] animate-pulse shrink-0 ml-2" />
@@ -473,7 +473,7 @@ const SignUp = () => {
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.25 + idx * 0.08 }}
                   whileHover={{ x: 4 }}
-                  className="flex items-center gap-3 text-xs font-bold text-[#17233E] cursor-default"
+                  className="flex items-center gap-3 text-sm font-bold text-[#17233E] cursor-default"
                 >
                   <span className={`w-2 h-2 rounded-full ${feat.dot} shadow-xs`} />
                   <span>{feat.text}</span>
@@ -520,13 +520,13 @@ const SignUp = () => {
               <h2 className="text-2xl font-extrabold mb-1 tracking-tight text-[#17233E]">
                 Create your account
               </h2>
-              <p className="text-[#5A6D89] text-xs font-medium">Join or setup your SkillPulse-AI enterprise workspace</p>
+              <p className="text-[#243656] text-sm font-medium">Join or setup your SkillPulse-AI enterprise workspace</p>
             </div>
             <motion.span
               key={completionPct}
               initial={{ scale: 0.85 }}
               animate={{ scale: 1 }}
-              className="shrink-0 px-2.5 py-1 rounded-full bg-[#1988A3]/10 border border-[#1988A3]/25 text-[#1988A3] text-[10px] font-mono font-bold mt-1"
+              className="shrink-0 px-2.5 py-1 rounded-full bg-[#1988A3]/10 border border-[#1988A3]/25 text-[#1988A3] text-xs sm:text-sm font-mono font-bold mt-1"
             >
               {completionPct}% Ready
             </motion.span>
@@ -544,8 +544,8 @@ const SignUp = () => {
                   key={tab.id}
                   type="button"
                   onClick={() => handleModeSwitch(tab.id)}
-                  className={`relative py-2 text-xs font-bold rounded-xl transition-colors z-10 cursor-pointer ${
-                    active ? 'text-white' : 'text-[#5A6D89] hover:text-[#17233E]'
+                  className={`relative py-2 text-sm font-bold rounded-xl transition-colors z-10 cursor-pointer ${
+                    active ? 'text-white' : 'text-[#243656] hover:text-[#17233E]'
                   }`}
                 >
                   {active && (
@@ -569,7 +569,7 @@ const SignUp = () => {
                 animate={{ opacity: 1, y: 0, x: [0, -6, 6, -4, 4, 0] }}
                 exit={{ opacity: 0, height: 0 }}
                 transition={{ duration: 0.35 }}
-                className="mb-5 bg-red-50 border border-red-200 text-red-600 text-xs py-3 px-4 rounded-xl text-left font-medium"
+                className="mb-5 bg-red-50 border border-red-200 text-red-600 text-sm py-3 px-4 rounded-xl text-left font-medium"
               >
                 ⚠️ {errorMessage}
               </motion.div>
@@ -670,7 +670,7 @@ const SignUp = () => {
                       />
                     ))}
                   </div>
-                  <span className="text-[10px] font-mono font-bold text-[#5A6D89] shrink-0">
+                  <span className="text-xs sm:text-sm font-mono font-bold text-[#243656] shrink-0">
                     {passwordsMatch
                       ? '✓ Passwords Match'
                       : passwordScore >= 3
@@ -748,7 +748,7 @@ const SignUp = () => {
               transition={{ duration: 0.45, delay: 0.24 }}
               className="flex flex-col gap-1.5 text-left group"
             >
-              <label className="text-[#5A6D89] text-[11px] font-bold ml-1 uppercase tracking-wider group-focus-within:text-[#1988A3] transition-colors">
+              <label className="text-[#243656] text-sm font-bold ml-1 uppercase tracking-wider group-focus-within:text-[#1988A3] transition-colors">
                 {signupType === 'create' ? 'Primary Workspace Role' : 'Requested Role'}
               </label>
               <div className="relative">
@@ -784,7 +784,7 @@ const SignUp = () => {
                     transition={{ duration: 0.25 }}
                     className="flex flex-col gap-1.5 text-left group mt-3 overflow-hidden"
                   >
-                    <label className="text-[#5A6D89] text-[11px] font-bold ml-1 uppercase tracking-wider group-focus-within:text-[#1988A3] transition-colors">
+                    <label className="text-[#243656] text-sm font-bold ml-1 uppercase tracking-wider group-focus-within:text-[#1988A3] transition-colors">
                       Subscription Plan
                     </label>
                     <div className="relative">
@@ -807,7 +807,7 @@ const SignUp = () => {
                   </motion.div>
                 )}
               </AnimatePresence>
-              <p className="text-[10px] text-[#8A9CB7] mt-1 pl-1 font-medium">
+              <p className="text-xs sm:text-sm text-[#8A9CB7] mt-1 pl-1 font-medium">
                 {signupType === 'create'
                   ? 'Creating a new organization tenant provisions row-level database partitioning.'
                   : 'Role assignment subject to approval by Company Admin'}
@@ -836,7 +836,7 @@ const SignUp = () => {
           {/* Divider */}
           <div className="flex items-center gap-3 mt-5">
             <div className="flex-1 h-px bg-[#8A9CB7]/30"></div>
-            <span className="text-[10px] uppercase font-bold text-[#8A9CB7] tracking-widest">or continue with</span>
+            <span className="text-xs sm:text-sm uppercase font-bold text-[#8A9CB7] tracking-widest">or continue with</span>
             <div className="flex-1 h-px bg-[#8A9CB7]/30"></div>
           </div>
 
@@ -847,7 +847,7 @@ const SignUp = () => {
             type="button"
             onClick={() => handleGoogleSSO()}
             disabled={googleLoading}
-            className="w-full flex items-center justify-center gap-2.5 mt-4 py-3 bg-white/85 hover:bg-white border border-[#8A9CB7]/30 rounded-2xl text-xs sm:text-sm font-bold text-[#17233E] transition-all shadow-sm disabled:opacity-50 cursor-pointer"
+            className="w-full flex items-center justify-center gap-2.5 mt-4 py-3 bg-white/85 hover:bg-white border border-[#8A9CB7]/30 rounded-2xl text-sm sm:text-base font-bold text-[#17233E] transition-all shadow-sm disabled:opacity-50 cursor-pointer"
           >
             {googleLoading ? (
               <span className="w-4 h-4 border-2 border-[#1988A3] border-t-transparent rounded-full animate-spin" />
@@ -862,7 +862,7 @@ const SignUp = () => {
             {googleLoading ? 'Signing in with Google...' : 'Continue with Google'}
           </motion.button>
 
-          <p className="text-center text-xs sm:text-sm text-[#5A6D89] mt-6 font-medium">
+          <p className="text-center text-sm sm:text-base text-[#243656] mt-6 font-medium">
             Already registered?{' '}
             <Link to="/login" className="text-[#1988A3] font-bold hover:text-[#157289] hover:underline transition-colors ml-1">
               Sign In

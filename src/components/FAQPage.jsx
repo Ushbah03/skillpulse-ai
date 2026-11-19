@@ -111,7 +111,7 @@ const FAQPage = () => {
         <div className="container mx-auto max-w-4xl relative z-10">
           <div className="inline-flex items-center gap-2 bg-[#1988A3]/10 border border-[#1988A3]/25 px-4 py-1.5 rounded-full mb-6 backdrop-blur-md">
             <HelpCircle className="w-4 h-4 text-[#1988A3] animate-pulse" />
-            <span className="text-[#1988A3] text-xs font-bold uppercase tracking-widest font-mono">
+            <span className="text-[#1988A3] text-sm font-bold uppercase tracking-widest font-mono">
               KNOWLEDGE BASE & FAQ
             </span>
           </div>
@@ -123,13 +123,13 @@ const FAQPage = () => {
             </span>
           </h1>
 
-          <p className="text-[#5A6D89] text-base md:text-lg max-w-xl mx-auto font-normal leading-relaxed mb-10">
+          <p className="text-[#243656] text-base md:text-lg max-w-xl mx-auto font-medium leading-relaxed mb-10">
             Clear answers about SkillPulse AI architecture, 5-tier role governance, subscription plans, and security.
           </p>
 
           {/* Search Input */}
           <div className="relative max-w-2xl mx-auto group">
-            <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-[#5A6D89] w-5 h-5 group-focus-within:text-[#1988A3] transition-colors" />
+            <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-[#243656] w-5 h-5 group-focus-within:text-[#1988A3] transition-colors" />
             <input 
               type="text" 
               value={searchQuery}
@@ -155,10 +155,10 @@ const FAQPage = () => {
                   setActiveTab(cat);
                   setOpenQuestion('');
                 }}
-                className={`px-5 py-2.5 rounded-full text-xs font-bold transition-all duration-300 cursor-pointer ${
+                className={`px-5 py-2.5 rounded-full text-sm font-bold transition-all duration-300 cursor-pointer ${
                   activeTab === cat 
                     ? "bg-[#17233E] text-white shadow-md shadow-[#17233E]/20" 
-                    : "bg-white/70 text-[#5A6D89] hover:text-[#17233E] border border-white shadow-sm"
+                    : "bg-white/70 text-[#243656] hover:text-[#17233E] border border-white shadow-sm"
                 }`}
               >
                 {cat}
@@ -188,7 +188,7 @@ const FAQPage = () => {
                       <span className={`text-sm sm:text-base font-semibold pr-4 transition-colors ${isOpen ? 'text-[#1988A3]' : 'text-[#17233E]'}`}>
                         {faq.question}
                       </span>
-                      <div className={`w-6 h-6 rounded-full border flex items-center justify-center font-bold text-xs shrink-0 transition-colors ${isOpen ? 'border-[#1988A3] bg-[#1988A3] text-white' : 'border-[#8A9CB7]/40 text-[#5A6D89]'}`}>
+                      <div className={`w-6 h-6 rounded-full border flex items-center justify-center font-bold text-sm shrink-0 transition-colors ${isOpen ? 'border-[#1988A3] bg-[#1988A3] text-white' : 'border-[#8A9CB7]/40 text-[#243656]'}`}>
                         {isOpen ? '-' : '+'}
                       </div>
                     </button>
@@ -201,7 +201,7 @@ const FAQPage = () => {
                           exit={{ height: 0, opacity: 0 }}
                           transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
                         >
-                          <div className="px-5 pb-5 pt-0 text-[#5A6D89] text-xs leading-relaxed font-normal border-t border-[#8A9CB7]/15">
+                          <div className="px-5 pb-5 pt-0 text-[#243656] text-sm leading-relaxed font-medium border-t border-[#8A9CB7]/15">
                             {faq.answer}
                           </div>
                         </motion.div>
@@ -211,7 +211,7 @@ const FAQPage = () => {
                 );
               })
             ) : (
-              <div className="text-center py-12 text-[#5A6D89] text-xs font-mono">
+              <div className="text-center py-12 text-[#243656] text-sm font-mono">
                 No matching questions found. Try adjusting your search query or selecting another category.
               </div>
             )}
@@ -223,10 +223,10 @@ const FAQPage = () => {
               <Mail className="w-6 h-6" />
             </div>
             <h3 className="text-xl font-extrabold text-[#17233E] mb-2">Have a specific question?</h3>
-            <p className="text-[#5A6D89] text-xs font-normal mb-6">Reach out to our team for detailed information on platform features or enterprise deployments.</p>
+            <p className="text-[#243656] text-sm font-medium mb-6">Reach out to our team for detailed information on platform features or enterprise deployments.</p>
             <Link 
               to="/contact"
-              className="w-full sm:w-auto bg-[#1988A3] hover:bg-[#157289] text-white px-7 py-3 rounded-xl font-bold text-xs transition-all shadow-md shadow-[#1988A3]/25 inline-block cursor-pointer text-center"
+              className="w-full sm:w-auto bg-[#1988A3] hover:bg-[#157289] text-white px-7 py-3 rounded-xl font-bold text-sm transition-all shadow-md shadow-[#1988A3]/25 inline-block cursor-pointer text-center"
             >
               Contact Support
             </Link>
@@ -239,7 +239,7 @@ const FAQPage = () => {
       <section className="py-12 sm:py-16 px-6 text-center relative z-10 mb-8">
         <div className="container mx-auto max-w-3xl">
           <h2 className="text-2xl sm:text-4xl md:text-5xl font-extrabold text-[#17233E] mb-4 tracking-tight">Ready to Explore SkillPulse AI?</h2>
-          <p className="text-[#5A6D89] text-sm sm:text-base mb-8 max-w-lg mx-auto font-normal">
+          <p className="text-[#243656] text-sm sm:text-base mb-8 max-w-lg mx-auto font-medium">
             Discover multi-tenant workforce intelligence, skill gap inference, and 5-tier role governance.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5 max-w-xs sm:max-w-none mx-auto">

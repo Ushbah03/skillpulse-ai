@@ -191,7 +191,7 @@ const Login = () => {
             className="inline-flex items-center gap-2 bg-white/75 border border-[#1988A3]/25 px-3.5 py-1.5 rounded-full backdrop-blur-xl shadow-xs"
           >
             <span className="w-2 h-2 rounded-full bg-[#11C6DE] animate-ping" />
-            <span className="text-[11px] font-mono font-bold text-[#17233E] uppercase tracking-wider">
+            <span className="text-sm font-mono font-bold text-[#17233E] uppercase tracking-wider">
               {formData.workspace ? `${formData.workspace}.skillpulse.ai` : 'RLS Session Guard Active'}
             </span>
           </motion.div>
@@ -203,7 +203,7 @@ const Login = () => {
                 SkillPulse-AI
               </span>
             </motion.h1>
-            <motion.p variants={intenseUp} className="text-[#5A6D89] text-sm max-w-md leading-relaxed font-normal">
+            <motion.p variants={intenseUp} className="text-[#243656] text-sm max-w-md leading-relaxed font-medium">
               AI-Powered Skill Intelligence Platform for Modern Organizations. Measure readiness and optimize talent.
             </motion.p>
           </div>
@@ -237,13 +237,13 @@ const Login = () => {
           >
             <div className="flex justify-between items-start mb-6">
               <div>
-                <p className="text-[10px] uppercase tracking-widest text-[#5A6D89] font-mono font-bold mb-1">Team Readiness</p>
+                <p className="text-xs sm:text-sm uppercase tracking-widest text-[#243656] font-mono font-bold mb-1">Team Readiness</p>
                 <h4 className="text-2xl font-extrabold text-[#17233E]">84% Optimal</h4>
               </div>
               <motion.span
                 animate={{ scale: [1, 1.05, 1] }}
                 transition={{ duration: 2.6, repeat: Infinity, ease: 'easeInOut' }}
-                className="bg-[#1988A3]/10 text-[#1988A3] border border-[#1988A3]/25 text-[10px] font-bold px-2.5 py-1 rounded-full font-mono flex items-center gap-1.5"
+                className="bg-[#1988A3]/10 text-[#1988A3] border border-[#1988A3]/25 text-xs sm:text-sm font-bold px-2.5 py-1 rounded-full font-mono flex items-center gap-1.5"
               >
                 <span className="w-1.5 h-1.5 rounded-full bg-[#11C6DE] animate-pulse" />
                 +12% Live
@@ -301,13 +301,13 @@ const Login = () => {
           <div className="mb-6 sm:mb-8 text-left flex items-start justify-between gap-3">
             <div>
               <h2 className="text-2xl sm:text-3xl font-extrabold mb-1.5 text-[#17233E] tracking-tight">Sign in to your account</h2>
-              <p className="text-[#5A6D89] text-xs sm:text-sm font-medium">Enter your credentials to continue</p>
+              <p className="text-[#243656] text-sm sm:text-base font-medium">Enter your credentials to continue</p>
             </div>
             <motion.span
               key={readinessPct}
               initial={{ scale: 0.85 }}
               animate={{ scale: 1 }}
-              className="shrink-0 px-2.5 py-1 rounded-full bg-[#1988A3]/10 border border-[#1988A3]/25 text-[#1988A3] text-[10px] font-mono font-bold mt-1 flex items-center gap-1"
+              className="shrink-0 px-2.5 py-1 rounded-full bg-[#1988A3]/10 border border-[#1988A3]/25 text-[#1988A3] text-xs sm:text-sm font-mono font-bold mt-1 flex items-center gap-1"
             >
               <Icons.Shield />
               {readinessPct === 100 ? 'Ready' : 'TLS 1.3'}
@@ -324,7 +324,7 @@ const Login = () => {
               className="space-y-2 text-left group"
             >
               <div className="flex justify-between items-center ml-1">
-                <label className="text-[#5A6D89] text-xs font-bold uppercase tracking-wider group-focus-within:text-[#1988A3] transition-colors flex items-center gap-2">
+                <label className="text-[#243656] text-sm font-bold uppercase tracking-wider group-focus-within:text-[#1988A3] transition-colors flex items-center gap-2">
                   <span>Workspace / Organization</span>
                   {formData.workspace && (
                     <motion.span
@@ -334,7 +334,7 @@ const Login = () => {
                     />
                   )}
                 </label>
-                <span className="text-[10px] text-[#8A9CB7] font-medium">(Optional for global accounts)</span>
+                <span className="text-xs sm:text-sm text-[#8A9CB7] font-medium">(Optional for global accounts)</span>
               </div>
               <div className="relative rounded-2xl transition-transform duration-200 group-focus-within:-translate-y-0.5">
                 <div className="absolute -inset-[1px] rounded-2xl bg-gradient-to-r from-[#1988A3]/35 via-[#11C6DE]/45 to-[#1988A3]/35 blur-[2px] opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 pointer-events-none" />
@@ -349,7 +349,7 @@ const Login = () => {
                   placeholder="acme-corp (or leave blank)" 
                   className="relative w-full bg-white/70 focus:bg-white/95 border border-[#8A9CB7]/30 rounded-2xl py-3.5 pl-12 pr-[7.5rem] text-sm text-[#17233E] placeholder:text-[#8A9CB7] focus:outline-none focus:ring-2 focus:ring-[#1988A3]/20 focus:border-[#1988A3] transition-all shadow-inner hover:border-[#8A9CB7]/55"
                 />
-                <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[11px] font-semibold text-[#8A9CB7] pointer-events-none z-10">
+                <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-sm font-semibold text-[#8A9CB7] pointer-events-none z-10">
                   .skillpulse.ai
                 </span>
                 <span className="pointer-events-none absolute bottom-0 left-4 right-4 h-[2px] rounded-full bg-gradient-to-r from-[#1988A3] to-[#11C6DE] scale-x-0 group-focus-within:scale-x-100 transition-transform duration-300 origin-center" />
@@ -363,7 +363,7 @@ const Login = () => {
               transition={{ duration: 0.45, delay: 0.1 }}
               className="space-y-2 text-left group"
             >
-              <label className="text-[#5A6D89] text-xs font-bold uppercase tracking-wider ml-1 group-focus-within:text-[#1988A3] transition-colors flex items-center justify-between">
+              <label className="text-[#243656] text-sm font-bold uppercase tracking-wider ml-1 group-focus-within:text-[#1988A3] transition-colors flex items-center justify-between">
                 <span>Email Address</span>
                 {formData.email && (
                   <motion.span
@@ -398,7 +398,7 @@ const Login = () => {
               transition={{ duration: 0.45, delay: 0.15 }}
               className="space-y-2 text-left group"
             >
-              <label className="text-[#5A6D89] text-xs font-bold uppercase tracking-wider ml-1 group-focus-within:text-[#1988A3] transition-colors flex items-center justify-between">
+              <label className="text-[#243656] text-sm font-bold uppercase tracking-wider ml-1 group-focus-within:text-[#1988A3] transition-colors flex items-center justify-between">
                 <span>Password</span>
                 {formData.password && (
                   <motion.span
@@ -438,9 +438,9 @@ const Login = () => {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.45, delay: 0.2 }}
-              className="flex items-center justify-between text-xs font-semibold pt-1"
+              className="flex items-center justify-between text-sm font-semibold pt-1"
             >
-              <label className="flex items-center gap-2 cursor-pointer text-[#5A6D89] hover:text-[#17233E] transition-colors select-none">
+              <label className="flex items-center gap-2 cursor-pointer text-[#243656] hover:text-[#17233E] transition-colors select-none">
                 <input 
                   type="checkbox" 
                   name="rememberMe"
@@ -463,7 +463,7 @@ const Login = () => {
                   animate={{ opacity: 1, y: 0, x: [0, -6, 6, -4, 4, 0] }}
                   exit={{ opacity: 0, height: 0 }}
                   transition={{ duration: 0.35 }}
-                  className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-xl text-xs flex items-center gap-2"
+                  className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-xl text-sm flex items-center gap-2"
                 >
                   <svg className="w-4 h-4 shrink-0 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
                   <span>{errorMsg}</span>
@@ -496,7 +496,7 @@ const Login = () => {
 
           <div className="relative my-6 text-center select-none">
             <div className="absolute inset-0 flex items-center px-4"><div className="w-full border-t border-[#8A9CB7]/20"></div></div>
-            <span className="relative bg-white/85 px-4 text-[10px] font-bold text-[#8A9CB7] uppercase tracking-widest rounded-full">Or continue with</span>
+            <span className="relative bg-white/85 px-4 text-xs sm:text-sm font-bold text-[#8A9CB7] uppercase tracking-widest rounded-full">Or continue with</span>
           </div>
 
           <div className="mt-6 flex flex-col gap-4">
@@ -506,7 +506,7 @@ const Login = () => {
               type="button"
               onClick={() => handleGoogleLogin()}
               disabled={isGoogleLoading}
-              className="w-full flex items-center justify-center gap-2.5 bg-white/85 hover:bg-white border border-[#8A9CB7]/30 py-3 rounded-2xl text-xs sm:text-sm font-bold text-[#17233E] transition-all shadow-sm disabled:opacity-50 cursor-pointer"
+              className="w-full flex items-center justify-center gap-2.5 bg-white/85 hover:bg-white border border-[#8A9CB7]/30 py-3 rounded-2xl text-sm sm:text-base font-bold text-[#17233E] transition-all shadow-sm disabled:opacity-50 cursor-pointer"
             >
               {isGoogleLoading ? (
                 <span className="w-4 h-4 border-2 border-[#1988A3] border-t-transparent rounded-full animate-spin" />
@@ -518,7 +518,7 @@ const Login = () => {
           </div>
 
           <div className="mt-6 space-y-3 text-center">
-            <p className="text-sm text-[#5A6D89] font-medium">
+            <p className="text-sm text-[#243656] font-medium">
               Don't have an account? <Link to="/signup" className="text-[#1988A3] font-bold hover:text-[#157289] hover:underline transition-colors ml-1">Sign Up</Link>
             </p>
           </div>

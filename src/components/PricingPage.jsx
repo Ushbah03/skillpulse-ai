@@ -135,7 +135,7 @@ const PricingPage = () => {
             >
               <ArrowLeft className="w-4 h-4" />
             </Link>
-            <span className="text-xs font-mono font-bold uppercase tracking-widest text-[#1988A3]">
+            <span className="text-sm font-mono font-bold uppercase tracking-widest text-[#1988A3]">
               Pricings
             </span>
             <div className="w-9 h-9" /> {/* Spacer */}
@@ -145,7 +145,7 @@ const PricingPage = () => {
           <h1 className="text-3xl sm:text-5xl md:text-6xl font-extrabold mb-3 tracking-tight leading-tight text-[#17233E]">
             Pricing on your terms
           </h1>
-          <p className="text-[#5A6D89] text-xs sm:text-base max-w-md mx-auto font-normal leading-relaxed mb-6 sm:mb-8">
+          <p className="text-[#243656] text-base sm:text-lg max-w-md mx-auto font-medium leading-relaxed mb-6 sm:mb-8">
             Scale workforce skill intelligence, gap detection, and AI recommendations with complete multi-tenant governance.
           </p>
 
@@ -156,10 +156,10 @@ const PricingPage = () => {
                 key={idx}
                 type="button"
                 onClick={() => handleSelectTier(idx)}
-                className={`px-4 sm:px-6 py-2 sm:py-2.5 rounded-full text-xs font-bold transition-all duration-300 cursor-pointer shrink-0 ${
+                className={`px-4 sm:px-6 py-2 sm:py-2.5 rounded-full text-sm font-bold transition-all duration-300 cursor-pointer shrink-0 ${
                   selectedTier === idx
                     ? 'bg-gradient-to-r from-[#17233E] via-[#1B3154] to-[#1988A3] text-white shadow-md shadow-[#17233E]/20'
-                    : 'text-[#5A6D89] hover:text-[#17233E]'
+                    : 'text-[#243656] hover:text-[#17233E]'
                 }`}
               >
                 {p.shortTitle}
@@ -173,10 +173,10 @@ const PricingPage = () => {
               <button
                 type="button"
                 onClick={() => setIsYearly(false)}
-                className={`px-4 sm:px-6 py-2 sm:py-2.5 rounded-full text-[11px] sm:text-xs font-bold transition-all duration-300 cursor-pointer ${
+                className={`px-4 sm:px-6 py-2 sm:py-2.5 rounded-full text-sm sm:text-base font-bold transition-all duration-300 cursor-pointer ${
                   !isYearly 
                     ? 'bg-[#17233E] text-white shadow-md shadow-[#17233E]/20' 
-                    : 'text-[#5A6D89] hover:text-[#17233E]'
+                    : 'text-[#243656] hover:text-[#17233E]'
                 }`}
               >
                 Monthly Billing
@@ -184,14 +184,14 @@ const PricingPage = () => {
               <button
                 type="button"
                 onClick={() => setIsYearly(true)}
-                className={`px-4 sm:px-6 py-2 sm:py-2.5 rounded-full text-[11px] sm:text-xs font-bold transition-all duration-300 flex items-center gap-2 cursor-pointer ${
+                className={`px-4 sm:px-6 py-2 sm:py-2.5 rounded-full text-sm sm:text-base font-bold transition-all duration-300 flex items-center gap-2 cursor-pointer ${
                   isYearly 
                     ? 'bg-[#17233E] text-white shadow-md shadow-[#17233E]/20' 
-                    : 'text-[#5A6D89] hover:text-[#17233E]'
+                    : 'text-[#243656] hover:text-[#17233E]'
                 }`}
               >
                 <span>Annual Billing</span>
-                <span className="bg-[#1988A3]/15 text-[#1988A3] border border-[#1988A3]/30 text-[9px] font-mono font-bold px-2 py-0.5 rounded-full">
+                <span className="bg-[#1988A3]/15 text-[#1988A3] border border-[#1988A3]/30 text-sm font-mono font-bold px-2 py-0.5 rounded-full">
                   SAVE 20%
                 </span>
               </button>
@@ -232,10 +232,10 @@ const PricingPage = () => {
                   <div className="relative mb-5 pb-5 border-b border-white/10 flex items-center justify-between">
                     <div>
                       <div className="flex items-center gap-1.5 mb-1">
-                        <span className="text-[10px] font-mono font-bold text-[#11C6DE] bg-[#11C6DE]/15 px-1.5 py-0.5 rounded">
+                        <span className="text-xs sm:text-sm font-mono font-bold text-[#11C6DE] bg-[#11C6DE]/15 px-1.5 py-0.5 rounded">
                           {plan.stepNumber}
                         </span>
-                        <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-white/60">
+                        <h3 className="text-sm font-mono font-bold uppercase tracking-wider text-white/60">
                           Upgrade to {plan.name}
                         </h3>
                       </div>
@@ -268,12 +268,12 @@ const PricingPage = () => {
                             ${plan.price}
                           </motion.span>
                         </AnimatePresence>
-                        <span className="text-white/50 text-xs sm:text-sm font-medium">{plan.unit}</span>
+                        <span className="text-white/50 text-sm sm:text-base font-medium">{plan.unit}</span>
                       </div>
 
                       {/* Pill Badge */}
                       {plan.badge && (
-                        <span className={`text-[10px] font-mono font-bold px-3 py-1 rounded-full uppercase tracking-wider border shadow-xs ${
+                        <span className={`text-xs sm:text-sm font-mono font-bold px-3 py-1 rounded-full uppercase tracking-wider border shadow-xs ${
                           plan.featured
                             ? 'bg-[#11C6DE]/20 text-[#11C6DE] border-[#11C6DE]/50 shadow-[0_0_12px_rgba(17,198,222,0.3)]'
                             : 'bg-white/10 text-white/80 border-white/20'
@@ -283,7 +283,7 @@ const PricingPage = () => {
                       )}
                     </div>
 
-                    <p className="text-white/60 text-xs font-normal leading-relaxed">
+                    <p className="text-white/60 text-sm font-medium leading-relaxed">
                       {plan.subDesc}
                     </p>
                   </div>
@@ -291,11 +291,11 @@ const PricingPage = () => {
                   {/* 3. Features List with Sparkle Diamonds (Exact Look from Reference Image) */}
                   <div className="space-y-3 mb-8 flex-grow pt-4 border-t border-white/10">
                     {plan.features.map((f, idx) => (
-                      <div key={idx} className="flex items-start gap-2.5 text-xs text-white/90">
+                      <div key={idx} className="flex items-start gap-2.5 text-sm text-white/90">
                         <span className="text-[#11C6DE] text-sm shrink-0 leading-none mt-0.5 select-none font-bold">
                           ✦
                         </span>
-                        <span className="leading-relaxed font-normal">{f}</span>
+                        <span className="leading-relaxed font-medium">{f}</span>
                       </div>
                     ))}
                   </div>
@@ -303,7 +303,7 @@ const PricingPage = () => {
                   {/* 4. Action Button (Glowing Pill on Selected, Frosted Glass Pill on Other) */}
                   <Link 
                     to={plan.targetPath}
-                    className={`w-full py-3.5 rounded-full font-bold text-xs sm:text-sm text-center transition-all duration-300 block tracking-wide cursor-pointer select-none ${
+                    className={`w-full py-3.5 rounded-full font-bold text-sm sm:text-base text-center transition-all duration-300 block tracking-wide cursor-pointer select-none ${
                       isSelected
                         ? 'bg-gradient-to-r from-[#1988A3] via-[#11C6DE] to-[#60EFFF] hover:from-[#157289] hover:via-[#0FB5CB] hover:to-[#4AE8FA] text-[#0B1528] font-black shadow-[0_0_25px_rgba(17,198,222,0.45)] hover:shadow-[0_0_35px_rgba(17,198,222,0.65)] transform hover:scale-[1.01]'
                         : 'bg-white/10 hover:bg-white/15 border border-white/15 hover:border-[#11C6DE]/40 text-white shadow-xs'
@@ -324,13 +324,13 @@ const PricingPage = () => {
       <section className="py-14 sm:py-20 px-4 sm:px-6 md:px-12 relative z-10">
         <div className="container mx-auto max-w-6xl">
           <div className="text-center mb-10">
-            <span className="px-3.5 py-1.5 rounded-full bg-[#1988A3]/10 border border-[#1988A3]/25 text-[#1988A3] text-xs font-mono font-bold uppercase tracking-wider inline-block mb-3.5">
+            <span className="px-3.5 py-1.5 rounded-full bg-[#1988A3]/10 border border-[#1988A3]/25 text-[#1988A3] text-sm font-mono font-bold uppercase tracking-wider inline-block mb-3.5">
               DETAILED COMPARISON
             </span>
             <h2 className="text-2xl sm:text-3xl md:text-5xl font-extrabold text-[#17233E] mb-2 sm:mb-3">
               Workspace Feature Matrix
             </h2>
-            <p className="text-[#5A6D89] text-xs sm:text-base max-w-xl mx-auto font-normal">
+            <p className="text-[#243656] text-base sm:text-lg max-w-xl mx-auto font-medium">
               Granular capability breakdown across all deployment tiers.
             </p>
           </div>
@@ -345,7 +345,7 @@ const PricingPage = () => {
                   <th className="py-4.5 px-6 font-bold text-white text-sm">Enterprise</th>
                 </tr>
               </thead>
-              <tbody className="text-xs divide-y divide-[#8A9CB7]/20">
+              <tbody className="text-sm divide-y divide-[#8A9CB7]/20">
                 {[
                   { f: "User Role Access", s: "Employee & Admin", b: "Employee, Lead, HR & Admin", e: "Tenant Roles (Up to 1000 Seats)" },
                   { f: "AI Skill Analytics", s: "Self-Assessment Engine", b: "AI Gap Detection & Recs", e: "AI Gap Detection & Department Trends" },
@@ -356,7 +356,7 @@ const PricingPage = () => {
                 ].map((row, i) => (
                   <tr key={i} className="hover:bg-[#E9EAF7]/50 transition-colors">
                     <td className="py-4 px-6 font-semibold text-[#17233E]">{row.f}</td>
-                    <td className="py-4 px-6 text-[#5A6D89] font-mono">{row.s}</td>
+                    <td className="py-4 px-6 text-[#243656] font-mono">{row.s}</td>
                     <td className="py-4 px-6 text-[#1988A3] font-bold font-mono">{row.b}</td>
                     <td className="py-4 px-6 text-[#17233E] font-bold font-mono">{row.e}</td>
                   </tr>
@@ -370,13 +370,13 @@ const PricingPage = () => {
       {/* 4. FREQUENTLY ASKED QUESTIONS */}
       <section className="py-10 sm:py-16 px-4 sm:px-6 md:px-12 relative z-10 mb-8 sm:mb-12">
         <div className="text-center mb-6 sm:mb-10">
-          <span className="px-3 py-1 rounded-full bg-[#17233E]/10 border border-[#17233E]/20 text-[#17233E] text-[10px] sm:text-xs font-mono font-bold uppercase tracking-wider inline-block mb-2.5 sm:mb-3.5">
+          <span className="px-3 py-1 rounded-full bg-[#17233E]/10 border border-[#17233E]/20 text-[#17233E] text-sm sm:text-base font-mono font-bold uppercase tracking-wider inline-block mb-2.5 sm:mb-3.5">
             QUESTIONS & ANSWERS
           </span>
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-[#17233E] mb-2 sm:mb-3">
             Frequently Asked Questions
           </h2>
-          <p className="text-[#5A6D89] text-xs sm:text-base max-w-xl mx-auto font-normal">
+          <p className="text-[#243656] text-base sm:text-lg max-w-xl mx-auto font-medium">
             Key details on multi-tenant billing, security, and scope boundary.
           </p>
         </div>
@@ -394,7 +394,7 @@ const PricingPage = () => {
                 className="p-4 sm:p-5 flex justify-between items-center cursor-pointer select-none"
               >
                 <span className={`font-semibold text-sm ${openIndex === i ? 'text-[#1988A3]' : 'text-[#17233E]'}`}>{faq.q}</span>
-                <div className={`w-6 h-6 rounded-full border flex items-center justify-center font-bold text-xs transition-colors ${openIndex === i ? 'border-[#1988A3] bg-[#1988A3] text-white' : 'border-[#8A9CB7]/40 text-[#5A6D89]'}`}>
+                <div className={`w-6 h-6 rounded-full border flex items-center justify-center font-bold text-sm transition-colors ${openIndex === i ? 'border-[#1988A3] bg-[#1988A3] text-white' : 'border-[#8A9CB7]/40 text-[#243656]'}`}>
                   {openIndex === i ? '-' : '+'}
                 </div>
               </div>
@@ -407,7 +407,7 @@ const PricingPage = () => {
                     exit={{ height: 0, opacity: 0 }}
                     transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
                   >
-                    <div className="p-4 sm:p-5 pt-0 text-[#5A6D89] text-xs sm:text-sm leading-relaxed font-normal border-t border-[#8A9CB7]/15">
+                    <div className="p-4 sm:p-5 pt-0 text-[#243656] text-sm sm:text-base leading-relaxed font-medium border-t border-[#8A9CB7]/15">
                       {faq.a}
                     </div>
                   </motion.div>

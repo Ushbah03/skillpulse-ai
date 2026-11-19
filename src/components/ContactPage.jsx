@@ -13,14 +13,14 @@ const ContactPage = () => {
       <section className="relative pt-20 pb-20 px-6 text-center overflow-hidden z-10">
         <div className="relative z-10 container mx-auto max-w-4xl">
           <div className="inline-flex items-center gap-2 bg-[#1988A3]/10 border border-[#1988A3]/25 px-4 py-1.5 rounded-full mb-6 backdrop-blur-md">
-            <span className="text-[#1988A3] text-xs font-bold uppercase tracking-widest font-mono">
+            <span className="text-[#1988A3] text-sm font-bold uppercase tracking-widest font-mono">
               GET IN TOUCH
             </span>
           </div>
           <h1 className="text-4xl lg:text-5xl font-extrabold mb-5 tracking-tight text-[#17233E]">
             Let's <span className="text-[#1988A3]">Connect</span>
           </h1>
-          <p className="text-[#5A6D89] text-base md:text-lg max-w-xl mx-auto leading-relaxed font-normal">
+          <p className="text-[#243656] text-base md:text-lg max-w-xl mx-auto leading-relaxed font-medium">
             Have questions about SkillPulse AI? Our engineering and solutions team is ready to assist your organization.
           </p>
         </div>
@@ -37,7 +37,7 @@ const ContactPage = () => {
                   <MessageSquare className="w-6 h-6 sm:w-7 sm:h-7" />
                 </div>
                 <h3 className="text-xl sm:text-2xl font-extrabold text-[#17233E] mb-3 tracking-tight">Sales Inquiries</h3>
-                <p className="text-[#5A6D89] mb-6 sm:mb-8 leading-relaxed text-xs sm:text-sm font-normal">
+                <p className="text-[#243656] mb-6 sm:mb-8 leading-relaxed text-sm sm:text-base font-medium">
                   Interested in our multi-tenant enterprise solution? Speak with our workforce intelligence experts.
                 </p>
               </div>
@@ -54,7 +54,7 @@ const ContactPage = () => {
                   <Mail className="w-6 h-6 sm:w-7 sm:h-7" />
                 </div>
                 <h3 className="text-xl sm:text-2xl font-extrabold text-[#17233E] mb-3 tracking-tight">Customer Support</h3>
-                <p className="text-[#5A6D89] mb-6 sm:mb-8 leading-relaxed text-xs sm:text-sm font-normal">
+                <p className="text-[#243656] mb-6 sm:mb-8 leading-relaxed text-sm sm:text-base font-medium">
                   Need help configuring tenant roles or LMS connectors? Our team responds within standard SLA windows.
                 </p>
               </div>
@@ -75,12 +75,12 @@ const ContactPage = () => {
                   <a href="tel:+15550000000" className="text-[#17233E] hover:text-[#1988A3] font-extrabold text-lg sm:text-xl tracking-tight transition-colors block">
                     +1 (555) 000-0000
                   </a>
-                  <p className="text-[#5A6D89] text-xs font-normal">
+                  <p className="text-[#243656] text-sm font-medium">
                     Mon-Fri: 9:00 AM - 6:00 PM EST
                   </p>
                 </div>
               </div>
-              <span className="text-[#5A6D89] font-mono text-[11px] sm:text-xs uppercase font-bold tracking-wider">
+              <span className="text-[#243656] font-mono text-sm sm:text-base uppercase font-bold tracking-wider">
                 Enterprise Support Ready
               </span>
             </div>
@@ -92,7 +92,7 @@ const ContactPage = () => {
       <section className="py-16 px-6 relative z-10">
         <div className="container mx-auto max-w-7xl flex flex-col lg:flex-row items-center gap-16 text-left">
           <div className="lg:w-1/3">
-            <span className="bg-[#1988A3]/10 text-[#1988A3] border border-[#1988A3]/25 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider mb-6 inline-block">
+            <span className="bg-[#1988A3]/10 text-[#1988A3] border border-[#1988A3]/25 px-4 py-1.5 rounded-full text-sm font-bold uppercase tracking-wider mb-6 inline-block">
               Our Headquarters
             </span>
             <h2 className="text-4xl font-extrabold text-[#17233E] mb-8 leading-tight tracking-tight">Visit Our Office</h2>
@@ -104,7 +104,7 @@ const ContactPage = () => {
                 </div>
                 <div>
                   <h4 className="font-extrabold text-base mb-1 text-[#17233E]">Head Office</h4>
-                  <p className="text-[#5A6D89] leading-relaxed text-xs font-normal">
+                  <p className="text-[#243656] leading-relaxed text-sm font-medium">
                     123 Intelligence Square, Tech District<br />
                     New York, NY 10001, USA
                   </p>
@@ -116,7 +116,7 @@ const ContactPage = () => {
                 </div>
                 <div>
                   <h4 className="font-extrabold text-base mb-1 text-[#17233E]">Business Hours</h4>
-                  <p className="text-[#5A6D89] leading-relaxed text-xs font-normal">
+                  <p className="text-[#243656] leading-relaxed text-sm font-medium">
                     Monday - Friday: 9am - 6pm EST<br />
                     Weekend: Support On-Call
                   </p>

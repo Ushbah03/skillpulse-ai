@@ -89,14 +89,14 @@ const FeaturePage = () => {
         
         {/* Floating Ambient Micro-Pills */}
         <div className="hidden lg:block absolute left-8 top-28 animate-float-slow pointer-events-none">
-          <div className="glass-pill px-4 py-2 rounded-2xl flex items-center gap-2.5 text-xs font-mono font-bold text-[#17233E]">
+          <div className="glass-pill px-4 py-2 rounded-2xl flex items-center gap-2.5 text-sm font-mono font-bold text-[#17233E]">
             <span className="w-2 h-2 rounded-full bg-[#11C6DE] animate-ping" />
             <span>AI Taxonomy v4.2 Live</span>
           </div>
         </div>
 
         <div className="hidden lg:block absolute right-8 top-36 animate-float-reverse pointer-events-none">
-          <div className="glass-pill px-4 py-2 rounded-2xl flex items-center gap-2.5 text-xs font-mono font-bold text-[#17233E]">
+          <div className="glass-pill px-4 py-2 rounded-2xl flex items-center gap-2.5 text-sm font-mono font-bold text-[#17233E]">
             <Radio className="w-3.5 h-3.5 text-[#1988A3] animate-pulse" />
             <span>Telemetry: 98.4% Precision</span>
           </div>
@@ -105,7 +105,7 @@ const FeaturePage = () => {
         <div className="container mx-auto max-w-4xl relative z-10">
           <div className="inline-flex items-center gap-2 bg-[#1988A3]/10 border border-[#1988A3]/25 px-3 sm:px-4 py-1.5 rounded-full mb-4 sm:mb-6 backdrop-blur-md shadow-sm">
             <span className="w-2 h-2 bg-[#1988A3] rounded-full animate-ping"></span>
-            <span className="text-[#1988A3] text-[10px] sm:text-[11px] font-bold uppercase tracking-wider font-mono">
+            <span className="text-[#1988A3] text-sm sm:text-base font-bold uppercase tracking-wider font-mono">
               {tenant.name} Enterprise Capabilities
             </span>
           </div>
@@ -117,14 +117,14 @@ const FeaturePage = () => {
             </span>
           </h1>
 
-          <p className="text-[#5A6D89] text-xs sm:text-base md:text-lg max-w-2xl mx-auto font-normal leading-relaxed mb-5 sm:mb-8">
+          <p className="text-[#243656] text-base sm:text-lg md:text-lg max-w-2xl mx-auto font-medium leading-relaxed mb-5 sm:mb-8">
             Explore the AI-driven tools that power skill growth, predictive gap resolution, and enterprise workforce readiness across your entire organization.
           </p>
 
           <div className="flex flex-col sm:flex-row justify-center items-stretch sm:items-center gap-2.5 sm:gap-4 max-w-xs sm:max-w-none mx-auto">
             <Link 
               to="/contact" 
-              className="bg-[#1988A3] hover:bg-[#157289] text-white px-6 sm:px-7 py-3 sm:py-3.5 rounded-full font-bold text-xs sm:text-sm md:text-base transition-all shadow-lg shadow-[#1988A3]/30 hover:shadow-[#1988A3]/50 inline-flex items-center justify-center gap-2 group text-center"
+              className="bg-[#1988A3] hover:bg-[#157289] text-white px-6 sm:px-7 py-3 sm:py-3.5 rounded-full font-bold text-sm sm:text-base md:text-base transition-all shadow-lg shadow-[#1988A3]/30 hover:shadow-[#1988A3]/50 inline-flex items-center justify-center gap-2 group text-center"
             >
               Request Live Demo <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </Link>
@@ -132,7 +132,7 @@ const FeaturePage = () => {
             {/* Interactive Loading Animation Simulator Trigger */}
             <button
               onClick={handleSimulateCalibration}
-              className="glass-panel px-5 sm:px-6 py-3 sm:py-3.5 rounded-full font-bold text-xs sm:text-sm md:text-base text-[#17233E] hover:border-[#1988A3]/60 transition-all inline-flex items-center justify-center gap-2 shadow-sm cursor-pointer text-center"
+              className="glass-panel px-5 sm:px-6 py-3 sm:py-3.5 rounded-full font-bold text-sm sm:text-base md:text-base text-[#17233E] hover:border-[#1988A3]/60 transition-all inline-flex items-center justify-center gap-2 shadow-sm cursor-pointer text-center"
               title="Click to see the high-tech SkillPulse AI Loading Animation"
             >
               <RefreshCw className="w-4 h-4 text-[#1988A3] animate-spin" style={{ animationDuration: '3s' }} />
@@ -155,11 +155,11 @@ const FeaturePage = () => {
             </div>
 
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 mb-4 sm:mb-6">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#17233E] text-white text-[10px] font-mono font-bold uppercase shadow-sm">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#17233E] text-white text-xs sm:text-sm font-mono font-bold uppercase shadow-sm">
                 <span className="w-1.5 h-1.5 rounded-full bg-[#11C6DE] animate-ping" />
                 Prisma Engine Synced
               </div>
-              <span className="text-[10px] sm:text-[11px] font-mono font-bold text-[#1988A3]">
+              <span className="text-sm sm:text-base font-mono font-bold text-[#1988A3]">
                 Live Adaptive Scoring
               </span>
             </div>
@@ -174,10 +174,10 @@ const FeaturePage = () => {
                 <button
                   key={tab.id}
                   onClick={() => setActiveCategory(tab.id)}
-                  className={`flex-1 py-1.5 sm:py-2 text-[10px] sm:text-xs font-bold rounded-lg sm:rounded-xl transition-all cursor-pointer ${
+                  className={`flex-1 py-1.5 sm:py-2 text-sm sm:text-base font-bold rounded-lg sm:rounded-xl transition-all cursor-pointer ${
                     activeCategory === tab.id
                       ? 'bg-[#17233E] text-white shadow-md'
-                      : 'text-[#5A6D89] hover:text-[#17233E]'
+                      : 'text-[#243656] hover:text-[#17233E]'
                   }`}
                 >
                   {tab.label}
@@ -188,11 +188,11 @@ const FeaturePage = () => {
             {/* Animated Dynamic Progress Bars with Particle Tips */}
             <div className="bg-white/60 rounded-xl sm:rounded-2xl p-3.5 sm:p-6 border border-white/80 shadow-inner space-y-4 sm:space-y-6">
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1 border-b border-[#8A9CB7]/20 pb-2.5 sm:pb-3">
-                <h4 className="font-bold sm:font-extrabold text-[#17233E] text-xs sm:text-base flex items-center gap-2">
+                <h4 className="font-bold sm:font-extrabold text-[#17233E] text-base sm:text-lg flex items-center gap-2">
                   <Sparkles className="w-4 h-4 text-[#1988A3]" />
                   <span>Real-Time Capability Matrix</span>
                 </h4>
-                <span className="text-[9px] sm:text-xs font-mono font-bold text-[#5A6D89]">
+                <span className="text-sm sm:text-base font-mono font-bold text-[#243656]">
                   Quarterly Snapshot
                 </span>
               </div>
@@ -208,13 +208,13 @@ const FeaturePage = () => {
                 >
                   {assessmentData[activeCategory].map((s, i) => (
                     <div key={i} className="group">
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-xs font-bold mb-1.5 font-mono">
-                        <span className="text-[#17233E] text-[11px] sm:text-xs font-bold leading-tight">{s.label}</span>
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-sm font-bold mb-1.5 font-mono">
+                        <span className="text-[#17233E] text-sm sm:text-base font-bold leading-tight">{s.label}</span>
                         <div className="flex items-center justify-between sm:justify-end gap-2">
-                          <span className="text-[9px] sm:text-[10px] text-[#5A6D89] font-normal lowercase bg-white/70 px-2 py-0.5 rounded-md border border-[#8A9CB7]/30">
+                          <span className="text-sm sm:text-base text-[#243656] font-medium lowercase bg-white/70 px-2 py-0.5 rounded-md border border-[#8A9CB7]/30">
                             {s.tag}
                           </span>
-                          <span className="text-[#1988A3] font-bold text-[11px] sm:text-xs">{s.val}%</span>
+                          <span className="text-[#1988A3] font-bold text-sm sm:text-base">{s.val}%</span>
                         </div>
                       </div>
 
@@ -239,13 +239,13 @@ const FeaturePage = () => {
 
           {/* Engine Content */}
           <div className="text-left">
-            <span className="px-3 py-1 rounded-full bg-[#1988A3]/10 border border-[#1988A3]/25 text-[#1988A3] text-[10px] sm:text-xs font-mono font-bold uppercase tracking-wider inline-block mb-2.5 sm:mb-3.5">
+            <span className="px-3 py-1 rounded-full bg-[#1988A3]/10 border border-[#1988A3]/25 text-[#1988A3] text-sm sm:text-base font-mono font-bold uppercase tracking-wider inline-block mb-2.5 sm:mb-3.5">
               ASSESSMENT FRAMEWORK
             </span>
             <h2 className="text-xl sm:text-3xl md:text-5xl font-extrabold mb-3 sm:mb-5 text-[#17233E] leading-tight">
               Skill Assessment Engine
             </h2>
-            <p className="text-[#5A6D89] text-xs sm:text-base md:text-lg font-normal mb-5 sm:mb-8 leading-relaxed">
+            <p className="text-[#243656] text-base sm:text-lg md:text-lg font-medium mb-5 sm:mb-8 leading-relaxed">
               Empower employees with structured, intuitive evaluations capturing actionable skill proficiencies mapped to benchmark industry standards.
             </p>
             <div className="space-y-3 sm:space-y-4">
@@ -258,7 +258,7 @@ const FeaturePage = () => {
                   <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-[#1988A3]/15 border border-[#1988A3]/30 text-[#1988A3] flex items-center justify-center flex-shrink-0 mt-0.5">
                     <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                   </div>
-                  <p className="text-[#5A6D89] text-xs sm:text-sm leading-relaxed">
+                  <p className="text-[#243656] text-sm sm:text-base leading-relaxed">
                     <span className="font-bold text-[#17233E]">{item.t}:</span> {item.d}
                   </p>
                 </div>
@@ -273,13 +273,13 @@ const FeaturePage = () => {
         <div className="container mx-auto max-w-7xl grid md:grid-cols-2 items-center gap-8 sm:gap-14">
           
           <div className="order-2 md:order-1 text-left">
-            <span className="px-3 py-1 rounded-full bg-[#17233E]/10 border border-[#17233E]/20 text-[#17233E] text-[10px] sm:text-xs font-mono font-bold uppercase tracking-wider inline-block mb-2.5 sm:mb-3.5">
+            <span className="px-3 py-1 rounded-full bg-[#17233E]/10 border border-[#17233E]/20 text-[#17233E] text-sm sm:text-base font-mono font-bold uppercase tracking-wider inline-block mb-2.5 sm:mb-3.5">
               PREDICTIVE ANALYSIS
             </span>
             <h2 className="text-xl sm:text-3xl md:text-5xl font-extrabold mb-3 sm:mb-5 text-[#17233E]">
               AI Skill Gap Detection
             </h2>
-            <p className="text-[#5A6D89] text-xs sm:text-base md:text-lg mb-5 sm:mb-8 font-normal leading-relaxed">
+            <p className="text-[#243656] text-base sm:text-lg md:text-lg mb-5 sm:mb-8 font-medium leading-relaxed">
               Our neural engine cross-evaluates talent profiles against organizational objectives to detect, isolate, and forecast skill deficiencies before they impact delivery.
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-4">
@@ -294,11 +294,11 @@ const FeaturePage = () => {
                   whileHover={{ y: -3, scale: 1.02 }}
                   className="p-3.5 sm:p-5 glass-panel rounded-xl sm:rounded-2xl hover:border-[#1988A3]/50 transition-all cursor-pointer group"
                 >
-                  <h4 className="font-bold text-[#17233E] text-xs sm:text-sm mb-1 flex items-center justify-between">
+                  <h4 className="font-bold text-[#17233E] text-sm sm:text-base mb-1 flex items-center justify-between">
                     <span>{f.title}</span>
                     <Zap className="w-3.5 h-3.5 text-[#1988A3] group-hover:scale-125 transition-transform" />
                   </h4>
-                  <p className="text-[11px] sm:text-xs text-[#5A6D89] font-normal leading-relaxed">{f.desc}</p>
+                  <p className="text-sm sm:text-base text-[#243656] font-medium leading-relaxed">{f.desc}</p>
                 </motion.div>
               ))}
             </div>
@@ -309,11 +309,11 @@ const FeaturePage = () => {
             
             {/* Header info */}
             <div className="w-full flex items-center justify-between mb-3 sm:mb-4">
-              <h4 className="text-xs sm:text-base font-extrabold text-[#17233E] flex items-center gap-2">
+              <h4 className="text-base sm:text-lg font-extrabold text-[#17233E] flex items-center gap-2">
                 <Cpu className="w-4 h-4 text-[#1988A3]" />
                 <span>Neural Skill Vector Radar</span>
               </h4>
-              <span className="text-[9px] sm:text-[10px] font-mono font-bold text-[#1988A3] bg-[#1988A3]/10 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full border border-[#1988A3]/20">
+              <span className="text-sm sm:text-base font-mono font-bold text-[#1988A3] bg-[#1988A3]/10 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full border border-[#1988A3]/20">
                 Live Sweep
               </span>
             </div>
@@ -369,14 +369,14 @@ const FeaturePage = () => {
 
               {/* Node Tooltip Display */}
               <div className="absolute bottom-2 inset-x-4 pointer-events-none text-center">
-                <span className="text-[9px] sm:text-[10px] font-mono font-bold text-[#17233E] bg-white/90 backdrop-blur-md px-2.5 sm:px-3 py-1 rounded-full border border-white/80 shadow-sm">
+                <span className="text-sm sm:text-base font-mono font-bold text-[#17233E] bg-white/90 backdrop-blur-md px-2.5 sm:px-3 py-1 rounded-full border border-white/80 shadow-sm">
                   {hoveredNode ? `${hoveredNode.name}: ${hoveredNode.score}` : "Hover nodes for skill telemetry"}
                 </span>
               </div>
             </div>
 
             {/* Floating Orbiting Status Pill */}
-            <div className="w-full flex items-center justify-between text-[11px] sm:text-xs font-mono font-bold text-[#5A6D89] mt-2 px-1 sm:px-2">
+            <div className="w-full flex items-center justify-between text-sm sm:text-base font-mono font-bold text-[#243656] mt-2 px-1 sm:px-2">
               <span className="flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full bg-[#1988A3]" /> Vector Gap: -8% (Optimal)
               </span>
@@ -427,7 +427,7 @@ const FeaturePage = () => {
                 <span className="text-4xl sm:text-5xl font-black text-[#17233E] tracking-tight leading-none mb-1">
                   {tenant.readinessScore}
                 </span>
-                <span className="text-[10px] sm:text-[11px] font-mono font-bold text-[#5A6D89] uppercase tracking-wider">
+                <span className="text-sm sm:text-base font-mono font-bold text-[#243656] uppercase tracking-wider">
                   SCORE / 100
                 </span>
               </div>
@@ -441,7 +441,7 @@ const FeaturePage = () => {
                 <div className="w-1 bg-[#17233E] rounded-full equalizer-bar-3" />
                 <div className="w-1 bg-[#1988A3] rounded-full equalizer-bar-4" />
               </div>
-              <p className="font-mono font-bold text-[#1988A3] uppercase tracking-widest text-[11px] sm:text-xs">
+              <p className="font-mono font-bold text-[#1988A3] uppercase tracking-widest text-sm sm:text-base">
                 Live Enterprise Readiness
               </p>
             </div>
@@ -449,13 +449,13 @@ const FeaturePage = () => {
           
           {/* Pillars List */}
           <div className="text-left">
-            <span className="px-3 py-1 rounded-full bg-[#1988A3]/10 border border-[#1988A3]/25 text-[#1988A3] text-[10px] sm:text-xs font-mono font-bold uppercase tracking-wider inline-block mb-2.5 sm:mb-3.5">
+            <span className="px-3 py-1 rounded-full bg-[#1988A3]/10 border border-[#1988A3]/25 text-[#1988A3] text-sm sm:text-base font-mono font-bold uppercase tracking-wider inline-block mb-2.5 sm:mb-3.5">
               UNIFIED INDEX
             </span>
             <h2 className="text-xl sm:text-3xl md:text-5xl font-extrabold mb-3 sm:mb-5 text-[#17233E]">
               Workforce Readiness Score
             </h2>
-            <p className="text-[#5A6D89] text-xs sm:text-base md:text-lg mb-6 sm:mb-8 font-normal leading-relaxed">
+            <p className="text-[#243656] text-base sm:text-lg md:text-lg mb-6 sm:mb-8 font-medium leading-relaxed">
               A single, unified metric that quantifies how ready your team is for upcoming business goals, powered by four key pillars:
             </p>
             <div className="space-y-2.5 sm:space-y-3">
@@ -465,8 +465,8 @@ const FeaturePage = () => {
                   whileHover={{ x: 4 }}
                   className="p-3 sm:p-4 glass-panel rounded-xl sm:rounded-2xl flex justify-between items-center transition-all"
                 >
-                  <span className="font-bold text-[#17233E] text-xs sm:text-sm">{pillar}</span>
-                  <span className="text-[#1988A3] font-bold text-[11px] sm:text-xs uppercase font-mono flex items-center gap-1.5">
+                  <span className="font-bold text-[#17233E] text-sm sm:text-base">{pillar}</span>
+                  <span className="text-[#1988A3] font-bold text-sm sm:text-base uppercase font-mono flex items-center gap-1.5">
                     <span className="w-1.5 h-1.5 rounded-full bg-[#1988A3] animate-pulse" /> Synced
                   </span>
                 </motion.div>
@@ -479,13 +479,13 @@ const FeaturePage = () => {
       {/* 5. ROLE-BASED DASHBOARDS */}
       <section className="py-10 sm:py-16 md:py-20 px-4 sm:px-8 md:px-20 relative z-10">
         <div className="container mx-auto max-w-7xl text-center mb-12">
-          <span className="px-3.5 py-1.5 rounded-full bg-[#17233E]/10 border border-[#17233E]/20 text-[#17233E] text-xs font-mono font-bold uppercase tracking-wider inline-block mb-3.5">
+          <span className="px-3.5 py-1.5 rounded-full bg-[#17233E]/10 border border-[#17233E]/20 text-[#17233E] text-sm font-mono font-bold uppercase tracking-wider inline-block mb-3.5">
             ROLE GOVERNANCE
           </span>
           <h2 className="text-xl sm:text-3xl md:text-5xl font-extrabold text-[#17233E] mb-2 sm:mb-3">
             Role-Based Dashboards
           </h2>
-          <p className="text-[#5A6D89] text-xs sm:text-base md:text-lg max-w-2xl mx-auto font-normal">
+          <p className="text-[#243656] text-base sm:text-lg md:text-lg max-w-2xl mx-auto font-medium">
             Specific interfaces tailored for every stakeholder in your organization.
           </p>
         </div>
@@ -509,14 +509,14 @@ const FeaturePage = () => {
                     />
                   ) : (
                     <div className="p-3 text-center">
-                      <span className="text-xs font-mono font-bold text-[#17233E]">{d.id} UI</span>
+                      <span className="text-sm font-mono font-bold text-[#17233E]">{d.id} UI</span>
                     </div>
                   )}
                 </div>
                 <h4 className="font-extrabold text-[#17233E] mb-1 pl-1 transition-colors group-hover:text-[#1988A3] text-base">
                   {d.t}
                 </h4>
-                <p className="text-[10px] font-mono font-bold text-[#5A6D89] uppercase tracking-widest pl-1">
+                <p className="text-xs sm:text-sm font-mono font-bold text-[#243656] uppercase tracking-widest pl-1">
                   {d.s}
                 </p>
               </Link>
@@ -533,7 +533,7 @@ const FeaturePage = () => {
             <Lock className="w-16 h-16 sm:w-24 sm:h-24 text-[#1988A3] group-hover:scale-110 transition-transform duration-300 relative z-10" />
           </div>
           <div className="flex-1">
-            <span className="px-3.5 py-1.5 rounded-full bg-[#1988A3]/10 border border-[#1988A3]/25 text-[#1988A3] text-xs font-mono font-bold uppercase tracking-wider inline-block mb-3.5">
+            <span className="px-3.5 py-1.5 rounded-full bg-[#1988A3]/10 border border-[#1988A3]/25 text-[#1988A3] text-sm font-mono font-bold uppercase tracking-wider inline-block mb-3.5">
               COMPLIANCE & ISOLATION
             </span>
             <h2 className="text-xl sm:text-3xl md:text-5xl font-extrabold text-[#17233E] mb-4 sm:mb-8">
@@ -548,7 +548,7 @@ const FeaturePage = () => {
               ].map((s, i) => (
                 <div key={i}>
                   <h4 className="font-bold text-[#17233E] mb-1 border-l-2 border-[#1988A3] pl-3 text-sm">{s.t}</h4>
-                  <p className="text-[#5A6D89] text-xs leading-relaxed font-normal">{s.d}</p>
+                  <p className="text-[#243656] text-sm leading-relaxed font-medium">{s.d}</p>
                 </div>
               ))}
             </div>

@@ -126,11 +126,11 @@ const ForgotPasswordScreen = () => {
                 <CheckCircle className="w-8 h-8 text-emerald-600" />
               </div>
               <h2 className="text-2xl sm:text-3xl font-extrabold mb-2 text-[#17233E] tracking-tight">Password Reset Complete!</h2>
-              <p className="text-[#5A6D89] text-xs sm:text-sm max-w-sm">{successMessage}</p>
-              <p className="text-xs text-[#1988A3] mt-4 font-semibold animate-pulse">Redirecting to login page...</p>
+              <p className="text-[#243656] text-sm sm:text-base max-w-sm">{successMessage}</p>
+              <p className="text-sm text-[#1988A3] mt-4 font-semibold animate-pulse">Redirecting to login page...</p>
             </div>
             <div className="pt-2 text-center">
-              <Link to="/login" className="inline-flex items-center gap-2 text-[#1988A3] hover:text-[#157289] font-bold text-xs sm:text-sm transition-colors">
+              <Link to="/login" className="inline-flex items-center gap-2 text-[#1988A3] hover:text-[#157289] font-bold text-sm sm:text-base transition-colors">
                 <ArrowLeft size={16} /> Go to Login Now
               </Link>
             </div>
@@ -143,18 +143,18 @@ const ForgotPasswordScreen = () => {
                 <Lock className="w-5 h-5 text-[#11C6DE]" />
               </div>
               <h2 className="text-2xl sm:text-3xl font-extrabold mb-2 text-[#17233E] tracking-tight">Set New Password</h2>
-              <p className="text-[#5A6D89] text-xs sm:text-sm">Enter your security token and choose a new password for your account.</p>
+              <p className="text-[#243656] text-sm sm:text-base">Enter your security token and choose a new password for your account.</p>
             </div>
 
             {error && (
-              <div className="bg-rose-500/10 border border-rose-500/20 text-rose-600 p-4 rounded-2xl text-xs font-semibold flex items-center gap-2">
+              <div className="bg-rose-500/10 border border-rose-500/20 text-rose-600 p-4 rounded-2xl text-sm font-semibold flex items-center gap-2">
                 <AlertCircle size={16} /> {error}
               </div>
             )}
 
             <form onSubmit={handleResetPassword} className="space-y-4">
               <div className="space-y-1 text-left">
-                <label className="text-[#5A6D89] text-xs font-semibold ml-1">Work Email</label>
+                <label className="text-[#243656] text-sm font-semibold ml-1">Work Email</label>
                 <input
                   type="email"
                   value={email}
@@ -165,7 +165,7 @@ const ForgotPasswordScreen = () => {
               </div>
 
               <div className="space-y-1 text-left">
-                <label className="text-[#5A6D89] text-xs font-semibold ml-1">Reset Token</label>
+                <label className="text-[#243656] text-sm font-semibold ml-1">Reset Token</label>
                 <input
                   type="text"
                   value={token}
@@ -177,7 +177,7 @@ const ForgotPasswordScreen = () => {
               </div>
 
               <div className="space-y-1 text-left">
-                <label className="text-[#5A6D89] text-xs font-semibold ml-1">New Password</label>
+                <label className="text-[#243656] text-sm font-semibold ml-1">New Password</label>
                 <div className="relative">
                   <input
                     type={showPassword ? 'text' : 'password'}
@@ -199,7 +199,7 @@ const ForgotPasswordScreen = () => {
               </div>
 
               <div className="space-y-1 text-left">
-                <label className="text-[#5A6D89] text-xs font-semibold ml-1">Confirm New Password</label>
+                <label className="text-[#243656] text-sm font-semibold ml-1">Confirm New Password</label>
                 <input
                   type={showPassword ? 'text' : 'password'}
                   value={confirmPassword}
@@ -213,7 +213,7 @@ const ForgotPasswordScreen = () => {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full mt-4 bg-[#17233E] hover:bg-[#1B3154] text-white py-3.5 sm:py-4 rounded-full font-bold transition-all shadow-lg shadow-[#17233E]/20 flex items-center justify-center gap-2 disabled:opacity-70 text-xs sm:text-sm cursor-pointer"
+                className="w-full mt-4 bg-[#17233E] hover:bg-[#1B3154] text-white py-3.5 sm:py-4 rounded-full font-bold transition-all shadow-lg shadow-[#17233E]/20 flex items-center justify-center gap-2 disabled:opacity-70 text-sm sm:text-base cursor-pointer"
               >
                 {isLoading ? (
                   <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
@@ -223,10 +223,10 @@ const ForgotPasswordScreen = () => {
               </button>
             </form>
 
-            <div className="pt-2 flex items-center justify-between text-xs">
+            <div className="pt-2 flex items-center justify-between text-sm">
               <button
                 onClick={() => setMode('request')}
-                className="text-[#5A6D89] hover:text-[#17233E] transition-colors cursor-pointer font-medium"
+                className="text-[#243656] hover:text-[#17233E] transition-colors cursor-pointer font-medium"
               >
                 Need a new reset token?
               </button>
@@ -243,18 +243,18 @@ const ForgotPasswordScreen = () => {
                 <KeyRound className="w-5 h-5 text-[#11C6DE]" />
               </div>
               <h2 className="text-2xl sm:text-3xl font-extrabold mb-2 text-[#17233E] tracking-tight">Forgot Password?</h2>
-              <p className="text-[#5A6D89] text-xs sm:text-sm">No worries, it happens. Enter your work email below and we'll dispatch a secure recovery token.</p>
+              <p className="text-[#243656] text-sm sm:text-base">No worries, it happens. Enter your work email below and we'll dispatch a secure recovery token.</p>
             </div>
 
             {error && (
-              <div className="bg-rose-500/10 border border-rose-500/20 text-rose-600 p-4 rounded-2xl text-xs font-semibold flex items-center gap-2">
+              <div className="bg-rose-500/10 border border-rose-500/20 text-rose-600 p-4 rounded-2xl text-sm font-semibold flex items-center gap-2">
                 <AlertCircle size={16} /> {error}
               </div>
             )}
 
             <form onSubmit={handleRequestReset} className="space-y-6">
               <div className="space-y-2 text-left">
-                <label className="text-[#5A6D89] text-xs font-semibold ml-1">Email Address</label>
+                <label className="text-[#243656] text-sm font-semibold ml-1">Email Address</label>
                 <div className="relative">
                   <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#8A9CB7]"><Mail className="w-4 h-4" /></span>
                   <input
@@ -271,7 +271,7 @@ const ForgotPasswordScreen = () => {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full bg-[#17233E] hover:bg-[#1B3154] text-white py-3.5 sm:py-4 rounded-full font-bold transition-all shadow-lg shadow-[#17233E]/20 flex items-center justify-center gap-2 disabled:opacity-70 text-xs sm:text-sm cursor-pointer"
+                className="w-full bg-[#17233E] hover:bg-[#1B3154] text-white py-3.5 sm:py-4 rounded-full font-bold transition-all shadow-lg shadow-[#17233E]/20 flex items-center justify-center gap-2 disabled:opacity-70 text-sm sm:text-base cursor-pointer"
               >
                 {isLoading ? (
                   <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
@@ -281,11 +281,11 @@ const ForgotPasswordScreen = () => {
               </button>
             </form>
 
-            <div className="pt-2 flex items-center justify-between text-xs">
+            <div className="pt-2 flex items-center justify-between text-sm">
               <button
                 type="button"
                 onClick={() => setMode('reset')}
-                className="text-[#5A6D89] hover:text-[#17233E] transition-colors cursor-pointer font-medium"
+                className="text-[#243656] hover:text-[#17233E] transition-colors cursor-pointer font-medium"
               >
                 Already have a token?
               </button>
@@ -302,11 +302,11 @@ const ForgotPasswordScreen = () => {
                 <CheckCircle className="w-6 h-6 text-emerald-600" />
               </div>
               <h2 className="text-2xl sm:text-3xl font-extrabold mb-2 text-[#17233E] tracking-tight">Check Your Email</h2>
-              <p className="text-[#5A6D89] text-xs sm:text-sm max-w-sm">We've dispatched password recovery instructions to:</p>
-              <p className="text-xs font-semibold text-[#1988A3] mt-2 bg-[#1988A3]/10 border border-[#1988A3]/25 px-4 py-2 rounded-xl inline-block font-mono">
+              <p className="text-[#243656] text-sm sm:text-base max-w-sm">We've dispatched password recovery instructions to:</p>
+              <p className="text-sm font-semibold text-[#1988A3] mt-2 bg-[#1988A3]/10 border border-[#1988A3]/25 px-4 py-2 rounded-xl inline-block font-mono">
                 {email}
               </p>
-              <p className="text-xs text-[#5A6D89] mt-4 max-w-xs leading-relaxed">
+              <p className="text-sm text-[#243656] mt-4 max-w-xs leading-relaxed">
                 Please check your inbox or spam folder. Click the secure link inside the email to reset your password.
               </p>
             </div>
@@ -314,21 +314,21 @@ const ForgotPasswordScreen = () => {
             <hr className="border-[#8A9CB7]/20" />
 
             <div className="space-y-3">
-              <p className="text-xs sm:text-sm text-[#5A6D89]">
+              <p className="text-sm sm:text-base text-[#243656]">
                 Have a reset token code?
               </p>
               <button
                 onClick={() => setMode('reset')}
-                className="text-xs sm:text-sm font-bold text-[#1988A3] hover:text-[#157289] transition-colors underline underline-offset-4 cursor-pointer"
+                className="text-sm sm:text-base font-bold text-[#1988A3] hover:text-[#157289] transition-colors underline underline-offset-4 cursor-pointer"
               >
                 Enter Reset Token Manually
               </button>
             </div>
 
-            <div className="pt-2 flex items-center justify-between text-xs">
+            <div className="pt-2 flex items-center justify-between text-sm">
               <button
                 onClick={() => setIsSubmitted(false)}
-                className="text-[#5A6D89] hover:text-[#17233E] transition-colors cursor-pointer font-medium"
+                className="text-[#243656] hover:text-[#17233E] transition-colors cursor-pointer font-medium"
               >
                 Try another email
               </button>

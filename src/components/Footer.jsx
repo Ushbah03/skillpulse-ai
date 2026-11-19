@@ -117,7 +117,7 @@ export function Footer() {
                   <span className="text-xl sm:text-2xl font-black text-[#17233E] tracking-tight">
                     SkillPulse<span className="text-[#1988A3]">-AI</span>
                   </span>
-                  <span className="block text-[10px] font-mono font-bold tracking-widest text-[#5A6D89] uppercase">
+                  <span className="block text-xs sm:text-sm font-mono font-bold tracking-widest text-[#243656] uppercase">
                     Workforce Intelligence
                   </span>
                 </div>
@@ -129,7 +129,7 @@ export function Footer() {
                   calibrated daily.
                 </span>
               </h3>
-              <p className="text-[#5A6D89] text-xs sm:text-sm mt-2.5 leading-relaxed max-w-md">
+              <p className="text-[#243656] text-sm sm:text-base mt-2.5 leading-relaxed max-w-md">
                 Subscribe to weekly talent intelligence telemetry, AI squad orchestration case studies, and corporate workforce benchmarks.
               </p>
             </div>
@@ -144,7 +144,7 @@ export function Footer() {
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="work.email@company.com"
                     disabled={isSubscribed}
-                    className="flex-1 bg-transparent px-3.5 sm:px-4 py-2 text-xs sm:text-sm text-[#17233E] placeholder:text-[#8A9CB7] focus:outline-none font-medium min-w-0"
+                    className="flex-1 bg-transparent px-3.5 sm:px-4 py-2 text-sm sm:text-base text-[#17233E] placeholder:text-[#8A9CB7] focus:outline-none font-medium min-w-0"
                     required
                   />
                   <motion.button
@@ -152,7 +152,7 @@ export function Footer() {
                     whileHover={{ scale: 1.03 }}
                     whileTap={{ scale: 0.97 }}
                     disabled={isSubscribed}
-                    className="px-4 sm:px-6 py-2 sm:py-2.5 rounded-full bg-[#17233E] hover:bg-[#1988A3] text-white text-xs font-bold transition-colors shadow-md shadow-[#17233E]/20 flex items-center gap-1.5 shrink-0 cursor-pointer"
+                    className="px-4 sm:px-6 py-2 sm:py-2.5 rounded-full bg-[#17233E] hover:bg-[#1988A3] text-white text-sm font-bold transition-colors shadow-md shadow-[#17233E]/20 flex items-center gap-1.5 shrink-0 cursor-pointer"
                   >
                     {isSubscribed ? (
                       <>
@@ -169,7 +169,7 @@ export function Footer() {
                 </div>
               </form>
 
-              <p className="text-[10px] font-medium text-[#8A9CB7] mt-2 px-3 flex items-center gap-1.5">
+              <p className="text-xs sm:text-sm font-medium text-[#8A9CB7] mt-2 px-3 flex items-center gap-1.5">
                 <ShieldCheck className="w-3 h-3 text-[#1988A3] shrink-0" />
                 <span>Zero spam. Unsubscribe anytime. SOC 2 Type II compliant.</span>
               </p>
@@ -180,7 +180,7 @@ export function Footer() {
                   <Link
                     key={i}
                     to="/contact"
-                    className="px-3.5 py-1.5 rounded-full bg-white/70 hover:bg-[#1988A3]/15 border border-white/85 text-[11px] text-[#5A6D89] hover:text-[#17233E] font-semibold transition-all inline-flex items-center gap-1.5 shadow-2xs backdrop-blur-md cursor-pointer"
+                    className="px-3.5 py-1.5 rounded-full bg-white/70 hover:bg-[#1988A3]/15 border border-white/85 text-sm text-[#243656] hover:text-[#17233E] font-semibold transition-all inline-flex items-center gap-1.5 shadow-2xs backdrop-blur-md cursor-pointer"
                   >
                     <span>{social}</span>
                     <ArrowUpRight className="w-3 h-3 text-[#1988A3]" />
@@ -199,7 +199,7 @@ export function Footer() {
               <div className="grid grid-cols-4 gap-8">
                 {navColumns.map((col, idx) => (
                   <div key={idx} className="space-y-3">
-                    <h4 className="text-[11px] font-mono font-bold uppercase tracking-wider text-[#17233E] flex items-center gap-1.5">
+                    <h4 className="text-sm font-mono font-bold uppercase tracking-wider text-[#17233E] flex items-center gap-1.5">
                       <span className="w-1.5 h-1.5 rounded-full bg-[#1988A3]" />
                       {col.title}
                     </h4>
@@ -208,13 +208,13 @@ export function Footer() {
                         <li key={lIdx}>
                           <Link
                             to={link.path}
-                            className="group inline-flex items-center gap-1.5 text-xs text-[#5A6D89] hover:text-[#17233E] font-medium transition-colors"
+                            className="group inline-flex items-center gap-1.5 text-sm text-[#243656] hover:text-[#17233E] font-medium transition-colors"
                           >
                             <span className="group-hover:translate-x-0.5 transition-transform">
                               {link.label}
                             </span>
                             {link.badge && (
-                              <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded-md bg-[#1988A3]/10 text-[#1988A3] border border-[#1988A3]/25 uppercase leading-none">
+                              <span className="text-sm font-mono font-bold px-1.5 py-0.5 rounded-md bg-[#1988A3]/10 text-[#1988A3] border border-[#1988A3]/25 uppercase leading-none">
                                 {link.badge}
                               </span>
                             )}
@@ -240,16 +240,16 @@ export function Footer() {
                     >
                       <div className="flex items-center gap-2">
                         <span className={`w-1.5 h-1.5 rounded-full transition-colors ${isOpen ? 'bg-[#11C6DE]' : 'bg-[#1988A3]'}`} />
-                        <span className="text-xs font-mono font-bold uppercase tracking-wider text-[#17233E]">
+                        <span className="text-sm font-mono font-bold uppercase tracking-wider text-[#17233E]">
                           {col.title}
                         </span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="text-[10px] font-mono text-[#8A9CB7] bg-white/60 px-2 py-0.5 rounded-full border border-white/80">
+                        <span className="text-xs sm:text-sm font-mono text-[#8A9CB7] bg-white/60 px-2 py-0.5 rounded-full border border-white/80">
                           {col.links.length}
                         </span>
                         <ChevronDown
-                          className={`w-4 h-4 text-[#5A6D89] transition-transform duration-200 ${
+                          className={`w-4 h-4 text-[#243656] transition-transform duration-200 ${
                             isOpen ? 'rotate-180 text-[#1988A3]' : ''
                           }`}
                         />
@@ -269,13 +269,13 @@ export function Footer() {
                             <li key={lIdx}>
                               <Link
                                 to={link.path}
-                                className="flex items-center justify-between py-1 text-xs text-[#5A6D89] hover:text-[#17233E] active:text-[#1988A3] font-medium transition-colors"
+                                className="flex items-center justify-between py-1 text-sm text-[#243656] hover:text-[#17233E] active:text-[#1988A3] font-medium transition-colors"
                               >
                                 <span className="hover:translate-x-0.5 transition-transform">
                                   {link.label}
                                 </span>
                                 {link.badge && (
-                                  <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded-md bg-[#1988A3]/10 text-[#1988A3] border border-[#1988A3]/25 uppercase leading-none">
+                                  <span className="text-sm font-mono font-bold px-1.5 py-0.5 rounded-md bg-[#1988A3]/10 text-[#1988A3] border border-[#1988A3]/25 uppercase leading-none">
                                     {link.badge}
                                   </span>
                                 )}
@@ -295,15 +295,15 @@ export function Footer() {
         </div>
 
         {/* 4. Bottom Horizontal Action & Compliance Bar (Full-Width Divider) */}
-        <div className="pt-8 border-t border-white/70 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
+        <div className="pt-8 border-t border-white/70 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm">
           
           {/* Left: Copyright */}
-          <div className="text-[#5A6D89] font-medium text-xs text-center sm:text-left">
+          <div className="text-[#243656] font-medium text-sm text-center sm:text-left">
             © {new Date().getFullYear()} SkillPulse-AI Enterprise Systems. All rights reserved.
           </div>
 
           {/* Right: Legal & Security Navigation */}
-          <div className="flex items-center gap-4 text-[#5A6D89] text-xs font-medium">
+          <div className="flex items-center gap-4 text-[#243656] text-sm font-medium">
             <Link to="/faq?tab=Privacy%20%26%20Terms" className="hover:text-[#17233E] transition-colors py-1">Privacy</Link>
             <span className="text-[#8A9CB7]/50 select-none">•</span>
             <Link to="/faq?tab=Privacy%20%26%20Terms" className="hover:text-[#17233E] transition-colors py-1">Terms</Link>
